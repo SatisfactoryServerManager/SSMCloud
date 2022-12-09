@@ -1,0 +1,56 @@
+<div class="col-12 col-md-6 col-lg-6 col-xl-3">
+    <div class="card" id="server-card-<%=agent._id%>">
+        <div class="card-header">
+            <a class="float-end" href="/server/<%=agent._id%>"
+                ><button class="btn btn-primary">
+                    <i class="fas fa-cog"></i></button
+            ></a>
+            <h5><%=agent.agentName%></h5>
+        </div>
+        <div class="card-body">
+
+            <% let statusText="Offline"; %>
+            <% if(agent.running) statusText = "Running" %>
+            <% if(agent.online) statusText = "Online" %>
+            <% if(!agent.installed) statusText = "Not Installed" %>
+            <% if(!agent.online) statusText = "Offline" %>
+
+            <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
+            ClassID:"status", Title:"Status", Data:statusText, Icon:"fa-server"})
+            %> 
+            
+            <%- include('../includes/status-info-card.ejs',
+            {ClassColour:"orange", ClassID:"users", Title:"Connected Users",
+            Data:"0", Icon:"fa-user"}) %>
+
+            <%- include('../includes/status-info-card.ejs',
+            {ClassColour:"green", ClassID:"mods", Title:"Installed Mods",
+            Data:"0", Icon:"fa-pencil-ruler"}) %>
+
+            <hr/>
+            <div class="progress-bar-wrapper">
+                <div class="circle mem_progress" data-percent="<%=agent.ramUsage%>">
+                    <strong></strong>
+                    <h6>RAM</h6>
+                </div>
+                <div class="circle cpu_progress" data-percent="<%=agent.cpuUsage%>">
+                    <strong></strong>
+                    <h6>CPU</h6>
+                </div>
+            </div>
+            <hr/>
+
+            <div class="d-flex flex-column flex-md-row">
+                <a href="/dashboard/serveraction/<%=agent._id%>/start" class="flex-fill mt-2 mt-md-0 me-md-2">
+                    <button class='btn btn-success server-action-btn w-100'><i class="fas fa-play"></i>Start Server</button>
+                </a>
+                 <a href="/dashboard/serveraction/<%=agent._id%>/stop" class="flex-fill mt-2  mt-md-0">
+                    <button class='btn btn-warning server-action-btn w-100'><i class="fas fa-stop"></i>Stop Server</button>
+                </a>
+                <a href="/dashboard/serveraction/<%=agent._id%>/kill" class="flex-fill mt-2  mt-md-0 ms-md-2">
+                    <button class='btn btn-danger server-action-btn w-100'><i class="fas fa-skull-crossbones"></i>Kill Server</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
