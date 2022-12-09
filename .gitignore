@@ -1,0 +1,13 @@
+node_modules
+scripts/*.exe
+scripts/Temp
+build
+assets/version.txt
+release-builds
+tools/TOKEN.txt
+tools/DOCKERPASS.txt
+tools/app_config.txt
+*.log
+
+tools/app_config.txt
+log.txt
