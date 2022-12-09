@@ -164,6 +164,9 @@ class SSMCloud_App {
             })
         );
 
+        const APIRoutes = require("./routes/api");
+        app.use("/api", APIRoutes);
+
         app.use(csrfProtection);
         app.use(flash());
 
