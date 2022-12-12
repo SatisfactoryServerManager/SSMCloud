@@ -16,11 +16,13 @@ const cors = require("cors");
 const methodOverride = require("method-override");
 const fs = require("fs-extra");
 const morgan = require("morgan");
+const multer = require("multer");
 
 /* SSM Server Utils */
 
 const Config = require("./server/server_config");
-const Logger = require("./server/server_Logger");
+const Logger = require("./server/server_logger");
+const AgentHandler = require("./server/server_agent_handler");
 
 /* End SSM Server Utils */
 
@@ -45,6 +47,7 @@ class SSMCloud_App {
         await Config.load();
         Logger.info("[APP] [PREINIT] - Starting SSM..");
         this.startExpress();
+        AgentHandler.init();
     };
 
     startExpress() {
@@ -59,6 +62,20 @@ class SSMCloud_App {
             uri: this.MONGODB_URI,
             collection: "sessions",
         });
+
+        // SET STORAGE
+        var storage = multer.diskStorage({
+            destination: function (req, file, cb) {
+                cb(null, Config.get("ssm.tempdir"));
+            },
+            filename: function (req, file, cb) {
+                cb(null, `${file.originalname}`);
+            },
+        });
+
+        const upload = multer({ storage: storage });
+
+        app.use(upload.single("file"));
 
         app.set("trust proxy", "127.0.0.1");
 
@@ -163,6 +180,7 @@ class SSMCloud_App {
                 store,
             })
         );
+        app.use(morgan("combined"));
 
         const APIRoutes = require("./routes/api");
         app.use("/api", APIRoutes);
@@ -184,8 +202,6 @@ class SSMCloud_App {
         const AuthRoutes = require("./routes/auth");
         const DashboardRoutes = require("./routes/dashboard");
 
-        app.use(morgan("combined"));
-
         app.use(AuthRoutes);
         app.use(DashboardRoutes);
 
@@ -195,6 +211,7 @@ class SSMCloud_App {
 
         // Error-handling middleware. Express executes this middleware when you call next() with an error passed to it
         app.use((error, req, res, next) => {
+
             res.status(500).render("500", {
                 pageTitle: "Server Error",
                 path: "/500",

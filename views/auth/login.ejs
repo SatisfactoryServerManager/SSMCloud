@@ -5,7 +5,9 @@
     </div>
     <div class="card-body">
         <h4 class="card-title">Login to Dashboard</h4>
-        <div class="error-content"><%=errorMessage%></div>
+        <%if(errorMessage != ""){%>
+        <div class="alert alert-danger"><%=errorMessage%></div>
+        <%}%>
         <form class="form-horizontal signup-form" method="post" action="">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <fieldset>

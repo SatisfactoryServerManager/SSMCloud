@@ -1,0 +1,321 @@
+<%- include('../includes/head-main.ejs') %>
+
+<body>
+    <div id="viewport" class="minimal">
+        <%- include('../includes/navigation.ejs') %>
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    <div class="row page-header">
+                        <div class="col-12 col-md-9">
+                            <h3 class="mb-3">Servers - <%=accountName%></h3>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="status-info-card blue">
+                                <div class="status-info-card-main">
+                                    Servers:
+                                </div>
+                                <div class="status-info-card-secondary">
+                                    <span id="server-count"
+                                        ><%= agents.length %></span
+                                    >
+                                </div>
+                                <div class="status-info-card-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card border-secondary mb-3 shadow">
+                        <div class="card-header">
+                            <h5>Create New Server</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <h6>Server Options:</h6>
+                                    <%if(errorMessage != ""){%>
+                                    <div class="alert alert-danger">
+                                        <%=errorMessage%>
+                                    </div>
+                                    <%}%> <%if(newApiKey){%>
+                                    <div class="alert alert-success">
+                                        New server has been created
+                                        successfully. The server API Key:
+                                        <b><%=newApiKey%></b>
+                                    </div>
+                                    <%}%>
+                                    <form action="" method="post">
+                                        <input
+                                            type="hidden"
+                                            name="_csrf"
+                                            value="<%= csrfToken %>"
+                                        />
+                                        <div class="form-group">
+                                            <label
+                                                for="inp_servername"
+                                                class="form-label"
+                                                >Server Name:</label
+                                            >
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="fas fa-server"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="inp_servername"
+                                                    name="inp_servername"
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="Server Name"
+                                                    value="<%=oldInput.inp_servername%>"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label
+                                                for="inp_serverport"
+                                                class="form-label"
+                                                >Server Port:</label
+                                            >
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="fas fa-network-wired"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="inp_serverport"
+                                                    name="inp_serverport"
+                                                    type="number"
+                                                    class="form-control"
+                                                    placeholder="Server Port"
+                                                    value="<%if(oldInput.inp_serverport){%><%=oldInput.inp_serverport%><%}else{%>15777<%}%>"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <fieldset class="form-group">
+                                            <label
+                                                for="inp_servermemory"
+                                                class="form-label"
+                                            >
+                                                Server Memory:
+                                            </label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="fa-solid fa-memory"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    type="range"
+                                                    class="form-range custom-range"
+                                                    min="1"
+                                                    max="6"
+                                                    step="0.5"
+                                                    id="inp_servermemory"
+                                                    name="inp_servermemory"
+                                                    value="<%if(oldInput.inp_servermemory){%><%=oldInput.inp_servermemory%><%}else{%>1<%}%>"
+                                                />
+                                                <span
+                                                    class="input-group-text"
+                                                    id="inp_servermemory_value"
+                                                    >1.0G</span
+                                                >
+                                            </div>
+                                        </fieldset>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button
+                                                    class="btn btn-primary"
+                                                    id="submit-create-server-btn"
+                                                >
+                                                    <i class="fas fa-plus"></i>
+                                                    Add Server
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <h6>Install Command:</h6>
+                                    <p>
+                                        When running this install script, you
+                                        will be prompted for the following
+                                        information:
+                                    </p>
+                                    <ul>
+                                        <li>
+                                            SSM Url - This is the url that the
+                                            agent will connect to. By default
+                                            this will be SSM Cloud, you can
+                                            enter your hosted SSM cloud url/ip
+                                            address if needed.
+                                        </li>
+                                        <li>
+                                            API Key: This is the secure api key
+                                            used for sending data to SSM Cloud
+                                        </li>
+                                    </ul>
+
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li
+                                            class="nav-item"
+                                            role="presentation"
+                                        >
+                                            <a
+                                                class="nav-link active"
+                                                data-bs-toggle="tab"
+                                                href="#windows-install-agent"
+                                                aria-selected="true"
+                                                role="tab"
+                                                >Windows</a
+                                            >
+                                        </li>
+                                        <li
+                                            class="nav-item"
+                                            role="presentation"
+                                        >
+                                            <a
+                                                class="nav-link"
+                                                data-bs-toggle="tab"
+                                                href="#linux-install-agent"
+                                                aria-selected="false"
+                                                role="tab"
+                                                tabindex="-1"
+                                                >Ubuntu / Debian</a
+                                            >
+                                        </li>
+                                    </ul>
+                                    <div
+                                        id="myTabContent"
+                                        class="tab-content server-install-command"
+                                    >
+                                        <div
+                                            class="tab-pane fade active show"
+                                            id="windows-install-agent"
+                                            role="tabpanel"
+                                        >
+                                            <p>
+                                                PS> Invoke-WebRequest
+                                                https://tinyurl.com/ssm-agent-install-ps1
+                                                -Out install-agent.ps1
+                                            </p>
+                                            <p>PS> <span></span></p>
+                                        </div>
+                                        <div
+                                            class="tab-pane fade"
+                                            id="linux-install-agent"
+                                            role="tabpanel"
+                                        >
+                                            <p>
+                                                $> wget -q
+                                                https://tinyurl.com/ssm-agent-install-sh
+                                                -O install-agent.sh
+                                            </p>
+                                            <p>$> <span></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-secondary mb-3 shadow">
+                        <div class="card-header">
+                            <h5>Server List</h5>
+                        </div>
+                        <div class="card-body">
+                            <table
+                                class="table table-bordered"
+                                id="agents-table"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Online</th>
+                                        <th>Installed</th>
+                                        <th>Version</th>
+                                        <th>SF Branch</th>
+                                        <th>SF Version</th>
+                                        <th>SF Avaliable Version</th>
+                                        <th width="80px">Options</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(agents.length > 0){ %>
+                                    <div class="row">
+                                        <% agents.forEach(agent => { %>
+                                        <tr>
+                                            <td><%=agent.agentName%></td>
+                                            <td>
+                                                <%if(agent.online){%>
+                                                <i
+                                                    class="fas fa-circle-check text-success"
+                                                ></i>
+                                                <%} else {%>
+                                                <i
+                                                    class="fas fa-circle-xmark text-danger"
+                                                ></i>
+                                                <%}%>
+                                            </td>
+                                            <td>
+                                                <%if(agent.installed){%>
+                                                <i
+                                                    class="fas fa-circle-check text-success"
+                                                ></i>
+                                                <%} else {%>
+                                                <i
+                                                    class="fas fa-circle-xmark text-danger"
+                                                ></i>
+                                                <%}%>
+                                            </td>
+                                            <%if(agent.config.version){%>
+                                            <td>v<%=agent.config.version%></td>
+                                            <td><%=agent.config.sfBranch%></td>
+                                            <td>
+                                                <%=agent.config.sfVersions.installed%>
+                                            </td>
+                                            <td>
+                                                <%=agent.config.sfVersions.available%>
+                                            </td>
+                                            <%}else{%>
+                                            <td>v0.0.0</td>
+                                            <td>public</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <%}%>
+                                            <td>
+                                                <a
+                                                    href="/dashboard/server/<%=agent._id%>"
+                                                >
+                                                    <button
+                                                        class="btn btn-primary float-start"
+                                                    >
+                                                        <i
+                                                            class="fas fa-cog"
+                                                        ></i>
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <%})%>
+                                    </div>
+                                    <%}%>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('../includes/footer-main.ejs') %>
+        </div>
+    </div>
+</body>

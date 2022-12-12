@@ -9,7 +9,7 @@ const { validationResult } = require("express-validator");
 exports.getLogin = (req, res) => {
     console.log(res.session);
 
-    if (!req.session.isLoggedIn) {
+    if (req.session.isLoggedIn) {
         res.redirect("/dashboard");
     }
 

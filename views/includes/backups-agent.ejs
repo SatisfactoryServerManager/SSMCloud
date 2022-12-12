@@ -1,0 +1,66 @@
+<div class="card border-secondary mb-3 shadow">
+    <div class="card-header">
+        <h5><%=agent.agentName%> - Backups</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered backup-agent-table">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Created</th>
+                    <th>Size</th>
+                    <th width="80px">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%agent.backups.forEach(backup=>{%>
+
+
+                    <%
+                    Number.prototype.pad = function (width, z) {
+                        let n = this;
+                        z = z || "0";
+                        n = n + "";
+                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                    };
+
+                    Date.prototype.getMonthName = function () {
+                        const monthNames = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                        ];
+                        return monthNames[this.getMonth()];
+                    };
+                        const date = new Date(backup.uploadDate);
+                        const day = date.getDate()
+                        const month = date.getMonthName();
+                        const year = date.getFullYear();
+                
+                        const hour = date.getHours().pad(2)
+                        const min = date.getMinutes().pad(2)
+                        const sec = date.getSeconds().pad(2)
+                
+                        const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
+                        
+                        %>
+                <tr>
+                    <td><%=backup.backupName%></td>
+                    <td><%=dateStr%></td>
+                    <td><%=backup.size%> Bytes</td>
+                    <td></td>
+                </tr>
+                <%})%>
+            </tbody>
+        </table>
+    </div>
+</div>

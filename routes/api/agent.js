@@ -2,21 +2,26 @@ const express = require("express");
 
 const router = express.Router();
 const isAgent = require("../../middleware/is-agent");
+const AgentController = require("../../controllers/agent");
 
-const Agent = require("../../models/agent");
+router.post("/activestate", isAgent, AgentController.postAgentActiveState);
+router.post(
+    "/installedstate",
+    isAgent,
+    AgentController.postAgentInstalledState
+);
+router.post("/runningstate", isAgent, AgentController.postAgentRunningState);
 
-router.post("/activestate", isAgent, async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+router.post("/configData", isAgent, AgentController.postUpdateAgentConfigData);
 
-    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+router.post(
+    "/messagequeue",
+    isAgent,
+    AgentController.postUpdateAgentMessageQueueItem
+);
 
-    theAgent.online = req.body.active;
-    theAgent.lastCommDate = Date.now();
-    await theAgent.save();
+router.get("/messagequeue", isAgent, AgentController.getAgentMessageQueue);
 
-    res.json({
-        success: true,
-    });
-});
+router.post("/uploadbackup", isAgent, AgentController.postUploadBackupFile);
 
 module.exports = router;

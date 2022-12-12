@@ -40,6 +40,9 @@ class ServerConfig extends iConfig {
         super.set("ssm.tempdir", path.join(userDataPath, "temp"));
         fs.ensureDirSync(super.get("ssm.tempdir"));
 
+        super.set("ssm.uploadsdir", path.join(userDataPath, "uploads"));
+        fs.ensureDirSync(super.get("ssm.uploadsdir"));
+
         super.get("ssm.http_port", 3000);
 
         // Mongo DB Config
