@@ -3,18 +3,20 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const Account = require("../models/account");
 const User = require("../models/user");
+const UserRole = require("../models/user_role");
+const Permission = require("../models/permission");
 
 const { validationResult } = require("express-validator");
 
 exports.getLogin = (req, res) => {
-    console.log(res.session);
-
     if (req.session.isLoggedIn) {
         res.redirect("/dashboard");
     }
 
     let message = req.flash("error");
     message.length > 0 ? (message = message[0]) : (message = null);
+
+    console.log(message);
 
     res.render("auth/login", {
         path: "/login",
@@ -137,7 +139,11 @@ exports.postSignUp = async (req, res, next) => {
             password: hashedPassword,
             isAccountAdmin: true,
         });
+
         NewAccount.users.push(newUser);
+
+        await CreateAccountUserRoles(NewAccount);
+
         await NewAccount.save();
         res.redirect("/login");
     } catch (err) {
@@ -145,4 +151,19 @@ exports.postSignUp = async (req, res, next) => {
         error.httpStatusCode = 500;
         return next(error);
     }
+};
+
+const CreateAccountUserRoles = async (theAccount) => {
+    const AllPermissions = await Permission.find();
+
+    const AdminUserRole = await UserRole.create({
+        roleName: "Administrator",
+        permissions: AllPermissions,
+    });
+
+    theAccount.users[0].role = AdminUserRole;
+
+    await theAccount.users[0].save();
+
+    theAccount.userRoles.push(AdminUserRole);
 };

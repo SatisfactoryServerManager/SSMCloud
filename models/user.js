@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const UserRole = require("./user_role");
 
 const Schema = mongoose.Schema;
 
@@ -14,6 +15,10 @@ const userSchema = new Schema({
     isAccountAdmin: {
         type: Boolean,
         default: false,
+    },
+    role: {
+        type: Schema.Types.ObjectId,
+        ref: "UserRole",
     },
 });
 

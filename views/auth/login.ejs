@@ -5,7 +5,7 @@
     </div>
     <div class="card-body">
         <h4 class="card-title">Login to Dashboard</h4>
-        <%if(errorMessage != ""){%>
+        <%if(errorMessage != "" && errorMessage != null){%>
         <div class="alert alert-danger"><%=errorMessage%></div>
         <%}%>
         <form class="form-horizontal signup-form" method="post" action="">

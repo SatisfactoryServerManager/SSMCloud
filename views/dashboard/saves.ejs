@@ -1,0 +1,112 @@
+<%- include('../includes/head-main.ejs') %>
+
+<body>
+    <div id="viewport" class="minimal">
+        <%- include('../includes/navigation.ejs') %>
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    <div class="row page-header">
+                        <div class="col-12 col-md-9">
+                            <h3 class="mb-3">Saves - <%=accountName%></h3>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="status-info-card blue">
+                                <div class="status-info-card-main">
+                                    Servers:
+                                </div>
+                                <div class="status-info-card-secondary">
+                                    <span id="server-count"
+                                        ><%= agents.length %></span
+                                    >
+                                </div>
+                                <div class="status-info-card-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-secondary mb-3">
+                        <div class="card-header">
+                            <h5>Satisfactory Saves</h5>
+                        </div>
+                        <div class="card-body">
+                            <form
+                                id="save-upload-form"
+                                enctype="multipart/form-data"
+                                method="post"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="_csrf"
+                                    value="<%= csrfToken %>"
+                                />
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-12 col-md-3">
+                                            <b class="settings-prop"
+                                                >Save File:</b
+                                            >
+                                            <span class="settings-info">
+                                                The save file (.sav) to upload
+                                                to the server
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-5">
+                                            <div class="form-group">
+                                                <input
+                                                    class="form-control"
+                                                    type="file"
+                                                    name="file"
+                                                    id="inp-save-file"
+                                                    accept=".sav"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <select
+                                                name="inp_agentid"
+                                                id=""
+                                                class="form-select"
+                                            >
+                                                <%agents.forEach(agent=>{%>
+                                                <option value="<%=agent._id%>">
+                                                    Server -
+                                                    <%=agent.agentName%>
+                                                </option>
+                                                <%})%>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <button
+                                                class="btn btn-success btn-block"
+                                                id="btn-save-upload"
+                                            >
+                                                <i class="fas fa-upload"></i>
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                     <% if(agents.length > 0){ %>
+                        <% agents.forEach(agent => { %>
+                            <%- include('../includes/saves-agent.ejs', {agent}) %>
+                        <%})%>
+                    <%} else {%>
+                        <div class="alert alert-info">
+                            It looks there is no servers set up yet! Go to the <strong>Servers</strong> page to set up your first server.
+                        </div>
+                    <%}%>
+                </div>
+            </div>
+
+            <%- include('../includes/footer-main.ejs') %>
+        </div>
+    </div>
+</body>

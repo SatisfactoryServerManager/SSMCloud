@@ -64,6 +64,12 @@ const agentSchema = new Schema(
                 ref: "AgentBackup",
             },
         ],
+        saves: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "AgentSave",
+            },
+        ],
     },
     { minimize: false }
 );

@@ -170,7 +170,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-6">
-                                                <input type="range" class="form-range" id="inp_maxplayers" min="4" max="500" value="<%=agent.config.maxPlayers%>">
+                                                <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.config.maxPlayers%>">
                                             </div>
                         
                                             <div class="col-12 col-md-2">
@@ -185,7 +185,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-8">
-                                                <input id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                                                <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                                             </div>
                                         </div>
                         
@@ -197,7 +197,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-8">
-                                                <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" class="form-control">
+                                                <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
                                             </div>
                                         </div>
                                         <div class="row settings-row">
@@ -208,7 +208,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-8">
-                                                <input id="inp_sfbranch" type="checkbox" <%if(agent.config.sfBranch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
+                                                <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.config.sfBranch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
                                             </div>
                                         </div>
                                         <div class="row">
@@ -234,8 +234,11 @@
                                                 </span>
                                         </div>
                                         <div class="col-12 col-md-8">
-                                            <button class="btn btn-danger" id="settings-dangerarea-installsf"><i
-                                                        class="fas fa-download"></i> Install / Reinstall</button>
+                                            <a href="/dashboard/serveraction/<%=agent._id%>/install">
+                                                <button class="btn btn-danger" id="settings-dangerarea-installsf"><i
+                                                    class="fas fa-download"></i> Install / Reinstall</button>
+                                            </a>
+                                            
                                         </div>
                                     </div>
                                     <div class="row settings-row">
@@ -246,8 +249,10 @@
                                             </span>
                                         </div>
                                         <div class="col-12 col-md-8">
+                                            <a href="/dashboard/serveraction/<%=agent._id%>/update">
                                             <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
                                                 Update Server</button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -271,7 +276,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-8">
-                                                <input type="number" name="" class="form-control" id="inp_backup-interval" value="<%=agent.config.backup.interval%>">
+                                                <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backup.interval%>">
                                             </div>
                                         </div>
                                         <div class="row settings-row">
@@ -282,7 +287,7 @@
                                                 </span>
                                             </div>
                                             <div class="col-12 col-md-8">
-                                                <input type="number" name="" class="form-control" id="inp_backup-keep" value="<%=agent.config.backup.keep%>">
+                                                <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backup.keep%>">
                                             </div>
                                         </div>
                                         <div class="row settings-row">
@@ -295,14 +300,40 @@
                                             <div class="col-12 col-md-8">
 
                                                 <%
+
+                                                Number.prototype.pad = function (width, z) {
+                                                    let n = this;
+                                                    z = z || "0";
+                                                    n = n + "";
+                                                    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                                                };
+                            
+                                                Date.prototype.getMonthName = function () {
+                                                    const monthNames = [
+                                                        "Jan",
+                                                        "Feb",
+                                                        "Mar",
+                                                        "Apr",
+                                                        "May",
+                                                        "Jun",
+                                                        "Jul",
+                                                        "Aug",
+                                                        "Sep",
+                                                        "Oct",
+                                                        "Nov",
+                                                        "Dec",
+                                                    ];
+                                                    return monthNames[this.getMonth()];
+                                                };
+
                                                 const date = new Date(agent.config.backup.nextbackup);
-                                                const day = date.getDate()
-                                                const month = date.getMonth()+1;
+                                                const day = date.getDate().pad(2);
+                                                const month = date.getMonthName();
                                                 const year = date.getFullYear();
                                         
-                                                const hour = date.getHours()
-                                                const min = date.getMinutes()
-                                                const sec = date.getSeconds()
+                                                const hour = date.getHours().pad(2);
+                                                const min = date.getMinutes().pad(2);
+                                                const sec = date.getSeconds().pad(2);
                                         
                                                 const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
                                                 

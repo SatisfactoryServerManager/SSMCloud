@@ -1,0 +1,61 @@
+<div class="card border-secondary mb-3 shadow">
+    <div class="card-header">
+        <h5><%=agent.agentName%> - Save Files</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered backup-agent-table">
+            <thead>
+                <tr>
+                    <th>Session</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Mods</th>
+                    <th width="80px">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%agent.saves.forEach(save=>{%>
+
+
+                    <%
+                    Number.prototype.pad = function (width, z) {
+                        let n = this;
+                        z = z || "0";
+                        n = n + "";
+                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                    };
+
+                    Date.prototype.getMonthName = function () {
+                        const monthNames = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                        ];
+                        return monthNames[this.getMonth()];
+                    };
+                       
+                
+                        const dateStr = ``;
+                        
+                        %>
+                <tr>
+                    <td><%=save.sessionName%></td>
+                    <td><%=save.fileName%></td>
+                    <td><%=save.stats.size%> Bytes</td>
+                    <td><%=save.mods.length%></td>
+                    <td></td>
+                </tr>
+                <%})%>
+            </tbody>
+        </table>
+    </div>
+</div>

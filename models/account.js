@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Agent = require("./agent");
 const User = require("./user");
+const UserRole = require("./user_role");
+const UserInvites = require("./user_invite");
 
 const Schema = mongoose.Schema;
 
@@ -19,6 +21,18 @@ const accountSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: "Agent",
+        },
+    ],
+    userRoles: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "UserRole",
+        },
+    ],
+    userInvites: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "UserInvite",
         },
     ],
 });

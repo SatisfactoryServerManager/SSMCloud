@@ -18,6 +18,8 @@ const fs = require("fs-extra");
 const morgan = require("morgan");
 const multer = require("multer");
 
+const PermissionModel = require("./models/permission");
+
 /* SSM Server Utils */
 
 const Config = require("./server/server_config");
@@ -102,6 +104,10 @@ class SSMCloud_App {
                 "Access-Control-Allow-Headers",
                 "Origin, X-Requested-With, Content-Type, Accept"
             );
+            res.header(
+                "Content-Security-Policy",
+                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net"
+            );
             next();
         });
 
@@ -128,7 +134,12 @@ class SSMCloud_App {
             })
         );
 
-        app.use(helmet());
+        app.use(
+            helmet({
+                crossOriginEmbedderPolicy: false,
+                contentSecurityPolicy: false,
+            })
+        );
         app.use(compression());
 
         app.use(bodyParser.urlencoded({ extended: true }));
@@ -201,6 +212,7 @@ class SSMCloud_App {
 
         const AuthRoutes = require("./routes/auth");
         const DashboardRoutes = require("./routes/dashboard");
+        app.use("/docs", express.static(__basedir + "/docs"));
 
         app.use(AuthRoutes);
         app.use(DashboardRoutes);
@@ -211,7 +223,6 @@ class SSMCloud_App {
 
         // Error-handling middleware. Express executes this middleware when you call next() with an error passed to it
         app.use((error, req, res, next) => {
-
             res.status(500).render("500", {
                 pageTitle: "Server Error",
                 path: "/500",
@@ -227,18 +238,46 @@ class SSMCloud_App {
                 useUnifiedTopology: true,
                 useNewUrlParser: true,
             })
-            .then(() => {
+            .then(async () => {
                 Logger.debug("[APP] - Connected to DB!");
                 Logger.info(
                     `[APP] - Listening on port: ${Config.get("ssm.http_port")}`
                 );
                 app.listen(Config.get("ssm.http_port"));
+                await this.CheckDBPermissionsCollection();
             })
             .catch((err) => {
                 Logger.error("[APP] - Failed to connect to DB!");
                 console.log(err);
             });
     }
+
+    CheckDBPermissionsCollection = async () => {
+        Logger.debug("[APP] - Checking Permissions DB Collection");
+        const permissions = [
+            { name: "page.dashboard", description: "View Dashboard Page" },
+            { name: "page.servers", description: "View Servers Page" },
+            { name: "page.server", description: "View Server Page" },
+            { name: "page.backups", description: "View Backups Page" },
+        ];
+
+        for (let i = 0; i < permissions.length; i++) {
+            const permission = permissions[i];
+            const existingPermission = await PermissionModel.findOne({
+                permissionName: permission.name,
+            });
+
+            if (existingPermission == null) {
+                await PermissionModel.create({
+                    permissionName: permission.name,
+                    description: permission.description,
+                });
+            } else {
+            }
+        }
+
+        Logger.debug("[APP] - Checked! Permissions DB Collection");
+    };
 }
 
 new SSMCloud_App();

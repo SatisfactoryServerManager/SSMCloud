@@ -24,4 +24,8 @@ router.get("/messagequeue", isAgent, AgentController.getAgentMessageQueue);
 
 router.post("/uploadbackup", isAgent, AgentController.postUploadBackupFile);
 
+router.get("/saves/download/:filename", isAgent, AgentController.getSaveFile);
+
+router.post("/saves/info", isAgent, AgentController.postAgentSaveInfo);
+
 module.exports = router;

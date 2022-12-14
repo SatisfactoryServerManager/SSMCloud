@@ -4,6 +4,7 @@ const path = require("path");
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
+const AgentSave = require("../models/agent_save");
 
 const Config = require("../server/server_config");
 
@@ -137,4 +138,51 @@ exports.postUploadBackupFile = async (req, res, next) => {
             error: err.message,
         });
     }
+};
+
+exports.getSaveFile = async (req, res, next) => {
+    const AgentAPIKey = req.session.agentKey;
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    const filePath = path.join(
+        Config.get("ssm.uploadsdir"),
+        theAgent._id.toString(),
+        "saves",
+        req.params.filename
+    );
+
+    if (fs.existsSync(filePath)) {
+        res.download(filePath);
+        return;
+    }
+
+    res.status("404");
+};
+
+exports.postAgentSaveInfo = async (req, res, next) => {
+    const AgentAPIKey = req.session.agentKey;
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    await AgentSave.deleteMany({ _id: { $in: theAgent.saves } });
+    theAgent.saves = [];
+
+    const data = req.body.saveDatas;
+
+    for (let i = 0; i < data.length; i++) {
+        const save = data[i];
+        const newSave = await AgentSave.create({
+            sessionName: save.sessionName,
+            fileName: save.fileName,
+            level: save.level,
+            stats: save.stats,
+            mods: save.mods,
+        });
+
+        theAgent.saves.push(newSave);
+    }
+    await theAgent.save();
+
+    res.json({
+        success: true,
+    });
 };

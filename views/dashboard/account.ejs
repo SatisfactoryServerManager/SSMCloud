@@ -1,0 +1,346 @@
+<%- include('../includes/head-main.ejs') %>
+
+<body>
+    <div id="viewport" class="minimal">
+        <%- include('../includes/navigation.ejs') %>
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    <div class="row page-header">
+                        <div class="col-12 col-md-9">
+                            <h3 class="mb-3">Account - <%=accountName%></h3>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="status-info-card blue">
+                                <div class="status-info-card-main">
+                                    Servers:
+                                </div>
+                                <div class="status-info-card-secondary">
+                                    <span id="server-count"
+                                        ><%= agents.length %></span
+                                    >
+                                </div>
+                                <div class="status-info-card-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="card border-secondary mb-3">
+                                <div class="card-header">
+                                    <button
+                                        id="btn-addapikey"
+                                        class="btn btn-primary float-end"
+                                    >
+                                        <i class="fas fa-plus"></i> Add API Key
+                                    </button>
+                                    <h5>API Keys</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table
+                                        class="table table-bordered"
+                                        id="apikeys-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th width="100px">ID</th>
+                                                <th width="150px">User Name</th>
+                                                <th>API Key</th>
+                                                <th width="60px">Options</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="card border-secondary mb-3">
+                                <div class="card-header">
+                                    <button
+                                        id="btn-addwebhook"
+                                        class="btn btn-primary float-end"
+                                    >
+                                        <i class="fas fa-plus"></i> Add Webhook
+                                    </button>
+                                    <h5>Webhooks</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table
+                                        class="table table-bordered"
+                                        id="webhooks-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th width="50px">ID</th>
+                                                <th>Name</th>
+                                                <th>Enabled</th>
+                                                <th>Type</th>
+                                                <th width="60px">Options</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-secondary mb-3 shadow">
+                                <div class="card-header">
+                                    <h5>User Invites</h5>
+                                </div>
+                                <div class="card-body">
+                                    <%if(inviteErrorMessage != null){%>
+                                        <div class="alert alert-danger"><%=inviteErrorMessage%></div>
+
+                                    <%}%>
+                                    <table
+                                        class="table table-bordered"
+                                        id="invites-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>Email address</th>
+                                                <th>Invite Link</th>
+                                                <th>Claimed</th>
+                                                <th width="60px">Options</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(userInvites.length > 0){ %>
+                                            <% userInvites.forEach(invite => { %>
+                                            <%if(invite.claimed) return;%>
+                                            <tr>
+                                                <td><%=invite.user.email%></td>
+                                                <td>
+                                                    <a
+                                                        href="<%=inviteUrl%>/<%=invite._id%>"
+                                                    > Invite Link</a>
+                                                </td>
+                                                <td>
+
+                                                     <%if(invite.claimed){%>
+                                                    <i
+                                                        class="fas fa-circle-check text-success"
+                                                    ></i>
+                                                    <%} else {%>
+                                                    <i
+                                                        class="fas fa-circle-xmark text-danger"
+                                                    ></i>
+                                                    <%}%>
+
+                                                </td>
+                                                <td>
+                                                    <a
+                                                        href="/dashboard/account/deleteinvite/<%=invite._id%>"
+                                                        class="btn btn-danger"
+                                                    >
+                                                        <i
+                                                            class="fas fa-trash"
+                                                        ></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <%})%> 
+                                            <%}%>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="card border-secondary mb-3 shadow">
+                                <div class="card-header">
+                                    <h5>Users</h5>
+                                </div>
+                                <div class="card-body">
+                                    <%if(userErrorMessage!=null){%>
+                                        <div class="alert alert-danger"><%=userErrorMessage%></div>
+
+                                    <%}%>
+                                    <form
+                                        action="/dashboard/account/user"
+                                        method="post"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="_csrf"
+                                            value="<%= csrfToken %>"
+                                        />
+
+                                        <div class="row">
+                                            <div class="col-12 col-md-6">
+                                                <div class="input-group mb-3">
+                                                    <span
+                                                        class="input-group-text"
+                                                        id="basic-addon1"
+                                                        ><i
+                                                            class="fas fa-at"
+                                                        ></i
+                                                    ></span>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="inp_useremail"
+                                                        placeholder="Email Address"
+                                                        aria-label="Email Address"
+                                                        aria-describedby="basic-addon1"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="input-group mb-3">
+                                                    <span
+                                                        class="input-group-text"
+                                                        id="basic-addon1"
+                                                        ><i
+                                                            class="fas fa-user-group"
+                                                        ></i
+                                                    ></span>
+                                                    <select
+                                                        name="inp_userrole"
+                                                        id=""
+                                                        class="form-select"
+                                                        placeholder="User Role"
+                                                    >
+                                                        <% userRoles.forEach(role => { %>
+                                                        <option
+                                                            value="<%=role._id%>"
+                                                        >
+                                                            <%=role.roleName%>
+                                                        </option>
+                                                        <%})%>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            id="btn-adduser"
+                                            class="btn btn-primary"
+                                        >
+                                            <i class="fas fa-plus"></i> Add User
+                                        </button>
+                                    </form>
+
+                                    <hr />
+
+                                    <table
+                                        class="table table-bordered"
+                                        id="users-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th width="60px">Options</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(users.length > 0){ %> <%
+                                            users.forEach(user => { %>
+                                            <tr>
+                                                <td><%=user.email%></td>
+                                                <td><%=user.role.roleName%></td>
+                                                <td>
+                                                    <a
+                                                        href="/dashboard/account/deleteuser/<%=user._id%>"
+                                                        class="btn btn-danger"
+                                                    >
+                                                        <i
+                                                            class="fas fa-trash"
+                                                        ></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <%})%> <%}%>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="card border-secondary mb-3">
+                                <div class="card-header">
+                                    <button
+                                        id="btn-addrole"
+                                        class="btn btn-primary float-end"
+                                    >
+                                        <i class="fas fa-plus"></i> Add Role
+                                    </button>
+                                    <h5>Roles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table
+                                        class="table table-bordered"
+                                        id="roles-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>Role Name</th>
+                                                <th width="150px">
+                                                    Permissions
+                                                </th>
+                                                <th width="60px">Options</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(userRoles.length > 0){ %> <%
+                                            userRoles.forEach(role => { %>
+                                            <tr>
+                                                <td><%=role.roleName%></td>
+                                                <td>
+                                                    <%=role.permissions.length%>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <%})%> <%}%>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-secondary mb-3">
+                                <div class="card-header">
+                                    <button
+                                        id="btn-generatedebug"
+                                        class="btn btn-primary float-end"
+                                    >
+                                        <i class="fas fa-plus"></i> Generate
+                                        Debug Report
+                                    </button>
+                                    <h5>Debug Reports</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table
+                                        class="table table-bordered"
+                                        id="debugreports-table"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th width="100px">Debug ID</th>
+                                                <th>Date Generated</th>
+                                                <th width="80px">Options</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('../includes/footer-main.ejs') %>
+        </div>
+    </div>
+</body>

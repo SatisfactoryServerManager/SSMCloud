@@ -42,6 +42,16 @@ function main() {
         $(".backup-agent-table").DataTable();
     }
 
+    if ($("#saves-table").length > 0) {
+        $("#saves-table").DataTable();
+    }
+
+    if ($("#users-table").length > 0) {
+        $("#users-table").DataTable();
+        $("#roles-table").DataTable();
+        $("#invites-table").DataTable();
+    }
+
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
