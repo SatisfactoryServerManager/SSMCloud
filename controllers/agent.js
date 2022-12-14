@@ -186,3 +186,37 @@ exports.postAgentSaveInfo = async (req, res, next) => {
         success: true,
     });
 };
+
+exports.postUploadSaveFile = async (req, res, next) => {
+    try {
+        const file = req.file;
+
+        const AgentAPIKey = req.session.agentKey;
+        const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+        const newFilePath = path.join(
+            Config.get("ssm.uploadsdir"),
+            theAgent._id.toString(),
+            "saves",
+            file.originalname
+        );
+
+        try {
+            if (fs.existsSync(newFilePath)) {
+                fs.unlinkSync(newFilePath);
+            }
+
+            fs.moveSync(file.path, newFilePath);
+        } catch (err) {}
+
+        res.json({
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            success: false,
+            error: err.message,
+        });
+    }
+};

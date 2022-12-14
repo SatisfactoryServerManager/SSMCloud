@@ -3,11 +3,12 @@
         <h5><%=agent.agentName%> - Save Files</h5>
     </div>
     <div class="card-body">
-        <table class="table table-bordered backup-agent-table">
+        <table class="table table-bordered saves-table">
             <thead>
                 <tr>
                     <th>Session</th>
                     <th>File Name</th>
+                    <th>Last Updated</th>
                     <th>Size</th>
                     <th>Mods</th>
                     <th width="80px">Options</th>
@@ -44,15 +45,37 @@
                     };
                        
                 
-                        const dateStr = ``;
-                        
+                        const date = new Date(save.stats.mtime);
+                        const day = date.getDate()
+                        const month = date.getMonthName();
+                        const year = date.getFullYear();
+                
+                        const hour = date.getHours().pad(2)
+                        const min = date.getMinutes().pad(2)
+                        const sec = date.getSeconds().pad(2)
+                
+                        const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
+                        function formatBytes(bytes, decimals = 2) {
+                            if (!+bytes) return '0 Bytes'
+
+                            const k = 1024
+                            const dm = decimals < 0 ? 0 : decimals
+                            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+                            const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+                            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+                        }
                         %>
                 <tr>
                     <td><%=save.sessionName%></td>
                     <td><%=save.fileName%></td>
-                    <td><%=save.stats.size%> Bytes</td>
+                    <td><%=dateStr%></td>
+                    <td><%=formatBytes(save.stats.size)%></td>
                     <td><%=save.mods.length%></td>
-                    <td></td>
+                    <td> <a target="_blank" href="/dashboard/saves/download/<%=agent._id%>/<%=save.fileName%>" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                        </a></td>
                 </tr>
                 <%})%>
             </tbody>

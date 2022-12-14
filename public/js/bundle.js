@@ -40,11 +40,15 @@ function main() {
     }
 
     if ($(".backup-agent-table").length > 0) {
-        $(".backup-agent-table").DataTable();
+        $(".backup-agent-table").DataTable({
+            order: [[1, "desc"]],
+        });
     }
 
-    if ($("#saves-table").length > 0) {
-        $("#saves-table").DataTable();
+    if ($(".saves-table").length > 0) {
+        $(".saves-table").DataTable({
+            order: [[2, "desc"]],
+        });
     }
 
     if ($("#users-table").length > 0) {

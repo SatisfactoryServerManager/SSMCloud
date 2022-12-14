@@ -409,6 +409,56 @@ exports.getBackups = async (req, res, next) => {
     }
 };
 
+exports.getDownloadBackup = async (req, res, next) => {
+    const backupId = req.params.backupId;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(backupId)) {
+        const error = new Error("Invalid Backup ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const agents = await Agent.find({ _id: { $in: theAccount.agents } });
+    let FoundAgent = null;
+    for (let i = 0; i < agents.length; i++) {
+        const agent = agents[i];
+        if (agent.backups.includes(backupId)) {
+            FoundAgent = agent;
+            break;
+        }
+    }
+    if (FoundAgent == null) {
+        const error = new Error("Cant Find Agent");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+    await FoundAgent.populate("backups");
+
+    const backup = FoundAgent.backups.find((b) => b._id == backupId);
+
+    if (backup == null) {
+        const error = new Error("Cant Find Backup");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    res.download(backup.fileName);
+};
+
 exports.getAccount = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -647,4 +697,64 @@ exports.postSaves = async (req, res, next) => {
         agents: theAccount.agents,
         errorMessage: "",
     });
+};
+
+exports.getDownloadSave = async (req, res, next) => {
+    const agentId = req.params.agentId;
+    const fileName = req.params.fileName;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(agentId)) {
+        const error = new Error("Invalid Agent ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("agents");
+
+    const theAgent = theAccount.agents.find((a) => a._id == agentId);
+    if (theAgent == null) {
+        const error = new Error("Cant Find Agent");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+    await theAgent.populate("saves");
+
+    const theSave = theAgent.saves.find((s) => s.fileName == fileName);
+
+    if (theSave == null) {
+        const error = new Error("Cant Find Save File");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const filePath = path.join(
+        Config.get("ssm.uploadsdir"),
+        theAgent._id.toString(),
+        "saves",
+        theSave.fileName
+    );
+
+    if (fs.existsSync(filePath)) {
+        res.download(filePath);
+    } else {
+        res.status(404).render("404", {
+            pageTitle: "Page Not Found",
+            path: "/404",
+            isAuthenticated: req.session.isLoggedIn,
+        });
+    }
 };

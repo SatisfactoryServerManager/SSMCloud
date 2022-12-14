@@ -52,12 +52,28 @@
                 
                         const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
                         
+                       function formatBytes(bytes, decimals = 2) {
+                            if (!+bytes) return '0 Bytes'
+
+                            const k = 1024
+                            const dm = decimals < 0 ? 0 : decimals
+                            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+                            const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+                            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+                        }
+
                         %>
                 <tr>
                     <td><%=backup.backupName%></td>
                     <td><%=dateStr%></td>
-                    <td><%=backup.size%> Bytes</td>
-                    <td></td>
+                    <td><%=formatBytes(backup.size)%></td>
+                    <td>
+                        <a target="_blank" href="/dashboard/backups/download/<%=backup._id%>" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </td>
                 </tr>
                 <%})%>
             </tbody>

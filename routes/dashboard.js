@@ -46,6 +46,11 @@ router.post(
 );
 
 router.get("/dashboard/backups", isAuth, dashboardController.getBackups);
+router.get(
+    "/dashboard/backups/download/:backupId",
+    isAuth,
+    dashboardController.getDownloadBackup
+);
 
 router.get("/dashboard/account", isAuth, dashboardController.getAccount);
 
@@ -88,5 +93,11 @@ router.post(
 router.get("/dashboard/saves", isAuth, dashboardController.getSaves);
 
 router.post("/dashboard/saves", isAuth, dashboardController.postSaves);
+
+router.get(
+    "/dashboard/saves/download/:agentId/:fileName",
+    isAuth,
+    dashboardController.getDownloadSave
+);
 
 module.exports = router;
