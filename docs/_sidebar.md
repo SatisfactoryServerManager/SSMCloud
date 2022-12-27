@@ -1,3 +1,8 @@
 -   Getting Started
 -   [Account](getting-started/account.md)
 -   [Users](getting-started/users.md)
+-   Api
+-   [Overview](api/overview.md)
+-   [Account](api/account.md)
+-   [User](api/user.md)
+-   [Servers](api/servers.md)

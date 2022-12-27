@@ -3,6 +3,7 @@ const Agent = require("./agent");
 const User = require("./user");
 const UserRole = require("./user_role");
 const UserInvites = require("./user_invite");
+const ApiKey = require("./apikey");
 
 const Schema = mongoose.Schema;
 
@@ -33,6 +34,12 @@ const accountSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: "UserInvite",
+        },
+    ],
+    apiKeys: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "ApiKey",
         },
     ],
 });

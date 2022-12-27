@@ -54,6 +54,8 @@ function main() {
         $("#users-table").DataTable();
         $("#roles-table").DataTable();
         $("#invites-table").DataTable();
+        $("#apikeys-table").DataTable();
+        $("#webhooks-table").DataTable();
     }
 
     $("body")
@@ -71,6 +73,32 @@ function main() {
         })
         .on("change", "#inp_serverport", (e) => {
             BuildAgentInstallCommands();
+        })
+        .on("click", ".should-confirm-btn", (e) => {
+            e.preventDefault();
+            const $this = $(e.currentTarget);
+            window.openModal(
+                "/public/modals",
+                "server-action-confirm",
+                (modal) => {
+                    modal
+                        .find(".modal-title")
+                        .text($this.attr("data-confirm-title"));
+
+                    const $confirmBtn = modal.find("#confirm-action");
+                    $confirmBtn.attr("data-href", $this.attr("href"));
+                    $confirmBtn.attr("data-action", $this.attr("data-action"));
+                }
+            );
+        })
+        .on("click", "#server-action-confirm #cancel-action", (e) => {
+            $("#server-action-confirm .btn-close").trigger("click");
+        })
+        .on("click", "#server-action-confirm #confirm-action", (e) => {
+            const $this = $(e.currentTarget);
+            window.location = $this.attr("data-href");
+
+            $("#server-action-confirm .btn-close").trigger("click");
         });
 
     $("#inp_maxplayers").on("input change", () => {

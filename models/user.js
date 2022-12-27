@@ -11,6 +11,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
+        select: false
     },
     isAccountAdmin: {
         type: Boolean,
@@ -19,6 +20,10 @@ const userSchema = new Schema({
     role: {
         type: Schema.Types.ObjectId,
         ref: "UserRole",
+    },
+    active: {
+        type: Boolean,
+        default: false,
     },
 });
 

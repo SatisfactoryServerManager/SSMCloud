@@ -18,6 +18,7 @@ const UserInvite = require("../models/user_invite");
 const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
+const ApiKey = require("../models/apikey");
 
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -474,6 +475,7 @@ exports.getAccount = async (req, res, next) => {
         await theAccount.populate("userRoles");
         await theAccount.populate("users");
         await theAccount.populate("userInvites");
+        await theAccount.populate("apiKeys");
 
         const AllPermissions = await Permission.find();
 
@@ -487,6 +489,11 @@ exports.getAccount = async (req, res, next) => {
             await userInvite.populate("user");
         }
 
+        for (let i = 0; i < theAccount.apiKeys.length; i++) {
+            const key = theAccount.apiKeys[i];
+            await key.populate("user");
+        }
+
         res.render("dashboard/account", {
             path: "/account",
             pageTitle: "Account",
@@ -495,10 +502,13 @@ exports.getAccount = async (req, res, next) => {
             users: theAccount.users,
             userRoles: theAccount.userRoles,
             userInvites: theAccount.userInvites,
+            apiKeys: theAccount.apiKeys,
             permissions: AllPermissions,
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
+            apikeyErrorMessage: null,
+            apikeySuccessMessage: null,
             errorMessage: "",
         });
     } else {
@@ -511,9 +521,12 @@ exports.getAccount = async (req, res, next) => {
             userRoles: [],
             permissions: [],
             userInvites: [],
+            apiKeys: [],
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
+            apikeyErrorMessage: null,
+            apikeySuccessMessage: null,
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
@@ -525,8 +538,6 @@ exports.postAccountUser = async (req, res, next) => {
     const host = req.hostname;
 
     const data = req.body;
-
-    console.log(data);
 
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -547,6 +558,7 @@ exports.postAccountUser = async (req, res, next) => {
     await theAccount.populate("userRoles");
     await theAccount.populate("users");
     await theAccount.populate("userInvites");
+    await theAccount.populate("apiKeys");
 
     const AllPermissions = await Permission.find();
 
@@ -560,6 +572,11 @@ exports.postAccountUser = async (req, res, next) => {
         await userInvite.populate("user");
     }
 
+    for (let i = 0; i < theAccount.apiKeys.length; i++) {
+        const key = theAccount.apiKeys[i];
+        await key.populate("user");
+    }
+
     const resData = {
         path: "/account",
         pageTitle: "Account",
@@ -568,10 +585,12 @@ exports.postAccountUser = async (req, res, next) => {
         users: theAccount.users,
         userRoles: theAccount.userRoles,
         userInvites: theAccount.userInvites,
+        apiKeys: theAccount.apiKeys,
         permissions: AllPermissions,
         inviteUrl: `${protocol}://${host}/acceptinvite`,
         inviteErrorMessage: null,
         userErrorMessage: null,
+        apikeyErrorMessage: null,
         errorMessage: "",
         successMessage: null,
     };
@@ -594,6 +613,167 @@ exports.postAccountUser = async (req, res, next) => {
 
     await theAccount.save();
     resData.successMessage = "User Invite Successfully Created!";
+    return res.redirect("/dashboard/account");
+};
+
+exports.postAccountApiKey = async (req, res, next) => {
+    const protocol = req.protocol;
+    const host = req.hostname;
+
+    const data = req.body;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("userRoles");
+    await theAccount.populate("users");
+    await theAccount.populate("userInvites");
+    await theAccount.populate("apiKeys");
+
+    const AllPermissions = await Permission.find();
+
+    for (let i = 0; i < theAccount.users.length; i++) {
+        const user = theAccount.users[i];
+        await user.populate("role");
+    }
+
+    for (let i = 0; i < theAccount.userInvites.length; i++) {
+        const userInvite = theAccount.userInvites[i];
+        await userInvite.populate("user");
+    }
+
+    for (let i = 0; i < theAccount.apiKeys.length; i++) {
+        const key = theAccount.apiKeys[i];
+        await key.populate("user");
+    }
+
+    const resData = {
+        path: "/account",
+        pageTitle: "Account",
+        accountName: theAccount.accountName,
+        agents: theAccount.agents,
+        users: theAccount.users,
+        userRoles: theAccount.userRoles,
+        userInvites: theAccount.userInvites,
+        apiKeys: theAccount.apiKeys,
+        permissions: AllPermissions,
+        inviteUrl: `${protocol}://${host}/acceptinvite`,
+        inviteErrorMessage: null,
+        userErrorMessage: null,
+        apikeyErrorMessage: null,
+        apikeySuccessMessage: null,
+        errorMessage: "",
+        successMessage: null,
+    };
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        resData.apikeyErrorMessage = errors.array()[0].msg;
+        return res.status(422).render("dashboard/account", resData);
+    }
+
+    let theUser = null;
+
+    for (let i = 0; i < theAccount.users.length; i++) {
+        const user = theAccount.users[i];
+        if (user._id == data.inp_user) {
+            theUser = user;
+            break;
+        }
+    }
+
+    const APIKey = "API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
+
+    const newApiKey = await ApiKey.create({ user: theUser, key: APIKey });
+    theAccount.apiKeys.push(newApiKey);
+    await theAccount.save();
+
+    await newApiKey.populate("user");
+
+    resData.apiKeys.push(newApiKey);
+
+    resData.apikeySuccessMessage = `API Key has successfully been created: ${APIKey}`;
+    res.render("dashboard/account", resData);
+};
+
+exports.getDeleteUser = async (req, res, next) => {
+    const userId = req.params.userId;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(userId)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("users");
+    await theAccount.populate("userInvites");
+
+    let found = false;
+    let foundIndex = -1;
+
+    for (let i = 0; i < theAccount.users.length; i++) {
+        const user = theAccount.users[i];
+        if (user._id == userId) {
+            found = true;
+            foundIndex = i;
+            break;
+        }
+    }
+    let userInvite = -1;
+    for (let i = 0; i < theAccount.userInvites.length; i++) {
+        const invite = theAccount.userInvites[i];
+        if (invite.user == userId) {
+            userInvite = i;
+        }
+    }
+
+    if (!found) {
+        if (!ObjectId.isValid(userId)) {
+            const error = new Error("User Not Found!");
+            error.httpStatusCode = 500;
+            return next(error);
+        }
+    }
+
+    if (userInvite != -1) {
+        theAccount.userInvites.splice(userInvite, 1);
+    }
+
+    theAccount.users.splice(foundIndex, 1);
+    await theAccount.save();
+
+    await User.deleteOne({ _id: userId });
+    await UserInvite.deleteOne({ user: userId });
+
     return res.redirect("/dashboard/account");
 };
 
@@ -688,7 +868,11 @@ exports.postSaves = async (req, res, next) => {
     theAgent.messageQueue.push(message);
     await theAgent.save();
 
-    console.log(data);
+    await theAccount.populate("agents");
+    for (let i = 0; i < theAccount.agents.length; i++) {
+        const agent = theAccount.agents[i];
+        await agent.populate("saves");
+    }
 
     res.render("dashboard/saves", {
         path: "/saves",

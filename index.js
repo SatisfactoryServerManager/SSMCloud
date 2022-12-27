@@ -106,7 +106,7 @@ class SSMCloud_App {
             );
             res.header(
                 "Content-Security-Policy",
-                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net"
+                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com"
             );
             next();
         });

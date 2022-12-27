@@ -30,29 +30,101 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-lg-6">
-                            <div class="card border-secondary mb-3">
+                            <div class="card border-secondary mb-3 shadow">
                                 <div class="card-header">
-                                    <button
-                                        id="btn-addapikey"
-                                        class="btn btn-primary float-end"
-                                    >
-                                        <i class="fas fa-plus"></i> Add API Key
-                                    </button>
                                     <h5>API Keys</h5>
                                 </div>
                                 <div class="card-body">
+
+                                    <%if(locals.apikeyErrorMessage){%>
+                                        <div class="alert alert-danger"><%=apikeyErrorMessage%></div>
+                                    <%}%>
+
+                                     <%if(locals.apikeySuccessMessage){%>
+                                        <div class="alert alert-success"><%=apikeySuccessMessage%></div>
+                                    <%}%>
+
+                                     <form
+                                        action="/dashboard/account/apikey"
+                                        method="post"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="_csrf"
+                                            value="<%= csrfToken %>"
+                                        />
+                                        <div class="input-group mb-3">
+                                            <span
+                                                class="input-group-text"
+                                                id="basic-addon1"
+                                                ><i
+                                                    class="fas fa-user"
+                                                ></i
+                                            ></span>
+                                            <select
+                                                name="inp_user"
+                                                id=""
+                                                class="form-select"
+                                                placeholder="User"
+                                            >
+                                                <% users.forEach(user => { %>
+                                                <%if(user.active){%>
+                                                <option
+                                                    value="<%=user._id%>"
+                                                >
+                                                    <%=user.email%>
+                                                </option>
+                                                <%}})%>
+                                            </select>
+                                            <button
+                                        id="btn-addapikey"
+                                        class="btn btn-primary"
+                                    >
+                                        <i class="fas fa-plus"></i> Add API Key
+                                    </button>
+                                        </div>
+                                     
+                                    </form>
+
+
                                     <table
                                         class="table table-bordered"
                                         id="apikeys-table"
                                     >
                                         <thead>
                                             <tr>
-                                                <th width="100px">ID</th>
-                                                <th width="150px">User Name</th>
-                                                <th>API Key</th>
+                                                <th >User</th>
+                                                <th width="140px">API Key</th>
                                                 <th width="60px">Options</th>
                                             </tr>
                                         </thead>
+                                        <tbody>
+                                             <% apiKeys.forEach(key => { %>
+                                                <%if(key.user.active){%>
+                                                <tr>
+                                                    <td><%=key.user.email%></td>
+
+                                                    <%
+                                                        let apiKeyData = key.key.split("-")
+                                                        const keyPart = apiKeyData[1];
+                                                        const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
+                                                        const shortenedKey = `${apiKeyData[0]} - XXXX${shortenedKeyPart}`
+                                                    %>
+
+                                                    <td><%=shortenedKey%></td>
+                                                    <td>
+                                                        <a
+                                                            href="/dashboard/account/deleteapikey/<%=key._id%>"
+                                                            class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation"
+                                                        >
+                                                            <i
+                                                                class="fas fa-trash"
+                                                            ></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <%}})%>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -75,7 +147,6 @@
                                     >
                                         <thead>
                                             <tr>
-                                                <th width="50px">ID</th>
                                                 <th>Name</th>
                                                 <th>Enabled</th>
                                                 <th>Type</th>
@@ -114,6 +185,7 @@
                                             <% if(userInvites.length > 0){ %>
                                             <% userInvites.forEach(invite => { %>
                                             <%if(invite.claimed) return;%>
+                                            <%if(invite.user == null) return;%>
                                             <tr>
                                                 <td><%=invite.user.email%></td>
                                                 <td>
@@ -137,7 +209,7 @@
                                                 <td>
                                                     <a
                                                         href="/dashboard/account/deleteinvite/<%=invite._id%>"
-                                                        class="btn btn-danger"
+                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation"
                                                     >
                                                         <i
                                                             class="fas fa-trash"
@@ -244,13 +316,14 @@
                                         <tbody>
                                             <% if(users.length > 0){ %> <%
                                             users.forEach(user => { %>
+                                             <%if(user.active){%>
                                             <tr>
                                                 <td><%=user.email%></td>
                                                 <td><%=user.role.roleName%></td>
                                                 <td>
                                                     <a
                                                         href="/dashboard/account/deleteuser/<%=user._id%>"
-                                                        class="btn btn-danger"
+                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation"
                                                     >
                                                         <i
                                                             class="fas fa-trash"
@@ -258,7 +331,7 @@
                                                     </a>
                                                 </td>
                                             </tr>
-                                            <%})%> <%}%>
+                                            <%}})%> <%}%>
                                         </tbody>
                                     </table>
                                 </div>

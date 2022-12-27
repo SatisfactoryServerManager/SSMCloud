@@ -156,7 +156,10 @@ exports.getSaveFile = async (req, res, next) => {
         return;
     }
 
-    res.status("404");
+    res.status("404").json({
+        success:false,
+        error: "File Does Not Exist!"
+    });
 };
 
 exports.postAgentSaveInfo = async (req, res, next) => {

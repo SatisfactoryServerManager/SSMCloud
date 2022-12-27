@@ -3,14 +3,18 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const Account = require("../models/account");
 const User = require("../models/user");
+const UserInvite = require("../models/user_invite");
 const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
+
+var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
 
 exports.getLogin = (req, res) => {
     if (req.session.isLoggedIn) {
         res.redirect("/dashboard");
+        return;
     }
 
     let message = req.flash("error");
@@ -46,7 +50,7 @@ exports.getSignUp = (req, res) => {
     });
 };
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async (req, res, next) => {
     const { email, password } = req.body;
 
     const errors = validationResult(req);
@@ -63,56 +67,50 @@ exports.postLogin = (req, res, next) => {
         });
     }
 
-    User.findOne({ email })
-        .then((user) => {
-            if (!user) {
-                return res.status(422).render("auth/login", {
-                    path: "/login",
-                    pageTitle: "Log In",
-                    errorMessage: "Invalid email or password.",
-                    oldInput: {
-                        email,
-                        password,
-                    },
-                    validationErrors: [],
-                });
-            }
-            // Validate password. bcrypt can compare password to hashed value, and can determine whether hashed value makes sense, taking into account hashing algorithm used. So if it were hashed, could it result in hashed password?
-            bcrypt
-                .compare(password, user.password)
-                // Will make it into then block regardless of whether passwords match. Result will be a boolean that is true if passwords are equal, false otherwise
-                .then((doMatch) => {
-                    if (doMatch) {
-                        req.session.isLoggedIn = true;
-                        req.session.user = user;
-                        return req.session.save((err) => {
-                            if (err) {
-                                console.log(err);
-                            }
-                            res.redirect("/dashboard");
-                        });
-                    }
-                    return res.status(422).render("auth/login", {
-                        path: "/login",
-                        pageTitle: "Log In",
-                        errorMessage: "Invalid email or password.",
-                        oldInput: {
-                            email,
-                            password,
-                        },
-                        validationErrors: [],
-                    });
-                })
-                .catch((err) => {
+    try {
+        const user = await user.findOne({ email }).select("+password");
+
+        if (!user) {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Log In",
+                errorMessage: "Invalid email or password.",
+                oldInput: {
+                    email,
+                    password,
+                },
+                validationErrors: [],
+            });
+        }
+
+        const doMatch = await bcrypt.compare(password, user.password);
+
+        if (doMatch) {
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            return req.session.save((err) => {
+                if (err) {
                     console.log(err);
-                    res.redirect("/login");
-                });
-        })
-        .catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
-        });
+                }
+                res.redirect("/dashboard");
+            });
+        } else {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Log In",
+                errorMessage: "Invalid email or password.",
+                oldInput: {
+                    email,
+                    password,
+                },
+                validationErrors: [],
+            });
+        }
+    } catch (err) {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    }
 };
 
 exports.postSignUp = async (req, res, next) => {
@@ -138,6 +136,7 @@ exports.postSignUp = async (req, res, next) => {
             email,
             password: hashedPassword,
             isAccountAdmin: true,
+            active: true,
         });
 
         NewAccount.users.push(newUser);
@@ -145,6 +144,80 @@ exports.postSignUp = async (req, res, next) => {
         await CreateAccountUserRoles(NewAccount);
 
         await NewAccount.save();
+        res.redirect("/login");
+    } catch (err) {
+        const error = err;
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+};
+
+exports.getAcceptInvite = async (req, res, next) => {
+    let message = req.flash("error");
+    message.length > 0 ? (message = message[0]) : (message = null);
+    if (!ObjectId.isValid(req.params.inviteId)) {
+        const error = new Error("Invalid Invite ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const userInvite = await UserInvite.findOne({ _id: req.params.inviteId });
+
+    if (userInvite == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    res.render("auth/acceptinvite", {
+        path: "/acceptinvite",
+        pageTitle: "Accept Invite",
+        errorMessage: message,
+        oldInput: { email: "", password: "", confirmPassword: "" },
+        validationErrors: [],
+    });
+};
+
+exports.postAcceptInvite = async (req, res, next) => {
+    if (!ObjectId.isValid(req.params.inviteId)) {
+        const error = new Error("Invalid Invite ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const userInvite = await UserInvite.findOne({ _id: req.params.inviteId });
+
+    if (userInvite == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const { email, password, confirmPassword } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render("auth/acceptinvite", {
+            path: "/acceptinvite",
+            pageTitle: "Accept Invite",
+            errorMessage: errors.array()[0].msg,
+            oldInput: { email, password, confirmPassword },
+            validationErrors: errors.array(),
+        });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    try {
+        await userInvite.populate("user");
+        console.log(userInvite);
+        const user = userInvite.user;
+
+        user.password = hashedPassword;
+        user.active = true;
+        await user.save();
+
+        userInvite.claimed = true;
+        await userInvite.save();
+
         res.redirect("/login");
     } catch (err) {
         const error = err;

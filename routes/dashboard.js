@@ -54,6 +54,12 @@ router.get(
 
 router.get("/dashboard/account", isAuth, dashboardController.getAccount);
 
+router.get(
+    "/dashboard/account/deleteuser/:userId",
+    isAuth,
+    dashboardController.getDeleteUser
+);
+
 router.post(
     "/dashboard/account/user",
     isAuth,
@@ -89,6 +95,25 @@ router.post(
     ],
     dashboardController.postAccountUser
 );
+
+router.post(
+    "/dashboard/account/apikey",
+    isAuth,
+    [
+        check("inp_user").custom((value, { req }) => {
+            return User.findOne({ _id: value }).then((userDoc) => {
+                if (!userDoc) {
+                    return Promise.reject("Invaild User!");
+                }
+            });
+        }),
+    ],
+    dashboardController.postAccountApiKey
+);
+
+router.get("/dashboard/account/apikey", (req, res, next) => {
+    res.redirect("/dashboard/account");
+});
 
 router.get("/dashboard/saves", isAuth, dashboardController.getSaves);
 
