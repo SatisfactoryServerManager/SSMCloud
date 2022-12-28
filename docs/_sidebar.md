@@ -4,5 +4,6 @@
 -   Api
 -   [Overview](api/overview.md)
 -   [Account](api/account.md)
--   [User](api/user.md)
+-   [Users](api/user.md)
+-   [User Roles](api/userroles.md)
 -   [Servers](api/servers.md)
