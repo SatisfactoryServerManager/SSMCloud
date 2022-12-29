@@ -29,4 +29,6 @@ router.get("/saves/download/:filename", isAgent, AgentController.getSaveFile);
 
 router.post("/saves/info", isAgent, AgentController.postAgentSaveInfo);
 
+router.post("/uploadlog", isAgent, AgentController.postUploadLog);
+
 module.exports = router;

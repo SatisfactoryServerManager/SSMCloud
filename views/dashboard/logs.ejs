@@ -1,0 +1,126 @@
+<%- include('../includes/head-main.ejs') %>
+
+<body>
+    <div id="viewport" class="minimal">
+        <%- include('../includes/navigation.ejs') %>
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    <div class="row page-header">
+                        <div class="col-12 col-md-9">
+                            <h3 class="mb-3">
+                                <%=pageTitle%> - <%=accountName%>
+                            </h3>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="status-info-card blue">
+                                <div class="status-info-card-main">
+                                    Servers:
+                                </div>
+                                <div class="status-info-card-secondary">
+                                    <span id="server-count"
+                                        ><%= agents.length %></span
+                                    >
+                                </div>
+                                <div class="status-info-card-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <%agents.forEach(agent=>{%>
+                        <div class="col-12 col-xl-6 mb-3">
+                            <div class="card shadow">
+                                <div class="card-header">
+                                    <h5><%=agent.agentName%> - Log Files</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card border-secondary mb-3">
+                                        <div class="card-header">
+                                            <a href="/dashboard/logs/download/<%=agent._id%>/SSMLog" class="btn btn-primary float-end">
+                                                <i class="fas fa-download"></i> SSM Log File
+                                            </a>
+                                            <h5>SSM Log</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="log-viewer">
+                                                <% 
+                                                const logInfo = agent.logInfo;
+                                                if(logInfo != null){
+                                                    if(logInfo.SSMAgentData.length>0){
+                                                    logInfo.SSMAgentData.forEach(line=>{%>
+                                                        <p><%=line%></p>
+
+                                                    <%})}else{%>
+                                                        <p>No log entries for this log type.</p>
+                                                    <%}
+                                                }
+                                                %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card border-secondary mb-3">
+                                        <div class="card-header">
+                                            <a href="/dashboard/logs/download/<%=agent._id%>/SteamLog" class="btn btn-primary float-end">
+                                                <i class="fas fa-download"></i> Steam Log File
+                                            </a>
+                                            <h5>Steam Log</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="log-viewer">
+                                               <% 
+                                                if(logInfo != null){
+                                                    if(logInfo.SSMSteamCMDData.length>0){
+                                                    logInfo.SSMSteamCMDData.forEach(line=>{%>
+                                                        <p><%=line%></p>
+
+                                                    <%})}else{%>
+                                                        <p>No log entries for this log type.</p>
+                                                    <%}
+                                                }
+                                                %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card border-secondary mb-3">
+                                        <div class="card-header">
+                                            <a href="/dashboard/logs/download/<%=agent._id%>/SFLog" class="btn btn-primary float-end">
+                                                <i class="fas fa-download"></i> Satisfactory Log File
+                                            </a>
+                                            <h5>Satisfactory Log</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="log-viewer">
+                                                <% 
+                                                if(logInfo != null){
+                                                    if(logInfo.FactoryGameData.length>0){
+                                                    logInfo.FactoryGameData.forEach(line=>{%>
+                                                        <p><%=line%></p>
+
+                                                    <%})}else{%>
+                                                        <p>No log entries for this log type.</p>
+                                                    <%}
+                                                }
+                                                %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <%})%>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <%- include('../includes/footer-main.ejs') %>
+        </div>
+    </div>
+</body>

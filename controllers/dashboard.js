@@ -20,6 +20,7 @@ const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
 const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
+const AgentLogInfo = require("../models/agent_log_info");
 
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -91,7 +92,9 @@ exports.getServerAction = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+    const theAgent = await Agent.findOne({ _id: agentid }).select(
+        "+messageQueue"
+    );
 
     let actionString = "";
 
@@ -215,11 +218,14 @@ exports.postServers = async (req, res, next) => {
         const APIKey =
             "AGT-API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
 
+        const newLogInfo = await AgentLogInfo.create({});
+
         const newAgent = await Agent.create({
             agentName: req.body.inp_servername,
             sfPortNum: req.body.inp_serverport,
             apiKey: APIKey,
             memory: req.body.inp_servermemory * 1024 * 1024 * 1024,
+            logInfo: newLogInfo,
         });
         theAccount.agents.push(newAgent);
         await theAccount.save();
@@ -337,7 +343,9 @@ exports.postServer = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+    const theAgent = await Agent.findOne({ _id: agentid }).select(
+        "+messageQueue"
+    );
 
     if (theAccount) {
         await theAccount.populate("agents");
@@ -1004,6 +1012,9 @@ exports.getMods = async (req, res, next) => {
 
     const theAccount = await Account.findOne({ users: req.session.user._id });
 
+    let message = req.flash("success");
+    message.length > 0 ? (message = message[0]) : (message = null);
+
     if (theAccount) {
         await theAccount.populate("agents");
 
@@ -1014,6 +1025,7 @@ exports.getMods = async (req, res, next) => {
             pageTitle: "Mods",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
+            message,
             mods,
             errorMessage: "",
         });
@@ -1024,6 +1036,102 @@ exports.getMods = async (req, res, next) => {
             accountName: "",
             agents: [],
             mods: [],
+            message,
+            errorMessage:
+                "Cant Find Account details. Please contact SSM Support.",
+        });
+    }
+};
+
+exports.postInstallMod = async (req, res, next) => {
+    const { inp_agentid, inp_modid, inp_modversion } = req.body;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(inp_agentid)) {
+        const error = new Error("Invalid Agent ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+        agents: inp_agentid,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("agents");
+
+    const theAgent = theAccount.agents.find(
+        (agent) => agent._id == inp_agentid
+    );
+
+    const theMod = await ModModel.findOne({
+        modId: inp_modid,
+    });
+
+    const message = await MessageQueueItem.create({
+        action: "installmod",
+        data: {
+            modId: inp_modid,
+            modVersion: inp_modversion,
+            modInfo: theMod.toJSON(),
+        },
+    });
+
+    theAgent.messageQueue.push(message);
+    await theAgent.save();
+
+    const successMessageData = {
+        agentId: inp_agentid,
+        message:
+            "Install Mod Request has been sent and will be installed in the background.",
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+
+    res.redirect("/dashboard/mods");
+};
+
+exports.getLogs = async (req, res, next) => {
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    if (theAccount) {
+        await theAccount.populate("agents");
+
+        for (let i = 0; i < theAccount.agents.length; i++) {
+            const agent = theAccount.agents[i];
+            await agent.populate("logInfo");
+        }
+
+        res.render("dashboard/logs", {
+            path: "/logs",
+            pageTitle: "Logs",
+            accountName: theAccount.accountName,
+            agents: theAccount.agents,
+            errorMessage: "",
+        });
+    } else {
+        res.render("dashboard/logs", {
+            path: "/logs",
+            pageTitle: "Logs",
+            accountName: "",
+            agents: [],
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });

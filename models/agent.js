@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const MessageQueueItem = require("./messagequeueitem");
 const AgentBackup = require("./agent_backup");
+const AgentLogInfo = require("./agent_log_info");
 
 const Schema = mongoose.Schema;
 
@@ -14,6 +15,7 @@ const agentSchema = new Schema(
         apiKey: {
             type: String,
             required: true,
+            select: false,
         },
         online: {
             type: Boolean,
@@ -48,12 +50,15 @@ const agentSchema = new Schema(
             type: Date,
             default: Date.now,
         },
-        messageQueue: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "MessageQueueItem",
-            },
-        ],
+        messageQueue: {
+            type: [
+                {
+                    type: Schema.Types.ObjectId,
+                    ref: "MessageQueueItem",
+                },
+            ],
+            select: false,
+        },
         config: {
             type: Object,
             default: {},
@@ -70,6 +75,10 @@ const agentSchema = new Schema(
                 ref: "AgentSave",
             },
         ],
+        logInfo: {
+            type: Schema.Types.ObjectId,
+            ref: "AgentLogInfo",
+        },
     },
     { minimize: false }
 );

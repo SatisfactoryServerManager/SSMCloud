@@ -1,10 +1,12 @@
 const fs = require("fs-extra");
 const path = require("path");
+const es = require("event-stream");
 
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
 const AgentSave = require("../models/agent_save");
+const AgentLogInfo = require("../models/agent_log_info");
 
 const Config = require("../server/server_config");
 
@@ -53,7 +55,9 @@ exports.postAgentRunningState = async (req, res, next) => {
 exports.getAgentMessageQueue = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
 
-    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey }).select(
+        "+messageQueue"
+    );
 
     const queue = await MessageQueueItem.find({
         _id: { $in: theAgent.messageQueue },
@@ -157,8 +161,8 @@ exports.getSaveFile = async (req, res, next) => {
     }
 
     res.status("404").json({
-        success:false,
-        error: "File Does Not Exist!"
+        success: false,
+        error: "File Does Not Exist!",
     });
 };
 
@@ -222,4 +226,126 @@ exports.postUploadSaveFile = async (req, res, next) => {
             error: err.message,
         });
     }
+};
+
+exports.postUploadLog = async (req, res, next) => {
+    try {
+        const file = req.file;
+
+        const AgentAPIKey = req.session.agentKey;
+        const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+        const theLogInfo = await AgentLogInfo.findOne({
+            _id: theAgent.logInfo,
+        });
+
+        if (theLogInfo == null) {
+            res.json({
+                success: false,
+                error: "Log Info is null!",
+            });
+            return;
+        }
+
+        const newFilePath = path.join(
+            Config.get("ssm.uploadsdir"),
+            theAgent._id.toString(),
+            "logs",
+            file.originalname
+        );
+
+        let logFileData = file.originalname.replace(".log", "");
+
+        if (logFileData != "FactoryGame") {
+            logFileData = logFileData.split("-")[1];
+        }
+
+        if (theAgent.logs == null) {
+            theAgent.logs = {};
+        }
+
+        switch (logFileData) {
+            case "FactoryGame":
+                theLogInfo.FactoryGame = newFilePath;
+                theLogInfo.FactoryGameData = await GetLogFileData(newFilePath);
+                await theLogInfo.save();
+                break;
+            case "SSMAgent":
+                theLogInfo.SSMAgent = newFilePath;
+                theLogInfo.SSMAgentData = await GetLogFileData(newFilePath);
+                await theLogInfo.save();
+                break;
+            case "SSMSteamCMD":
+                theLogInfo.SSMSteamCMD = newFilePath;
+                theLogInfo.SSMSteamCMDData = await GetLogFileData(newFilePath);
+                await theLogInfo.save();
+                break;
+        }
+
+        try {
+            if (fs.existsSync(newFilePath)) {
+                fs.unlinkSync(newFilePath);
+            }
+
+            fs.moveSync(file.path, newFilePath);
+        } catch (err) {}
+
+        res.json({
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            success: false,
+            error: err.message,
+        });
+    }
+};
+
+const GetLogFileData = async (LogFile) => {
+    if (!fs.existsSync(LogFile)) {
+        return;
+    }
+
+    let FileData = [];
+    const ResData = [];
+    await new Promise((resolve, reject) => {
+        var s = fs
+            .createReadStream(LogFile)
+            .pipe(es.split())
+            .pipe(
+                es
+                    .mapSync((line) => {
+                        if (line != "") {
+                            // pause the readstream
+                            s.pause();
+
+                            FileData.push(line);
+
+                            // resume the readstream, possibly from a callback
+                            s.resume();
+                        }
+                    })
+                    .on("error", (err) => {
+                        reject(err);
+                    })
+                    .on("end", () => {
+                        FileData = FileData.reverse();
+
+                        const lineCount = FileData.length;
+
+                        let maxCount = 500;
+                        if (lineCount < maxCount) {
+                            maxCount = lineCount;
+                        }
+
+                        for (let i = 0; i < maxCount; i++) {
+                            ResData.push(FileData[i]);
+                        }
+                        resolve();
+                    })
+            );
+    });
+
+    return ResData;
 };

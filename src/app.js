@@ -58,6 +58,10 @@ function main() {
         $("#webhooks-table").DataTable();
     }
 
+    if ($(".mods-table").length > 0) {
+        $(".mods-table").DataTable();
+    }
+
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
@@ -121,11 +125,15 @@ function main() {
 
                 if (theMod) {
                     $versionBox.empty();
-                    $versionBox.append(`<option value="">Select Version</option>`)
+                    $versionBox.append(
+                        `<option value="">Select Version</option>`
+                    );
 
                     for (let i = 0; i < theMod.versions.length; i++) {
                         const version = theMod.versions[i];
-                        $versionBox.append(`<option value="${version.version}">${version.version}</option>`)
+                        $versionBox.append(
+                            `<option value="${version.version}">${version.version}</option>`
+                        );
                     }
                 }
             }

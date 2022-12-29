@@ -133,4 +133,12 @@ router.get(
 
 router.get("/dashboard/mods", isAuth, dashboardController.getMods);
 
+router.post(
+    "/dashboard/mods/installmod",
+    isAuth,
+    dashboardController.postInstallMod
+);
+
+router.get("/dashboard/logs", isAuth, dashboardController.getLogs);
+
 module.exports = router;

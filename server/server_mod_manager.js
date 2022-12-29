@@ -31,7 +31,6 @@ class ModManager {
 
     GetModListFromAPI = async () => {
         const count = await this.GetModCountFromAPI();
-        console.log("Mod Count: ", count);
 
         const ModList = [];
         for (let i = 0; i < count / 100; i++) {

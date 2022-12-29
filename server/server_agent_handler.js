@@ -1,10 +1,12 @@
 const Agent = require("../models/agent");
+const MessageQueueItem = require("../models/messagequeueitem");
 
 const Logger = require("./server_logger");
 
 class AgentHandler {
     init() {
         this.CheckAllAgentsLastOnline();
+        this.PurgeMessageQueues();
     }
 
     CheckAllAgentsLastOnline() {
@@ -37,6 +39,31 @@ class AgentHandler {
                 await agent.save();
             }
         }
+    };
+
+    PurgeMessageQueues = async () => {
+        setInterval(async () => {
+            Logger.info("[AgentHandler] - Purging Message Queue");
+
+            const agents = await Agent.find().select("+messageQueue");
+
+            for (let i = 0; i < agents.length; i++) {
+                const agent = agents[i];
+                await agent.populate("messageQueue");
+
+                for (let j = 0; j < agent.messageQueue.length; j++) {
+                    const message = agent.messageQueue[j];
+
+                    if (message.completed || message.retries == 10) {
+                        await MessageQueueItem.deleteOne({ _id: message._id });
+                        agent.messageQueue.splice(j, 1);
+                        await agent.save();
+                        break;
+                    }
+                }
+            }
+            Logger.info("[AgentHandler] - Completed Purging Message Queue");
+        }, 30000);
     };
 }
 

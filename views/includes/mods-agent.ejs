@@ -7,11 +7,19 @@
             <%- include('../includes/status-info-card.ejs',{ClassColour:"blue", ClassID:"status",Title:"SML Version", Data:"v0.0.0",Icon:"fa-wrench"}) %>
             <%- include('../includes/status-info-card.ejs',{ClassColour:"green", ClassID:"status",Title:"Installed Mods", Data:0,Icon:"fa-pencil-ruler"}) %>
 
-            <div class="card border-secondary">
+            <div class="card border-secondary mb-3">
                 <div class="card-header">
                     <h5>Install Mods</h5>
                 </div>
                 <div class="card-body">
+                        
+                    <% if(locals.message){
+                        const messageData = JSON.parse(message);
+                        if(messageData.agentId == agent._id){%>
+                        <div class="alert alert-success">
+                            <%=messageData.message%>
+                        </div>
+                    <%}}%>
                     <form action="/dashboard/mods/installmod" method="post">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <input type="hidden" name="inp_agentid" value="<%=agent._id%>">
@@ -35,6 +43,25 @@
                         </button>
                     </form>
                 </div>
+            </div>
+
+            <div class="card border-secondary">
+                <div class="card-header">
+                    <h5>Manage Mods</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered mods-table">
+                        <thead>
+                            <tr>
+                                <th>Mod</th>
+                                <th>Version</th>
+                                <th width="80px">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
             </div>
 
         </div>
