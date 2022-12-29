@@ -1,0 +1,43 @@
+<div class="col-12 col-md-6 col-lg-4 mb-3">
+    <div class="card">
+        <div class="card-header">
+            <h5><%=agent.agentName%> - Mods</h5>
+        </div>
+        <div class="card-body">
+            <%- include('../includes/status-info-card.ejs',{ClassColour:"blue", ClassID:"status",Title:"SML Version", Data:"v0.0.0",Icon:"fa-wrench"}) %>
+            <%- include('../includes/status-info-card.ejs',{ClassColour:"green", ClassID:"status",Title:"Installed Mods", Data:0,Icon:"fa-pencil-ruler"}) %>
+
+            <div class="card border-secondary">
+                <div class="card-header">
+                    <h5>Install Mods</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/dashboard/mods/installmod" method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="inp_agentid" value="<%=agent._id%>">
+                        <div class="form-group">
+                            <label for="inp_modid" class="form-label">Select Mod:</label>
+                            <select name="inp_modid" id="inp_modid" class="form-select inp_modid">
+                                <option value="">Select Mod</option>
+                                <%mods.forEach(mod=>{%>
+                                    <option value="<%=mod.modId%>"><%=mod.modName%></option>
+                                <%})%>
+                            </select>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label for="inp_modversion" class="form-label">Select Version:</label>
+                            <select name="inp_modversion" id="inp_modversion" class="form-select inp_modversion">
+                                <option value="">Select Version</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mt-3">
+                            <i class="fas fa-download"></i> Install Mod
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

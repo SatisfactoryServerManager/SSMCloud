@@ -99,6 +99,36 @@ function main() {
             window.location = $this.attr("data-href");
 
             $("#server-action-confirm .btn-close").trigger("click");
+        })
+        .on("change", ".inp_modid", (e) => {
+            const $this = $(e.currentTarget);
+            const $versionBox = $this.parent().parent().find(".inp_modversion");
+            const value = $this.val();
+            let localStorageMods = null;
+            try {
+                localStorageMods = JSON.parse(localStorage.getItem("mods"));
+            } catch (err) {}
+
+            if (localStorageMods) {
+                let theMod = null;
+                for (let i = 0; i < localStorageMods.mods.length; i++) {
+                    const mod = localStorageMods.mods[i];
+                    if (mod.modId == value) {
+                        theMod = mod;
+                        break;
+                    }
+                }
+
+                if (theMod) {
+                    $versionBox.empty();
+                    $versionBox.append(`<option value="">Select Version</option>`)
+
+                    for (let i = 0; i < theMod.versions.length; i++) {
+                        const version = theMod.versions[i];
+                        $versionBox.append(`<option value="${version.version}">${version.version}</option>`)
+                    }
+                }
+            }
         });
 
     $("#inp_maxplayers").on("input change", () => {

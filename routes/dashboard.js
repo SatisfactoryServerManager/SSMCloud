@@ -60,6 +60,12 @@ router.get(
     dashboardController.getDeleteUser
 );
 
+router.get(
+    "/dashboard/account/deleteinvite/:inviteId",
+    isAuth,
+    dashboardController.getDeleteUserInvite
+);
+
 router.post(
     "/dashboard/account/user",
     isAuth,
@@ -124,5 +130,7 @@ router.get(
     isAuth,
     dashboardController.getDownloadSave
 );
+
+router.get("/dashboard/mods", isAuth, dashboardController.getMods);
 
 module.exports = router;

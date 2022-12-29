@@ -1,0 +1,51 @@
+<%- include('../includes/head-main.ejs') %>
+
+<body>
+    <div id="viewport" class="minimal">
+        <%- include('../includes/navigation.ejs') %>
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    <div class="row page-header">
+                        <div class="col-12 col-md-9">
+                            <h3 class="mb-3">
+                                <%=pageTitle%> - <%=accountName%>
+                            </h3>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="status-info-card blue">
+                                <div class="status-info-card-main">
+                                    Servers:
+                                </div>
+                                <div class="status-info-card-secondary">
+                                    <span id="server-count"
+                                        ><%= agents.length %></span
+                                    >
+                                </div>
+                                <div class="status-info-card-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <%agents.forEach(agent=>{%>
+                            <%- include('../includes/mods-agent.ejs',{agent, mods}) %>
+                        <%})%>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('../includes/footer-main.ejs') %>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    let mods = <%- JSON.stringify(mods) %>;
+    localStorage.setItem('mods', JSON.stringify({'mods': mods}));
+  </script>

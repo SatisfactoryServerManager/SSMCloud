@@ -19,6 +19,7 @@ const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
 const ApiKey = require("../models/apikey");
+const ModModel = require("../models/mod");
 
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -777,6 +778,57 @@ exports.getDeleteUser = async (req, res, next) => {
     return res.redirect("/dashboard/account");
 };
 
+exports.getDeleteUserInvite = async (req, res, next) => {
+    const inviteId = req.params.inviteId;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(inviteId)) {
+        const error = new Error("Invalid User Invite ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+    await theAccount.populate("userInvites");
+
+    let userInvite = -1;
+    for (let i = 0; i < theAccount.userInvites.length; i++) {
+        const invite = theAccount.userInvites[i];
+        if (invite._id == inviteId) {
+            userInvite = i;
+            break;
+        }
+    }
+
+    if (userInvite == -1) {
+        if (!ObjectId.isValid(userId)) {
+            const error = new Error("User Not Found!");
+            error.httpStatusCode = 500;
+            return next(error);
+        }
+    }
+
+    theAccount.userInvites.splice(userInvite, 1);
+    await theAccount.save();
+
+    await UserInvite.deleteOne({ _id: inviteId });
+
+    return res.redirect("/dashboard/account");
+};
+
 exports.getSaves = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -939,6 +991,41 @@ exports.getDownloadSave = async (req, res, next) => {
             pageTitle: "Page Not Found",
             path: "/404",
             isAuthenticated: req.session.isLoggedIn,
+        });
+    }
+};
+
+exports.getMods = async (req, res, next) => {
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    if (theAccount) {
+        await theAccount.populate("agents");
+
+        const mods = await ModModel.find().sort({ modName: 1 });
+
+        res.render("dashboard/mods", {
+            path: "/mods",
+            pageTitle: "Mods",
+            accountName: theAccount.accountName,
+            agents: theAccount.agents,
+            mods,
+            errorMessage: "",
+        });
+    } else {
+        res.render("dashboard/mods", {
+            path: "/mods",
+            pageTitle: "Mods",
+            accountName: "",
+            agents: [],
+            mods: [],
+            errorMessage:
+                "Cant Find Account details. Please contact SSM Support.",
         });
     }
 };

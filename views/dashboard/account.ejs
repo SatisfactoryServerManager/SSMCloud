@@ -370,7 +370,18 @@
                                                 <td>
                                                     <%=role.permissions.length%>
                                                 </td>
-                                                <td></td>
+                                                <td>
+                                                    <%if(role.canEdit){%>
+                                                    <a
+                                                        href="/dashboard/account/deleteuserrole/<%=role._id%>"
+                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation"
+                                                    >
+                                                        <i
+                                                            class="fas fa-trash"
+                                                        ></i>
+                                                    </a>
+                                                    <%}%>
+                                                </td>
                                             </tr>
                                             <%})%> <%}%>
                                         </tbody>

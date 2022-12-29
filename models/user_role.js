@@ -13,6 +13,10 @@ const userRoleSchema = new Schema({
             ref: "Permission",
         },
     ],
+    canEdit: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 module.exports = mongoose.model("UserRole", userRoleSchema);

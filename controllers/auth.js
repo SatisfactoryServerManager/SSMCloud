@@ -11,6 +11,15 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
 
+exports.getLogout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        }
+        res.redirect("/login");
+    });
+};
+
 exports.getLogin = (req, res) => {
     if (req.session.isLoggedIn) {
         res.redirect("/dashboard");
@@ -68,7 +77,7 @@ exports.postLogin = async (req, res, next) => {
     }
 
     try {
-        const user = await user.findOne({ email }).select("+password");
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
             return res.status(422).render("auth/login", {
@@ -232,11 +241,28 @@ const CreateAccountUserRoles = async (theAccount) => {
     const AdminUserRole = await UserRole.create({
         roleName: "Administrator",
         permissions: AllPermissions,
+        canEdit: false,
     });
 
     theAccount.users[0].role = AdminUserRole;
-
     await theAccount.users[0].save();
 
+    const SuperUserPerms = await Permission.find({
+        $or: [
+            { permissionName: /page\./ },
+            { permissionName: "user.create" },
+            { permissionName: "user.update" },
+            { permissionName: "userrole.create" },
+            { permissionName: "userrole.update" },
+            { permissionName: /server\./ },
+        ],
+    });
+
+    const SuperUserRole = await UserRole.create({
+        roleName: "Super User",
+        permissions: SuperUserPerms,
+    });
+
     theAccount.userRoles.push(AdminUserRole);
+    theAccount.userRoles.push(SuperUserRole);
 };

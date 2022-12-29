@@ -96,4 +96,6 @@ router.post(
     authController.postAcceptInvite
 );
 
+router.get("/logout", authController.getLogout);
+
 module.exports = router;
