@@ -144,8 +144,6 @@ case $response in
 
     start_spinner "${YELLOW}Waiting for MongoDB to start...${NC}"
     service mongod start > /dev/null 2>&1
-    echo -e "";
-    echo -e "";
     sleep 10
 
     stop_spinner $?
@@ -283,6 +281,7 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOL
+sleep 1
 stop_spinner $?
 
 start_spinner "${YELLOW}Starting SSM Service${NC}"
