@@ -163,7 +163,7 @@ EOL
 cat > /etc/mongosetup_ssm.js <<EOL
 db = db.getSiblingDB('ssm');
 db.dropAllUsers();
-db.createUser({"user": "ssm", "pwd": "#SSMP@$£", "roles": ["readWrite", "dbAdmin"]});
+db.createUser({"user": "ssm", "pwd": "#SSMPa$£", "roles": ["readWrite", "dbAdmin"]});
 EOL
   mongo /etc/mongosetup_ssm.js > /dev/null 2>&1
   ;;
