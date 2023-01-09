@@ -122,7 +122,7 @@ dpkg-reconfigure --frontend noninteractive tzdata >/dev/null 2>&1
 stop_spinner $?
 
 start_spinner "${YELLOW}Installing Prereqs${NC}"
-apt-get -qq install apt-utils curl wget jq binutils software-properties-common libcap2-bin -y >/dev/null 2>&1
+apt-get -qq install apt-utils curl wget jq binutils software-properties-common libcap2-bin unzip zip -y >/dev/null 2>&1
 apt-get -qq update -y >/dev/null 2>&1
 stop_spinner $?
 
@@ -274,7 +274,7 @@ Group=ssm
 
 Type=simple
 WorkingDirectory=/opt/SSM
-ExecStart=/opt/SSM/SatisfactoryServerManager
+ExecStart=/opt/SSM/SSMCloud
 TimeoutStopSec=20
 KillMode=process
 Restart=on-failure
