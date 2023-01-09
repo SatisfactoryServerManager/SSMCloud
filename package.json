@@ -83,6 +83,7 @@
             "public/**/*",
             "scripts/**/*.sh",
             "assets/**/*",
+            "node_modules/**/*.node",
             "node_modules/jquery/dist/**/*",
             "node_modules/jquery-steps/build/**/*",
             "node_modules/@fortawesome/fontawesome-free/css/**/*",

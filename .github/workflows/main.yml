@@ -23,4 +23,4 @@ jobs:
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
-            - run: pkg app.js -c package.json -t node16-linux-x64 --out-path ./release/linux
+            - run: pkg index.js -c package.json -t node16-linux-x64 --out-path ./release/linux
