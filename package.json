@@ -98,7 +98,7 @@
             "db_updates/**/*"
         ],
         "targets": [
-            "node16"
+            "node18"
         ]
     },
     "devDependencies": {

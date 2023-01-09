@@ -1,25 +1,26 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  build-linux:
+    build-linux:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [18.5]
 
-    strategy:
-      matrix:
-        node-version: [18.5]
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm i -g yarn
-      - run: yarn
+        steps:
+            - uses: actions/checkout@v3
+            - name: Build Linux
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: npm i -g yarn pkg
+            - run: yarn
+            - run: mkdir -p ./release/linux
+            - run: pkg app.js -c package.json -t node16-linux-x64 --out-path ./release/linux
