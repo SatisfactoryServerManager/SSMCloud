@@ -65,6 +65,7 @@ jobs:
               uses: actions/download-artifact@v3
               with:
                   name: ssm-build
+            - run: ls -l
             - name: get-npm-version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@main
