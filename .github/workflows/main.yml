@@ -23,13 +23,12 @@ jobs:
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
-            - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
+            - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux -d > /release/linux/build.log
             - uses: vimtor/action-zip@v1
               with:
-                  files: release/linux
+                  files: release/linux/SSMCloud release/linux/build.log
                   recursive: false
                   dest: SSMCloud-Linux-amd64.zip
-            - run: ls -l
             - uses: actions/upload-artifact@v1
               with:
                   name: ssm-build
@@ -51,13 +50,12 @@ jobs:
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/windows
-            - run: pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows
+            - run: pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows -d > /release/windows/build.log
             - uses: vimtor/action-zip@v1
               with:
-                  files: release/windows
+                  files: release/windows/SSMCloud.exe release/windows/build.log
                   recursive: false
                   dest: SSMCloud-Windows-x64.zip
-            - run: ls -l
             - uses: actions/upload-artifact@v1
               with:
                   name: ssm-build
