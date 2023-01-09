@@ -10,16 +10,12 @@ jobs:
     build-linux:
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [18.5]
-
         steps:
             - uses: actions/checkout@v3
-            - name: Use NodeJS ${{ matrix.node-version }}
+            - name: Use NodeJS 18.5
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 18.5
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
@@ -37,16 +33,12 @@ jobs:
     build-windows:
         runs-on: windows-latest
 
-        strategy:
-            matrix:
-                node-version: [18.5]
-
         steps:
             - uses: actions/checkout@v3
-            - name: Use NodeJS ${{ matrix.node-version }}
+            - name: Use NodeJS 18.5
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 18.5
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/windows
@@ -60,3 +52,36 @@ jobs:
               with:
                   name: ssm-build
                   path: ${{ github.workspace }}/SSMCloud-Windows-x64.zip
+
+    release:
+      needs: [build-linux, build-windows]
+
+      runs-on: ubuntu-latest
+      - uses: actions/checkout@v3
+      - name: Download a artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ssm-build
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          release_name: Release ${{ steps.package-version.outputs.current-version }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./release/linux/SSMCloud-Linux-amd64.zip
+          asset_name: SSMCloud-Linux-amd64.zip
+          asset_content_type: application/zip
