@@ -157,7 +157,7 @@ sleep 5
 
 cat > /etc/mongosetup_ssm.js <<EOL
 db = db.getSiblingDB('ssm');
-db.createUser({"user": "ssm", "pwd": "#SSMPa$£", "roles": ["readWrite", "dbAdmin"]});
+db.createUser({"user": "ssm", "pwd": "#SSMP@$£", "roles": ["readWrite", "dbAdmin"]});
 EOL
   mongo /etc/mongosetup_ssm.js > /dev/null 2>&1
   stop_spinner $?
@@ -209,9 +209,10 @@ SSM_URL=$(cat ${TEMP_DIR}/SSM_releases.json | jq -r ".assets[].browser_download_
 
 rm -r ${INSTALL_DIR}/* >/dev/null 2>&1
 
-wget -q "${SSM_URL}" -O "${INSTALL_DIR}/SSM.tar.gz"
-tar xzf "${INSTALL_DIR}/SSM.tar.gz" -C "${INSTALL_DIR}"
-rm "${INSTALL_DIR}/SSM.tar.gz" >/dev/null 2>&1
+wget -q "${SSM_URL}" -O "${INSTALL_DIR}/SSMCloud.zip"
+unzip -q "${INSTALL_DIR}/SSMCloud.zip" -d "${INSTALL_DIR}"
+
+rm "${INSTALL_DIR}/SSMCloud.zip" >/dev/null 2>&1
 rm "${INSTALL_DIR}/build.log" >/dev/null 2>&1
 echo ${SSM_VER} >"${INSTALL_DIR}/version.txt"
 stop_spinner $?
