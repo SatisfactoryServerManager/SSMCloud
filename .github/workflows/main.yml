@@ -3,7 +3,7 @@ name: Build SSM Cloud
 on:
     push:
         tags:
-            - *
+            - "*"
 jobs:
     build-linux:
         runs-on: ubuntu-latest
