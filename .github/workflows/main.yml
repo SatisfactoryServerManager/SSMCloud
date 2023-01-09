@@ -23,4 +23,9 @@ jobs:
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
-            - run: pkg index.js -c package.json -t node16-linux-x64 --out-path ./release/linux
+            - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
+            - uses: vimtor/action-zip@v1
+              with:
+                files: release/linux
+                dest: SSMCloud-Linux-amd64.zip
+            - run: ls -l
