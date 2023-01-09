@@ -136,13 +136,19 @@ case $response in
   echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list > /dev/null 2>&1
   apt-get update > /dev/null;
   apt-get install -y mongodb-org mongodb-org-shell > /dev/null;
+  stop_spinner $?
   systemctl daemon-reload > /dev/null 2>&1
   systemctl enable mongod > /dev/null 2>&1
-  service mongod start > /dev/null 2>&1
 
-echo -e "";
-echo -e "Waiting for MongoDB to start...";
-sleep 10
+
+
+    start_spinner "${YELLOW}Waiting for MongoDB to start...${NC}"
+    service mongod start > /dev/null 2>&1
+    echo -e "";
+    echo -e "";
+    sleep 10
+
+    stop_spinner $?
 
 cat >/etc/mongosetup.js <<EOL
 db.system.users.remove({});
@@ -150,17 +156,18 @@ db.system.version.remove({});
 db.system.version.insert({"_id": "authSchema", "currentVersion": 3});
 EOL
   mongo /etc/mongosetup.js > /dev/null 2>&1
-  service mongod restart > /dev/null 2>&1
 
-echo "Restarting MongoDB..."
-sleep 5
+  start_spinner "${YELLOW}Restarting MongoDB......${NC}"
+  service mongod restart > /dev/null 2>&1
+  sleep 5
+   stop_spinner $?
 
 cat > /etc/mongosetup_ssm.js <<EOL
 db = db.getSiblingDB('ssm');
+db.dropAllUsers();
 db.createUser({"user": "ssm", "pwd": "#SSMP@$£", "roles": ["readWrite", "dbAdmin"]});
 EOL
   mongo /etc/mongosetup_ssm.js > /dev/null 2>&1
-  stop_spinner $?
   ;;
 *)
   echo -e "${RED}MongoDB install skipped...${NC}"
@@ -212,6 +219,9 @@ rm -r ${INSTALL_DIR}/* >/dev/null 2>&1
 wget -q "${SSM_URL}" -O "${INSTALL_DIR}/SSMCloud.zip"
 unzip -q "${INSTALL_DIR}/SSMCloud.zip" -d "${INSTALL_DIR}"
 
+mv "${INSTALL_DIR}/release/linux/SSMCloud" "${INSTALL_DIR}" >/dev/null 2>&1
+rm -r "${INSTALL_DIR}/release/linux" >/dev/null 2>&1
+
 rm "${INSTALL_DIR}/SSMCloud.zip" >/dev/null 2>&1
 rm "${INSTALL_DIR}/build.log" >/dev/null 2>&1
 echo ${SSM_VER} >"${INSTALL_DIR}/version.txt"
@@ -231,18 +241,9 @@ fi
 chmod -R 777 ${INSTALL_DIR} >/dev/null 2>&1
 chown -R ssm:ssm ${INSTALL_DIR} >/dev/null 2>&1
 
-if [ -d "/SSMAgents" ]; then
-    chown -R ssm:ssm /SSMAgents >/dev/null 2>&1
-    chmod -R 755 /SSMAgents >/dev/null 2>&1
-else
-    mkdir /SSMAgents >/dev/null 2>&1
-    chown -R ssm:ssm /SSMAgents >/dev/null 2>&1
-    chmod -R 755 /SSMAgents >/dev/null 2>&1
-fi
-
 stop_spinner $?
 
-setcap cap_net_bind_service=+ep $(readlink -f /opt/SSM/SatisfactoryServerManager)
+setcap cap_net_bind_service=+ep $(readlink -f /opt/SSM/SSMCloud)
 
 
 ENV_SYSTEMD=$(pidof systemd | wc -l)
