@@ -2,11 +2,8 @@
 name: Build SSM Cloud
 on:
     push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+        tags:
+            - *
 jobs:
     build-linux:
         runs-on: ubuntu-latest
