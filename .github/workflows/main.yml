@@ -26,6 +26,11 @@ jobs:
             - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
             - uses: vimtor/action-zip@v1
               with:
-                files: release/linux
-                dest: SSMCloud-Linux-amd64.zip
+                  files: release/linux
+                  recursive: false
+                  dest: SSMCloud-Linux-amd64.zip
             - run: ls -l
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: ssm-linux-build
+                  path: ${{ github.workspace }}/SSMCloud-Linux-amd64.zip
