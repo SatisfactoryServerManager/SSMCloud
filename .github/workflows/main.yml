@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Build SSM Cloud
 
 on:
     push:
@@ -16,7 +16,7 @@ jobs:
 
         steps:
             - uses: actions/checkout@v3
-            - name: Build Linux
+            - name: Use NodeJS ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
@@ -32,5 +32,33 @@ jobs:
             - run: ls -l
             - uses: actions/upload-artifact@v1
               with:
-                  name: ssm-linux-build
+                  name: ssm-build
                   path: ${{ github.workspace }}/SSMCloud-Linux-amd64.zip
+
+    build-windows:
+        runs-on: windows-latest
+
+        strategy:
+            matrix:
+                node-version: [18.5]
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use NodeJS ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: npm i -g yarn pkg
+            - run: yarn
+            - run: mkdir -p ./release/windows
+            - run: pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows
+            - uses: vimtor/action-zip@v1
+              with:
+                  files: release/windows
+                  recursive: false
+                  dest: SSMCloud-Windows-x64.zip
+            - run: ls -l
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: ssm-build
+                  path: ${{ github.workspace }}/SSMCloud-Windows-x64.zip
