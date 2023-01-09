@@ -79,13 +79,23 @@ jobs:
                   release_name: Release ${{ steps.package-version.outputs.current-version }}
                   draft: false
                   prerelease: false
-            - name: Upload Release Asset
-              id: upload-release-asset
+            - name: Upload Linux Release Asset
+              id: upload-linux-release-asset
               uses: actions/upload-release-asset@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./release/linux/SSMCloud-Linux-amd64.zip
+                  asset_path: ./SSMCloud-Linux-amd64.zip
                   asset_name: SSMCloud-Linux-amd64.zip
+                  asset_content_type: application/zip
+            - name: Upload Windows Release Asset
+              id: upload-win-release-asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./SSMCloud-Windows-x64.zip
+                  asset_name: SSMCloud-Windows-x64.zip
                   asset_content_type: application/zip
