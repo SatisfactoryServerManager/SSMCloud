@@ -52,7 +52,6 @@ jobs:
               with:
                   name: ssm-build
                   path: ${{ github.workspace }}/SSMCloud-Windows-x64.zip
-
     release:
       needs: [build-linux, build-windows]
 
