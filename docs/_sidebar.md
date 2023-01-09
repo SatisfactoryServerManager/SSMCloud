@@ -1,10 +1,3 @@
 -   [Home](README.md)
--   Getting Started
--   [Account](getting-started/account.md)
--   [Users](getting-started/users.md)
--   Api
--   [Overview](api/overview.md)
--   [Account](api/account.md)
--   [Users](api/user.md)
--   [User Roles](api/userroles.md)
--   [Servers](api/servers.md)
+-   [Getting Started](getting-started.md)
+-   [API](api.md)

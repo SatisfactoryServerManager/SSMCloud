@@ -203,7 +203,7 @@ fi
 
 start_spinner "${YELLOW}Downloading SSM Binaries${NC}"
 
-curl --silent "https://api.github.com/repos/mrhid6/satisfactoryservermanager/releases/latest" >${TEMP_DIR}/SSM_releases.json
+curl --silent "https://api.github.com/repos/satisfactoryservermanager/ssmcloud/releases/latest" >${TEMP_DIR}/SSM_releases.json
 SSM_VER=$(cat ${TEMP_DIR}/SSM_releases.json | jq -r ".tag_name")
 SSM_URL=$(cat ${TEMP_DIR}/SSM_releases.json | jq -r ".assets[].browser_download_url" | grep -i "Linux" | sort | head -1)
 

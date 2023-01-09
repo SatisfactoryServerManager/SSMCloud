@@ -11,6 +11,7 @@ router.post(
     AgentController.postAgentInstalledState
 );
 router.post("/runningstate", isAgent, AgentController.postAgentRunningState);
+router.post("/cpumem", isAgent, AgentController.postAgentCpuMem);
 
 router.post("/configData", isAgent, AgentController.postUpdateAgentConfigData);
 
