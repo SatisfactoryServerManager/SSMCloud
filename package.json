@@ -82,6 +82,7 @@
             "views/**/*",
             "public/**/*",
             "scripts/**/*.sh",
+            "docs/**/*",
             "assets/**/*",
             "node_modules/**/*.node",
             "node_modules/jquery/dist/**/*",
