@@ -52,6 +52,21 @@ exports.postAgentRunningState = async (req, res, next) => {
     });
 };
 
+exports.postAgentCpuMem = async (req, res, next) => {
+    const AgentAPIKey = req.session.agentKey;
+
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    theAgent.cpuUsage = req.body.cpu;
+    theAgent.ramUsage = req.body.mem;
+
+    await theAgent.save();
+
+    res.json({
+        success: true,
+    });
+};
+
 exports.getAgentMessageQueue = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
 
