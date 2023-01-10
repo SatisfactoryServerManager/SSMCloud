@@ -11,7 +11,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
-        select: false
+        select: false,
     },
     isAccountAdmin: {
         type: Boolean,
@@ -22,6 +22,14 @@ const userSchema = new Schema({
         ref: "UserRole",
     },
     active: {
+        type: Boolean,
+        default: false,
+    },
+    twoFASecret: {
+        type: String,
+        select: false,
+    },
+    twoFASetup: {
         type: Boolean,
         default: false,
     },

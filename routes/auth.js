@@ -98,4 +98,11 @@ router.post(
 
 router.get("/logout", authController.getLogout);
 
+router.get("/2fa/setup", authController.get2FASetup);
+
+router.post("/2fa/setup", authController.post2faSetup);
+
+router.get("/2fa/validate", authController.get2FAValidate);
+router.post("/2fa/validate", authController.post2FAValidate);
+
 module.exports = router;

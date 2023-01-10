@@ -11,6 +11,10 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
 
+const QRCode = require("qrcode");
+
+const { authenticator } = require("otplib");
+
 exports.getLogout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -95,13 +99,17 @@ exports.postLogin = async (req, res, next) => {
         const doMatch = await bcrypt.compare(password, user.password);
 
         if (doMatch) {
-            req.session.isLoggedIn = true;
             req.session.user = user;
             return req.session.save((err) => {
                 if (err) {
                     console.log(err);
                 }
-                res.redirect("/dashboard");
+
+                if (user.twoFASetup == false) {
+                    res.redirect("/2fa/setup");
+                } else {
+                    res.redirect("/2fa/validate");
+                }
             });
         } else {
             return res.status(422).render("auth/login", {
@@ -265,4 +273,120 @@ const CreateAccountUserRoles = async (theAccount) => {
 
     theAccount.userRoles.push(AdminUserRole);
     theAccount.userRoles.push(SuperUserRole);
+};
+
+exports.get2FASetup = async (req, res, next) => {
+    if (req.session == null || req.session.user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const user = await User.findOne({ _id: req.session.user._id }).select(
+        "+twoFASecret"
+    );
+
+    if (user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    if (user.twoFASetup == true) {
+        res.redirect("/login");
+        return;
+    }
+
+    const secret = authenticator.generateSecret();
+    user.twoFASecret = secret;
+
+    await user.save();
+
+    QRCode.toDataURL(
+        authenticator.keyuri(user.email, "SSM Cloud", secret),
+        (err, url) => {
+            if (err) {
+                throw err;
+            }
+
+            res.render("auth/2fa_setup.ejs", {
+                path: "/2fa/setup",
+                pageTitle: "Setup 2FA",
+                QRCODE: url,
+            });
+        }
+    );
+};
+
+exports.post2faSetup = async (req, res, next) => {
+    const post = req.body;
+    const token = post.token;
+    if (req.session == null || req.session.user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const user = await User.findOne({ _id: req.session.user._id }).select(
+        "+twoFASecret"
+    );
+
+    if (user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const secret = user.twoFASecret;
+
+    if (!authenticator.check(token, secret)) {
+        //redirect back
+        console.log("ERROR: 2fa failed Verify", secret);
+        return res.redirect("/2fa/setup");
+    }
+
+    user.twoFASetup = true;
+    await user.save();
+
+    res.redirect("/login");
+};
+
+exports.get2FAValidate = async (req, res, next) => {
+    if (req.session == null || req.session.user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    res.render("auth/2fa_validate.ejs", {
+        path: "/2fa/validate",
+        pageTitle: "Validate 2FA",
+    });
+};
+
+exports.post2FAValidate = async (req, res, next) => {
+    const post = req.body;
+    const token = post.token;
+    if (req.session == null || req.session.user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const user = await User.findOne({ _id: req.session.user._id }).select(
+        "+twoFASecret"
+    );
+
+    if (user == null) {
+        res.redirect("/login");
+        return;
+    }
+
+    const secret = user.twoFASecret;
+
+    if (!authenticator.check(token, secret)) {
+        //redirect back
+        console.log("ERROR: 2fa failed Verify", secret);
+        return res.redirect("/2fa/validate");
+    }
+
+    req.session.isLoggedIn = true;
+
+    await req.session.save();
+
+    res.redirect("/dashboard");
 };
