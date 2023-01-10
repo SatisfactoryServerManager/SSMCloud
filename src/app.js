@@ -237,7 +237,10 @@ function BuildAgentInstallCommands() {
     const port = 7777 + portOffset;
 
     let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory}`;
+    let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}"`;
+
     let LinuxInstallCommand = `bash install-agent.sh --name "SSMAgent_${agentName}" --memory ${memory}`;
+    let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}"`;
 
     if (portOffset > 0) {
         WindowsInstallCommand += ` -SERVERQUERYPORT ${serverqueryport}`;
@@ -249,8 +252,17 @@ function BuildAgentInstallCommands() {
         LinuxInstallCommand += ` --port ${port}`;
     }
 
-    $("#windows-install-agent span").text(WindowsInstallCommand);
-    $("#linux-install-agent span").text(LinuxInstallCommand);
+    WindowsStandaloneInstallCommand += ` -PORTOFFSET ${portOffset}`;
+    LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
+
+    $("#windows-install-agent .docker span").text(WindowsInstallCommand);
+    $("#windows-install-agent .standalone span").text(
+        WindowsStandaloneInstallCommand
+    );
+    $("#linux-install-agent .docker span").text(LinuxInstallCommand);
+    $("#linux-install-agent .standalone span").text(
+        LinuxStandaloneInstallCommand
+    );
 }
 
 $(document).ready(() => {
