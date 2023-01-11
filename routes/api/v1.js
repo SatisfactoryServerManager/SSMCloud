@@ -18,6 +18,9 @@ router.put(
     v1Controller.getAccount
 );
 
+router.get("/users", isApiKey, v1Controller.getUsers);
+router.get("/users/:userId", isApiKey, v1Controller.getSingleUser);
+
 router.use("*", (req, res, next) => {
     res.status(404).json({
         success: false,

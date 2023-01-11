@@ -126,3 +126,62 @@ exports.putAccount = async (req, res, next) => {
 
     next();
 };
+
+exports.getUsers = async (req, res, next) => {
+    const apiKey = req.session.apikey;
+    const apiKeyId = req.session.apikeyId;
+
+    const theAccount = await Account.findOne({ apiKeys: apiKeyId });
+
+    if (theAccount == null) {
+        res.status(404).json({
+            success: false,
+            account: null,
+            error: "Cannot find account with that api key!",
+        });
+        return;
+    }
+
+    await theAccount.populate("users");
+
+    res.status(200).json({
+        success: true,
+        users: theAccount.users,
+    });
+};
+
+exports.getSingleUser = async (req, res, next) => {
+    const apiKey = req.session.apikey;
+    const apiKeyId = req.session.apikeyId;
+
+    const userid = req.params.userId;
+
+    const theAccount = await Account.findOne({ apiKeys: apiKeyId });
+
+    if (theAccount == null) {
+        res.status(404).json({
+            success: false,
+            account: null,
+            error: "Cannot find account with that api key!",
+        });
+        return;
+    }
+
+    await theAccount.populate("users");
+
+    const theUser = theAccount.users.find((u) => u._id == userid);
+
+    if (theUser == null) {
+        res.status(404).json({
+            success: false,
+            account: null,
+            error: "Cannot find user with that id!",
+        });
+        return;
+    }
+
+    res.status(200).json({
+        success: true,
+        user: theUser,
+    });
+};
