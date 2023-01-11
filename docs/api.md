@@ -34,7 +34,8 @@ Login through the login api endpoint to return your API keys
 ```json
 {
     "email": "your_email",
-    "password": "your_password"
+    "password": "your_password",
+    "otp": 123456
 }
 ```
 

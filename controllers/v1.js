@@ -1,12 +1,16 @@
 const Account = require("../models/account");
 const ApiKey = require("../models/apikey");
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const { authenticator } = require("otplib");
 
 exports.postLogin = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, otp } = req.body;
 
     try {
-        const user = await User.findOne({ email }).select("+password");
+        const user = await User.findOne({ email }).select(
+            "+password +twoFASecret"
+        );
 
         if (!user) {
             res.status(404).json({
@@ -20,6 +24,17 @@ exports.postLogin = async (req, res, next) => {
         const doMatch = await bcrypt.compare(password, user.password);
 
         if (doMatch) {
+            const secret = user.twoFASecret;
+
+            if (!authenticator.check(otp, secret)) {
+                res.status(403).json({
+                    success: false,
+                    apikeys: [],
+                    error: "Incorrect 2FA information",
+                });
+                return;
+            }
+
             const apiKeys = await ApiKey.find({ user: user._id });
 
             const keyArray = [];
