@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.12](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.11...v1.0.12) (2023-01-11)
+
+
+### Features
+
+* Updated api for 2fa login ([7434938](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/7434938653779b786999dc321f54d38144f7656b))
+* Users endpoint ([32f42d2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/32f42d2da82e5a886e1f3069a5b5513dc4800a6c))
+
 ### [1.0.11](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.10...v1.0.11) (2023-01-10)
 
 
