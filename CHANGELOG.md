@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.14](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.13...v1.0.14) (2023-01-12)
+
+
+### Features
+
+* Notification System ([fe6ab20](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/fe6ab2028252b0db160e0f24b7d97786a860e386))
+* Save Inspector ([aec5047](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/aec5047e236de01966951a8271262096f005d613))
+
 ### [1.0.13](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.12...v1.0.13) (2023-01-12)
 
 
