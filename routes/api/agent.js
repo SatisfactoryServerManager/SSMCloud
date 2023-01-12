@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router();
 const isAgent = require("../../middleware/is-agent");
 const AgentController = require("../../controllers/agent");
+const rateLimit = require("../../middleware/ratelimit");
+
+router.use(rateLimit.agentLimiter);
 
 router.post("/activestate", isAgent, AgentController.postAgentActiveState);
 router.post(

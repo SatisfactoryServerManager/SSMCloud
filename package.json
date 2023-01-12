@@ -6,6 +6,8 @@
     "author": "Mrhid6 <mrhid6@gmail.com>",
     "license": "MIT",
     "dependencies": {
+        "@commitlint/cli": "^12.0.1",
+        "@commitlint/config-conventional": "^12.0.1",
         "@electerm/strip-ansi": "^1.0.0",
         "@fortawesome/fontawesome-free": "^6.1.1",
         "archiver": "^5.3.1",
@@ -33,6 +35,7 @@
         "event-stream": "^4.0.1",
         "express": "^4.18.1",
         "express-handlebars": "^6.0.6",
+        "express-rate-limit": "^6.7.0",
         "express-session": "^1.17.3",
         "express-validator": "^6.14.2",
         "extract-zip": "^2.0.1",
@@ -43,6 +46,7 @@
         "graphql": "^16.5.0",
         "graphql-request": "^5.1.0",
         "helmet": "^6.0.1",
+        "husky": "^5.2.0",
         "isomorphic-fetch": "^3.0.0",
         "jquery": "^3.6.0",
         "jquery-circle-progress": "^1.2.2",
@@ -68,10 +72,7 @@
         "serve-favicon": "^2.5.0",
         "tar": "^6.1.11",
         "tmp-promise": "^3.0.3",
-        "toastr": "^2.1.4",
-        "@commitlint/cli": "^12.0.1",
-        "@commitlint/config-conventional": "^12.0.1",
-        "husky": "^5.2.0"
+        "toastr": "^2.1.4"
     },
     "scripts": {
         "start": "node index.js",
@@ -114,7 +115,7 @@
         ]
     },
     "devDependencies": {
-        "uglifyify": "^5.0.2",
-        "standard-version": "^9.1.1"
+        "standard-version": "^9.1.1",
+        "uglifyify": "^5.0.2"
     }
 }

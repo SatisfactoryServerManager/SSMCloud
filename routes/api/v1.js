@@ -6,6 +6,9 @@ const router = express.Router();
 
 const v1Controller = require("../../controllers/v1");
 const isApiKey = require("../../middleware/is-apikey");
+const rateLimit = require("../../middleware/ratelimit");
+
+router.use(rateLimit.apiLimiter);
 
 router.post("/login", v1Controller.postLogin);
 
