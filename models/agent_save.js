@@ -30,6 +30,11 @@ const agentSaveSchema = new Schema({
             default: {},
         },
     ],
+    saveInspection: {
+        type: Object,
+        default: {},
+        select: false,
+    },
 });
 
 module.exports = mongoose.model("AgentSave", agentSaveSchema);

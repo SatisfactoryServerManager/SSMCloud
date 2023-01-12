@@ -185,23 +185,52 @@ exports.postAgentSaveInfo = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
-    await AgentSave.deleteMany({ _id: { $in: theAgent.saves } });
-    theAgent.saves = [];
+    await theAgent.populate("saves");
+    const SaveIdsToRemove = [];
 
     const data = req.body.saveDatas;
 
     for (let i = 0; i < data.length; i++) {
         const save = data[i];
-        const newSave = await AgentSave.create({
-            sessionName: save.sessionName,
-            fileName: save.fileName,
-            level: save.level,
-            stats: save.stats,
-            mods: save.mods,
-        });
 
-        theAgent.saves.push(newSave);
+        const existing = theAgent.saves.find(
+            (s) =>
+                s.sessionName == save.sessionName && s.fileName == save.fileName
+        );
+
+        if (existing) {
+            existing.level = save.level;
+            existing.stats = save.stats;
+            existing.mods = save.mods;
+
+            await existing.save();
+        } else {
+            const newSave = await AgentSave.create({
+                sessionName: save.sessionName,
+                fileName: save.fileName,
+                level: save.level,
+                stats: save.stats,
+                mods: save.mods,
+            });
+
+            theAgent.saves.push(newSave);
+        }
     }
+
+    for (let i = 0; i < theAgent.saves.length; i++) {
+        const save = theAgent.saves[i];
+        const existing = data.find(
+            (s) =>
+                s.sessionName == save.sessionName && s.fileName == save.fileName
+        );
+
+        if (existing == null) {
+            SaveIdsToRemove.push(save._id);
+            theAgent.saves.splice(i, 1);
+        }
+    }
+    await AgentSave.deleteMany({ _id: { $in: SaveIdsToRemove } });
+
     await theAgent.save();
 
     res.json({
