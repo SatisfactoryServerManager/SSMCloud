@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.13](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.12...v1.0.13) (2023-01-12)
+
+
+### Features
+
+* Home page ([9821416](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/9821416380a915ed876932654c58aec0a47a44af))
+
+
+### Bug Fixes
+
+* Footer copyright date ([5da8d00](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/5da8d00368ebd67aef6f2e7373cd94c10974c1cd))
+
+
+### Performance
+
+* Rate limit api ([c2079cf](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/c2079cf44abf6f0217c2b1818702e97d2b8ac484))
+
 ### [1.0.12](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.11...v1.0.12) (2023-01-11)
 
 
