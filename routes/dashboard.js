@@ -10,6 +10,10 @@ const { check, body } = require("express-validator");
 
 const router = express.Router();
 
+router.get("/", (req, res, next) => {
+    res.render("home.ejs", {});
+});
+
 router.get("/dashboard", isAuth, dashboardController.getDashboard);
 
 router.get(

@@ -18,6 +18,8 @@ const fs = require("fs-extra");
 const morgan = require("morgan");
 const multer = require("multer");
 
+const frameguard = require("frameguard");
+
 const UserRoleModel = require("./models/user_role");
 const PermissionModel = require("./models/permission");
 
@@ -143,6 +145,8 @@ class SSMCloud_App {
                 contentSecurityPolicy: false,
             })
         );
+
+        app.use(frameguard());
         app.use(compression());
 
         app.use(bodyParser.urlencoded({ extended: true }));
