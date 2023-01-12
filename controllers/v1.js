@@ -87,6 +87,7 @@ exports.getAccount = async (req, res, next) => {
     await theAccount.populate("userRoles");
     await theAccount.populate("userInvites");
     await theAccount.populate("apiKeys");
+    await theAccount.populate("notificationSettings");
 
     res.status(200).json({
         success: true,

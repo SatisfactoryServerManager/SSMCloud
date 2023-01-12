@@ -20,15 +20,11 @@ const multer = require("multer");
 
 const frameguard = require("frameguard");
 
-const UserRoleModel = require("./models/user_role");
-const PermissionModel = require("./models/permission");
-
 /* SSM Server Utils */
 
 const Config = require("./server/server_config");
 const Logger = require("./server/server_logger");
-const AgentHandler = require("./server/server_agent_handler");
-const ModManager = require("./server/server_mod_manager");
+const ServerApp = require("./server/server_app");
 
 /* End SSM Server Utils */
 
@@ -53,8 +49,6 @@ class SSMCloud_App {
         await Config.load();
         Logger.info("[APP] [PREINIT] - Starting SSM..");
         this.startExpress();
-        AgentHandler.init();
-        ModManager.init();
     };
 
     startExpress() {
@@ -256,63 +250,13 @@ class SSMCloud_App {
                     `[APP] - Listening on port: ${Config.get("ssm.http_port")}`
                 );
                 app.listen(Config.get("ssm.http_port"));
-                await this.CheckDBPermissionsCollection();
+                ServerApp.init();
             })
             .catch((err) => {
                 Logger.error("[APP] - Failed to connect to DB!");
                 console.log(err);
             });
     }
-
-    CheckDBPermissionsCollection = async () => {
-        Logger.debug("[APP] - Checking Permissions DB Collection");
-        const permissions = [
-            { name: "page.dashboard", description: "View Dashboard Page" },
-            { name: "page.servers", description: "View Servers Page" },
-            { name: "page.server", description: "View Server Page" },
-            { name: "page.backups", description: "View Backups Page" },
-            { name: "page.account", description: "View Accounts Page" },
-            { name: "page.logs", description: "View Logs Page" },
-            { name: "page.mods", description: "View Mods Page" },
-            { name: "user.create", description: "Create A New User" },
-            { name: "user.delete", description: "Delete User" },
-            { name: "user.update", description: "Update User" },
-            { name: "userrole.create", description: "Create User Role" },
-            { name: "userrole.delete", description: "Delete User Role" },
-            { name: "userrole.update", description: "Update User Role" },
-            { name: "server.create", description: "Create Server" },
-            { name: "server.update", description: "Update Server" },
-            { name: "server.delete", description: "Delete Server" },
-        ];
-
-        for (let i = 0; i < permissions.length; i++) {
-            const permission = permissions[i];
-            const existingPermission = await PermissionModel.findOne({
-                permissionName: permission.name,
-            });
-
-            if (existingPermission == null) {
-                await PermissionModel.create({
-                    permissionName: permission.name,
-                    description: permission.description,
-                });
-            } else {
-            }
-        }
-
-        const roles = await UserRoleModel.find({ roleName: "Administrator" });
-        const AllPermissions = await PermissionModel.find();
-
-        for (let i = 0; i < roles.length; i++) {
-            const role = roles[i];
-            if (role.permissions.length != AllPermissions.length) {
-                role.permissions = AllPermissions;
-                await role.save();
-            }
-        }
-
-        Logger.debug("[APP] - Checked! Permissions DB Collection");
-    };
 }
 
 new SSMCloud_App();

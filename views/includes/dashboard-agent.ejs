@@ -37,7 +37,7 @@
             
             <%- include('../includes/status-info-card.ejs',
             {ClassColour:"orange", ClassID:"users", Title:"Connected Users",
-            Data:"0", Icon:"fa-user"}) %>
+            Data:agent.playerCount, Icon:"fa-user"}) %>
 
             <%- include('../includes/status-info-card.ejs',
             {ClassColour:"green", ClassID:"mods", Title:"Installed Mods",

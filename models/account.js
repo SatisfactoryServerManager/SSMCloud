@@ -4,6 +4,8 @@ const User = require("./user");
 const UserRole = require("./user_role");
 const UserInvites = require("./user_invite");
 const ApiKey = require("./apikey");
+const AccountNotificationSetting = require("./account_notification_setting");
+const Notification = require("./notification");
 
 const Schema = mongoose.Schema;
 
@@ -42,6 +44,22 @@ const accountSchema = new Schema({
             ref: "ApiKey",
         },
     ],
+    notificationSettings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "AccountNotificationSetting",
+        },
+    ],
+
+    notifications: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Notification",
+            },
+        ],
+        select: false,
+    },
 });
 
 module.exports = mongoose.model("Account", accountSchema);

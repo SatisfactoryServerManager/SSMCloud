@@ -46,6 +46,10 @@ const agentSchema = new Schema(
             type: Number,
             default: 0.0,
         },
+        playerCount: {
+            type: Number,
+            default: 0,
+        },
         lastCommDate: {
             type: Date,
             default: Date.now,
