@@ -313,12 +313,20 @@
                                                     href="/dashboard/server/<%=agent._id%>"
                                                 >
                                                     <button
-                                                        class="btn btn-primary float-start"
+                                                        class="btn btn-primary float-start me-2"
                                                     >
                                                         <i
                                                             class="fas fa-cog"
                                                         ></i>
                                                     </button>
+                                                </a>
+                                                <a
+                                                    href="/dashboard/server/<%=agent._id%>/delete"
+                                                    class="btn btn-danger should-confirm-btn" data-confirm-title="Delete Agent Confirmation"
+                                                >
+                                                        <i
+                                                            class="fas fa-trash"
+                                                        ></i>
                                                 </a>
                                             </td>
                                         </tr>

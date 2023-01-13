@@ -49,6 +49,12 @@ router.post(
     dashboardController.postServer
 );
 
+router.get(
+    "/dashboard/server/:agentid/delete",
+    isAuth,
+    dashboardController.getServerDelete
+);
+
 router.get("/dashboard/backups", isAuth, dashboardController.getBackups);
 router.get(
     "/dashboard/backups/download/:backupId",
@@ -144,5 +150,11 @@ router.post(
 );
 
 router.get("/dashboard/logs", isAuth, dashboardController.getLogs);
+
+router.get(
+    "/dashboard/notifications",
+    isAuth,
+    dashboardController.getNotifications
+);
 
 module.exports = router;

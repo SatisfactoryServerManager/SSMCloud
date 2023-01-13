@@ -10,6 +10,8 @@ const Config = require("../server/server_config");
 
 const { validationResult } = require("express-validator");
 
+const NotificationSystem = require("../server/server_notification_system");
+
 const Account = require("../models/account");
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
@@ -18,6 +20,7 @@ const UserInvite = require("../models/user_invite");
 const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
+const AgentBackup = require("../models/agent_backup");
 const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
@@ -230,6 +233,23 @@ exports.postServers = async (req, res, next) => {
         theAccount.agents.push(newAgent);
         await theAccount.save();
 
+        try {
+            await NotificationSystem.CreateNotification(
+                "agent.created",
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: newAgent._id,
+                    agent_name: newAgent.agentName,
+                    server_port: newAgent.sfPortNum,
+                    memory: newAgent.memory,
+                },
+                theAccount._id
+            );
+        } catch (err) {
+            console.log(err);
+        }
+
         res.render("dashboard/servers", {
             path: "/servers",
             pageTitle: "Servers",
@@ -377,6 +397,51 @@ exports.postServer = async (req, res, next) => {
 
     theAgent.messageQueue.push(message);
     await theAgent.save();
+};
+
+exports.getServerDelete = async (req, res, next) => {
+    const { agentid } = req.params;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(agentid)) {
+        const error = new Error("Invalid Agent ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+        agents: agentid,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const agentIndex = theAccount.agents.indexOf(agentid);
+
+    await theAccount.populate("agents");
+
+    const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+
+    if (theAgent) {
+        await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
+        await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
+        await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
+
+        await Agent.deleteOne({ _id: theAgent._id });
+        theAccount.agents.splice(agentIndex, 1);
+        await theAccount.save();
+    }
+
+    res.redirect("/dashboard/servers");
 };
 
 exports.getBackups = async (req, res, next) => {
@@ -1132,6 +1197,44 @@ exports.getLogs = async (req, res, next) => {
             pageTitle: "Logs",
             accountName: "",
             agents: [],
+            errorMessage:
+                "Cant Find Account details. Please contact SSM Support.",
+        });
+    }
+};
+
+exports.getNotifications = async (req, res, next) => {
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+    }).select("+notifications");
+
+    if (theAccount) {
+        await theAccount.populate("agents");
+        await theAccount.populate("notificationSettings");
+
+        res.render("dashboard/notifications", {
+            path: "/notifications",
+            pageTitle: "Notifications",
+            accountName: theAccount.accountName,
+            agents: theAccount.agents,
+            notificationSettings: theAccount.notificationSettings,
+            notifications: theAccount.notifications,
+            errorMessage: "",
+        });
+    } else {
+        res.render("dashboard/notifications", {
+            path: "/notifications",
+            pageTitle: "Notifications",
+            accountName: "",
+            agents: [],
+            notificationSettings: [],
+            notifications: [],
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });

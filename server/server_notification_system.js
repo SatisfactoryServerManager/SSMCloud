@@ -4,6 +4,7 @@ const Logger = require("./server_logger");
 const NotificationModel = require("../models/notification");
 const NotificationEventModel = require("../models/notification_event");
 const NotificationEventTypeModel = require("../models/notification_event_type");
+const AccountModel = require("../models/account");
 
 const axios = require("axios");
 
@@ -53,6 +54,46 @@ class NotificationSystem {
         }
 
         Logger.debug("[APP] - Checked Notification Event Types DB Collection");
+    };
+
+    CreateNotification = async (eventType, eventData, AccountID) => {
+        const theAccount = await AccountModel.findOne({ _id: AccountID }).select("+notifications");
+        if (theAccount == null) {
+            throw new Error("Account was Null!");
+        }
+
+        const theEventType = await NotificationEventTypeModel.findOne({
+            eventTypeName: eventType,
+        });
+        if (theEventType == null) {
+            throw new Error("Event Type was Null!");
+        }
+
+        await theAccount.populate("notificationSettings");
+
+        for (let i = 0; i < theAccount.notificationSettings.length; i++) {
+            const notificationSetting = theAccount.notificationSettings[i];
+            await notificationSetting.populate("eventTypes");
+
+            const hasEventType = notificationSetting.eventTypes.find(
+                (et) => et.eventTypeName == theEventType.eventTypeName
+            );
+
+            if (hasEventType) {
+                const theNotification = await NotificationModel.create({
+                    notificationSetting,
+                    eventType: theEventType,
+                    data: eventData,
+                });
+
+                theAccount.notifications.push(theNotification);
+                await theAccount.save();
+            } else {
+                console.log(
+                    `theAccount is not listening for event ${eventType}`
+                );
+            }
+        }
     };
 
     ProcessPendingNotifications = async () => {
