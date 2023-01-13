@@ -41,13 +41,13 @@ body {
 
 .login-card .card-header .logo {
     position: absolute;
-    top: -64px;
+    top: -90px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .login-card .card-header .logo img {
-    width: 128px;
+    width: 180px;
 }
 
 .login-card .card-title {

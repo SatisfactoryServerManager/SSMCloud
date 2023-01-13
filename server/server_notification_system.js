@@ -57,7 +57,9 @@ class NotificationSystem {
     };
 
     CreateNotification = async (eventType, eventData, AccountID) => {
-        const theAccount = await AccountModel.findOne({ _id: AccountID }).select("+notifications");
+        const theAccount = await AccountModel.findOne({
+            _id: AccountID,
+        }).select("+notifications");
         if (theAccount == null) {
             throw new Error("Account was Null!");
         }
@@ -125,6 +127,9 @@ class NotificationSystem {
         const theEvent = await NotificationEventModel.create({
             eventData,
         });
+
+        Notification.events.push(theEvent);
+        await Notification.save();
 
         if (Notification.notificationSetting.notificationType == "webhook") {
             await this.DispatchWebhookEvent(Notification, theEvent);

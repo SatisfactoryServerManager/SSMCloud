@@ -46,33 +46,69 @@
                                     <h5>Notification Settings</h5>
                                 </div>
                                 <div class="card-body">
+                                    <%if(notificationSettings.length == 0){%>
+                                        <div class="alert alert-info">It looks like Notifications has not been setup yet!</div>
+                                    <%}%>
                                     <%notificationSettings.forEach(setting=>{%>
-                                        <form action="" method="post">
-                                            <input type="hidden" name="inp_note_id" value="<%=setting._id%>">
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <%if(setting.notificationType == "webhook"){%>
-                                                    <i class="fac fa-webhook" style="font-size:20px"></i>
-                                                    <%}%>
-                                                    <%if(setting.notificationType == "discord"){%>
-                                                    <i class="fab fa-discord" style="font-size:20px"></i>
-                                                    <%}%>
-                                                    <%if(setting.notificationType == "email"){%>
-                                                    <i class="fas fa-envelope" style="font-size:20px"></i>
-                                                    <%}%>
-                                                </span>
-                                                <select name="sel_type" id="" class="form-select">
-                                                    <option <%if(setting.notificationType == "webhook"){%>selected<%}%>>
-                                                    Webhook
-                                                    </option>
-                                                    <option <%if(setting.notificationType == "discord"){%>selected<%}%>>Discord</option>
-                                                    <option <%if(setting.notificationType == "email"){%>selected<%}%>>Email</option>
-                                                </select>
-                                                <input class="form-control" type="text" name="inp_url" id="inp_url" value="<%=setting.url%>">
-                                                <button class="btn btn-primary"><i class="fas fa-save"></i> Update Settings</button>
-                                            </div>
-                                        </form>
+                                        <form action="/dashboard/notification/update/<%=setting._id%>" method="post" class="edit-notification-form">
 
+                                            <div class="row">
+                                                <div class="col-12 col-lg-6">
+                                                    <label for="sel_type" class="form-label">Notification Type:</label>
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
+                                                         <select name="sel_type" id="sel_type" class="form-select">
+                                                            <option <%if(setting.notificationType == "webhook"){%>selected<%}%>>
+                                                            Webhook
+                                                            </option>
+                                                            <option <%if(setting.notificationType == "discord"){%>selected<%}%>>Discord</option>
+                                                            <option <%if(setting.notificationType == "email"){%>selected<%}%>>Email</option>
+                                                        </select>
+                                                    </div>
+                                                    <label for="inp_url" class="form-label">Notification URL:</label>
+                                                     <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+                                                         <input class="form-control" type="text" name="inp_url" id="inp_url" value="<%=setting.url%>">
+                                                     </div>
+                                                </div>
+                                                <div class="col-12 col-lg-6">
+                                                    <label class="form-label">Selected Event Types:</label>
+                                                    <div class="event-types-pills mb-3">
+                                                        <%setting.eventTypes.forEach(et=>{%>
+                                                            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="<%=et._id%>" style="font-size:12px">
+                                                                <%=et.description%>
+                                                                <i class="fas fa-times ms-1 float-end" ></i>
+                                                            </span>
+                                                        <%})%>
+                                                    </div>
+                                                    <hr>
+                                                    <label class="form-label">Add Event Types:</label>
+                                                     <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
+                                                        <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
+
+                                                            <%
+                                                                for(let i=0; i < eventTypes.length; i++){
+                                                                    const et = eventTypes[i];
+
+                                                                    const existingEt = setting.eventTypes.find(e=>e.eventTypeName == et.eventTypeName);
+                                                                    if(existingEt == null){%>
+                                                                        <option value="<%=et._id%>"><%=et.description%></option>
+                                                                    <%}
+                                                                }
+                                                            %>
+
+
+                                                        </select>
+                                                         <button class="btn btn-success add-event-type">
+                                                            <i class="fas fa-plus" style="font-size:20px"></i>
+                                                         </button>
+                                                     </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary"><i class="fas fa-save"></i> Update Settings</button>
+                                        </form>
+                                        <hr>
                                     <%})%>
                                 </div>
                             </div>
@@ -80,7 +116,7 @@
                         <div class="col-12 col-lg-6">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                    <h5>Pending Notification Events</h5>
+                                    <h5>Notification Events</h5>
                                 </div>
                                 <div class="card-body">
 

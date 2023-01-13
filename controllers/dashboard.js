@@ -25,6 +25,8 @@ const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
 
+const NotificationEventTypeModel = require("../models/notification_event_type");
+
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -1214,9 +1216,24 @@ exports.getNotifications = async (req, res, next) => {
         users: req.session.user._id,
     }).select("+notifications");
 
+    const eventTypes = await NotificationEventTypeModel.find();
+
     if (theAccount) {
         await theAccount.populate("agents");
         await theAccount.populate("notificationSettings");
+        await theAccount.populate("notifications");
+
+        for (let i = 0; i < theAccount.notificationSettings.length; i++) {
+            const setting = theAccount.notificationSettings[i];
+            await setting.populate("eventTypes");
+        }
+
+        for (let i = 0; i < theAccount.notifications.length; i++) {
+            const notification = theAccount.notifications[i];
+            await notification.populate("events");
+            await notification.populate("eventType");
+            await notification.populate("notificationSetting");
+        }
 
         res.render("dashboard/notifications", {
             path: "/notifications",
@@ -1225,6 +1242,7 @@ exports.getNotifications = async (req, res, next) => {
             agents: theAccount.agents,
             notificationSettings: theAccount.notificationSettings,
             notifications: theAccount.notifications,
+            eventTypes,
             errorMessage: "",
         });
     } else {
@@ -1235,6 +1253,7 @@ exports.getNotifications = async (req, res, next) => {
             agents: [],
             notificationSettings: [],
             notifications: [],
+            eventTypes: [],
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });

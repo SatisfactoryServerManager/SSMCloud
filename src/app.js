@@ -151,6 +151,58 @@ function main() {
                     }
                 }
             }
+        })
+        .on("click", ".add-event-type", (e) => {
+            e.preventDefault();
+            const $this = $(e.currentTarget);
+            const $select = $this.parent().find("select");
+            if ($select.val() == null) return;
+
+            const $pillWrapper = $this
+                .parent()
+                .parent()
+                .find(".event-types-pills");
+
+            $pillWrapper.append(`
+            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="${$select.val()}" style="font-size:12px">
+                ${$select.find("option:selected").text()}
+                <i class="fas fa-times ms-1 float-end" ></i>
+            </span>
+            `);
+
+            $select.find("option:selected").remove();
+        })
+        .on("submit", ".edit-notification-form", (e) => {
+            e.preventDefault();
+
+            const $form = $(e.currentTarget);
+            const action = $form.attr("action");
+            var data = $form.serializeArray().reduce(function (obj, item) {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+
+            data.eventTypes = [];
+
+            const $PillWrapper = $form.find(".event-types-pills");
+            const $Pills = $PillWrapper.children();
+            $Pills.each((index, el) => {
+                const $el = $(el);
+                data.eventTypes.push($el.attr("data-event-type-id"));
+            });
+            console.log(data);
+            $.ajax({
+                method: "post",
+                url: action,
+                enctype: "multipart/form-data",
+                data: data,
+            });
+
+            return true;
+        })
+        .on("click", ".event-types-pills svg", (e) => {
+            const $this = $(e.currentTarget);
+            $this.parent().remove();
         });
 
     $("#inp_maxplayers").on("input change", () => {
