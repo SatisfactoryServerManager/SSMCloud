@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.15](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.14...v1.0.15) (2023-01-14)
+
+
+### Features
+
+* Game Player Handler ([ed65290](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ed65290e033e49155c8c0a8c8e4907e35f3aee2a))
+* New Icons ([1458bb1](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/1458bb1a510f4e4985be0fb341ef062b78e35895))
+* Notification Page ([2874d4b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/2874d4bd1f243aee2a437bc9ecc81ed71b20dff8))
+* Notifications page ([5d97a1b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/5d97a1b39f131b228e793907cdb55edf2c3eae1f))
+
 ### [1.0.14](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.13...v1.0.14) (2023-01-12)
 
 
