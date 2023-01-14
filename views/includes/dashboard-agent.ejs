@@ -31,13 +31,23 @@
                 }
             %>
 
+            <%
+                const playerCount = 0;
+                for(let i=0;i<agent.players;i++){
+                    const player = agent.players[i];
+                    if(player.state == "online")
+                        playerCount++;
+                        
+                }
+            %>
+
             <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
             ClassID:"status", Title:"Status", Data:statusText, Icon:"fa-server"})
             %> 
             
             <%- include('../includes/status-info-card.ejs',
             {ClassColour:"orange", ClassID:"users", Title:"Connected Users",
-            Data:agent.playerCount, Icon:"fa-user"}) %>
+            Data:playerCount, Icon:"fa-user"}) %>
 
             <%- include('../includes/status-info-card.ejs',
             {ClassColour:"green", ClassID:"mods", Title:"Installed Mods",

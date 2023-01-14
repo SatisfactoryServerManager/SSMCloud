@@ -2,6 +2,8 @@ const fs = require("fs-extra");
 const path = require("path");
 const es = require("event-stream");
 
+const GamePlayerHandler = require("../server/server_game_player_handler");
+
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
@@ -313,11 +315,11 @@ exports.postUploadLog = async (req, res, next) => {
                 theLogInfo.FactoryGame = newFilePath;
                 theLogInfo.FactoryGameData = await GetLogFileData(newFilePath);
                 await theLogInfo.save();
-                theAgent.playerCount = await GetPlayerCountFromLog(
-                    theAgent,
+
+                await GamePlayerHandler.ReadLogForPlayerEvents(
+                    theAgent._id,
                     newFilePath
                 );
-                await theAgent.save();
                 break;
             case "SSMAgent":
                 theLogInfo.SSMAgent = newFilePath;
@@ -397,59 +399,4 @@ const GetLogFileData = async (LogFile) => {
     });
 
     return ResData;
-};
-
-const GetPlayerCountFromLog = async (theAgent, LogFile) => {
-    if (!fs.existsSync(LogFile)) {
-        return 0;
-    }
-
-    let UserCount = 0;
-
-    let joinArray = [];
-    await new Promise((resolve, reject) => {
-        var s = fs
-            .createReadStream(LogFile)
-            .pipe(es.split())
-            .pipe(
-                es
-                    .mapSync((line) => {
-                        if (line != "") {
-                            // pause the readstream
-                            s.pause();
-
-                            if (line.includes("Join suc")) {
-                                joinArray.push(line);
-                            }
-
-                            if (
-                                line.includes(
-                                    "AddClientConnection: Added client connection:"
-                                )
-                            ) {
-                                UserCount++;
-                            }
-
-                            if (
-                                line.includes(
-                                    "UNetConnection::Close: [UNetConnection]"
-                                )
-                            ) {
-                                UserCount--;
-                            }
-
-                            // resume the readstream, possibly from a callback
-                            s.resume();
-                        }
-                    })
-                    .on("error", (err) => {
-                        reject(err);
-                    })
-                    .on("end", () => {
-                        resolve();
-                    })
-            );
-    });
-
-    return UserCount;
 };

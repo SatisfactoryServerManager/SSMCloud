@@ -27,12 +27,33 @@ class NotificationSystem {
             { name: "agent.delete", description: "Agent has been deleted" },
             { name: "agent.online", description: "Agent is online" },
             { name: "agent.offline", description: "Agent is offline" },
-            { name: "agent.sf.started", description: "Server is started" },
+            { name: "agent.sf.starting", description: "Server is starting" },
             { name: "agent.sf.running", description: "Server is running" },
+            { name: "agent.sf.stopping", description: "Server is stopping" },
             { name: "agent.sf.stopped", description: "Server is stopped" },
             {
                 name: "agent.sf.playerjoined",
                 description: "Player joined the server",
+            },
+            {
+                name: "agent.sf.playerleave",
+                description: "Player left the server",
+            },
+            {
+                name: "agent.cpu.80",
+                description: "Agent CPU > 80%",
+            },
+            {
+                name: "agent.cpu.90",
+                description: "Agent CPU > 90%",
+            },
+            {
+                name: "agent.ram.80",
+                description: "Agent RAM > 80%",
+            },
+            {
+                name: "agent.ram.90",
+                description: "Agent RAM > 90%",
             },
         ];
 
@@ -186,11 +207,15 @@ class NotificationSystem {
             if (Event.eventData.data) {
                 const data = Event.eventData.data;
                 if (data.hasOwnProperty("agent_name")) {
-                    embed.addField("**Agent:**", data.agent_name, true);
+                    embed.addField("**Agent:**", data.agent_name);
                 }
 
                 if (data.hasOwnProperty("agent_id")) {
-                    embed.addField("**Agent Id:**", data.agent_id, true);
+                    embed.addField("**Agent Id:**", data.agent_id);
+                }
+
+                if (data.hasOwnProperty("player_name")) {
+                    embed.addField("**Player:**", data.player_name);
                 }
             }
             await hook.send(embed);

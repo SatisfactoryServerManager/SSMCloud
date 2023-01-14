@@ -38,6 +38,11 @@ exports.getDashboard = async (req, res, next) => {
     if (theAccount) {
         await theAccount.populate("agents");
 
+        for (let i = 0; i < theAccount.agents.length; i++) {
+            const agent = theAccount.agents[i];
+            await agent.populate("players");
+        }
+
         res.render("dashboard/dashboard", {
             path: "/dashboard",
             pageTitle: "Dashboard",
