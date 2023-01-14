@@ -68,13 +68,13 @@
 
             <div class="d-flex flex-column flex-md-row">
                 <a href="/dashboard/serveraction/<%=agent._id%>/start" <% if(startBtn == "disabled"){%>style="pointer-events: none"<%}%> class="flex-fill mt-2 mt-md-0 me-md-2">
-                    <button class='btn btn-success server-action-btn w-100' <%=startBtn%>><i class="fas fa-play"></i>Start Server</button>
+                    <button class='btn btn-success server-action-btn w-100' <%=startBtn%>><i class="fas fa-play me-1"></i>Start Server</button>
                 </a>
                  <a href="/dashboard/serveraction/<%=agent._id%>/stop" <% if(stopBtn == "disabled"){%>style="pointer-events: none"<%}%> class="flex-fill mt-2  mt-md-0">
-                    <button class='btn btn-warning server-action-btn w-100' <%=stopBtn%>><i class="fas fa-stop"></i>Stop Server</button>
+                    <button class='btn btn-warning server-action-btn w-100' <%=stopBtn%>><i class="fas fa-stop me-1"></i>Stop Server</button>
                 </a>
                 <a href="/dashboard/serveraction/<%=agent._id%>/kill" <% if(killBtn == "disabled"){%>style="pointer-events: none"<%}%> class="flex-fill mt-2  mt-md-0 ms-md-2">
-                    <button class='btn btn-danger server-action-btn w-100' <%=killBtn%>><i class="fas fa-skull-crossbones"></i>Kill Server</button>
+                    <button class='btn btn-danger server-action-btn w-100' <%=killBtn%>><i class="fas fa-skull-crossbones me-1"></i>Kill Server</button>
                 </a>
             </div>
         </div>
