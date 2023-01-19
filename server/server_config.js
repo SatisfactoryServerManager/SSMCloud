@@ -48,7 +48,7 @@ class ServerConfig extends iConfig {
         // Mongo DB Config
         super.get("ssm.db.user", "ssm");
         super.get("ssm.db.pass", "#SSMPa$£");
-        super.get("ssm.db.host", "localhost");
+        super.get("ssm.db.host", "127.0.0.1");
         super.get("ssm.db.database", "ssm");
     };
 }

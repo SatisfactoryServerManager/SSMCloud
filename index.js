@@ -17,6 +17,7 @@ const methodOverride = require("method-override");
 const fs = require("fs-extra");
 const morgan = require("morgan");
 const multer = require("multer");
+var cookieParser = require("cookie-parser");
 
 const frameguard = require("frameguard");
 
@@ -78,12 +79,10 @@ class SSMCloud_App {
 
         app.use(upload.single("file"));
 
-        app.set("trust proxy", "127.0.0.1");
+        app.set("trust proxy", 1);
 
         // Secret used for signing/hashing token is stored in session by default
         const csrfProtection = csrf();
-
-        var cookieParser = require("cookie-parser");
 
         Logger.info("[APP] [EXPRESS] - Starting Express..");
         app.set("view engine", "ejs");
