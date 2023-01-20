@@ -4,7 +4,7 @@ const ModModel = require("../models/mod");
 
 class ModManager {
     constructor() {
-        this.FicsitApiURL = "https://api.ficsit.app";
+        this.FicsitApiURL = "https://api.ficsit.dev";
         this.FicsitQueryURL = `${this.FicsitApiURL}/v2/query`;
     }
 
@@ -49,6 +49,10 @@ class ModManager {
                         versions {
                             version,
                             link,
+                            arch {
+                                platform
+                                asset
+                              },
                             sml_version,
                             dependencies {
                                 mod_id
@@ -64,7 +68,24 @@ class ModManager {
                 const mods = modsRes.getMods.mods;
                 for (let i = 0; i < mods.length; i++) {
                     const mod = mods[i];
-                    ModList.push(mod);
+                    if (mod.versions.length == 0) continue;
+
+                    const versionsFilter = mod.versions.filter((v) => {
+                        if (v.arch != null) {
+                            const linuxArch = v.arch.find(
+                                (a) => a.platform == "LinuxServer"
+                            );
+                            const windowsArch = v.arch.find(
+                                (a) => a.platform == "WindowsServer"
+                            );
+                            return linuxArch != null || windowsArch != null;
+                        }
+                        return false;
+                    });
+                    if (versionsFilter.length > 0) {
+                        mod.versions = versionsFilter;
+                        ModList.push(mod);
+                    }
                 }
             } catch (err) {
                 console.log(err);
