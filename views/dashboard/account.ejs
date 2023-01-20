@@ -130,36 +130,6 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-6">
-                            <div class="card border-secondary mb-3">
-                                <div class="card-header">
-                                    <button
-                                        id="btn-addwebhook"
-                                        class="btn btn-primary float-end"
-                                    >
-                                        <i class="fas fa-plus"></i> Add Webhook
-                                    </button>
-                                    <h5>Webhooks</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table
-                                        class="table table-bordered"
-                                        id="webhooks-table"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Enabled</th>
-                                                <th>Type</th>
-                                                <th width="60px">Options</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
                             <div class="card border-secondary mb-3 shadow">
                                 <div class="card-header">
                                     <h5>User Invites</h5>
@@ -176,8 +146,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Email address</th>
-                                                <th>Invite Link</th>
-                                                <th>Claimed</th>
+                                                <th width="120px">Invite Link</th>
                                                 <th width="60px">Options</th>
                                             </tr>
                                         </thead>
@@ -192,19 +161,6 @@
                                                     <a
                                                         href="<%=inviteUrl%>/<%=invite._id%>"
                                                     > Invite Link</a>
-                                                </td>
-                                                <td>
-
-                                                     <%if(invite.claimed){%>
-                                                    <i
-                                                        class="fas fa-circle-check text-success"
-                                                    ></i>
-                                                    <%} else {%>
-                                                    <i
-                                                        class="fas fa-circle-xmark text-danger"
-                                                    ></i>
-                                                    <%}%>
-
                                                 </td>
                                                 <td>
                                                     <a

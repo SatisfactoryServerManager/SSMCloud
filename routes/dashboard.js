@@ -157,4 +157,10 @@ router.get(
     dashboardController.getNotifications
 );
 
+router.post(
+    "/dashboard/notifications/update/:settingsId",
+    isAuth,
+    dashboardController.postUpdateNotificationSettings
+);
+
 module.exports = router;

@@ -26,6 +26,7 @@ const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
 
 const NotificationEventTypeModel = require("../models/notification_event_type");
+const NotificationSettingsModel = require("../models/account_notification_setting");
 
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -439,6 +440,21 @@ exports.getServerDelete = async (req, res, next) => {
     const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
 
     if (theAgent) {
+        try {
+            await NotificationSystem.CreateNotification(
+                "agent.deleted",
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: theAgent._id,
+                    agent_name: theAgent.agentName,
+                },
+                theAccount._id
+            );
+        } catch (err) {
+            console.log(err);
+        }
+
         await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
         await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
         await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
@@ -1263,4 +1279,44 @@ exports.getNotifications = async (req, res, next) => {
                 "Cant Find Account details. Please contact SSM Support.",
         });
     }
+};
+
+exports.postUpdateNotificationSettings = async (req, res, next) => {
+    const notificationSettingId = req.params.settingsId;
+    const data = req.body;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(notificationSettingId)) {
+        const error = new Error("Invalid Notification Settings ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    console.log(notificationSettingId, data);
+
+    const theNotificationSetting = await NotificationSettingsModel.findOne({
+        _id: notificationSettingId,
+    });
+
+    if (theNotificationSetting == null) {
+        const error = new Error("Notification Settings is Null!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    theNotificationSetting.notificationType = data.sel_type.toLowerCase();
+    theNotificationSetting.url = data.inp_url;
+
+    const eventTypes = await NotificationEventTypeModel.find({
+        _id: { $in: data.eventTypes },
+    });
+    theNotificationSetting.eventTypes = eventTypes;
+
+    await theNotificationSetting.save();
+    res.status(200).json({});
 };

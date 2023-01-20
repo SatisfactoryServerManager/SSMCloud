@@ -9,13 +9,47 @@ const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
 const AgentSave = require("../models/agent_save");
 const AgentLogInfo = require("../models/agent_log_info");
+const Account = require("../models/account")
 
 const Config = require("../server/server_config");
+
+const NotificationSystem = require("../server/server_notification_system");
+const NotificationEventTypeModel = require("../models/notification_event_type");
 
 exports.postAgentActiveState = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    let EventName = "";
+    let fireEvent = false;
+
+    if (theAgent.online && !req.body.active) {
+        EventName = "agent.offline";
+        fireEvent = true;
+    } else if (!theAgent.online && req.body.active) {
+        EventName = "agent.online";
+        fireEvent = true;
+    }
+
+    const theAccount = await Account.find({agents:theAgent._id});
+
+    try {
+        if (fireEvent) {
+            await NotificationSystem.CreateNotification(
+                EventName,
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: theAgent._id,
+                    agent_name: theAgent.agentName,
+                },
+                theAccount._id
+            );
+        }
+    } catch (err) {
+        console.log(err);
+    }
 
     theAgent.online = req.body.active;
     theAgent.lastCommDate = Date.now();
@@ -44,6 +78,35 @@ exports.postAgentRunningState = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+    const theAccount = await Account.find({agents:theAgent._id});
+
+    let EventName = "";
+    let fireEvent = false;
+
+    if (theAgent.running && !req.body.running) {
+        EventName = "agent.sf.stopped";
+        fireEvent = true;
+    } else if (!theAgent.running && req.body.running) {
+        EventName = "agent.sf.running";
+        fireEvent = true;
+    }
+
+    try {
+        if (fireEvent) {
+            await NotificationSystem.CreateNotification(
+                EventName,
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: theAgent._id,
+                    agent_name: theAgent.agentName,
+                },
+                theAccount._id
+            );
+        }
+    } catch (err) {
+        console.log(err);
+    }
 
     theAgent.running = req.body.running;
     theAgent.lastCommDate = Date.now();

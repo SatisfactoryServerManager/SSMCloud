@@ -190,7 +190,6 @@ function main() {
                 const $el = $(el);
                 data.eventTypes.push($el.attr("data-event-type-id"));
             });
-            console.log(data);
             $.ajax({
                 method: "post",
                 url: action,

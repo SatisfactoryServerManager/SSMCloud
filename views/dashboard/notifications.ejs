@@ -97,8 +97,8 @@
                                         <div class="alert alert-info">It looks like Notifications has not been setup yet!</div>
                                     <%}%>
                                     <%notificationSettings.forEach(setting=>{%>
-                                        <form action="/dashboard/notification/update/<%=setting._id%>" method="post" class="edit-notification-form">
-
+                                        <form action="/dashboard/notifications/update/<%=setting._id%>" method="post" class="edit-notification-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                             <div class="row">
                                                 <div class="col-12 col-lg-6">
                                                     <label for="sel_type" class="form-label">Notification Type:</label>
