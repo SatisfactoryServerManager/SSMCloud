@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.19](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.18...v1.0.19) (2023-01-20)
+
+
+### Features
+
+* Added Var Cache ([4e8f36d](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/4e8f36d6421138f08c1a7e04e85769bb8ee7d688))
+* Notifications System ([e667852](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/e667852593de7284a6eeb544fa9c4dfa35c7dd03))
+* Updated mod manager to check versions ([51025cb](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/51025cb0d7076a26b8511da723e52260d248af75))
+
 ### [1.0.18](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.17...v1.0.18) (2023-01-19)
 
 
