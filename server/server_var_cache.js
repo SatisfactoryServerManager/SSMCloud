@@ -11,7 +11,6 @@ class ServerVarCache extends iVarCache {
         super.init();
 
         fs.ensureDirSync(super.get("homedir"));
-        console.log(this._data);
     }
 
     setupWindowsVarCache() {

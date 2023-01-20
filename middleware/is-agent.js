@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
     if (headerKey == null) {
         res.json({
             success: false,
-            error: "Key is null!",
+            error: "The Agent Key is empty!",
         });
         return;
     }
@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
     if (theAgent == null) {
         res.json({
             success: false,
-            error: "Agent is null!",
+            error: "Counldn't find the Agent using the supplied key!",
         });
         return;
     }
