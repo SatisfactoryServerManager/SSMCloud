@@ -22,7 +22,7 @@ var cookieParser = require("cookie-parser");
 const frameguard = require("frameguard");
 
 /* SSM Server Utils */
-
+const VarCache = require("./server/server_var_cache");
 const Config = require("./server/server_config");
 const Logger = require("./server/server_logger");
 const ServerApp = require("./server/server_app");
@@ -45,6 +45,8 @@ class SSMCloud_App {
     }
 
     init = async () => {
+        VarCache.init();
+        Config.init();
         Logger.init();
         Logger.info("[APP] [PREINIT] - Loading Configs..");
         await Config.load();

@@ -6,30 +6,16 @@ const semver = require("semver");
 
 const mrhid6utils = require("mrhid6utils");
 const iConfig = mrhid6utils.Config;
-const platform = process.platform;
 
-let userDataPath = null;
-
-switch (platform) {
-    case "win32":
-        userDataPath = "C:\\ProgramData\\SSM_Cloud";
-        break;
-    case "linux":
-        userDataPath = require("os").homedir() + "/.SSM_Cloud";
-        break;
-}
-
-if (fs.pathExistsSync(userDataPath) == false) {
-    fs.mkdirSync(userDataPath);
-}
+const VarCache = require("./server_var_cache");
 
 class ServerConfig extends iConfig {
-    constructor() {
-        super({
+    init() {
+        super.init({
             configName: "SSM",
             createConfig: true,
             useExactPath: true,
-            configBaseDirectory: path.join(userDataPath, "configs"),
+            configBaseDirectory: path.join(VarCache.get("homedir"), "configs"),
         });
     }
 
@@ -37,10 +23,13 @@ class ServerConfig extends iConfig {
         var pjson = require("../package.json");
         super.set("ssm.version", pjson.version);
 
-        super.set("ssm.tempdir", path.join(userDataPath, "temp"));
+        super.set("ssm.tempdir", path.join(VarCache.get("homedir"), "temp"));
         fs.ensureDirSync(super.get("ssm.tempdir"));
 
-        super.set("ssm.uploadsdir", path.join(userDataPath, "uploads"));
+        super.set(
+            "ssm.uploadsdir",
+            path.join(VarCache.get("homedir"), "uploads")
+        );
         fs.ensureDirSync(super.get("ssm.uploadsdir"));
 
         super.get("ssm.http_port", 3000);
