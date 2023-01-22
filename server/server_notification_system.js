@@ -81,6 +81,7 @@ class NotificationSystem {
         const theAccount = await AccountModel.findOne({
             _id: AccountID,
         }).select("+notifications");
+
         if (theAccount == null) {
             throw new Error("Account was Null!");
         }

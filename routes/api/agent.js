@@ -35,4 +35,8 @@ router.post("/saves/info", isAgent, AgentController.postAgentSaveInfo);
 
 router.post("/uploadlog", isAgent, AgentController.postUploadLog);
 
+router.get("/getsmlversions", isAgent, AgentController.getModsSMLVersions);
+
+router.get("/mod/:modReference", isAgent, AgentController.getMod);
+
 module.exports = router;

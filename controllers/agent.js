@@ -9,12 +9,15 @@ const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
 const AgentSave = require("../models/agent_save");
 const AgentLogInfo = require("../models/agent_log_info");
-const Account = require("../models/account")
+const Account = require("../models/account");
+const ModModel = require("../models/mod");
 
 const Config = require("../server/server_config");
 
 const NotificationSystem = require("../server/server_notification_system");
 const NotificationEventTypeModel = require("../models/notification_event_type");
+
+const ModManager = require("../server/server_mod_manager");
 
 exports.postAgentActiveState = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
@@ -32,7 +35,7 @@ exports.postAgentActiveState = async (req, res, next) => {
         fireEvent = true;
     }
 
-    const theAccount = await Account.find({agents:theAgent._id});
+    const theAccount = await Account.findOne({ agents: theAgent._id });
 
     try {
         if (fireEvent) {
@@ -78,7 +81,7 @@ exports.postAgentRunningState = async (req, res, next) => {
     const AgentAPIKey = req.session.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
-    const theAccount = await Account.find({agents:theAgent._id});
+    const theAccount = await Account.findOne({ agents: theAgent._id });
 
     let EventName = "";
     let fireEvent = false;
@@ -414,6 +417,34 @@ exports.postUploadLog = async (req, res, next) => {
             error: err.message,
         });
     }
+};
+
+exports.getModsSMLVersions = async (req, res, next) => {
+    const data = await ModManager.GetSMLVersionsFromAPI();
+
+    res.status(200).json({
+        success: true,
+        data,
+    });
+};
+
+exports.getMod = async (req, res, next) => {
+    const modReference = req.params.modReference;
+
+    const theMod = await ModModel.findOne({ modReference: modReference });
+
+    if (theMod == null) {
+        res.status(404).json({
+            success: false,
+            error: `Cant find mod with modReference: ${modReference}`,
+        });
+        return;
+    }
+
+    res.status(200).json({
+        success: true,
+        data: theMod.toJSON(),
+    });
 };
 
 const GetLogFileData = async (LogFile) => {

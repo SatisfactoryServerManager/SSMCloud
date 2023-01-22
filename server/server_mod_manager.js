@@ -29,6 +29,32 @@ class ModManager {
         }
     };
 
+    GetSMLVersionsFromAPI = async () => {
+        const query = ` {
+            getSMLVersions{
+              sml_versions{
+                id
+                version
+                link
+              }
+            }
+          }`;
+        try {
+            const result = await request(this.FicsitQueryURL, query);
+
+            return result.getSMLVersions.sml_versions;
+        } catch (err) {
+            //console.log(err);
+            return [
+                {
+                    id: "CKG78K6qYrKHaQ",
+                    version: "3.4.1",
+                    link: "https://github.com/satisfactorymodding/SatisfactoryModLoader/releases/tag/v3.4.1",
+                },
+            ];
+        }
+    };
+
     GetModListFromAPI = async () => {
         const count = await this.GetModCountFromAPI();
 
@@ -56,6 +82,7 @@ class ModManager {
                             sml_version,
                             dependencies {
                                 mod_id
+                                condition
                             }
                         }
                     }

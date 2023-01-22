@@ -989,7 +989,9 @@ exports.postSaves = async (req, res, next) => {
         return next(error);
     }
 
-    const theAgent = await Agent.findOne({ _id: data.inp_agentid });
+    const theAgent = await Agent.findOne({ _id: data.inp_agentid }).select(
+        "+messageQueue"
+    );
 
     const newFilePath = path.join(
         Config.get("ssm.uploadsdir"),
@@ -1159,8 +1161,8 @@ exports.postInstallMod = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = theAccount.agents.find(
-        (agent) => agent._id == inp_agentid
+    const theAgent = await Agent.findOne({ _id: inp_agentid }).select(
+        "+messageQueue"
     );
 
     const theMod = await ModModel.findOne({
@@ -1296,8 +1298,6 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
         error.httpStatusCode = 500;
         return next(error);
     }
-
-    console.log(notificationSettingId, data);
 
     const theNotificationSetting = await NotificationSettingsModel.findOne({
         _id: notificationSettingId,
