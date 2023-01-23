@@ -262,7 +262,12 @@ const CreateAccountUserRoles = async (theAccount) => {
             { permissionName: "user.update" },
             { permissionName: "userrole.create" },
             { permissionName: "userrole.update" },
+            { permissionName: "serveraction.start" },
+            { permissionName: "serveraction.stop" },
+            { permissionName: "serveraction.kill" },
             { permissionName: /server\./ },
+            { permissionName: /mods\./ },
+            { permissionName: /saves\./ },
         ],
     });
 

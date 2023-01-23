@@ -35,4 +35,9 @@ const userSchema = new Schema({
     },
 });
 
+userSchema.methods.HasPermission = async function (permissionName) {
+    await this.populate("role");
+    return this.role.HasPermission(permissionName);
+};
+
 module.exports = mongoose.model("User", userSchema);

@@ -19,4 +19,11 @@ const userRoleSchema = new Schema({
     },
 });
 
+userRoleSchema.methods.HasPermission = async function (permissionName) {
+    await this.populate("permissions");
+    return (
+        this.permissions.find((p) => p.permissionName == permissionName) != null
+    );
+};
+
 module.exports = mongoose.model("UserRole", userRoleSchema);

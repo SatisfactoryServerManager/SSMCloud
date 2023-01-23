@@ -35,6 +35,21 @@ exports.getDashboard = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.dashboard");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
     if (theAccount) {
         await theAccount.populate("agents");
@@ -90,6 +105,21 @@ exports.getServerAction = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission(`serveraction.${action}`);
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({
         users: req.session.user._id,
         agents: agentid,
@@ -141,6 +171,21 @@ exports.getServers = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.servers");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
     if (theAccount) {
         await theAccount.populate("agents");
@@ -181,6 +226,21 @@ exports.postServers = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.create");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({ users: req.session.user._id });
@@ -302,6 +362,21 @@ exports.getServer = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.server");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({
         users: req.session.user._id,
         agents: agentid,
@@ -356,6 +431,21 @@ exports.postServer = async (req, res, next) => {
         const error = new Error("Invalid Agent ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.update");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -422,6 +512,21 @@ exports.getServerDelete = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.delete");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({
         users: req.session.user._id,
         agents: agentid,
@@ -474,6 +579,21 @@ exports.getBackups = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.backups");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
     if (theAccount) {
         await theAccount.populate("agents");
@@ -522,6 +642,21 @@ exports.getDownloadBackup = async (req, res, next) => {
         return next(error);
     }
 
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("backup.download");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
 
     if (theAccount == null) {
@@ -562,6 +697,21 @@ exports.getAccount = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.account");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const protocol = req.protocol;
@@ -640,6 +790,21 @@ exports.postAccountUser = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("user.create");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -725,6 +890,21 @@ exports.postAccountApiKey = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("user.apikey.create");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({
         users: req.session.user._id,
     });
@@ -782,8 +962,6 @@ exports.postAccountApiKey = async (req, res, next) => {
         return res.status(422).render("dashboard/account", resData);
     }
 
-    let theUser = null;
-
     for (let i = 0; i < theAccount.users.length; i++) {
         const user = theAccount.users[i];
         if (user._id == data.inp_user) {
@@ -819,6 +997,21 @@ exports.getDeleteUser = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("user.delete");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -889,6 +1082,21 @@ exports.getDeleteUserInvite = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("user.delete");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({
         users: req.session.user._id,
     });
@@ -930,6 +1138,21 @@ exports.getSaves = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.saves");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({ users: req.session.user._id });
@@ -976,6 +1199,21 @@ exports.postSaves = async (req, res, next) => {
         const error = new Error("Invalid Agent ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("saves.upload");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -1049,6 +1287,21 @@ exports.getDownloadSave = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("saves.download");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
 
     if (theAccount == null) {
@@ -1100,6 +1353,21 @@ exports.getMods = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.mods");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
 
     let message = req.flash("success");
@@ -1146,6 +1414,21 @@ exports.postInstallMod = async (req, res, next) => {
         const error = new Error("Invalid Agent ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.mods.install");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -1199,6 +1482,21 @@ exports.getLogs = async (req, res, next) => {
         return next(error);
     }
 
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.logs");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
     const theAccount = await Account.findOne({ users: req.session.user._id });
 
     if (theAccount) {
@@ -1233,6 +1531,21 @@ exports.getNotifications = async (req, res, next) => {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.notifications");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theAccount = await Account.findOne({
@@ -1297,6 +1610,21 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
         const error = new Error("Invalid Notification Settings ID!");
         error.httpStatusCode = 500;
         return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("notifications.update");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
     }
 
     const theNotificationSetting = await NotificationSettingsModel.findOne({
