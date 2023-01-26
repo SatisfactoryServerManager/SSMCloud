@@ -447,6 +447,17 @@ exports.getMod = async (req, res, next) => {
     });
 };
 
+exports.postInstalledMods = async (req, res, next) => {
+    const AgentAPIKey = req.session.agentKey;
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    const mods = req.body.mods;
+
+    res.status(200).json({
+        success: true,
+    });
+};
+
 const GetLogFileData = async (LogFile) => {
     if (!fs.existsSync(LogFile)) {
         return;

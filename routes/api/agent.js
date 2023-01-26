@@ -39,4 +39,6 @@ router.get("/getsmlversions", isAgent, AgentController.getModsSMLVersions);
 
 router.get("/mod/:modReference", isAgent, AgentController.getMod);
 
+router.post("/mods", isAgent, AgentController.postInstalledMods);
+
 module.exports = router;
