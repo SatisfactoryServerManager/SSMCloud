@@ -453,6 +453,8 @@ exports.postInstalledMods = async (req, res, next) => {
 
     const mods = req.body.mods;
 
+    console.log(mods);
+
     res.status(200).json({
         success: true,
     });

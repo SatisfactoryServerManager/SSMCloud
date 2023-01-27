@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const MessageQueueItem = require("./messagequeueitem");
 const AgentBackup = require("./agent_backup");
 const AgentLogInfo = require("./agent_log_info");
+const AgentMod = require("./agent_mod");
 
 const Schema = mongoose.Schema;
 
@@ -85,6 +86,13 @@ const agentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "AgentLogInfo",
         },
+
+        installedMods: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "AgentMod",
+            },
+        ],
     },
     { minimize: false }
 );
