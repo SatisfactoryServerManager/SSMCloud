@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.22](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.21...v1.0.22) (2023-02-02)
+
+
+### Features
+
+* Agent Mods ([f59c58b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/f59c58b5bb8f8945f8c49ee6fb99686ee4564257))
+* Agent Mods endpoint ([7eeeee6](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/7eeeee64428001643df7cfd9bda15df172c8ecbc))
+* Get Latest Agent Version from GH ([bb8460f](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/bb8460fada7bd4d1ab17956c2b704c87ca8ea360))
+* RAB pages ([b271be7](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/b271be743618519298290a9e9f083bf342745cf2))
+
+
+### Docs
+
+* Docs Update ([b285df8](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/b285df8cc536001fe59f76b7650825b87d612d54))
+
 ### [1.0.21](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.20...v1.0.21) (2023-01-22)
 
 
