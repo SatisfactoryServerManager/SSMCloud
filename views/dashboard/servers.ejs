@@ -294,7 +294,7 @@
                                                 <%}%>
                                             </td>
                                             <%if(agent.config.version){%>
-                                            <td>v<%=agent.config.version%></td>
+                                            <td>v<%=agent.config.version%> / v<%=latestVersion%></td>
                                             <td><%=agent.config.sfBranch%></td>
                                             <td>
                                                 <%=agent.config.sfVersions.installed%>
@@ -303,7 +303,7 @@
                                                 <%=agent.config.sfVersions.available%>
                                             </td>
                                             <%}else{%>
-                                            <td>v0.0.0</td>
+                                            <td>v0.0.0 / v<%=latestVersion%></td>
                                             <td>public</td>
                                             <td>0</td>
                                             <td>0</td>

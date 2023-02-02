@@ -3,10 +3,14 @@ const MessageQueueItem = require("../models/messagequeueitem");
 
 const Logger = require("./server_logger");
 
+const { Octokit } = require("@octokit/rest");
+const semver = require("semver");
+
 class AgentHandler {
     init() {
         this.CheckAllAgentsLastOnline();
         this.PurgeMessageQueues();
+        this.GetMostRecentGHAgentVersion();
     }
 
     CheckAllAgentsLastOnline() {
@@ -62,8 +66,59 @@ class AgentHandler {
                     }
                 }
             }
+
+            await this.CheckAllAgentsNeedUpdate();
             Logger.info("[AgentHandler] - Completed Purging Message Queue");
         }, 30000);
+
+        setInterval(async () => {
+            await this.GetMostRecentGHAgentVersion();
+        }, 30 * 60 * 1000);
+    };
+
+    GetMostRecentGHAgentVersion = async () => {
+        try {
+            const octokit = new Octokit();
+
+            const releases = await octokit.repos.listReleases({
+                owner: "SatisfactoryServerManager",
+                repo: "SSMAgent",
+            });
+
+            const releaseData = releases.data;
+
+            if (releaseData.length == 0) return;
+
+            this._LatestAgentRelease = semver.clean(releaseData[0].tag_name);
+            console.log(this._LatestAgentRelease);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    CheckAllAgentsNeedUpdate = async () => {
+        const agents = await Agent.find().select("+messageQueue");
+
+        for (let i = 0; i < agents.length; i++) {
+            const agent = agents[i];
+
+            if (agent.config == null || agent.config.version == null) {
+                continue;
+            }
+
+            const agentVersion = semver.clean(agent.config.version);
+            const prevNeedUpdate = agent.needsUpdate;
+
+            if (semver.lt(agentVersion, this._LatestAgentRelease)) {
+                agent.needsUpdate = true;
+            } else {
+                agent.needsUpdate = false;
+            }
+
+            if (prevNeedUpdate != agent.needsUpdate) {
+                await agent.save();
+            }
+        }
     };
 }
 

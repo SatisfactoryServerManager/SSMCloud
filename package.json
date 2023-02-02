@@ -11,6 +11,7 @@
         "@electerm/strip-ansi": "^1.0.0",
         "@fortawesome/fontawesome-free": "^6.1.1",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",
+        "@octokit/rest": "^19.0.7",
         "archiver": "^5.3.1",
         "axios": "^1.2.3",
         "bcryptjs": "^2.4.3",
@@ -96,7 +97,6 @@
             "public/**/*",
             "scripts/**/*.sh",
             "docs/**/*",
-            "assets/**/*",
             "node_modules/**/*.node",
             "node_modules/jquery/dist/**/*",
             "node_modules/jquery-steps/build/**/*",
@@ -109,8 +109,7 @@
             "node_modules/exiftool-vendored/**/*",
             "node_modules/exiftool-vendored.pl/**/*",
             "node_modules/jquery-circle-progress/**/*",
-            "node_modules/axios/**/*",
-            "db_updates/**/*"
+            "node_modules/axios/**/*"
         ],
         "targets": [
             "node18"

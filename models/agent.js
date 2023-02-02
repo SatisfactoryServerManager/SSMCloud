@@ -93,6 +93,11 @@ const agentSchema = new Schema(
                 ref: "AgentMod",
             },
         ],
+
+        needsUpdate: {
+            type: Boolean,
+            default: false,
+        },
     },
     { minimize: false }
 );

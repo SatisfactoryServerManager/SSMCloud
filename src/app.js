@@ -195,6 +195,37 @@ function main() {
                 url: action,
                 enctype: "multipart/form-data",
                 data: data,
+            }).then(() => {
+                window.location = "/dashboard/notifications";
+            });
+
+            return true;
+        })
+        .on("submit", ".add-notification-form", (e) => {
+            e.preventDefault();
+
+            const $form = $(e.currentTarget);
+            const action = $form.attr("action");
+            var data = $form.serializeArray().reduce(function (obj, item) {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+
+            data.eventTypes = [];
+
+            const $PillWrapper = $form.find(".event-types-pills");
+            const $Pills = $PillWrapper.children();
+            $Pills.each((index, el) => {
+                const $el = $(el);
+                data.eventTypes.push($el.attr("data-event-type-id"));
+            });
+            $.ajax({
+                method: "post",
+                url: action,
+                enctype: "multipart/form-data",
+                data: data,
+            }).then(() => {
+                window.location = "/dashboard/notifications";
             });
 
             return true;

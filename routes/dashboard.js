@@ -163,4 +163,16 @@ router.post(
     dashboardController.postUpdateNotificationSettings
 );
 
+router.post(
+    "/dashboard/notifications/add",
+    isAuth,
+    dashboardController.postNewNotitifcationSettings
+);
+
+router.get(
+    "/dashboard/notifications/delete/:settingsId",
+    isAuth,
+    dashboardController.getDeleteNotificationSettings
+);
+
 module.exports = router;

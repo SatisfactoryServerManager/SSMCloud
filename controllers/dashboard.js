@@ -28,6 +28,8 @@ const AgentLogInfo = require("../models/agent_log_info");
 const NotificationEventTypeModel = require("../models/notification_event_type");
 const NotificationSettingsModel = require("../models/account_notification_setting");
 
+const AgentHandler = require("../server/server_agent_handler");
+
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -195,6 +197,7 @@ exports.getServers = async (req, res, next) => {
             pageTitle: "Servers",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
+            latestVersion: AgentHandler._LatestAgentRelease,
             errorMessage: "",
             newApiKey: "",
             oldInput: {
@@ -209,6 +212,7 @@ exports.getServers = async (req, res, next) => {
             pageTitle: "Servers",
             accountName: "",
             agents: [],
+            latestVersion: "",
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
             newApiKey: "",
@@ -253,6 +257,7 @@ exports.postServers = async (req, res, next) => {
                 pageTitle: "Servers",
                 accountName: theAccount.accountName,
                 agents: theAccount.agents,
+                latestVersion: AgentHandler._LatestAgentRelease,
                 errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
                 oldInput: {
@@ -274,6 +279,7 @@ exports.postServers = async (req, res, next) => {
                 pageTitle: "Servers",
                 accountName: "",
                 agents: theAccount.agents,
+                latestVersion: AgentHandler._LatestAgentRelease,
                 oldInput: {
                     inp_servername: req.body.inp_servername,
                     inp_serverport: req.body.inp_serverport,
@@ -323,6 +329,7 @@ exports.postServers = async (req, res, next) => {
             pageTitle: "Servers",
             accountName: "",
             agents: theAccount.agents,
+            latestVersion: AgentHandler._LatestAgentRelease,
             oldInput: {
                 inp_servername: req.body.inp_servername,
                 inp_serverport: req.body.inp_serverport,
@@ -337,6 +344,7 @@ exports.postServers = async (req, res, next) => {
             pageTitle: "Servers",
             accountName: "",
             agents: [],
+            latestVersion: "",
             oldInput: {
                 email: "",
                 password: "",
@@ -400,6 +408,7 @@ exports.getServer = async (req, res, next) => {
             pageTitle: `Server - ${theAgent.agentName}`,
             accountName: theAccount.accountName,
             agents: theAccount.agents,
+            latestVersion: AgentHandler._LatestAgentRelease,
             agent: theAgent,
             errorMessage: "",
         });
@@ -409,6 +418,7 @@ exports.getServer = async (req, res, next) => {
             pageTitle: "Server",
             accountName: "",
             agents: [],
+            latestVersion: "",
             agent: {},
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
@@ -1647,4 +1657,93 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
 
     await theNotificationSetting.save();
     res.status(200).json({});
+};
+
+exports.postNewNotitifcationSettings = async (req, res, next) => {
+    const data = req.body;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("notifications.update");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+    }).select("+notifications");
+
+    const eventTypes = await NotificationEventTypeModel.find({
+        _id: { $in: data.eventTypes },
+    });
+
+    const newNotificationSettings = await NotificationSettingsModel.create({
+        url: data.inp_url,
+        notificationType: data.sel_type.toLowerCase(),
+        eventTypes: eventTypes,
+    });
+
+    theAccount.notificationSettings.push(newNotificationSettings);
+    await theAccount.save();
+    res.status(200).json({});
+};
+
+exports.getDeleteNotificationSettings = async (req, res, next) => {
+    const notificationSettingId = req.params.settingsId;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(notificationSettingId)) {
+        const error = new Error("Invalid Notification Settings ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("notifications.update");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    await Account.updateOne(
+        {
+            users: req.session.user._id,
+        },
+        {
+            $pullAll: {
+                notificationSettings: [{ _id: notificationSettingId }],
+            },
+        }
+    );
+
+    await NotificationSettingsModel.deleteOne({ _id: notificationSettingId });
+
+    res.redirect("/dashboard/notifications");
 };

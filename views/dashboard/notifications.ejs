@@ -37,56 +37,60 @@
                                     <h5>Add New Notification</h5>
                                 </div>
                                 <div class="card-body">
+                                    <form action="/dashboard/notifications/add" method="post" class="add-notification-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                     <div class="row">
-                                                <div class="col-12 col-lg-6">
-                                                    <label for="sel_type" class="form-label">Notification Type:</label>
-                                                    <div class="input-group mb-2">
-                                                        <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
-                                                         <select name="sel_type" id="sel_type" class="form-select">
-                                                            <option >
-                                                            Webhook
-                                                            </option>
-                                                            <option >Discord</option>
-                                                            <option>Email</option>
-                                                        </select>
-                                                    </div>
-                                                    <label for="inp_url" class="form-label">Notification URL:</label>
-                                                     <div class="input-group mb-2">
-                                                        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
-                                                         <input class="form-control" type="text" name="inp_url" id="inp_url" value="">
-                                                     </div>
-                                                </div>
-                                                <div class="col-12 col-lg-6">
-                                                    <label class="form-label">Selected Event Types:</label>
-                                                    <div class="event-types-pills mb-3">
-                                                        
-                                                    </div>
-                                                    <hr>
-                                                    <label class="form-label">Add Event Types:</label>
-                                                     <div class="input-group mb-2">
-                                                        <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
-                                                        <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
-
-                                                            <%
-                                                                for(let i=0; i < eventTypes.length; i++){
-                                                                    const et = eventTypes[i];
-                                                                    %>
-                                                                        <option value="<%=et._id%>"><%=et.description%></option>
-                                                                    <%
-                                                                }
-                                                            %>
-
-
-                                                        </select>
-                                                         <button class="btn btn-success add-event-type">
-                                                            <i class="fas fa-plus" style="font-size:20px"></i>
-                                                         </button>
-                                                     </div>
-                                                </div>
+                                        <div class="col-12 col-lg-6">
+                                            <label for="sel_type" class="form-label">Notification Type:</label>
+                                            <div class="input-group mb-2">
+                                                <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
+                                                    <select name="sel_type" id="sel_type" class="form-select">
+                                                    <option >
+                                                    Webhook
+                                                    </option>
+                                                    <option >Discord</option>
+                                                    <option>Email</option>
+                                                </select>
                                             </div>
-                                            <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Notification Settings</button>
+                                            <label for="inp_url" class="form-label">Notification URL:</label>
+                                                <div class="input-group mb-2">
+                                                <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+                                                    <input class="form-control" type="text" name="inp_url" id="inp_url" value="">
+                                                </div>
+                                        </div>
+                                        <div class="col-12 col-lg-6">
+                                            <label class="form-label">Selected Event Types:</label>
+                                            <div class="event-types-pills mb-3">
+                                                
+                                            </div>
+                                            <hr>
+                                            <label class="form-label">Add Event Types:</label>
+                                                <div class="input-group mb-2">
+                                                <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
+                                                <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
+
+                                                    <%
+                                                        for(let i=0; i < eventTypes.length; i++){
+                                                            const et = eventTypes[i];
+                                                            %>
+                                                                <option value="<%=et._id%>"><%=et.description%></option>
+                                                            <%
+                                                        }
+                                                    %>
+
+
+                                                </select>
+                                                    <button class="btn btn-success add-event-type">
+                                                    <i class="fas fa-plus" style="font-size:20px"></i>
+                                                    </button>
+                                                </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Notification Settings</button>
+                                    </form>
                                 </div>
                             </div>
+                            
 
                             <div class="card mb-3">
                                 <div class="card-header">
@@ -154,6 +158,7 @@
                                                 </div>
                                             </div>
                                             <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Settings</button>
+                                            <a href="/dashboard/notifications/delete/<%=setting._id%>" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Settings</a>
                                         </form>
                                         <hr>
                                     <%})%>
