@@ -11,6 +11,10 @@ const agentModSchema = new Schema({
         type: String,
         default: "0.0.0",
     },
+    needsUpdate: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model("AgentMod", agentModSchema);

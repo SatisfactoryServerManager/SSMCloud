@@ -1,6 +1,8 @@
 const { request } = require("graphql-request");
 
 const ModModel = require("../models/mod");
+const AgentModModel = require("../models/agent_mod");
+const semver = require("semver");
 
 class ModManager {
     constructor() {
@@ -9,7 +11,12 @@ class ModManager {
     }
 
     init = async () => {
+        await this.CheckAgentsMods();
         await this.UpdateModsInDB();
+
+        setInterval(async () => {
+            await this.CheckAgentsMods();
+        }, 5 * 60 * 1000);
     };
 
     GetModCountFromAPI = async () => {
@@ -146,6 +153,33 @@ class ModManager {
                 logoUrl: mod.logo,
                 versions: mod.versions,
             });
+        }
+    };
+
+    CheckAgentsMods = async () => {
+        const mods = await AgentModModel.find({});
+
+        for (let i = 0; i < mods.length; i++) {
+            const mod = mods[i];
+            await mod.populate("mod");
+
+            let satifiesAllVersions = true;
+
+            for (let j = 0; j < mod.mod.versions.length; j++) {
+                const modVersion = mod.mod.versions[j];
+
+                if (semver.lt(mod.version, modVersion.version)) {
+                    satifiesAllVersions = false;
+                }
+            }
+
+            if (satifiesAllVersions == false) {
+                mod.needsUpdate = true;
+            } else {
+                mod.needsUpdate = false;
+            }
+
+            await mod.save();
         }
     };
 }

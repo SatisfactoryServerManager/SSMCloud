@@ -90,7 +90,6 @@ class AgentHandler {
             if (releaseData.length == 0) return;
 
             this._LatestAgentRelease = semver.clean(releaseData[0].tag_name);
-            console.log(this._LatestAgentRelease);
         } catch (err) {
             console.log(err);
         }

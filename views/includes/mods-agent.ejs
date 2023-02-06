@@ -4,8 +4,9 @@
             <h5><%=agent.agentName%> - Mods</h5>
         </div>
         <div class="card-body">
+            <%const installedModsCount = agent.installedMods.length;%>
             <%- include('../includes/status-info-card.ejs',{ClassColour:"blue", ClassID:"status",Title:"SML Version", Data:"v0.0.0",Icon:"fa-wrench"}) %>
-            <%- include('../includes/status-info-card.ejs',{ClassColour:"green", ClassID:"status",Title:"Installed Mods", Data:0,Icon:"fa-pencil-ruler"}) %>
+            <%- include('../includes/status-info-card.ejs',{ClassColour:"green", ClassID:"status",Title:"Installed Mods", Data:installedModsCount,Icon:"fa-pencil-ruler"}) %>
 
             <div class="card border-secondary mb-3">
                 <div class="card-header">
@@ -57,8 +58,23 @@
                                 <th>Version</th>
                                 <th width="80px">Options</th>
                             </tr>
+                            
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <%agent.installedMods.forEach(mod=>{%>
+                                <tr>
+                                    <td><%=mod.mod.modName%></td>
+                                    <td><%=mod.version%></td>
+                                    <td>
+                                        <%if(mod.needsUpdate){%>
+                                            <button class="btn btn-warning"><i class="fas fa-upload"></i></button>
+                                        <%}%>
+
+
+                                    </td>
+                                </tr>
+                            <%})%>
+                        </tbody>
                     </table>
                 </div>
 

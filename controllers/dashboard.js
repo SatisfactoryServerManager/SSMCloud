@@ -1386,6 +1386,17 @@ exports.getMods = async (req, res, next) => {
     if (theAccount) {
         await theAccount.populate("agents");
 
+        for (let i = 0; i < theAccount.agents.length; i++) {
+            const agent = theAccount.agents[i];
+
+            await agent.populate("installedMods");
+
+            for (let j = 0; j < agent.installedMods.length; j++) {
+                const mod = agent.installedMods[j];
+                await mod.populate("mod");
+            }
+        }
+
         const mods = await ModModel.find().sort({ modName: 1 });
 
         res.render("dashboard/mods", {
