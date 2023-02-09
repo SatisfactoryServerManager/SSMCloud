@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.27](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.26...v1.0.27) (2023-02-09)
+
+
+### Bug Fixes
+
+* Fixed stale message queue items ([9a9ceb5](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/9a9ceb58baa79bf82f7847fae7e100a52a17d87b))
+
 ### [1.0.26](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.25...v1.0.26) (2023-02-09)
 
 
