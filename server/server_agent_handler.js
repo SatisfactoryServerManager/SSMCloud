@@ -58,7 +58,19 @@ class AgentHandler {
                 for (let j = 0; j < agent.messageQueue.length; j++) {
                     const message = agent.messageQueue[j];
 
-                    if (message.completed || message.retries == 10) {
+                    let dauDiff = 10;
+                    if (message.created != null) {
+                        var t2 = new Date().getTime();
+                        var t1 = message.created.getTime();
+
+                        dayDiff = Math.floor((t2 - t1) / (24 * 3600 * 1000));
+                    }
+
+                    if (
+                        message.completed ||
+                        message.retries == 10 ||
+                        dayDiff > 5
+                    ) {
                         await MessageQueueItem.deleteOne({ _id: message._id });
                         agent.messageQueue.splice(j, 1);
                         await agent.save();
