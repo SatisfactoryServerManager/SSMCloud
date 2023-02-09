@@ -58,7 +58,7 @@ class AgentHandler {
                 for (let j = 0; j < agent.messageQueue.length; j++) {
                     const message = agent.messageQueue[j];
 
-                    let dauDiff = 10;
+                    let dayDiff = 10;
                     if (message.created != null) {
                         var t2 = new Date().getTime();
                         var t1 = message.created.getTime();
