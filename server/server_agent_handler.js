@@ -79,6 +79,22 @@ class AgentHandler {
                 }
             }
 
+            var cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - 5);
+
+            const staleItems = await MessageQueueItem.find({
+                $or: [
+                    { completed: true },
+                    { retries: 10 },
+                    { created: { $lt: cutoff } },
+                ],
+            });
+
+            for (let i = 0; i < staleItems.length; i++) {
+                const message = staleItems[i];
+                await MessageQueueItem.deleteOne({ _id: message._id });
+            }
+
             await this.CheckAllAgentsNeedUpdate();
             Logger.info("[AgentHandler] - Completed Purging Message Queue");
         }, 30000);
