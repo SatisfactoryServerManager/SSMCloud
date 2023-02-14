@@ -2,19 +2,6 @@
 
 export DEBIAN_FRONTEND=noninteractive
 
-clear;
-
-echo "#-----------------------------#"
-echo "#      _____ _____ __  __     #"
-echo "#     / ____/ ____|  \/  |    #"
-echo "#    | (___| (___ | \  / |    #"
-echo "#     \___ \\\\___ \| |\/| |    #"
-echo "#     ____) |___) | |  | |    #"
-echo "#    |_____/_____/|_|  |_|    #"
-echo "#-----------------------------#"
-echo "# Satisfactory Server Manager #"
-echo "#-----------------------------#"
-
 #Colors settings
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
@@ -53,6 +40,22 @@ while [[ $# -gt 0 ]]; do
         ;;
     esac
 done
+
+if [ $QUIET -eq 0 ]; then
+    clear;
+
+    echo "#-----------------------------#"
+    echo "#      _____ _____ __  __     #"
+    echo "#     / ____/ ____|  \/  |    #"
+    echo "#    | (___| (___ | \  / |    #"
+    echo "#     \___ \\\\___ \| |\/| |    #"
+    echo "#     ____) |___) | |  | |    #"
+    echo "#    |_____/_____/|_|  |_|    #"
+    echo "#-----------------------------#"
+    echo "# Satisfactory Server Manager #"
+    echo "#-----------------------------#"
+
+fi
 
 
 if [ ! "${PLATFORM}" == "Linux" ]; then
