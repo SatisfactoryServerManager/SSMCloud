@@ -6,6 +6,7 @@ const UserInvites = require("./user_invite");
 const ApiKey = require("./apikey");
 const AccountNotificationSetting = require("./account_notification_setting");
 const Notification = require("./notification");
+const AccountEvent = require("./account_event");
 
 const Schema = mongoose.Schema;
 
@@ -60,6 +61,23 @@ const accountSchema = new Schema({
         ],
         select: false,
     },
+    events: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "AccountEvent",
+        },
+    ],
 });
+
+accountSchema.methods.CreateEvent = async function (type, message, importance) {
+    const newEvent = await AccountEvent.create({
+        eventType: type,
+        eventMessage: message,
+        importance: importance,
+    });
+
+    this.events.push(newEvent);
+    await this.save();
+};
 
 module.exports = mongoose.model("Account", accountSchema);

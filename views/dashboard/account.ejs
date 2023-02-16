@@ -1,48 +1,116 @@
 <%- include('../includes/head-main.ejs') %>
 
 <body>
-    <div id="viewport" class="minimal">
-        <%- include('../includes/navigation.ejs') %>
-        <div id="content">
-            <div class="container-fluid">
-                <!-- BODY -->
-                <div class="page-container" data-page="dashboard">
-                    <div class="row page-header">
-                        <div class="col-12 col-md-9">
-                            <h3 class="mb-3">Account - <%=accountName%></h3>
-                        </div>
+  <div id="viewport" class="minimal">
+    <%- include('../includes/navigation.ejs') %>
+    <div id="content">
+      <div class="container-fluid">
+        <!-- BODY -->
+        <div class="page-container" data-page="dashboard">
+          <div class="row page-header">
+            <div class="col-12 col-md-9">
+              <h3 class="mb-3">Account - <%=accountName%></h3>
+            </div>
 
-                        <div class="col-12 col-md-3">
-                            <div class="status-info-card blue">
-                                <div class="status-info-card-main">
-                                    Servers:
-                                </div>
-                                <div class="status-info-card-secondary">
-                                    <span id="server-count"
-                                        ><%= agents.length %></span
-                                    >
-                                </div>
-                                <div class="status-info-card-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-lg-6">
-                            <div class="card border-secondary mb-3 shadow">
-                                <div class="card-header">
-                                    <h5>API Keys</h5>
-                                </div>
-                                <div class="card-body">
+            <div class="col-12 col-md-3">
+              <div class="status-info-card blue">
+                <div class="status-info-card-main">
+                  Servers:
+                </div>
+                <div class="status-info-card-secondary">
+                  <span id="server-count"><%= agents.length %></span>
+                </div>
+                <div class="status-info-card-icon">
+                  <i class="fas fa-server"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="card border-secondary mb-3">
+                <div class="card-header">
+                  <h5>Account Events</h5>
+                </div>
+                <div class="card-body">
+                  <table class="table table-bordered" id="account-events-table">
+                    <thead>
+                      <tr>
+                        <th width="150px">Event Date</th>
+                        <th width="100px">Event Type</th>
+                        <th>Event Message</th>
+                        <th width="80px">Options</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <%
+                    Number.prototype.pad = function (width, z) {
+                        let n = this;
+                        z = z || "0";
+                        n = n + "";
+                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                    };
 
-                                    <%if(locals.apikeyErrorMessage){%>
-                                        <div class="alert alert-danger"><%=apikeyErrorMessage%></div>
-                                    <%}%>
+                    Date.prototype.getMonthName = function () {
+                        const monthNames = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                        ];
+                        return monthNames[this.getMonth()];
+                    };%>
+
+                      <%events.forEach(event=>{%>
+                      <%
+                        const date = new Date(event.eventDate);
+                        const day = date.getDate()
+                        const month = date.getMonthName();
+                        const year = date.getFullYear();
+                
+                        const hour = date.getHours().pad(2)
+                        const min = date.getMinutes().pad(2)
+                        const sec = date.getSeconds().pad(2)
+                
+                        const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
+                        
+                        %>
+                      <tr>
+                        <td><%=dateStr%></td>
+                        <td><%=event.eventType%></td>
+                        <td><%=event.eventMessage%></td>
+                        <td></td>
+                      </tr>
+                      <%})%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-lg-6">
+              <div class="card border-secondary mb-3 shadow">
+                <div class="card-header">
+                  <h5>API Keys</h5>
+                </div>
+                <div class="card-body">
+
+                  <%if(locals.apikeyErrorMessage){%>
+                  <div class="alert alert-danger"><%=apikeyErrorMessage%></div>
+                  <%}%>
 
                                      <%if(locals.apikeySuccessMessage){%>
-                                        <div class="alert alert-success"><%=apikeySuccessMessage%></div>
-                                    <%}%>
+                  <div class="alert alert-success"><%=apikeySuccessMessage%></div>
+                  <%}%>
 
                                      <form
                                         action="/dashboard/account/apikey"
@@ -52,93 +120,69 @@
                                             type="hidden"
                                             name="_csrf"
                                             value="<%= csrfToken %>"
-                                        />
-                                        <div class="input-group mb-3">
-                                            <span
-                                                class="input-group-text"
-                                                id="basic-addon1"
-                                                ><i
-                                                    class="fas fa-user"
-                                                ></i
-                                            ></span>
-                                            <select
-                                                name="inp_user"
-                                                id=""
-                                                class="form-select"
-                                                placeholder="User"
-                                            >
-                                                <% users.forEach(user => { %>
-                                                <%if(user.active){%>
-                                                <option
-                                                    value="<%=user._id%>"
-                                                >
-                                                    <%=user.email%>
-                                                </option>
-                                                <%}})%>
-                                            </select>
-                                            <button
-                                        id="btn-addapikey"
-                                        class="btn btn-primary"
-                                    >
-                                        <i class="fas fa-plus"></i> Add API Key
-                                    </button>
-                                        </div>
-                                     
-                                    </form>
+                  />
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                    <select name="inp_user" id="" class="form-select" placeholder="User">
+                      <% users.forEach(user => { %>
+                      <%if(user.active){%>
+                      <option value="<%=user._id%>">
+                        <%=user.email%>
+                      </option>
+                      <%}})%>
+                    </select>
+                    <button id="btn-addapikey" class="btn btn-primary">
+                      <i class="fas fa-plus"></i> Add API Key
+                    </button>
+                  </div>
+
+                  </form>
 
 
-                                    <table
-                                        class="table table-bordered"
-                                        id="apikeys-table"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th >User</th>
-                                                <th width="140px">API Key</th>
-                                                <th width="60px">Options</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                             <% apiKeys.forEach(key => { %>
-                                                <%if(key.user.active){%>
-                                                <tr>
-                                                    <td><%=key.user.email%></td>
+                  <table class="table table-bordered" id="apikeys-table">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th width="140px">API Key</th>
+                        <th width="60px">Options</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% apiKeys.forEach(key => { %>
+                      <%if(key.user.active){%>
+                      <tr>
+                        <td><%=key.user.email%></td>
 
-                                                    <%
+                        <%
                                                         let apiKeyData = key.key.split("-")
                                                         const keyPart = apiKeyData[1];
                                                         const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
                                                         const shortenedKey = `${apiKeyData[0]} - XXXX${shortenedKeyPart}`
                                                     %>
 
-                                                    <td><%=shortenedKey%></td>
-                                                    <td>
-                                                        <a
-                                                            href="/dashboard/account/deleteapikey/<%=key._id%>"
-                                                            class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation"
-                                                        >
-                                                            <i
-                                                                class="fas fa-trash"
-                                                            ></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                <%}})%>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6">
-                            <div class="card border-secondary mb-3 shadow">
-                                <div class="card-header">
-                                    <h5>User Invites</h5>
-                                </div>
-                                <div class="card-body">
-                                    <%if(inviteErrorMessage != null){%>
-                                        <div class="alert alert-danger"><%=inviteErrorMessage%></div>
+                        <td><%=shortenedKey%></td>
+                        <td>
+                          <a href="/dashboard/account/deleteapikey/<%=key._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation">
+                            <i class="fas fa-trash"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <%}})%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="card border-secondary mb-3 shadow">
+                <div class="card-header">
+                  <h5>User Invites</h5>
+                </div>
+                <div class="card-body">
+                  <%if(inviteErrorMessage != null){%>
+                  <div class="alert alert-danger"><%=inviteErrorMessage%></div>
 
-                                    <%}%>
+                  <%}%>
                                     <table
                                         class="table table-bordered"
                                         id="invites-table"
@@ -152,29 +196,22 @@
                                         </thead>
                                         <tbody>
                                             <% if(userInvites.length > 0){ %>
-                                            <% userInvites.forEach(invite => { %>
-                                            <%if(invite.claimed) return;%>
-                                            <%if(invite.user == null) return;%>
-                                            <tr>
-                                                <td><%=invite.user.email%></td>
-                                                <td>
-                                                    <a
-                                                        href="<%=inviteUrl%>/<%=invite._id%>"
-                                                    > Invite Link</a>
-                                                </td>
-                                                <td>
-                                                    <a
-                                                        href="/dashboard/account/deleteinvite/<%=invite._id%>"
-                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation"
-                                                    >
-                                                        <i
-                                                            class="fas fa-trash"
-                                                        ></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <%})%> 
-                                            <%}%>
+                  <% userInvites.forEach(invite => { %>
+                  <%if(invite.claimed) return;%>
+                  <%if(invite.user == null) return;%>
+                  <tr>
+                    <td><%=invite.user.email%></td>
+                    <td>
+                      <a href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
+                    </td>
+                    <td>
+                      <a href="/dashboard/account/deleteinvite/<%=invite._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <%})%>
+                  <%}%>
                                         </tbody>
                                     </table>
                                 </div>
@@ -189,9 +226,9 @@
                                 </div>
                                 <div class="card-body">
                                     <%if(userErrorMessage!=null){%>
-                                        <div class="alert alert-danger"><%=userErrorMessage%></div>
+                  <div class="alert alert-danger"><%=userErrorMessage%></div>
 
-                                    <%}%>
+                  <%}%>
                                     <form
                                         action="/dashboard/account/user"
                                         method="post"
@@ -200,94 +237,57 @@
                                             type="hidden"
                                             name="_csrf"
                                             value="<%= csrfToken %>"
-                                        />
+                  />
 
-                                        <div class="row">
-                                            <div class="col-12 col-md-6">
-                                                <div class="input-group mb-3">
-                                                    <span
-                                                        class="input-group-text"
-                                                        id="basic-addon1"
-                                                        ><i
-                                                            class="fas fa-at"
-                                                        ></i
-                                                    ></span>
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="inp_useremail"
-                                                        placeholder="Email Address"
-                                                        aria-label="Email Address"
-                                                        aria-describedby="basic-addon1"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-6">
-                                                <div class="input-group mb-3">
-                                                    <span
-                                                        class="input-group-text"
-                                                        id="basic-addon1"
-                                                        ><i
-                                                            class="fas fa-user-group"
-                                                        ></i
-                                                    ></span>
-                                                    <select
-                                                        name="inp_userrole"
-                                                        id=""
-                                                        class="form-select"
-                                                        placeholder="User Role"
-                                                    >
-                                                        <% userRoles.forEach(role => { %>
-                                                        <option
-                                                            value="<%=role._id%>"
-                                                        >
-                                                            <%=role.roleName%>
-                                                        </option>
-                                                        <%})%>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button
-                                            id="btn-adduser"
-                                            class="btn btn-primary"
-                                        >
-                                            <i class="fas fa-plus"></i> Add User
-                                        </button>
-                                    </form>
+                  <div class="row">
+                    <div class="col-12 col-md-6">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
+                        <input type="text" class="form-control" name="inp_useremail" placeholder="Email Address" aria-label="Email Address" aria-describedby="basic-addon1" />
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-group"></i></span>
+                        <select name="inp_userrole" id="" class="form-select" placeholder="User Role">
+                          <% userRoles.forEach(role => { %>
+                          <option value="<%=role._id%>">
+                            <%=role.roleName%>
+                          </option>
+                          <%})%>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <button id="btn-adduser" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add User
+                  </button>
+                  </form>
 
-                                    <hr />
+                  <hr />
 
-                                    <table
-                                        class="table table-bordered"
-                                        id="users-table"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th>Email</th>
-                                                <th>Role</th>
-                                                <th width="60px">Options</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% if(users.length > 0){ %> <%
+                  <table class="table table-bordered" id="users-table">
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th width="60px">Options</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if(users.length > 0){ %> <%
                                             users.forEach(user => { %>
-                                             <%if(user.active){%>
-                                            <tr>
-                                                <td><%=user.email%></td>
-                                                <td><%=user.role.roleName%></td>
-                                                <td>
-                                                    <a
-                                                        href="/dashboard/account/deleteuser/<%=user._id%>"
-                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation"
-                                                    >
-                                                        <i
-                                                            class="fas fa-trash"
-                                                        ></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <%}})%> <%}%>
+                      <%if(user.active){%>
+                      <tr>
+                        <td><%=user.email%></td>
+                        <td><%=user.role.roleName%></td>
+                        <td>
+                          <a href="/dashboard/account/deleteuser/<%=user._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
+                            <i class="fas fa-trash"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <%}})%> <%}%>
                                         </tbody>
                                     </table>
                                 </div>
@@ -321,22 +321,17 @@
                                         <tbody>
                                             <% if(userRoles.length > 0){ %> <%
                                             userRoles.forEach(role => { %>
-                                            <tr>
-                                                <td><%=role.roleName%></td>
-                                                <td>
-                                                    <%=role.permissions.length%>
-                                                </td>
-                                                <td>
-                                                    <%if(role.canEdit){%>
-                                                    <a
-                                                        href="/dashboard/account/deleteuserrole/<%=role._id%>"
-                                                        class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation"
-                                                    >
-                                                        <i
-                                                            class="fas fa-trash"
-                                                        ></i>
-                                                    </a>
-                                                    <%}%>
+                      <tr>
+                        <td><%=role.roleName%></td>
+                        <td>
+                          <%=role.permissions.length%>
+                        </td>
+                        <td>
+                          <%if(role.canEdit){%>
+                          <a href="/dashboard/account/deleteuserrole/<%=role._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
+                            <i class="fas fa-trash"></i>
+                          </a>
+                          <%}%>
                                                 </td>
                                             </tr>
                                             <%})%> <%}%>
@@ -346,41 +341,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card border-secondary mb-3">
-                                <div class="card-header">
-                                    <button
-                                        id="btn-generatedebug"
-                                        class="btn btn-primary float-end"
-                                    >
-                                        <i class="fas fa-plus"></i> Generate
-                                        Debug Report
-                                    </button>
-                                    <h5>Debug Reports</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table
-                                        class="table table-bordered"
-                                        id="debugreports-table"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th width="100px">Debug ID</th>
-                                                <th>Date Generated</th>
-                                                <th width="80px">Options</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <%- include('../includes/footer-main.ejs') %>
-        </div>
-    </div>
+                </div>
+              </div>
 </body>

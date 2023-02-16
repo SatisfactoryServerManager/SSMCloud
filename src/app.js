@@ -69,7 +69,7 @@ function main() {
         $("#roles-table").DataTable();
         $("#invites-table").DataTable();
         $("#apikeys-table").DataTable();
-        $("#webhooks-table").DataTable();
+        $("#account-events-table").DataTable();
     }
 
     if ($(".mods-table").length > 0) {

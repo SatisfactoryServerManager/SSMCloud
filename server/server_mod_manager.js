@@ -2,6 +2,9 @@ const { request } = require("graphql-request");
 
 const ModModel = require("../models/mod");
 const AgentModModel = require("../models/agent_mod");
+const AgentModel = require("../models/agent");
+const Account = require("../models/account");
+
 const semver = require("semver");
 
 class ModManager {
@@ -165,6 +168,10 @@ class ModManager {
 
             let satifiesAllVersions = true;
 
+            if (mod.mod.versions.length == 0) {
+                continue;
+            }
+
             for (let j = 0; j < mod.mod.versions.length; j++) {
                 const modVersion = mod.mod.versions[j];
 
@@ -173,13 +180,32 @@ class ModManager {
                 }
             }
 
+            const prevNeedUpdate = mod.needsUpdate;
             if (satifiesAllVersions == false) {
                 mod.needsUpdate = true;
             } else {
                 mod.needsUpdate = false;
             }
 
-            await mod.save();
+            if (prevNeedUpdate != mod.needsUpdate) {
+                const theAgent = await AgentModel.findOne({
+                    installedMods: mod,
+                });
+                if (theAgent) {
+                    const theAccount = await Account.findOne({
+                        agents: theAgent,
+                    });
+                    if (theAccount) {
+                        await theAccount.CreateEvent(
+                            "AGENT",
+                            `Mod (${mod.mod.modName}) requires updating on Agent: ${theAgent.agentName}. Current Version: ${mod.version}, Latest Version: ${mod.mod.versions[0].version}`,
+                            5
+                        );
+                    }
+                }
+
+                await mod.save();
+            }
         }
     };
 }

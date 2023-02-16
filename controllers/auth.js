@@ -15,7 +15,22 @@ const QRCode = require("qrcode");
 
 const { authenticator } = require("otplib");
 
-exports.getLogout = (req, res) => {
+exports.getLogout = async (req, res) => {
+    const ip =
+        req.headers["X-Real-IP"] ||
+        req.headers["X-Fowarded-For"] ||
+        req.socket.remoteAddress;
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+    if (theAccount) {
+        await theAccount.CreateEvent(
+            "AUTH",
+            `Log out Successful for user: [${theUser.email}] with ip: [${ip}]`,
+            0
+        );
+    }
+
     req.session.destroy((err) => {
         if (err) {
             console.log(err);
@@ -96,11 +111,37 @@ exports.postLogin = async (req, res, next) => {
             });
         }
 
+        const theAccount = await Account.findOne({ users: user });
+
+        if (theAccount == null) {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Log In",
+                errorMessage: "Cant find account information!",
+                oldInput: {
+                    email,
+                    password,
+                },
+                validationErrors: [],
+            });
+        }
+
+        const ip =
+            req.headers["X-Real-IP"] ||
+            req.headers["X-Fowarded-For"] ||
+            req.socket.remoteAddress;
+
+        await theAccount.CreateEvent(
+            "AUTH",
+            `Login Attempt for user: [${user.email}] with ip: [${ip}]`,
+            0
+        );
+
         const doMatch = await bcrypt.compare(password, user.password);
 
         if (doMatch) {
             req.session.user = user;
-            return req.session.save((err) => {
+            return req.session.save(async (err) => {
                 if (err) {
                     console.log(err);
                 }
@@ -112,6 +153,11 @@ exports.postLogin = async (req, res, next) => {
                 }
             });
         } else {
+            await theAccount.CreateEvent(
+                "AUTH",
+                `Login FAILED for user: [${user.email}] with ip: [${ip}]`,
+                5
+            );
             return res.status(422).render("auth/login", {
                 path: "/login",
                 pageTitle: "Log In",
@@ -388,6 +434,23 @@ exports.post2FAValidate = async (req, res, next) => {
         console.log("ERROR: 2fa failed Verify", secret);
         return res.redirect("/2fa/validate");
     }
+
+    const theAccount = await Account.findOne({ users: user });
+
+    if (theAccount == null) {
+        return res.redirect("/2fa/validate");
+    }
+
+    const ip =
+        req.headers["X-Real-IP"] ||
+        req.headers["X-Fowarded-For"] ||
+        req.socket.remoteAddress;
+
+    await theAccount.CreateEvent(
+        "AUTH",
+        `Login Successful for user: [${user.email}] with ip: [${ip}]`,
+        0
+    );
 
     req.session.isLoggedIn = true;
 

@@ -320,6 +320,7 @@ exports.getAccount = async (req, res, next) => {
         await theAccount.populate("users");
         await theAccount.populate("userInvites");
         await theAccount.populate("apiKeys");
+        await theAccount.populate("events");
 
         const AllPermissions = await Permission.find();
 
@@ -347,6 +348,7 @@ exports.getAccount = async (req, res, next) => {
             userRoles: theAccount.userRoles,
             userInvites: theAccount.userInvites,
             apiKeys: theAccount.apiKeys,
+            events: theAccount.events,
             permissions: AllPermissions,
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
@@ -366,6 +368,7 @@ exports.getAccount = async (req, res, next) => {
             permissions: [],
             userInvites: [],
             apiKeys: [],
+            events: [],
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,

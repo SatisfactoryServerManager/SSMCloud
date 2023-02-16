@@ -1,5 +1,6 @@
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
+const Account = require("../models/account");
 
 const Logger = require("./server_logger");
 
@@ -143,6 +144,14 @@ class AgentHandler {
             }
 
             if (prevNeedUpdate != agent.needsUpdate) {
+                const theAccount = await Account.findOne({ agents: agent });
+                if (theAccount) {
+                    await theAccount.CreateEvent(
+                        "AGENT",
+                        `Agent (${agent.agentName}) requires updating. Current Version: ${agentVersion}, Latest Version: ${this._LatestAgentRelease}`,
+                        5
+                    );
+                }
                 await agent.save();
             }
         }
