@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.30](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.29...v1.0.30) (2023-02-16)
+
+
+### Features
+
+* Account Events ([bbc3208](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/bbc32086d1c337bc393df2bd8700fe501e0c9cd2))
+* Update Mod Button now works ([88a3939](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/88a3939ef54c8a6f1335e4f240e8edd3ee4f5a31))
+
 ### [1.0.29](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.28...v1.0.29) (2023-02-16)
 
 
