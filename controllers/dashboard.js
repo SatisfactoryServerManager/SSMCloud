@@ -21,6 +21,7 @@ const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
 const AgentBackup = require("../models/agent_backup");
+const AgentModModel = require("../models/agent_mod");
 const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
@@ -1075,6 +1076,91 @@ exports.postInstallMod = async (req, res, next) => {
         agentId: inp_agentid,
         message:
             "Install Mod Request has been sent and will be installed in the background.",
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+
+    res.redirect("/dashboard/mods");
+};
+
+exports.getUpdateMod = async (req, res, next) => {
+    const agentModId = req.params.agentModId;
+    const agentId = req.params.agentId;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.mods.update");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    const theAgentMod = await AgentModModel.findOne({ _id: agentModId });
+
+    if (theAgentMod == null) {
+        const error = new Error("The Agent doesn't have this mod installed!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAgentMod.populate("mod");
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+        agents: agentId,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("agents");
+
+    const theAgent = await Agent.findOne({ _id: agentId }).select(
+        "+messageQueue"
+    );
+
+    if (theAgentMod.mod.versions.length <= 0) {
+        const error = new Error("No mod versions found!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const latestVersion = theAgentMod.mod.versions[0];
+
+    const message = await MessageQueueItem.create({
+        action: "updatemod",
+        data: {
+            modId: theAgentMod.mod.modId,
+            modVersion: latestVersion.version,
+            modInfo: theAgentMod.mod.toJSON(),
+        },
+    });
+
+    console.log(message);
+
+    theAgent.messageQueue.push(message);
+    await theAgent.save();
+
+    const successMessageData = {
+        agentId: agentId,
+        message:
+            "Update Mod Request has been sent and will be installed in the background.",
     };
 
     req.flash("success", JSON.stringify(successMessageData));

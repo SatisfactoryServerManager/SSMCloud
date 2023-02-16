@@ -4,38 +4,62 @@
             <h5><%=agent.agentName%> - Mods</h5>
         </div>
         <div class="card-body">
-            <%const installedModsCount = agent.installedMods.length;%>
-            <%- include('../includes/status-info-card.ejs',{ClassColour:"blue", ClassID:"status",Title:"SML Version", Data:"v0.0.0",Icon:"fa-wrench"}) %>
-            <%- include('../includes/status-info-card.ejs',{ClassColour:"green", ClassID:"status",Title:"Installed Mods", Data:installedModsCount,Icon:"fa-pencil-ruler"}) %>
+            <%const installedModsCount = agent.installedMods.length;%> <%-
+            include('../includes/status-info-card.ejs',{ClassColour:"blue",
+            ClassID:"status",Title:"SML Version",
+            Data:"v0.0.0",Icon:"fa-wrench"}) %> <%-
+            include('../includes/status-info-card.ejs',{ClassColour:"green",
+            ClassID:"status",Title:"Installed Mods",
+            Data:installedModsCount,Icon:"fa-pencil-ruler"}) %>
 
             <div class="card border-secondary mb-3">
                 <div class="card-header">
                     <h5>Install Mods</h5>
                 </div>
                 <div class="card-body">
-                        
-                    <% if(locals.message){
-                        const messageData = JSON.parse(message);
-                        if(messageData.agentId == agent._id){%>
-                        <div class="alert alert-success">
-                            <%=messageData.message%>
-                        </div>
+                    <% if(locals.message){ const messageData =
+                    JSON.parse(message); if(messageData.agentId == agent._id){%>
+                    <div class="alert alert-success">
+                        <%=messageData.message%>
+                    </div>
                     <%}}%>
                     <form action="/dashboard/mods/installmod" method="post">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                        <input type="hidden" name="inp_agentid" value="<%=agent._id%>">
+                        <input
+                            type="hidden"
+                            name="_csrf"
+                            value="<%= csrfToken %>"
+                        />
+                        <input
+                            type="hidden"
+                            name="inp_agentid"
+                            value="<%=agent._id%>"
+                        />
                         <div class="form-group">
-                            <label for="inp_modid" class="form-label">Select Mod:</label>
-                            <select name="inp_modid" id="inp_modid" class="form-select inp_modid">
+                            <label for="inp_modid" class="form-label"
+                                >Select Mod:</label
+                            >
+                            <select
+                                name="inp_modid"
+                                id="inp_modid"
+                                class="form-select inp_modid"
+                            >
                                 <option value="">Select Mod</option>
                                 <%mods.forEach(mod=>{%>
-                                    <option value="<%=mod.modId%>"><%=mod.modName%></option>
+                                <option value="<%=mod.modId%>">
+                                    <%=mod.modName%>
+                                </option>
                                 <%})%>
                             </select>
                         </div>
                         <div class="form-group mt-2">
-                            <label for="inp_modversion" class="form-label">Select Version:</label>
-                            <select name="inp_modversion" id="inp_modversion" class="form-select inp_modversion">
+                            <label for="inp_modversion" class="form-label"
+                                >Select Version:</label
+                            >
+                            <select
+                                name="inp_modversion"
+                                id="inp_modversion"
+                                class="form-select inp_modversion"
+                            >
                                 <option value="">Select Version</option>
                             </select>
                         </div>
@@ -58,29 +82,27 @@
                                 <th>Version</th>
                                 <th width="80px">Options</th>
                             </tr>
-                            
                         </thead>
                         <tbody>
                             <%agent.installedMods.forEach(mod=>{%>
-                                <tr>
-                                    <td><%=mod.mod.modName%></td>
-                                    <td><%=mod.version%></td>
-                                    <td>
-                                        <%if(mod.needsUpdate){%>
-                                            <button class="btn btn-warning"><i class="fas fa-upload"></i></button>
-                                        <%}%>
-
-
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td><%=mod.mod.modName%></td>
+                                <td><%=mod.version%></td>
+                                <td>
+                                    <%if(mod.needsUpdate){%>
+                                    <a
+                                        href="/dashboard/mods/update/<%=agent._id%>/<%=mod._id%>"
+                                        class="btn btn-warning"
+                                        ><i class="fas fa-upload"></i
+                                    ></a>
+                                    <%}%>
+                                </td>
+                            </tr>
                             <%})%>
                         </tbody>
                     </table>
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>
-

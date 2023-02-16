@@ -12,4 +12,10 @@ router.get("/", isAuth, dashboardController.getMods);
 
 router.post("/installmod", isAuth, dashboardController.postInstallMod);
 
+router.get(
+    "/update/:agentId/:agentModId",
+    isAuth,
+    dashboardController.getUpdateMod
+);
+
 module.exports = router;
