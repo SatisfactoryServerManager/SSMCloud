@@ -202,41 +202,62 @@
                                             id="windows-install-agent"
                                             role="tabpanel"
                                         >
-                                            <h6>Install agent using docker containers (default)</h6>
+                                            <h6>
+                                                Install agent using docker
+                                                containers (default)
+                                            </h6>
                                             <p>
                                                 PS> Invoke-WebRequest
                                                 https://tinyurl.com/ssm-agent-install-ps1
                                                 -Out install-agent.ps1
                                             </p>
-                                            <p class="docker">PS> <span></span></p>
+                                            <p class="docker">
+                                                PS> <span></span>
+                                            </p>
 
-                                            <h6>Install agent instance on local machine</h6>
+                                            <h6>
+                                                Install agent instance on local
+                                                machine
+                                            </h6>
                                             <p>
                                                 PS> Invoke-WebRequest
                                                 https://tinyurl.com/ssm-agent-standalone-ps1
-                                                -Out install-agent-standalone.ps1
+                                                -Out
+                                                install-agent-standalone.ps1
                                             </p>
-                                            <p class="standalone">PS> <span></span></p>
+                                            <p class="standalone">
+                                                PS> <span></span>
+                                            </p>
                                         </div>
                                         <div
                                             class="tab-pane fade"
                                             id="linux-install-agent"
                                             role="tabpanel"
                                         >
-                                            <h6>Install agent using docker containers (default)</h6>
+                                            <h6>
+                                                Install agent using docker
+                                                containers (default)
+                                            </h6>
                                             <p>
                                                 $> wget -q
                                                 https://tinyurl.com/ssm-agent-install-sh
                                                 -O install-agent.sh
                                             </p>
-                                            <p class="docker">$> <span></span></p>
-                                            <h6>Install agent instance on local machine</h6>
+                                            <p class="docker">
+                                                $> <span></span>
+                                            </p>
+                                            <h6>
+                                                Install agent instance on local
+                                                machine
+                                            </h6>
                                             <p>
                                                 $> wget -q
                                                 https://tinyurl.com/ssm-agent-standalone-sh
                                                 -O install-agent-standalone.sh
                                             </p>
-                                            <p class="standalone">$> <span></span></p>
+                                            <p class="standalone">
+                                                $> <span></span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -294,7 +315,10 @@
                                                 <%}%>
                                             </td>
                                             <%if(agent.config.version){%>
-                                            <td>v<%=agent.config.version%> / v<%=latestVersion%></td>
+                                            <td>
+                                                v<%=agent.config.version%> /
+                                                v<%=latestVersion%>
+                                            </td>
                                             <td><%=agent.config.sfBranch%></td>
                                             <td>
                                                 <%=agent.config.sfVersions.installed%>
@@ -303,14 +327,16 @@
                                                 <%=agent.config.sfVersions.available%>
                                             </td>
                                             <%}else{%>
-                                            <td>v0.0.0 / v<%=latestVersion%></td>
+                                            <td>
+                                                v0.0.0 / v<%=latestVersion%>
+                                            </td>
                                             <td>public</td>
                                             <td>0</td>
                                             <td>0</td>
                                             <%}%>
                                             <td>
                                                 <a
-                                                    href="/dashboard/server/<%=agent._id%>"
+                                                    href="/dashboard/servers/<%=agent._id%>"
                                                 >
                                                     <button
                                                         class="btn btn-primary float-start me-2"
@@ -321,12 +347,11 @@
                                                     </button>
                                                 </a>
                                                 <a
-                                                    href="/dashboard/server/<%=agent._id%>/delete"
-                                                    class="btn btn-danger should-confirm-btn" data-confirm-title="Delete Agent Confirmation"
+                                                    href="/dashboard/servers/delete<%=agent._id%>"
+                                                    class="btn btn-danger should-confirm-btn"
+                                                    data-confirm-title="Delete Agent Confirmation"
                                                 >
-                                                        <i
-                                                            class="fas fa-trash"
-                                                        ></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>

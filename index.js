@@ -216,13 +216,9 @@ class SSMCloud_App {
             res.locals.csrfToken = req.csrfToken();
             next();
         });
-
-        const AuthRoutes = require("./routes/auth");
-        const DashboardRoutes = require("./routes/dashboard");
         app.use("/docs", express.static(__basedir + "/docs"));
 
-        app.use(AuthRoutes);
-        app.use(DashboardRoutes);
+        app.use(require("./routes"));
 
         app.get("/500", errorController.get500);
 
