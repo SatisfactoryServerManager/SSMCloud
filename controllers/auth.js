@@ -224,7 +224,10 @@ exports.getAcceptInvite = async (req, res, next) => {
         return next(error);
     }
 
-    const userInvite = await UserInvite.findOne({ _id: req.params.inviteId });
+    const userInvite = await UserInvite.findOne({
+        _id: req.params.inviteId,
+        claimed: false,
+    });
 
     if (userInvite == null) {
         res.redirect("/login");
