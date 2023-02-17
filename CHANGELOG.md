@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.36](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.35...v1.0.36) (2023-02-17)
+
+
+### Bug Fixes
+
+* Fixed claimed user invite ([99f14c2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/99f14c256c3b61fd6322bfc8c1fde6a2b9170c68))
+* Fixes to ui account error reporting ([e5f231f](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/e5f231f85bb231ef7509ec40c9b8b97d5a2633e8))
+
+
+### Docs
+
+* Updated Create User & Get Servers ([763354b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/763354b91b6295acd3367a6625fab54af29c9e84))
+
 ### [1.0.35](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.34...v1.0.35) (2023-02-17)
 
 
