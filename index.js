@@ -81,7 +81,7 @@ class SSMCloud_App {
 
         app.use(upload.single("file"));
 
-        app.set("trust proxy", 1);
+        app.set("trust proxy", true);
 
         // Secret used for signing/hashing token is stored in session by default
         const csrfProtection = csrf();

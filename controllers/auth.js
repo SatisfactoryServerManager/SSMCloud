@@ -446,6 +446,8 @@ exports.post2FAValidate = async (req, res, next) => {
         req.headers["X-Fowarded-For"] ||
         req.socket.remoteAddress;
 
+    console.log(req.headers, req.socket.remoteAddress);
+
     await theAccount.CreateEvent(
         "AUTH",
         `Login Successful for user: [${user.email}] with ip: [${ip}]`,
