@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.33](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.32...v1.0.33) (2023-02-17)
+
+
+### Bug Fixes
+
+* Steam player log matching ([9982e51](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/9982e51adfee4b45284e5d454d2bbd5f49771c2f))
+
 ### [1.0.32](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.31...v1.0.32) (2023-02-17)
 
 
