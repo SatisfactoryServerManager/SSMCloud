@@ -127,8 +127,8 @@ exports.postLogin = async (req, res, next) => {
         }
 
         const ip =
-            req.headers["X-Real-IP"] ||
-            req.headers["X-Fowarded-For"] ||
+            req.headers["x-forwarded-for"] ||
+            req.headers["x-real-ip"] ||
             req.socket.remoteAddress;
 
         await theAccount.CreateEvent(
@@ -442,11 +442,9 @@ exports.post2FAValidate = async (req, res, next) => {
     }
 
     const ip =
-        req.headers["X-Real-IP"] ||
-        req.headers["X-Fowarded-For"] ||
+        req.headers["x-forwarded-for"] ||
+        req.headers["x-real-ip"] ||
         req.socket.remoteAddress;
-
-    console.log(req.headers, req.socket.remoteAddress);
 
     await theAccount.CreateEvent(
         "AUTH",
