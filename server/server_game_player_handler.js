@@ -44,23 +44,34 @@ class GamePlayerHandler extends EventEmitter {
                                 s.pause();
 
                                 if (line.includes("LogNet: Login request: ")) {
-                                    let EOS = line.match(/\EOS:(.+)/i)[1];
-                                    EOS = EOS.split(" ")[0];
-                                    EOS = EOS.replace("(EOS)", "");
-                                    EOS = EOS.replace(",", "");
+                                    let EOS = "";
+                                    if (line.includes("EOS:")) {
+                                        EOS = line.match(/\EOS:(.+)/i)[1];
+                                        EOS = EOS.split(" ")[0];
+                                        EOS = EOS.replace("(EOS)", "");
+                                        EOS = EOS.replace(",", "");
+                                    } else if (line.includes("STEAM:")) {
+                                        EOS = line.match(/\STEAM:(.+)/i)[1];
+                                        EOS = EOS.split(" ")[0];
+                                        EOS = EOS.replace("(STEAM)", "");
+                                        EOS = EOS.replace(",", "");
+                                    }
 
-                                    let PlayerName =
-                                        line.match(/\?Name=(.+)/i)[1];
-                                    PlayerName = PlayerName.split(" ")[0];
+                                    if (EOS != "") {
+                                        let PlayerName =
+                                            line.match(/\?Name=(.+)/i)[1];
+                                        PlayerName = PlayerName.split(" ")[0];
 
-                                    const logDate = this.GetDateFromLine(line);
+                                        const logDate =
+                                            this.GetDateFromLine(line);
 
-                                    await this.RecievedLoginRequest(
-                                        AgentId,
-                                        PlayerName,
-                                        EOS,
-                                        logDate
-                                    );
+                                        await this.RecievedLoginRequest(
+                                            AgentId,
+                                            PlayerName,
+                                            EOS,
+                                            logDate
+                                        );
+                                    }
                                 }
 
                                 if (line.includes("LogNet: Join suc")) {
@@ -81,11 +92,18 @@ class GamePlayerHandler extends EventEmitter {
                                     )
                                 ) {
                                     if (line.includes("EOS:")) {
-                                        let EOS = line.match(/\EOS:(.+)/i)[1];
+                                        EOS = line.match(/\EOS:(.+)/i)[1];
                                         EOS = EOS.split(" ")[0];
                                         EOS = EOS.replace("(EOS)", "");
                                         EOS = EOS.replace(",", "");
+                                    } else if (line.includes("STEAM:")) {
+                                        EOS = line.match(/\STEAM:(.+)/i)[1];
+                                        EOS = EOS.split(" ")[0];
+                                        EOS = EOS.replace("(STEAM)", "");
+                                        EOS = EOS.replace(",", "");
+                                    }
 
+                                    if (EOS != "") {
                                         const logDate =
                                             this.GetDateFromLine(line);
 
