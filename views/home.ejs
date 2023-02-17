@@ -1,252 +1,224 @@
-<html>
-    <head>
-        <title>SSM Cloud</title>
-        <link
-            rel="stylesheet"
-            href="/libraries/bootstrap/dist/css/bootstrap.min.css"
-        />
-        <script
-            defer
-            src="/libraries/@fortawesome/fontawesome-free/js/all.min.js"
-        ></script>
-        <link
-            rel="stylesheet"
-            href="/libraries/@fortawesome/fontawesome-free/css/all.min.css"
-        />
-        <link rel="stylesheet" href="/public/css/bootswatch.min.css" />
-        <style>
-            body {
-                background: #1d1d1d url("/public/images/logonbg.png") fixed 0 0;
-                background-size: cover;
-                background-repeat: no-repeat;
-                font-size: 14px;
-            }
-            .navbar {
-                background-color: #333;
-            }
-            .navbar a {
-                color: white;
-            }
-            .bg-glass {
-                background: rgba(100, 100, 100, 0.2);
-                box-shadow: 0 4px 30px #0000001a;
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(5px);
-                border-color: #636363 !important;
-            }
-            .b-divider {
-                height: 3rem;
-                background-color: rgba(0, 0, 0, 0.1);
-                border: solid rgba(0, 0, 0, 0.15);
-                border-width: 1px 0;
-                box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
-                    inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
-            }
-            .ssm-logo {
-                z-index: 100;
-            }
-            .navbar {
-                padding: 3px 0;
-                border-bottom: 1px solid #636363;
-            }
-            .navbar-brand {
-                padding: 0;
-            }
-            .nav-item a {
-                font-size: 15px;
-            }
-        </style>
+<!DOCTYPE html>
+<html lang="en">
 
-        <meta name="HandheldFriendly" content="True" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-        />
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-glass">
-            <div class="container">
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a
-                                class="nav-link"
-                                href="https://discord.gg/refinedrnd"
-                            >
-                                <i class="fab fa-discord me-1"></i>
-                                Discord
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                class="nav-link"
-                                href="https://github.com/SatisfactoryServerManager/SSMCloud"
-                            >
-                                <i class="fab fa-github me-1"></i>
-                                GitHub
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/docs">
-                                <i class="fas fa-book me-1"></i>
-                                Docs
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/signup">
-                                <i class="fas fa-user-plus me-1"></i>
-                                Sign Up
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">
-                                <i class="fas fa-user me-1"></i>
-                                Log In
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="px-4 pt-5 text-center border-bottom bg-glass">
-            <img
-                src="/public/images/ssm_logo256_trimmed.png"
-                alt="ssm logo"
-                class="ssm-logo"
-            />
-            <div class="col-lg-6 mt-3 mx-auto">
-                <p class="lead mb-4">
-                    Easily manage and monitor multiple Satisfactory servers with
-                    SSM Cloud's user-friendly interface. View player
-                    information, access performance metrics, and manage server
-                    settings all in one place, whether you're a small community
-                    or a large hosting provider
-                </p>
-                <div
-                    class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5"
-                >
-                    <a href="/signup">
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-lg px-4 me-sm-3 shadow"
-                        >
-                            Sign Up For Free
-                        </button>
-                    </a>
-                </div>
-            </div>
-            <div class="overflow-hidden" style="max-height: 35vh">
-                <div class="container px-5">
-                    <img
-                        src="/public/images/home_dashboard_preview.png"
-                        class="img-fluid border border-dark rounded-3 shadow-lg mb-4"
-                        alt="Example image"
-                        width="700"
-                        height="600"
-                        loading="lazy"
-                    />
-                </div>
-            </div>
-        </div>
-        <div class="b-divider"></div>
-        <div class="px-4 border-bottom border-top bg-glass">
-            <div class="container col-xxl-8 px-4 py-5">
-                <div
-                    class="row flex-lg-row-reverse align-items-center g-5 py-5"
-                >
-                    <div class="col-10 col-sm-8 col-lg-6">
-                        <img
-                            src="/public/images/home_responsive.png"
-                            class="d-block mx-lg-auto img-fluid"
-                            alt="Bootstrap Themes"
-                            width="600"
-                            height="400"
-                            loading="lazy"
-                        />
-                    </div>
-                    <div class="col-lg-6">
-                        <h1 class="display-5 fw-bold lh-1 mb-3">
-                            Manage Satisfactory Servers On The Go!
-                        </h1>
-                        <p class="lead">
-                            SSM Cloud is a versatile platform that works
-                            seamlessly on multiple devices, including desktops,
-                            laptops, tablets, and smartphones. It automatically
-                            adapts to the device's screen, allowing you to
-                            manage servers and monitor performance on the go.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<head>
+  <title>SSM Cloud</title>
 
-        <div class="b-divider"></div>
-        <div class="px-4 border-bottom border-top bg-glass">
-            <div class="container col-xxl-8 px-4 py-5">
-                <div class="row flex-lg-row align-items-center g-5 py-5">
-                    <div class="col-10 col-sm-8 col-lg-6">
-                        <img
-                            src="/public/images/home_notifications.png"
-                            class="d-block mx-lg-auto img-fluid"
-                            alt="Notifications"
-                            width="600"
-                            height="400"
-                            loading="lazy"
-                        />
-                    </div>
-                    <div class="col-lg-6">
-                        <h1 class="display-5 fw-bold lh-1 mb-3">
-                            Get Notifications On Your Servers.
-                        </h1>
-                        <p class="lead">
-                            SSM Cloud offers a comprehensive notification system
-                            that enables users to stay informed about server
-                            updates, player activity, and other important
-                            events. It provides integration with external
-                            services like email, webhooks, and Discord which
-                            allows real-time notifications to be sent to you.
-                        </p>
-                        <p class="lead">
-                            This ensures that you are informed about server
-                            updates, player activity, or when the server has
-                            shut down or a new player joins the server. With
-                            these integrations, SSM Cloud can provide a
-                            convenient and efficient way for you to stay
-                            updated.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/fontawesome.min.js"></script>
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/brands.min.js"></script>
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/solid.min.js"></script>
 
-        <footer class="page-footer font-small blue bg-dark">
-            <!-- Copyright -->
-            <div class="footer-copyright text-center py-3">
-                © 2020 - 2023 Copyright:
-                <a href="https://github.com/SatisfactoryServerManager/SSMCloud">
-                    Refined R&D</a
-                >
-                MIT License.
-            </div>
-            <!-- Copyright -->
-        </footer>
-        <script defer src="/libraries/jquery/dist/jquery.min.js"></script>
-        <script
-            defer
-            src="/libraries/bootstrap/dist/js/bootstrap.bundle.min.js"
-        ></script>
-    </body>
+
+  <link rel="preload" href="/libraries/bootstrap/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/fontawesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/brands.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/solid.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/public/css/bootswatch.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="/libraries/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/bootswatch.min.css">
+  </noscript>
+
+
+  <link rel="preload" href="/public/images/logonbg.webp" as="image" />
+  <link rel="preload" href="/public/images/home_dashboard_preview.webp" as="image" />
+  <link rel="preload" href="/public/images/home_responsive.webp" as="image" />
+  <link rel="preload" href="/public/images/home_notifications.webp" as="image" />
+
+
+  <meta name="description" content="Satisfactory Server Manager (SSM) offers a cloud solution to manage all your Satisfactory server in one place" />
+
+  <link rel="canonical" href="https://ssmcloud.hostxtra.co.uk" />
+  <style>
+    body {
+      background: #1d1d1d url("/public/images/logonbg.webp") fixed 0 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      font-size: 14px;
+    }
+
+    .navbar {
+      background-color: #333;
+    }
+
+    .navbar a {
+      color: white;
+    }
+
+    .bg-glass {
+      background: rgba(100, 100, 100, 0.2);
+      box-shadow: 0 4px 30px #0000001a;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border-color: #636363 !important;
+    }
+
+    .b-divider {
+      height: 3rem;
+      background-color: rgba(0, 0, 0, 0.1);
+      border: solid rgba(0, 0, 0, 0.15);
+      border-width: 1px 0;
+      box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
+        inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
+    }
+
+    .ssm-logo {
+      z-index: 100;
+    }
+
+    .navbar {
+      padding: 3px 0;
+      border-bottom: 1px solid #636363;
+    }
+
+    .navbar-brand {
+      padding: 0;
+    }
+
+    .nav-item a {
+      font-size: 15px;
+    }
+  </style>
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-glass">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="https://discord.gg/refinedrnd">
+              <i class="fab fa-discord me-1"></i>
+              Discord
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/SatisfactoryServerManager/SSMCloud">
+              <i class="fab fa-github me-1"></i>
+              GitHub
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docs">
+              <i class="fas fa-book me-1"></i>
+              Docs
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/signup">
+              <i class="fas fa-user-plus me-1"></i>
+              Sign Up
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">
+              <i class="fas fa-user me-1"></i>
+              Log In
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="px-4 pt-5 text-center border-bottom bg-glass">
+    <img src="/public/images/ssm_logo256_trimmed.webp" alt="ssm logo" class="ssm-logo" loading="lazy" width="256px" height="160px" />
+    <div class="col-lg-6 mt-3 mx-auto">
+      <p class="lead mb-4">
+        Easily manage and monitor multiple Satisfactory servers with
+        SSM Cloud's user-friendly interface. View player
+        information, access performance metrics, and manage server
+        settings all in one place, whether you're a small community
+        or a large hosting provider
+      </p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+        <a href="/signup">
+          <button type="button" class="btn btn-primary btn-lg px-4 me-sm-3 shadow">
+            Sign Up For Free
+          </button>
+        </a>
+      </div>
+    </div>
+    <div class="overflow-hidden" style="max-height: 35vh">
+      <div class="container px-5">
+        <img src="/public/images/home_dashboard_preview.webp" class="img-fluid border border-dark rounded-3 shadow-lg mb-4" alt="Example image" width="700" height="600" />
+      </div>
+    </div>
+  </div>
+  <div class="b-divider"></div>
+  <div class="px-4 border-bottom border-top bg-glass">
+    <div class="container col-xxl-8 px-4 py-5">
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <img src="/public/images/home_responsive.webp" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="600" height="400" />
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold lh-1 mb-3">
+            Manage Satisfactory Servers On The Go!
+          </h1>
+          <p class="lead">
+            SSM Cloud is a versatile platform that works
+            seamlessly on multiple devices, including desktops,
+            laptops, tablets, and smartphones. It automatically
+            adapts to the device's screen, allowing you to
+            manage servers and monitor performance on the go.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="b-divider"></div>
+  <div class="px-4 border-bottom border-top bg-glass">
+    <div class="container col-xxl-8 px-4 py-5">
+      <div class="row flex-lg-row align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <img src="/public/images/home_notifications.webp" class="d-block mx-lg-auto img-fluid" alt="Notifications" width="600" height="400" loading="lazy" />
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold lh-1 mb-3">
+            Get Notifications On Your Servers.
+          </h1>
+          <p class="lead">
+            SSM Cloud offers a comprehensive notification system
+            that enables users to stay informed about server
+            updates, player activity, and other important
+            events. It provides integration with external
+            services like email, webhooks, and Discord which
+            allows real-time notifications to be sent to you.
+          </p>
+          <p class="lead">
+            This ensures that you are informed about server
+            updates, player activity, or when the server has
+            shut down or a new player joins the server. With
+            these integrations, SSM Cloud can provide a
+            convenient and efficient way for you to stay
+            updated.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer font-small blue bg-dark">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">
+      © 2020 - 2023 Copyright:
+      <a href="https://github.com/SatisfactoryServerManager/SSMCloud">
+        Refined R&D</a>
+      MIT License.
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <script defer src="/libraries/jquery/dist/jquery.min.js"></script>
+  <script defer src="/libraries/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

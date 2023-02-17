@@ -207,7 +207,7 @@ class SSMCloud_App {
         app.use(flash());
 
         app.use(
-            favicon(path.join(__dirname, "public", "images", "favicon.ico"))
+            favicon(path.join(__dirname, "public", "images", "favicons", "favicon.ico"))
         );
 
         app.use((req, res, next) => {
