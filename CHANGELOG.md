@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.32](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.31...v1.0.32) (2023-02-17)
+
+
+### Bug Fixes
+
+* Fixed incorrect ip address ([1e959da](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/1e959dac4ed11e5895837f3d88ef0a6f700e8247))
+
 ### [1.0.31](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.30...v1.0.31) (2023-02-17)
 
 ### [1.0.30](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.29...v1.0.30) (2023-02-16)
