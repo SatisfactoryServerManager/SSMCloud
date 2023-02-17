@@ -103,3 +103,9 @@ body {
     left: 0;
     width: 100%;
 }
+
+#token {
+    font-weight: bold;
+    font-size: 30px;
+    letter-spacing: 15px;
+}

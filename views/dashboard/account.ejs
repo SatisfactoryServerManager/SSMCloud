@@ -107,34 +107,30 @@
                   <%if(locals.apikeyErrorMessage){%>
                   <div class="alert alert-danger"><%=apikeyErrorMessage%></div>
                   <%}%>
-
-                                     <%if(locals.apikeySuccessMessage){%>
-                  <div class="alert alert-success"><%=apikeySuccessMessage%></div>
-                  <%}%>
-
-                                     <form
-                                        action="/dashboard/account/apikey"
-                                        method="post"
-                                    >
-                                        <input
-                                            type="hidden"
-                                            name="_csrf"
-                                            value="<%= csrfToken %>"
-                  />
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
-                    <select name="inp_user" id="" class="form-select" placeholder="User">
-                      <% users.forEach(user => { %>
-                      <%if(user.active){%>
-                      <option value="<%=user._id%>">
-                        <%=user.email%>
-                      </option>
-                      <%}})%>
-                    </select>
-                    <button id="btn-addapikey" class="btn btn-primary">
-                      <i class="fas fa-plus"></i> Add API Key
-                    </button>
+                  <% if(locals.message){ const messageData = JSON.parse(message); 
+                    if(messageData.section == "api"){%>
+                  <div class="alert alert-success">
+                    <%=messageData.message%>
                   </div>
+                  <%}}%>
+
+
+                  <form action="/dashboard/account/apikey" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="input-group mb-3">
+                      <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                      <select name="inp_user" id="" class="form-select" placeholder="User">
+                        <% users.forEach(user => { %>
+                        <%if(user.active){%>
+                        <option value="<%=user._id%>">
+                          <%=user.email%>
+                        </option>
+                        <%}})%>
+                      </select>
+                      <button id="btn-addapikey" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add API Key
+                      </button>
+                    </div>
 
                   </form>
 

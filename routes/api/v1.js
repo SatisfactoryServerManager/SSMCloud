@@ -24,6 +24,10 @@ router.put(
 router.get("/users", isApiKey, v1Controller.getUsers);
 router.get("/users/:userId", isApiKey, v1Controller.getSingleUser);
 
+router.post("/users", isApiKey, v1Controller.postUsers);
+
+router.get("/servers", isApiKey, v1Controller.getServers);
+
 router.use("*", (req, res, next) => {
     res.status(404).json({
         success: false,

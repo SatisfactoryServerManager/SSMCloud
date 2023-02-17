@@ -334,7 +334,8 @@ Retrived the account successfully
         "isAccountAdmin": false,
         "role": "6591799ab614792418e4e202",
         "active": true
-    }
+    },
+    "inviteUrl": "https://ssmcloud.hostxtra.co.uk/acceptInvite/123451234512345"
 }
 ```
 
@@ -346,6 +347,48 @@ User was not found
 {
     "success": false,
     "user": null
+}
+```
+
+<!-- tabs:end -->
+
+# Servers
+
+## Get
+
+Get all servers on the account.
+
+<div class="pill-wrapper pill-get">
+    <span>GET</span> /api/v1/servers
+</div>
+
+<!-- tabs:start -->
+
+#### ** Request **
+
+**Usage:**
+
+```shell
+curl -H "x-ssm-key: {APIKEY}" \
+     -l http://{URL}/api/v1/servers
+```
+
+**Request Body:**
+
+```
+Request requires no body.
+```
+
+#### ** Response **
+
+**200: OK**
+
+Retrived the account successfully
+
+```json
+{
+    "success": true,
+    "servers": []
 }
 ```
 

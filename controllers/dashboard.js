@@ -339,6 +339,9 @@ exports.getAccount = async (req, res, next) => {
             await key.populate("user");
         }
 
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
         res.render("dashboard/account", {
             path: "/account",
             pageTitle: "Account",
@@ -356,6 +359,7 @@ exports.getAccount = async (req, res, next) => {
             apikeyErrorMessage: null,
             apikeySuccessMessage: null,
             errorMessage: "",
+            message,
         });
     } else {
         res.render("dashboard/account", {
@@ -558,8 +562,12 @@ exports.postAccountApiKey = async (req, res, next) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        resData.apikeyErrorMessage = errors.array()[0].msg;
-        return res.status(422).render("dashboard/account", resData);
+        const successMessageData = {
+            section: "api",
+            message: errors.array()[0].msg,
+        };
+
+        req.flash("error", JSON.stringify(successMessageData));
     }
 
     for (let i = 0; i < theAccount.users.length; i++) {
@@ -578,10 +586,13 @@ exports.postAccountApiKey = async (req, res, next) => {
 
     await newApiKey.populate("user");
 
-    resData.apiKeys.push(newApiKey);
+    const successMessageData = {
+        section: "api",
+        message: `API Key has successfully been created: ${APIKey}`,
+    };
 
-    resData.apikeySuccessMessage = `API Key has successfully been created: ${APIKey}`;
-    res.render("dashboard/account", resData);
+    req.flash("success", JSON.stringify(successMessageData));
+    res.redirect("/dashboard/account");
 };
 
 exports.getDeleteUser = async (req, res, next) => {
@@ -659,10 +670,21 @@ exports.getDeleteUser = async (req, res, next) => {
     }
 
     theAccount.users.splice(foundIndex, 1);
-    await theAccount.save();
 
     await User.deleteOne({ _id: userId });
     await UserInvite.deleteOne({ user: userId });
+
+    await theAccount.populate("apiKeys");
+
+    for (let i = 0; i < theAccount.apiKeys.length; i++) {
+        const key = theAccount.apiKeys[i];
+        if (key.user == userId) {
+            theAccount.apiKeys.splice(i, 1);
+        }
+    }
+
+    await ApiKey.deleteMany({ user: userId });
+    await theAccount.save();
 
     return res.redirect("/dashboard/account");
 };
