@@ -342,6 +342,11 @@ exports.getAccount = async (req, res, next) => {
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
 
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         res.render("dashboard/account", {
             path: "/account",
             pageTitle: "Account",
@@ -356,9 +361,7 @@ exports.getAccount = async (req, res, next) => {
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
-            apikeyErrorMessage: null,
-            apikeySuccessMessage: null,
-            errorMessage: "",
+            errorMessage,
             message,
         });
     } else {
@@ -385,9 +388,6 @@ exports.getAccount = async (req, res, next) => {
 };
 
 exports.postAccountUser = async (req, res, next) => {
-    const protocol = req.protocol;
-    const host = req.hostname;
-
     const data = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -421,50 +421,15 @@ exports.postAccountUser = async (req, res, next) => {
         return next(error);
     }
 
-    await theAccount.populate("userRoles");
-    await theAccount.populate("users");
-    await theAccount.populate("userInvites");
-    await theAccount.populate("apiKeys");
-
-    const AllPermissions = await Permission.find();
-
-    for (let i = 0; i < theAccount.users.length; i++) {
-        const user = theAccount.users[i];
-        await user.populate("role");
-    }
-
-    for (let i = 0; i < theAccount.userInvites.length; i++) {
-        const userInvite = theAccount.userInvites[i];
-        await userInvite.populate("user");
-    }
-
-    for (let i = 0; i < theAccount.apiKeys.length; i++) {
-        const key = theAccount.apiKeys[i];
-        await key.populate("user");
-    }
-
-    const resData = {
-        path: "/account",
-        pageTitle: "Account",
-        accountName: theAccount.accountName,
-        agents: theAccount.agents,
-        users: theAccount.users,
-        userRoles: theAccount.userRoles,
-        userInvites: theAccount.userInvites,
-        apiKeys: theAccount.apiKeys,
-        permissions: AllPermissions,
-        inviteUrl: `${protocol}://${host}/acceptinvite`,
-        inviteErrorMessage: null,
-        userErrorMessage: null,
-        apikeyErrorMessage: null,
-        errorMessage: "",
-        successMessage: null,
-    };
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        resData.userErrorMessage = errors.array()[0].msg;
-        return res.status(422).render("dashboard/account", resData);
+        const successMessageData = {
+            section: "user",
+            message: errors.array()[0].msg,
+        };
+
+        req.flash("error", JSON.stringify(successMessageData));
+        return res.redirect("/dashboard/account");
     }
 
     const newUser = await User.create({
@@ -478,8 +443,13 @@ exports.postAccountUser = async (req, res, next) => {
     theAccount.userInvites.push(newInvite);
 
     await theAccount.save();
-    resData.successMessage = "User Invite Successfully Created!";
-    return res.redirect("/dashboard/account");
+    const successMessageData = {
+        section: "user",
+        message: `User Invite Successfully Created!`,
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+    res.redirect("/dashboard/account");
 };
 
 exports.postAccountApiKey = async (req, res, next) => {
@@ -494,9 +464,11 @@ exports.postAccountApiKey = async (req, res, next) => {
         return next(error);
     }
 
-    let theUser = await User.findOne({ _id: req.session.user._id });
+    let theRequestUser = await User.findOne({ _id: req.session.user._id });
 
-    const hasPermission = await theUser.HasPermission("user.apikey.create");
+    const hasPermission = await theRequestUser.HasPermission(
+        "user.apikey.create"
+    );
 
     if (!hasPermission) {
         res.status(403).render("403", {
@@ -519,47 +491,6 @@ exports.postAccountApiKey = async (req, res, next) => {
         return next(error);
     }
 
-    await theAccount.populate("userRoles");
-    await theAccount.populate("users");
-    await theAccount.populate("userInvites");
-    await theAccount.populate("apiKeys");
-
-    const AllPermissions = await Permission.find();
-
-    for (let i = 0; i < theAccount.users.length; i++) {
-        const user = theAccount.users[i];
-        await user.populate("role");
-    }
-
-    for (let i = 0; i < theAccount.userInvites.length; i++) {
-        const userInvite = theAccount.userInvites[i];
-        await userInvite.populate("user");
-    }
-
-    for (let i = 0; i < theAccount.apiKeys.length; i++) {
-        const key = theAccount.apiKeys[i];
-        await key.populate("user");
-    }
-
-    const resData = {
-        path: "/account",
-        pageTitle: "Account",
-        accountName: theAccount.accountName,
-        agents: theAccount.agents,
-        users: theAccount.users,
-        userRoles: theAccount.userRoles,
-        userInvites: theAccount.userInvites,
-        apiKeys: theAccount.apiKeys,
-        permissions: AllPermissions,
-        inviteUrl: `${protocol}://${host}/acceptinvite`,
-        inviteErrorMessage: null,
-        userErrorMessage: null,
-        apikeyErrorMessage: null,
-        apikeySuccessMessage: null,
-        errorMessage: "",
-        successMessage: null,
-    };
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const successMessageData = {
@@ -568,14 +499,27 @@ exports.postAccountApiKey = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(successMessageData));
+        return res.redirect("/dashboard/account");
     }
 
+    let theUser = null;
     for (let i = 0; i < theAccount.users.length; i++) {
         const user = theAccount.users[i];
         if (user._id == data.inp_user) {
             theUser = user;
             break;
         }
+    }
+
+
+    if(theUser == null){
+        const successMessageData = {
+            section: "api",
+            message: `Requested user is not in this account!`,
+        };
+
+        req.flash("error", JSON.stringify(successMessageData));
+        return res.redirect("/dashboard/account");
     }
 
     const APIKey = "API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
