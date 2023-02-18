@@ -125,7 +125,7 @@ class NotificationSystem {
         const allNotifications = await NotificationModel.find({
             completed: false,
             failed: false,
-            retries: { $lt: 10 },
+            retries: { $lt: 5 },
         });
 
         for (let i = 0; i < allNotifications.length; i++) {
@@ -181,7 +181,7 @@ class NotificationSystem {
             await Event.save();
             Notification.completed = false;
             Notification.retries += 1;
-            if (Notification.retries >= 10) {
+            if (Notification.retries >= 5) {
                 Notification.failed = true;
                 Notification.error = "Too Many Retries!";
             }
@@ -237,7 +237,7 @@ class NotificationSystem {
 
             Notification.completed = false;
             Notification.retries += 1;
-            if (Notification.retries >= 10) {
+            if (Notification.retries >= 5) {
                 Notification.failed = true;
                 Notification.error = "Too Many Retries!";
             }
