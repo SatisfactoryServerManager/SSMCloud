@@ -1,380 +1,395 @@
 <%- include('../includes/head-main.ejs') %>
 
 <body>
-    <div id="viewport" class="minimal">
-        <%- include('../includes/navigation.ejs') %>
-        <div id="content">
-            <div class="container-fluid">
-                <!-- BODY -->
-                <div class="page-container" data-page="dashboard">
-                    <div class="row page-header">
-                        <div class="col-12 col-md-9">
-                            <h3 class="mb-3">
-                                Server - <%=accountName%> - <%=agent.agentName%>
-                            </h3>
-                        </div>
+  <div id="viewport" class="minimal">
+    <%- include('../includes/navigation.ejs') %>
+    <div id="content">
+      <div class="container-fluid">
+        <!-- BODY -->
+        <div class="page-container" data-page="dashboard">
+          <div class="row page-header">
+            <div class="col-12 col-md-9">
+              <h3 class="mb-3">
+                Server - <%=accountName%> - <%=agent.agentName%>
+              </h3>
+            </div>
 
-                        <div class="col-12 col-md-3">
-                            <div class="status-info-card blue">
-                                <div class="status-info-card-main">Server:</div>
-                                <div class="status-info-card-secondary">
-                                    <span id="server-count"
-                                        ><%= agents.length %></span
-                                    >
-                                </div>
-                                <div class="status-info-card-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
+            <div class="col-12 col-md-3">
+              <div class="status-info-card blue">
+                <div class="status-info-card-main">Server:</div>
+                <div class="status-info-card-secondary">
+                  <span id="server-count"><%= agents.length %></span>
+                </div>
+                <div class="status-info-card-icon">
+                  <i class="fas fa-server"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <%if(agent.config.version == null){%>
+          <div class="alert alert-warning">Uh Oh looks like this server has not been started before!</div>
+
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="card border-secondary mb-3">
+                <div class="card-header">
+                  <h5>Install Command</h5>
+                </div>
+                <div class="card-body">
+
+                  <p>When running this install script, you will be prompted for the following information:</p>
+                  <ul>
+                    <li>SSM Url - This is the url that the agent will connect to. By default this will be SSM Cloud, you can enter your hosted SSM cloud url/ip address if needed. </li>
+                    <li>API Key: This is the secure api key used for sending data to SSM Cloud</li>
+                  </ul>
+                  <input type="hidden" id="inp_servername" value="<%=agent.agentName%>">
+                  <input type="hidden" id="inp_serverport" value="<%=agent.sfPortNum%>">
+                  <input type="hidden" id="inp_servermemory" value="<%=agent.memory/1024/1024/1024%>">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link active" data-bs-toggle="tab" href="#windows-install-agent" aria-selected="true" role="tab">Windows</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link" data-bs-toggle="tab" href="#linux-install-agent" aria-selected="false" role="tab" tabindex="-1">Ubuntu / Debian</a>
+                    </li>
+                  </ul>
+                  <div id="myTabContent" class="tab-content server-install-command">
+                    <div class="tab-pane fade active show" id="windows-install-agent" role="tabpanel">
+                      <h6>Install agent using docker containers (default)</h6>
+                      <p>
+                        PS> Invoke-WebRequest
+                        https://tinyurl.com/ssm-agent-install-ps1
+                        -Out install-agent.ps1
+                      </p>
+                      <p class="docker">PS> <span></span></p>
+
+                      <h6>Install agent instance on local machine</h6>
+                      <p>
+                        PS> Invoke-WebRequest
+                        https://tinyurl.com/ssm-agent-standalone-ps1
+                        -Out install-agent-standalone.ps1
+                      </p>
+                      <p class="standalone">PS> <span></span></p>
+                    </div>
+                    <div class="tab-pane fade" id="linux-install-agent" role="tabpanel">
+                      <h6>Install agent using docker containers (default)</h6>
+                      <p>
+                        $> wget -q
+                        https://tinyurl.com/ssm-agent-install-sh
+                        -O install-agent.sh
+                      </p>
+                      <p class="docker">$> <span></span></p>
+                      <h6>Install agent instance on local machine</h6>
+                      <p>
+                        $> wget -q
+                        https://tinyurl.com/ssm-agent-standalone-sh
+                        -O install-agent-standalone.sh
+                      </p>
+                      <p class="standalone">$> <span></span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <%}else{%>
+          <div class="row">
+            <div class="col-12 col-xl-3 mb-3">
+              <div class="card border-secondary h-100">
+                <div class="card-header">
+                  <h5>Server Information</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">Server Status:</b>
+                      <span class="settings-info">
+                        This is the servers status.</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+
+                      <%if(!agent.online){%>
+                      <span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> <b>Offline</b></span>
+                      <%}else{%>
+                      <span class="badge bg-success"><b>Online</b></span>
+                      <%if(agent.installed){%>
+                      <span class="badge bg-success"><b>Installed</b></span>
+                      <%}else{%>
+                      <span class="badge bg-warning"><b>Not Installed</b></span>
+                      <%}%>
+                      <%if(agent.running){%>
+                      <span class="badge bg-success"><b>Running</b></span>
+                      <%}else{%>
+                      <span class="badge bg-warning"><b>Not Running</b></span>
+                      <%}%>
+                      <%}%>
+                      <b id="agent-publicip"></b>
+                    </div>
+                  </div>
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">Server Host:</b>
+                      <span class="settings-info">
+                        This is your Hostname to connect to the Server in game.</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <b id="agent-publicip">1.2.3.4</b>
+                    </div>
+                  </div>
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">Connection Port:</b>
+                      <span class="settings-info">
+                        This is the port number of the SF server.</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <b id="agent-connectionport"><%=agent.sfPortNum%></b>
+                    </div>
+                  </div>
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">Server Version:</b>
+                      <span class="settings-info">
+                        This is the agent/server version.</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <b id="sfserver-version"><%=agent.config.version%></b> /
+                      <b id="sfserver-version"><%=latestVersion%></b>
+                    </div>
+                  </div>
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">SF Server Version:</b>
+                      <span class="settings-info">
+                        This is the SF server version.</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <b id="sfserver-version"><%=agent.config.sfVersions.installed%></b> /
+                      <b id="sfserver-version"><%=agent.config.sfVersions.available%></b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-9">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="card border-secondary mb-3">
+                    <div class="card-header">
+                      <h5>Satisfactory Server Settings</h5>
+                    </div>
+                    <div class="card-body">
+                      <form action="" method="post" class="form-horizontal">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="_ConfigSetting" value="sfsettings" />
+                        <div class="row settings-row">
+                          <div class="col-12 col-md-4">
+                            <b class="settings-prop">Max Players:</b>
+                            <span class="settings-info">
+                              Number of players that can join the server.
+                            </span>
+                          </div>
+                          <div class="col-12 col-md-6">
+                            <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.config.maxPlayers%>">
+                          </div>
+
+                          <div class="col-12 col-md-2">
+                            <span id="max-players-value">0 / 500</span>
+                          </div>
+                        </div>
+                        <div class="row settings-row">
+                          <div class="col-12 col-md-4">
+                            <b class="settings-prop">Update Server On Start:</b>
+                            <span class="settings-info">
+                              Update Satisfactory server on start of SSM.
+                            </span>
+                          </div>
+                          <div class="col-12 col-md-8">
+                            <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                             </div>
+                        </div>
+        
+                        <div class="row settings-row">
+                            <div class="col-12 col-md-4">
+                                <b class="settings-prop">Worker Threads:</b>
+                                <span class="settings-info">
+                                    Number of worker threads to allocate to the server.
+                                </span>
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
+                          </div>
+                        </div>
+                        <div class="row settings-row">
+                          <div class="col-12 col-md-4">
+                            <b class="settings-prop">Version Branch</b>
+                            <span class="settings-info">
+                              Choose whether to use the Public Branch or Experimental.
+                            </span>
+                          </div>
+                          <div class="col-12 col-md-8">
+                            <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.config.sfBranch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
                         </div>
                     </div>
-                    <%if(agent.config.version == null){%>
-                        <div class="alert alert-warning">Uh Oh looks like this server has not been started before!</div>
-
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                        <div class="card border-secondary mb-3">
-                            <div class="card-header">
-                                <h5>Install Command</h5>
-                            </div>
-                            <div class="card-body">
-                                
-                                        <p>When running this install script, you will be prompted for the following information:</p>
-                                        <ul>
-                                            <li>SSM Url - This is the url that the agent will connect to. By default this will be SSM Cloud, you can enter your hosted SSM cloud url/ip address if needed. </li>
-                                            <li>API Key: This is the secure api key used for sending data to SSM Cloud</li>
-                                        </ul>
-                                        <input type="hidden" id="inp_servername" value="<%=agent.agentName%>">
-                                        <input type="hidden" id="inp_serverport" value="<%=agent.sfPortNum%>">
-                                        <input type="hidden" id="inp_servermemory" value="<%=agent.memory/1024/1024/1024%>">
-                                        <ul class="nav nav-tabs" role="tablist">
-                                            <li
-                                                class="nav-item"
-                                                role="presentation"
-                                            >
-                                                <a
-                                                    class="nav-link active"
-                                                    data-bs-toggle="tab"
-                                                    href="#windows-install-agent"
-                                                    aria-selected="true"
-                                                    role="tab"
-                                                    >Windows</a
-                                                >
-                                            </li>
-                                            <li
-                                                class="nav-item"
-                                                role="presentation"
-                                            >
-                                                <a
-                                                    class="nav-link"
-                                                    data-bs-toggle="tab"
-                                                    href="#linux-install-agent"
-                                                    aria-selected="false"
-                                                    role="tab"
-                                                    tabindex="-1"
-                                                    >Ubuntu / Debian</a
-                                                >
-                                            </li>
-                                        </ul>
-                                        <div
-                                            id="myTabContent"
-                                            class="tab-content server-install-command"
-                                        >
-                                            <div
-                                                class="tab-pane fade active show"
-                                                id="windows-install-agent"
-                                                role="tabpanel"
-                                            >
-                                            <h6>Install agent using docker containers (default)</h6>
-                                            <p>
-                                                PS> Invoke-WebRequest
-                                                https://tinyurl.com/ssm-agent-install-ps1
-                                                -Out install-agent.ps1
-                                            </p>
-                                            <p class="docker">PS> <span></span></p>
-
-                                            <h6>Install agent instance on local machine</h6>
-                                            <p>
-                                                PS> Invoke-WebRequest
-                                                https://tinyurl.com/ssm-agent-standalone-ps1
-                                                -Out install-agent-standalone.ps1
-                                            </p>
-                                            <p class="standalone">PS> <span></span></p>
-                                            </div>
-                                            <div
-                                                class="tab-pane fade"
-                                                id="linux-install-agent"
-                                                role="tabpanel"
-                                            >
-                                            <h6>Install agent using docker containers (default)</h6>
-                                            <p>
-                                                $> wget -q
-                                                https://tinyurl.com/ssm-agent-install-sh
-                                                -O install-agent.sh
-                                            </p>
-                                            <p class="docker">$> <span></span></p>
-                                            <h6>Install agent instance on local machine</h6>
-                                            <p>
-                                                $> wget -q
-                                                https://tinyurl.com/ssm-agent-standalone-sh
-                                                -O install-agent-standalone.sh
-                                            </p>
-                                            <p class="standalone">$> <span></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <%}else{%>
-                    <div class="card border-secondary mb-3">
-                        <div class="card-header">
-                            <h5>Server Information</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Server Host:</b>
-                                    <span class="settings-info">
-                                        This is your Hostname to connect to the Server in game.</b>
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <b id="agent-publicip">1.2.3.4</b>
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Connection Port:</b>
-                                    <span class="settings-info">
-                                        This is the port number of the SF server.</b>
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <b id="agent-connectionport"><%=agent.sfPortNum%></b>
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Server Version:</b>
-                                    <span class="settings-info">
-                                        This is the SF server version.</b>
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <b id="sfserver-version"><%=agent.config.sfVersions.installed%></b> / 
-                                    <b id="sfserver-version"><%=agent.config.sfVersions.available%></b>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="card border-secondary mb-3">
-                                <div class="card-header">
-                                    <h5>Satisfactory Server Settings</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form action="" method="post" class="form-horizontal">
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                        <input type="hidden" name="_ConfigSetting" value="sfsettings" />
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Max Players:</b>
-                                                <span class="settings-info">
-                                                    Number of players that can join the server.
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-6">
-                                                <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.config.maxPlayers%>">
-                                            </div>
-                        
-                                            <div class="col-12 col-md-2">
-                                                <span id="max-players-value">0 / 500</span>
-                                            </div>
-                                        </div>
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Update Server On Start:</b>
-                                                <span class="settings-info">
-                                                    Update Satisfactory server on start of SSM.
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-                                                <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
-                                            </div>
-                                        </div>
-                        
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Worker Threads:</b>
-                                                <span class="settings-info">
-                                                    Number of worker threads to allocate to the server.
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-                                                <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Version Branch</b>
-                                                <span class="settings-info">
-                                                    Choose whether to use the Public Branch or Experimental.
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-                                                <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.config.sfBranch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <button class="btn btn-success float-end" id="save-sf-settings"><i
-                                                        class="fas fa-save"></i>
-                                                    Update Settings</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="card border-danger mb-3">
-                                <div class="card-header">
-                                    <h5>Server Options</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row settings-row">
-                                        <div class="col-12 col-md-4">
-                                            <b class="settings-prop">Install/Reinstall Server:</b>
-                                            <span class="settings-info">
-                                                    Install or Reinstall Satisfactory Server
-                                                </span>
-                                        </div>
-                                        <div class="col-12 col-md-8">
-                                            <a href="/dashboard/serveraction/<%=agent._id%>/install">
-                                                <button class="btn btn-danger" id="settings-dangerarea-installsf"><i
-                                                    class="fas fa-download"></i> Install / Reinstall</button>
-                                            </a>
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="row settings-row">
-                                        <div class="col-12 col-md-4">
-                                            <b class="settings-prop">Update Server:</b>
-                                            <span class="settings-info">
-                                                Update Satisfactory Server
-                                            </span>
-                                        </div>
-                                        <div class="col-12 col-md-8">
-                                            <a href="/dashboard/serveraction/<%=agent._id%>/update">
-                                            <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
-                                                Update Server</button>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="card border-secondary mb-3">
-                                <div class="card-header">
-                                    <h5>Backup Settings</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form action="" method="post">
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                                        <input type="hidden" name="_ConfigSetting" value="backupsettings" />
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Backup Interval:</b>
-                                                <span class="settings-info">
-                                                    This is the interval between backups <b>(Hours)</b>
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-                                                <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backup.interval%>">
-                                            </div>
-                                        </div>
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Backups To Keep:</b>
-                                                <span class="settings-info">
-                                                    This is the number of backup to keep
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-                                                <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backup.keep%>">
-                                            </div>
-                                        </div>
-                                        <div class="row settings-row">
-                                            <div class="col-12 col-md-4">
-                                                <b class="settings-prop">Next Backup:</b>
-                                                <span class="settings-info">
-                                                    This is when the next backup will take place
-                                                </span>
-                                            </div>
-                                            <div class="col-12 col-md-8">
-
-                                                <%
-
-                                                Number.prototype.pad = function (width, z) {
-                                                    let n = this;
-                                                    z = z || "0";
-                                                    n = n + "";
-                                                    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-                                                };
-                            
-                                                Date.prototype.getMonthName = function () {
-                                                    const monthNames = [
-                                                        "Jan",
-                                                        "Feb",
-                                                        "Mar",
-                                                        "Apr",
-                                                        "May",
-                                                        "Jun",
-                                                        "Jul",
-                                                        "Aug",
-                                                        "Sep",
-                                                        "Oct",
-                                                        "Nov",
-                                                        "Dec",
-                                                    ];
-                                                    return monthNames[this.getMonth()];
-                                                };
-
-                                                const date = new Date(agent.config.backup.nextbackup);
-                                                const day = date.getDate().pad(2);
-                                                const month = date.getMonthName();
-                                                const year = date.getFullYear();
-                                        
-                                                const hour = date.getHours().pad(2);
-                                                const min = date.getMinutes().pad(2);
-                                                const sec = date.getSeconds().pad(2);
-                                        
-                                                const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
-                                                
-                                                %>
-
-                                                <b id="backup-nextbackup"><%=dateStr%></b>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <button class="btn btn-success float-end" id="save-backup-settings"><i
-                                                        class="fas fa-save"></i>
-                                                    Update Settings</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    
-                                </div>
-                        
-                            </div>
+                        <div class="col-12">
+                            <button class="btn btn-success float-end" id="save-sf-settings"><i
+                                    class="fas fa-save"></i>
+                                Update Settings</button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+                </div>
 
-                    <%}%>
+                <div class="col-12 col-md-6">
+                  <div class="card border-secondary mb-3">
+                    <div class="card-header">
+                      <h5>Backup Settings</h5>
+                    </div>
+                    <div class="card-body">
+                      <form action="" method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                            <input type="hidden" name="_ConfigSetting" value="backupsettings" />
+                            <div class="row settings-row">
+                              <div class="col-12 col-md-4">
+                                <b class="settings-prop">Backup Interval:</b>
+                                <span class="settings-info">
+                                  This is the interval between backups <b>(Hours)</b>
+                                </span>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backup.interval%>">
+                              </div>
+                            </div>
+                            <div class="row settings-row">
+                              <div class="col-12 col-md-4">
+                                <b class="settings-prop">Backups To Keep:</b>
+                                <span class="settings-info">
+                                  This is the number of backup to keep
+                                </span>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backup.keep%>">
+                              </div>
+                            </div>
+                            <div class="row settings-row">
+                              <div class="col-12 col-md-4">
+                                <b class="settings-prop">Next Backup:</b>
+                                <span class="settings-info">
+                                  This is when the next backup will take place
+                                </span>
+                              </div>
+                              <div class="col-12 col-md-8">
+
+                                <%
+        
+                                                        Number.prototype.pad = function (width, z) {
+                                                            let n = this;
+                                                            z = z || "0";
+                                                            n = n + "";
+                                                            return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                                                        };
+                                    
+                                                        Date.prototype.getMonthName = function () {
+                                                            const monthNames = [
+                                                                "Jan",
+                                                                "Feb",
+                                                                "Mar",
+                                                                "Apr",
+                                                                "May",
+                                                                "Jun",
+                                                                "Jul",
+                                                                "Aug",
+                                                                "Sep",
+                                                                "Oct",
+                                                                "Nov",
+                                                                "Dec",
+                                                            ];
+                                                            return monthNames[this.getMonth()];
+                                                        };
+        
+                                                        const date = new Date(agent.config.backup.nextbackup);
+                                                        const day = date.getDate().pad(2);
+                                                        const month = date.getMonthName();
+                                                        const year = date.getFullYear();
+                                                
+                                                        const hour = date.getHours().pad(2);
+                                                        const min = date.getMinutes().pad(2);
+                                                        const sec = date.getSeconds().pad(2);
+                                                
+                                                        const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
+                                                        
+                                                        %>
+
+                                <b id="backup-nextbackup"><%=dateStr%></b>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-12">
+                                <button class="btn btn-success float-end" id="save-backup-settings"><i class="fas fa-save"></i>
+                                  Update Settings</button>
+                              </div>
+                            </div>
+                      </form>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="card border-danger mb-3">
+                    <div class="card-header">
+                      <h5>Server Options</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                          <b class="settings-prop">Install/Reinstall Server:</b>
+                          <span class="settings-info">
+                            Install or Reinstall Satisfactory Server
+                          </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                          <a href="/dashboard/serveraction/<%=agent._id%>/install">
+                            <button class="btn btn-danger" id="settings-dangerarea-installsf"><i class="fas fa-download"></i> Install / Reinstall</button>
+                          </a>
+
+                        </div>
+                      </div>
+                      <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                          <b class="settings-prop">Update Server:</b>
+                          <span class="settings-info">
+                            Update Satisfactory Server
+                          </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                          <a href="/dashboard/serveraction/<%=agent._id%>/update">
+                            <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
+                              Update Server</button>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <%}%>
 
                     
                 </div>
@@ -382,5 +397,5 @@
 
             <%- include('../includes/footer-main.ejs') %>
         </div>
-    </div>
+      </div>
 </body>

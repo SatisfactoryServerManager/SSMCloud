@@ -3,20 +3,21 @@ const path = require("path");
 const express = require("express");
 const isAuth = require("../../middleware/is-auth");
 const User = require("../../models/user");
-const dashboardController = require("../../controllers/dashboard");
+const Account = require("../../models/account");
+const accountController = require("../../controllers/dashboard/account");
 
 const { check, body } = require("express-validator");
 
 const router = express.Router();
 
-router.get("/", isAuth, dashboardController.getAccount);
+router.get("/", isAuth, accountController.getAccount);
 
-router.get("/deleteuser/:userId", isAuth, dashboardController.getDeleteUser);
+router.get("/deleteuser/:userId", isAuth, accountController.getDeleteUser);
 
 router.get(
     "/deleteinvite/:inviteId",
     isAuth,
-    dashboardController.getDeleteUserInvite
+    accountController.getDeleteUserInvite
 );
 
 router.post(
@@ -52,7 +53,7 @@ router.post(
             }),
         // Adding validation error message as second argument as alternative to using withMessage() after each validator since using message for both checks
     ],
-    dashboardController.postAccountUser
+    accountController.postAccountUser
 );
 
 router.post(
@@ -67,7 +68,13 @@ router.post(
             });
         }),
     ],
-    dashboardController.postAccountApiKey
+    accountController.postAccountApiKey
+);
+
+router.get(
+    "/apikey/delete/:apiKeyId",
+    isAuth,
+    accountController.getDeleteApiKey
 );
 
 router.get("/apikey", (req, res, next) => {

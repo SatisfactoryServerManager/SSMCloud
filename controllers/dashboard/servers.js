@@ -14,19 +14,12 @@ const Account = require("../../models/account");
 const Agent = require("../../models/agent");
 const MessageQueueItem = require("../../models/messagequeueitem");
 const User = require("../../models/user");
-const UserInvite = require("../../models/user_invite");
-const UserRole = require("../../models/user_role");
-const Permission = require("../../models/permission");
 const AgentSaveFile = require("../../models/agent_save");
 const AgentBackup = require("../../models/agent_backup");
-const ApiKey = require("../../models/apikey");
-const ModModel = require("../../models/mod");
 const AgentLogInfo = require("../../models/agent_log_info");
 
-const NotificationEventTypeModel = require("../../models/notification_event_type");
-const NotificationSettingsModel = require("../../models/account_notification_setting");
-
 const AgentHandler = require("../../server/server_agent_handler");
+const { validationResult } = require("express-validator");
 
 exports.getServers = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -54,14 +47,22 @@ exports.getServers = async (req, res, next) => {
     if (theAccount) {
         await theAccount.populate("agents");
 
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         res.render("dashboard/servers", {
             path: "/servers",
             pageTitle: "Servers",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
             latestVersion: AgentHandler._LatestAgentRelease,
-            errorMessage: "",
-            newApiKey: "",
+            errorMessage,
+            message,
             oldInput: {
                 inp_servername: "",
                 inp_serverport: "",
@@ -75,9 +76,8 @@ exports.getServers = async (req, res, next) => {
             accountName: "",
             agents: [],
             latestVersion: "",
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-            newApiKey: "",
+            message,
+            errorMessage,
             oldInput: {
                 inp_servername: "",
                 inp_serverport: "",
@@ -89,9 +89,13 @@ exports.getServers = async (req, res, next) => {
 
 exports.postServers = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "servers",
+            message: "Invalid Session User ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     const theUser = await User.findOne({ _id: req.session.user._id });
@@ -99,122 +103,92 @@ exports.postServers = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("server.create");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
+        const errorMessageData = {
+            section: "servers",
+            message: "You dont have permission to perform this action!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     const theAccount = await Account.findOne({ users: req.session.user._id });
-    if (theAccount) {
-        await theAccount.populate("agents");
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(422).render("dashboard/servers", {
-                path: "/servers",
-                pageTitle: "Servers",
-                accountName: theAccount.accountName,
-                agents: theAccount.agents,
-                latestVersion: AgentHandler._LatestAgentRelease,
-                errorMessage: errors.array()[0].msg,
-                validationErrors: errors.array(),
-                oldInput: {
-                    inp_servername: req.body.inp_servername,
-                    inp_serverport: req.body.inp_serverport,
-                    inp_servermemory: req.body.inp_servermemory,
-                },
-            });
-            return;
-        }
 
-        const existingAgentWithName = theAccount.agents.find(
-            (agent) => agent.agentName == req.body.inp_servername
-        );
+    if (theAccount == null) {
+        const errorMessageData = {
+            section: "servers",
+            message: "Cant Find Session Account details!",
+        };
 
-        if (existingAgentWithName) {
-            res.render("dashboard/servers", {
-                path: "/servers",
-                pageTitle: "Servers",
-                accountName: "",
-                agents: theAccount.agents,
-                latestVersion: AgentHandler._LatestAgentRelease,
-                oldInput: {
-                    inp_servername: req.body.inp_servername,
-                    inp_serverport: req.body.inp_serverport,
-                    inp_servermemory: req.body.inp_servermemory,
-                },
-                errorMessage:
-                    "Server with that name already exists on your account!",
-                newApiKey: "",
-            });
-            return;
-        }
-
-        const APIKey =
-            "AGT-API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
-
-        const newLogInfo = await AgentLogInfo.create({});
-
-        const newAgent = await Agent.create({
-            agentName: req.body.inp_servername,
-            sfPortNum: req.body.inp_serverport,
-            apiKey: APIKey,
-            memory: req.body.inp_servermemory * 1024 * 1024 * 1024,
-            logInfo: newLogInfo,
-        });
-        theAccount.agents.push(newAgent);
-        await theAccount.save();
-
-        try {
-            await NotificationSystem.CreateNotification(
-                "agent.created",
-                {
-                    account_id: theAccount._id,
-                    account_name: theAccount.accountName,
-                    agent_id: newAgent._id,
-                    agent_name: newAgent.agentName,
-                    server_port: newAgent.sfPortNum,
-                    memory: newAgent.memory,
-                },
-                theAccount._id
-            );
-        } catch (err) {
-            console.log(err);
-        }
-
-        res.render("dashboard/servers", {
-            path: "/servers",
-            pageTitle: "Servers",
-            accountName: "",
-            agents: theAccount.agents,
-            latestVersion: AgentHandler._LatestAgentRelease,
-            oldInput: {
-                inp_servername: req.body.inp_servername,
-                inp_serverport: req.body.inp_serverport,
-                inp_servermemory: req.body.inp_servermemory,
-            },
-            errorMessage: "",
-            newApiKey: APIKey,
-        });
-    } else {
-        res.render("dashboard/servers", {
-            path: "/servers",
-            pageTitle: "Servers",
-            accountName: "",
-            agents: [],
-            latestVersion: "",
-            oldInput: {
-                email: "",
-                password: "",
-            },
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
+
+    await theAccount.populate("agents");
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const errorMessageData = {
+            section: "servers",
+            message: errors.array()[0].msg,
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
+    }
+
+    const existingAgentWithName = theAccount.agents.find(
+        (agent) => agent.agentName == req.body.inp_servername
+    );
+
+    if (existingAgentWithName) {
+        const errorMessageData = {
+            section: "servers",
+            message:
+                "Server with the same name already exists on this Account!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
+    }
+
+    const APIKey = "AGT-API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
+
+    const newLogInfo = await AgentLogInfo.create({});
+
+    const newAgent = await Agent.create({
+        agentName: req.body.inp_servername,
+        sfPortNum: req.body.inp_serverport,
+        apiKey: APIKey,
+        memory: req.body.inp_servermemory * 1024 * 1024 * 1024,
+        logInfo: newLogInfo,
+    });
+    theAccount.agents.push(newAgent);
+    await theAccount.save();
+
+    try {
+        await NotificationSystem.CreateNotification(
+            "agent.created",
+            {
+                account_id: theAccount._id,
+                account_name: theAccount.accountName,
+                agent_id: newAgent._id,
+                agent_name: newAgent.agentName,
+                server_port: newAgent.sfPortNum,
+                memory: newAgent.memory,
+            },
+            theAccount._id
+        );
+    } catch (err) {
+        console.log(err);
+    }
+
+    const successMessageData = {
+        section: "servers",
+        message: `New server has been created successfully. New Server API Key: ${APIKey}`,
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+    return res.redirect("/dashboard/servers");
 };
 
 exports.getServer = async (req, res, next) => {
@@ -373,15 +347,23 @@ exports.getServerDelete = async (req, res, next) => {
     const { agentid } = req.params;
 
     if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Invalid Session User ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     if (!ObjectId.isValid(agentid)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Invalid Requested Server ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     const theUser = await User.findOne({ _id: req.session.user._id });
@@ -389,25 +371,27 @@ exports.getServerDelete = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("server.delete");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
+        const errorMessageData = {
+            section: "serverlist",
+            message: "You dont have permission to perform this action!",
+        };
 
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
+    }
     const theAccount = await Account.findOne({
         users: req.session.user._id,
         agents: agentid,
     });
 
     if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Cant Find Session Account details!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     const agentIndex = theAccount.agents.indexOf(agentid);
@@ -439,6 +423,14 @@ exports.getServerDelete = async (req, res, next) => {
         await Agent.deleteOne({ _id: theAgent._id });
         theAccount.agents.splice(agentIndex, 1);
         await theAccount.save();
+
+        const successMessageData = {
+            section: "serverlist",
+            message: `Server has been deleted successfully!`,
+        };
+
+        req.flash("success", JSON.stringify(successMessageData));
+        return res.redirect("/dashboard/servers");
     }
 
     res.redirect("/dashboard/servers");

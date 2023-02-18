@@ -495,7 +495,8 @@ body {
 
 /* Modals */
 
-.ssm-modal i {
+.ssm-modal i,
+.ssm-modal svg {
     font-size: 50px;
 }
 

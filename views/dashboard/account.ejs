@@ -161,7 +161,7 @@
 
                         <td><%=shortenedKey%></td>
                         <td>
-                          <a href="/dashboard/account/deleteapikey/<%=key._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation">
+                          <a href="/dashboard/account/apikey/delete/<%=key._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation">
                             <i class="fas fa-trash"></i>
                           </a>
                         </td>
@@ -178,39 +178,45 @@
                   <h5>User Invites</h5>
                 </div>
                 <div class="card-body">
-                  <%if(inviteErrorMessage != null){%>
-                  <div class="alert alert-danger"><%=inviteErrorMessage%></div>
+                  <% if(locals.message){ const messageData = JSON.parse(message); 
+                        if(messageData.section == "userinvite"){%>
+                  <div class="alert alert-success">
+                    <%=messageData.message%>
+                  </div>
+                  <%}}%>
 
-                  <%}%>
-                                    <table
-                                        class="table table-bordered"
-                                        id="invites-table"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th>Email address</th>
-                                                <th width="120px">Invite Link</th>
-                                                <th width="60px">Options</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% if(userInvites.length > 0){ %>
-                  <% userInvites.forEach(invite => { %>
-                  <%if(invite.claimed) return;%>
-                  <%if(invite.user == null) return;%>
-                  <tr>
-                    <td><%=invite.user.email%></td>
-                    <td>
-                      <a href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
-                    </td>
-                    <td>
-                      <a href="/dashboard/account/deleteinvite/<%=invite._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation">
-                        <i class="fas fa-trash"></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <%})%>
-                  <%}%>
+                  <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                        if(errorMessageData.section == "userinvite"){%>
+                  <div class="alert alert-danger">
+                    <%=errorMessageData.message%>
+                  </div>
+                  <%}}%>
+                  <table class="table table-bordered" id="invites-table">
+                    <thead>
+                      <tr>
+                        <th>Email address</th>
+                        <th width="120px">Invite Link</th>
+                        <th width="60px">Options</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if(userInvites.length > 0){ %>
+                      <% userInvites.forEach(invite => { %>
+                      <%if(invite.claimed) return;%>
+                      <%if(invite.user == null) return;%>
+                      <tr>
+                        <td><%=invite.user.email%></td>
+                        <td>
+                          <a href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
+                        </td>
+                        <td>
+                          <a href="/dashboard/account/deleteinvite/<%=invite._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation">
+                            <i class="fas fa-trash"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <%})%>
+                      <%}%>
                                         </tbody>
                                     </table>
                                 </div>
@@ -226,69 +232,69 @@
                                 <div class="card-body">
                                     <% if(locals.message){ const messageData = JSON.parse(message); 
                                         if(messageData.section == "user"){%>
-                  <div class="alert alert-success">
-                    <%=messageData.message%>
-                  </div>
-                  <%}}%>
+                      <div class="alert alert-success">
+                        <%=messageData.message%>
+                      </div>
+                      <%}}%>
 
-                  <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                      <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
                                         if(errorMessageData.section == "user"){%>
-                  <div class="alert alert-danger">
-                    <%=errorMessageData.message%>
-                  </div>
-                  <%}}%>
-                  <form action="/dashboard/account/user" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-
-                    <div class="row">
-                      <div class="col-12 col-md-6">
-                        <div class="input-group mb-3">
-                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
-                          <input type="text" class="form-control" name="inp_useremail" placeholder="Email Address" aria-label="Email Address" aria-describedby="basic-addon1" />
-                        </div>
+                      <div class="alert alert-danger">
+                        <%=errorMessageData.message%>
                       </div>
-                      <div class="col-12 col-md-6">
-                        <div class="input-group mb-3">
-                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-group"></i></span>
-                          <select name="inp_userrole" id="" class="form-select" placeholder="User Role">
-                            <% userRoles.forEach(role => { %>
-                            <option value="<%=role._id%>">
-                              <%=role.roleName%>
-                            </option>
-                            <%})%>
-                          </select>
+                      <%}}%>
+                      <form action="/dashboard/account/user" method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+                        <div class="row">
+                          <div class="col-12 col-md-6">
+                            <div class="input-group mb-3">
+                              <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
+                              <input type="text" class="form-control" name="inp_useremail" placeholder="Email Address" aria-label="Email Address" aria-describedby="basic-addon1" />
+                            </div>
+                          </div>
+                          <div class="col-12 col-md-6">
+                            <div class="input-group mb-3">
+                              <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-group"></i></span>
+                              <select name="inp_userrole" id="" class="form-select" placeholder="User Role">
+                                <% userRoles.forEach(role => { %>
+                                <option value="<%=role._id%>">
+                                  <%=role.roleName%>
+                                </option>
+                                <%})%>
+                              </select>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <button id="btn-adduser" class="btn btn-primary">
-                      <i class="fas fa-plus"></i> Add User
-                    </button>
-                  </form>
+                        <button id="btn-adduser" class="btn btn-primary">
+                          <i class="fas fa-plus"></i> Add User
+                        </button>
+                      </form>
 
-                  <hr />
+                      <hr />
 
-                  <table class="table table-bordered" id="users-table">
-                    <thead>
-                      <tr>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th width="60px">Options</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% if(users.length > 0){ %> <%
+                      <table class="table table-bordered" id="users-table">
+                        <thead>
+                          <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th width="60px">Options</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% if(users.length > 0){ %> <%
                                             users.forEach(user => { %>
-                      <%if(user.active){%>
-                      <tr>
-                        <td><%=user.email%></td>
-                        <td><%=user.role.roleName%></td>
-                        <td>
-                          <a href="/dashboard/account/deleteuser/<%=user._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
-                            <i class="fas fa-trash"></i>
-                          </a>
-                        </td>
-                      </tr>
-                      <%}})%> <%}%>
+                          <%if(user.active){%>
+                          <tr>
+                            <td><%=user.email%></td>
+                            <td><%=user.role.roleName%></td>
+                            <td>
+                              <a href="/dashboard/account/deleteuser/<%=user._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
+                                <i class="fas fa-trash"></i>
+                              </a>
+                            </td>
+                          </tr>
+                          <%}})%> <%}%>
                                         </tbody>
                                     </table>
                                 </div>
@@ -322,17 +328,17 @@
                                         <tbody>
                                             <% if(userRoles.length > 0){ %> <%
                                             userRoles.forEach(role => { %>
-                      <tr>
-                        <td><%=role.roleName%></td>
-                        <td>
-                          <%=role.permissions.length%>
-                        </td>
-                        <td>
-                          <%if(role.canEdit){%>
-                          <a href="/dashboard/account/deleteuserrole/<%=role._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
-                            <i class="fas fa-trash"></i>
-                          </a>
-                          <%}%>
+                          <tr>
+                            <td><%=role.roleName%></td>
+                            <td>
+                              <%=role.permissions.length%>
+                            </td>
+                            <td>
+                              <%if(role.canEdit){%>
+                              <a href="/dashboard/account/deleteuserrole/<%=role._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
+                                <i class="fas fa-trash"></i>
+                              </a>
+                              <%}%>
                                                 </td>
                                             </tr>
                                             <%})%> <%}%>

@@ -37,6 +37,7 @@ class ServerApp {
             { name: "user.delete", description: "Delete User" },
             { name: "user.update", description: "Update User" },
             { name: "user.apikey.create", description: "Create User API Key" },
+            { name: "user.apikey.delete", description: "Delete User API Key" },
             { name: "userrole.create", description: "Create User Role" },
             { name: "userrole.delete", description: "Delete User Role" },
             { name: "userrole.update", description: "Update User Role" },
