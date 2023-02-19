@@ -1,3 +1,4 @@
 -   [Home](README.md)
 -   [Getting Started](getting-started.md)
+-   [Scenarios](scenarios.md)
 -   [API](api.md)

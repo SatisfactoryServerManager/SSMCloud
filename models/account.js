@@ -61,6 +61,10 @@ const accountSchema = new Schema({
         ],
         select: false,
     },
+    createdDate: {
+        type: Date,
+        default: Date.now,
+    },
     events: [
         {
             type: Schema.Types.ObjectId,

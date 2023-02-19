@@ -33,6 +33,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    createdDate:{
+        type: Date,
+        default: Date.now
+    },
 });
 
 userSchema.methods.HasPermission = async function (permissionName) {

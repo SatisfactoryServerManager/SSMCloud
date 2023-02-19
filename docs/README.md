@@ -8,7 +8,9 @@
 
 Satisfactory Server Manager Cloud is a management web portal to manage locally hosted [SSM agents](#what-is-an-agent).
 
-The web portal can easily manage and control the ssm agent, providing at-a-glace information about the performance and information
+The web portal can easily manage and control the ssm agent, providing at-a-glace information about the performance and information.
+
+> **NOTE:** SSM Cloud is designed to only provide a user interface to easily manage **your** Satisfactory Dedicated server and will not host any dedicated server instances in the cloud.
 
 ## Why Use SSM Cloud?
 
@@ -20,7 +22,14 @@ Having the ability to monitor multiple servers using SSM Cloud means, that you c
 
 ## What is an agent?
 
-A SSM Agent is a docker container that will help easily manage the installation and running of a Satisfactory Dedicated server instance.
+A SSM Agent is a small application that is installed on your own infrastructure, this application will Install, Update, Start/Stop the Satisfactory Dedicated Server.
+
+> **NOTE:** Within SSM Cloud this is referred to as a server
+
+There are two different methods of installing SSM Agent.
+
+-   Running the Agent on the local machine and will be seperated by folder structure.
+-   Running the Agent within a Docker Container.
 
 ## SSM Architecture
 

@@ -11,6 +11,10 @@ const UserInviteSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    createdDate: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model("UserInvite", UserInviteSchema);
