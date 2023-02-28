@@ -11,6 +11,10 @@ const ApiKeySchema = new Schema({
         type: String,
         required: true,
     },
+    creationDate: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model("ApiKey", ApiKeySchema);

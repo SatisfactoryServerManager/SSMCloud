@@ -61,7 +61,7 @@ const accountSchema = new Schema({
         ],
         select: false,
     },
-    createdDate: {
+    creationDate: {
         type: Date,
         default: Date.now,
     },

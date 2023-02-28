@@ -40,7 +40,7 @@ const notificationSchema = new Schema({
         type: Object,
         default: {},
     },
-    createdDate: {
+    creationDate: {
         type: Date,
         default: Date.now,
     },

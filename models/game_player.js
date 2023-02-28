@@ -18,6 +18,10 @@ const GamePlayerSchema = new Schema({
     logDate: {
         type: Date,
     },
+    creationDate: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model("GamePlayer", GamePlayerSchema);

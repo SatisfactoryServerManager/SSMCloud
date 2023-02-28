@@ -33,9 +33,9 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    createdDate:{
+    creationDate: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
 });
 

@@ -98,7 +98,7 @@ const agentSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        createdDate: {
+        creationDate: {
             type: Date,
             default: Date.now,
         },
