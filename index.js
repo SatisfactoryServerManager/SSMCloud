@@ -50,6 +50,8 @@ class SSMCloud_App {
         Logger.init();
         Logger.info("[APP] [PREINIT] - Loading Configs..");
         await Config.load();
+
+        Logger.info(`[APP] [PREINIT] - Version: v${Config.get("ssm.version")}`);
         Logger.info("[APP] [PREINIT] - Starting SSM..");
         this.startExpress();
     };
@@ -207,7 +209,15 @@ class SSMCloud_App {
         app.use(flash());
 
         app.use(
-            favicon(path.join(__dirname, "public", "images", "favicons", "favicon.ico"))
+            favicon(
+                path.join(
+                    __dirname,
+                    "public",
+                    "images",
+                    "favicons",
+                    "favicon.ico"
+                )
+            )
         );
 
         app.use((req, res, next) => {
