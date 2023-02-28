@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.38](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.37...v1.0.38) (2023-02-28)
+
+
+### Features
+
+* Debug server version in logs ([b1bc84f](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/b1bc84f4b6ef7c0cc4114040c08aa41cc733012f))
+* Updated install agent tabs ([347d6a6](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/347d6a6f850ffd65e35f4e3c20e92a9d6d0e1f97))
+
+
+### Bug Fixes
+
+* Fixed creation date in db ([5228692](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/5228692f952a42bfe38592abeed8b1dc47d7a4bb))
+
+
+### Docs
+
+* Added scenarios ([d48b50d](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/d48b50d37f3ba48e017dbad56b6d61e5eb81543b))
+
 ### [1.0.37](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.36...v1.0.37) (2023-02-18)
 
 
