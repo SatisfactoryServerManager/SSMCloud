@@ -33,27 +33,7 @@
       <div class="container-fluid">
         <!-- BODY -->
         <div class="page-container" data-page="dashboard">
-          <div class="row page-header">
-            <div class="col-12 col-md-9">
-              <h3 class="mb-3">
-                <%=pageTitle%> - <%=accountName%>
-              </h3>
-            </div>
-
-            <div class="col-12 col-md-3">
-              <div class="status-info-card blue">
-                <div class="status-info-card-main">
-                  Servers:
-                </div>
-                <div class="status-info-card-secondary">
-                  <span id="server-count"><%= agents.length %></span>
-                </div>
-                <div class="status-info-card-icon">
-                  <i class="fas fa-server"></i>
-                </div>
-              </div>
-            </div>
-          </div>
+          <%- include('../includes/page-header.ejs') %>
           <div class="row">
             <div class="col-12 col-lg-6">
               <div class="card mb-3">
@@ -218,8 +198,8 @@
                       </div>
                       <div><b>Event Type:</b> <%=notification.eventType.description%></div>
                       <%
-                      const date = new Date(notification.createdDate);
-                        const day = date.getDate()
+                      const date = new Date(notification.creationDate);
+                        const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
                 

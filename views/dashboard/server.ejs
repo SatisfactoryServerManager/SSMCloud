@@ -7,25 +7,7 @@
       <div class="container-fluid">
         <!-- BODY -->
         <div class="page-container" data-page="dashboard">
-          <div class="row page-header">
-            <div class="col-12 col-md-9">
-              <h3 class="mb-3">
-                Server - <%=accountName%> - <%=agent.agentName%>
-              </h3>
-            </div>
-
-            <div class="col-12 col-md-3">
-              <div class="status-info-card blue">
-                <div class="status-info-card-main">Server:</div>
-                <div class="status-info-card-secondary">
-                  <span id="server-count"><%= agents.length %></span>
-                </div>
-                <div class="status-info-card-icon">
-                  <i class="fas fa-server"></i>
-                </div>
-              </div>
-            </div>
-          </div>
+          <%- include('../includes/page-header.ejs') %>
           <%if(agent.config.version == null){%>
           <div class="alert alert-warning">Uh Oh looks like this server has not been started before!</div>
 
@@ -171,6 +153,23 @@
                     <div class="col-12 col-md-6">
                       <b id="sfserver-version"><%=agent.config.sfVersions.installed%></b> /
                       <b id="sfserver-version"><%=agent.config.sfVersions.available%></b>
+                    </div>
+                  </div>
+                  <div class="row settings-row">
+                    <div class="col-12 col-md-6">
+                      <b class="settings-prop">Server API Key:</b>
+                      <span class="settings-info">
+                        This is the Servers API Key</b>
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <%
+                            let apiKeyData = agent.apiKey.split("-")
+                            const keyPart = apiKeyData[2];
+                            const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
+                            const shortenedKey = `${apiKeyData[0]}-${apiKeyData[1]} - XXXX${shortenedKeyPart}`
+                        %>
+                      <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="<%=agent.apiKey%>"><%=shortenedKey%></b>
                     </div>
                   </div>
                 </div>
@@ -399,3 +398,7 @@
         </div>
       </div>
 </body>
+
+<script>
+  window.agentKey = "<%=apiKey%>"
+</script>

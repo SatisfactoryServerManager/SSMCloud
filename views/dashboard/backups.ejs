@@ -1,48 +1,28 @@
 <%- include('../includes/head-main.ejs') %>
 
 <body>
-    <div id="viewport" class="minimal">
-        <%- include('../includes/navigation.ejs') %>
-        <div id="content">
-            <div class="container-fluid">
-                <!-- BODY -->
-                <div class="page-container" data-page="dashboard">
-                    <div class="row page-header">
-                        <div class="col-12 col-md-9">
-                            <h3 class="mb-3">Backups - <%=accountName%></h3>
-                        </div>
-
-                        <div class="col-12 col-md-3">
-                            <div class="status-info-card blue">
-                                <div class="status-info-card-main">
-                                    Servers:
-                                </div>
-                                <div class="status-info-card-secondary">
-                                    <span id="server-count"
-                                        ><%= agents.length %></span
-                                    >
-                                </div>
-                                <div class="status-info-card-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <div id="viewport" class="minimal">
+    <%- include('../includes/navigation.ejs') %>
+    <div id="content">
+      <div class="container-fluid">
+        <!-- BODY -->
+        <div class="page-container" data-page="dashboard">
+          <%- include('../includes/page-header.ejs') %>
 
 
-                    <% if(agents.length > 0){ %>
-                        <% agents.forEach(agent => { %>
-                            <%- include('../includes/backups-agent.ejs', {agent}) %>
-                        <%})%>
-                    <%} else {%>
-                        <div class="alert alert-info">
-                            It looks there is no servers set up yet! Go to the <strong>Servers</strong> page to set up your first server.
-                        </div>
-                    <%}%>
+          <% if(agents.length > 0){ %>
+          <% agents.forEach(agent => { %>
+          <%- include('../includes/backups-agent.ejs', {agent}) %>
+          <%})%>
+          <%} else {%>
+          <div class="alert alert-info">
+            It looks there is no servers set up yet! Go to the <strong>Servers</strong> page to set up your first server.
+          </div>
+          <%}%>
                 </div>
             </div>
 
             <%- include('../includes/footer-main.ejs') %>
         </div>
-    </div>
+      </div>
 </body>

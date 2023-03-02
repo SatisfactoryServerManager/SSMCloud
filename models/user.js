@@ -37,6 +37,10 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    profileImage: {
+        type: String,
+        default: "",
+    },
 });
 
 userSchema.methods.HasPermission = async function (permissionName) {

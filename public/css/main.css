@@ -149,13 +149,6 @@ body {
     padding: 0;
 }
 
-.dropdown-menu {
-    position: relative !important;
-    background-color: #333333;
-    margin: 0;
-    padding: 0;
-}
-
 .main-container {
     padding: 15px 15px 15px 15px;
     min-height: calc(100% - 58.41px);
@@ -172,6 +165,13 @@ body {
     padding: 12px 12px 0 12px;
     background-color: #333;
     margin-bottom: 12px;
+}
+
+.page-header .profile-btn-group .btn {
+    font-size: 15px !important;
+    height: 45px;
+    font-weight: bold;
+    line-height: 30px !important;
 }
 
 .page-footer {
@@ -275,11 +275,15 @@ body {
 }
 
 .btn {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .btn i {
     font-size: 14px;
+}
+.badge {
+    font-size: 12px;
 }
 
 .hidden {

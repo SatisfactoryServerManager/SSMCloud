@@ -234,10 +234,10 @@ exports.getServer = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+    let theAgent = theAccount.agents.find((agent) => agent._id == agentid);
 
-    if (theAccount) {
-        await theAccount.populate("agents");
+    if (theAgent) {
+        theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
 
         res.render("dashboard/server", {
             path: "/server",
@@ -246,6 +246,7 @@ exports.getServer = async (req, res, next) => {
             agents: theAccount.agents,
             latestVersion: AgentHandler._LatestAgentRelease,
             agent: theAgent,
+            apiKey: encodeBase64(theAgent.apiKey),
             errorMessage: "",
         });
     } else {
@@ -256,6 +257,7 @@ exports.getServer = async (req, res, next) => {
             agents: [],
             latestVersion: "",
             agent: {},
+            apiKey: "",
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
@@ -434,4 +436,11 @@ exports.getServerDelete = async (req, res, next) => {
     }
 
     res.redirect("/dashboard/servers");
+};
+
+const encodeBase64 = (data) => {
+    return Buffer.from(data).toString("base64");
+};
+const decodeBase64 = (data) => {
+    return Buffer.from(data, "base64").toString("ascii");
 };

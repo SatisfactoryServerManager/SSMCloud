@@ -942,3 +942,99 @@ exports.getDeleteNotificationSettings = async (req, res, next) => {
 
     res.redirect("/dashboard/notifications");
 };
+
+exports.getProfile = async (req, res, next) => {
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.mods");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    let message = req.flash("success");
+    message.length > 0 ? (message = message[0]) : (message = null);
+
+    if (theAccount) {
+        await theAccount.populate("agents");
+
+        res.render("dashboard/profile", {
+            path: "/profile",
+            pageTitle: "My Profile",
+            accountName: theAccount.accountName,
+            agents: theAccount.agents,
+            user: theUser,
+            message,
+            errorMessage: "",
+        });
+    } else {
+        res.render("dashboard/profile", {
+            path: "/profile",
+            pageTitle: "My Profile",
+            accountName: "",
+            agents: [],
+            mods: [],
+            message,
+            errorMessage:
+                "Cant Find Account details. Please contact SSM Support.",
+        });
+    }
+};
+
+exports.getProfileImage = async (req, res, next) => {
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    let theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.mods");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "403 - Forbidden",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    if (theUser.profileImage == "") {
+        const imagePath = path.join(
+            __basedir,
+            "/public/images/blank-profile-image.png"
+        );
+        res.sendFile(imagePath);
+        return;
+    }
+
+    if (!fs.existsSync(theUser.profileImage)) {
+        const imagePath = path.join(
+            __basedir,
+            "/public/images/blank-profile-image.png"
+        );
+        res.sendFile(imagePath);
+        return;
+    }
+
+    res.sendFile(theUser.profileImage);
+};

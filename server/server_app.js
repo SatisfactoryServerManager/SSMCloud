@@ -29,6 +29,7 @@ class ServerApp {
             { name: "page.logs", description: "View Logs Page" },
             { name: "page.mods", description: "View Mods Page" },
             { name: "page.saves", description: "View Saves Page" },
+            { name: "page.profile", description: "View Profile Page" },
             {
                 name: "page.notifications",
                 description: "View Notifications Page",

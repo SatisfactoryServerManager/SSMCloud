@@ -26,5 +26,6 @@ router.use("/mods", require("./mods"));
 router.use("/notifications", require("./notifications"));
 router.use("/saves", require("./saves"));
 router.use("/servers", require("./servers"));
+router.use("/profile", require("./profile"));
 
 module.exports = router;

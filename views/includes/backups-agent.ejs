@@ -1,22 +1,22 @@
 <div class="card border-secondary mb-3 shadow">
-    <div class="card-header">
-        <h5><%=agent.agentName%> - Backups</h5>
-    </div>
-    <div class="card-body">
-        <table class="table table-bordered backup-agent-table">
-            <thead>
-                <tr>
-                    <th>File Name</th>
-                    <th>Created</th>
-                    <th>Size</th>
-                    <th width="80px">Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%agent.backups.forEach(backup=>{%>
+  <div class="card-header">
+    <h5><%=agent.agentName%> - Backups</h5>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered backup-agent-table">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Created</th>
+          <th>Size</th>
+          <th width="80px">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%agent.backups.forEach(backup=>{%>
 
 
-                    <%
+        <%
                     Number.prototype.pad = function (width, z) {
                         let n = this;
                         z = z || "0";
@@ -42,7 +42,7 @@
                         return monthNames[this.getMonth()];
                     };
                         const date = new Date(backup.uploadDate);
-                        const day = date.getDate()
+                        const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
                 
@@ -65,18 +65,18 @@
                         }
 
                         %>
-                <tr>
-                    <td><%=backup.backupName%></td>
-                    <td><%=dateStr%></td>
-                    <td><%=formatBytes(backup.size)%></td>
-                    <td>
-                        <a target="_blank" href="/dashboard/backups/download/<%=backup._id%>" class="btn btn-primary">
-                            <i class="fas fa-download"></i>
-                        </a>
-                    </td>
-                </tr>
-                <%})%>
-            </tbody>
-        </table>
-    </div>
+        <tr>
+          <td><%=backup.backupName%></td>
+          <td><%=dateStr%></td>
+          <td><%=formatBytes(backup.size)%></td>
+          <td>
+            <a target="_blank" href="/dashboard/backups/download/<%=backup._id%>" class="btn btn-primary">
+              <i class="fas fa-download"></i>
+            </a>
+          </td>
+        </tr>
+        <%})%>
+      </tbody>
+    </table>
+  </div>
 </div>
