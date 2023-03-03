@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.40](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.39...v1.0.40) (2023-03-03)
+
+
+### Bug Fixes
+
+* btn sizing ([aaa3452](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/aaa3452e63c4006310e22e0806a190fabe2a23b6))
+
 ### [1.0.39](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.38...v1.0.39) (2023-03-02)
 
 
