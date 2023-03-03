@@ -952,7 +952,7 @@ exports.getProfile = async (req, res, next) => {
 
     let theUser = await User.findOne({ _id: req.session.user._id });
 
-    const hasPermission = await theUser.HasPermission("page.mods");
+    const hasPermission = await theUser.HasPermission("page.profile");
 
     if (!hasPermission) {
         res.status(403).render("403", {
@@ -1005,7 +1005,7 @@ exports.getProfileImage = async (req, res, next) => {
 
     let theUser = await User.findOne({ _id: req.session.user._id });
 
-    const hasPermission = await theUser.HasPermission("page.mods");
+    const hasPermission = await theUser.HasPermission("page.profile");
 
     if (!hasPermission) {
         res.status(403).render("403", {

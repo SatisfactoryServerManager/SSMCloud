@@ -5,7 +5,7 @@ body {
 
 body {
     color: #fff;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 /* Toggle Styles */
@@ -168,7 +168,7 @@ body {
 }
 
 .page-header .profile-btn-group .btn {
-    font-size: 15px !important;
+    font-size: 13px !important;
     height: 45px;
     font-weight: bold;
     line-height: 30px !important;
@@ -275,7 +275,7 @@ body {
 }
 
 .btn {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
 }
 
@@ -327,7 +327,7 @@ body {
 }
 
 .status-info-card .status-info-card-main {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 29px;
     display: inline-block;
@@ -335,7 +335,7 @@ body {
 }
 
 .status-info-card .status-info-card-secondary {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 29px;
     display: inline-block;
