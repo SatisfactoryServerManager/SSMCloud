@@ -91,6 +91,7 @@ class GamePlayerHandler extends EventEmitter {
                                         "UNetConnection::Close: [UNetConnection]"
                                     )
                                 ) {
+                                    let EOS = "";
                                     if (line.includes("EOS:")) {
                                         EOS = line.match(/\EOS:(.+)/i)[1];
                                         EOS = EOS.split(" ")[0];

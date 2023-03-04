@@ -1,24 +1,24 @@
 <div class="card border-secondary mb-3 shadow">
-    <div class="card-header">
-        <h5><%=agent.agentName%> - Save Files</h5>
-    </div>
-    <div class="card-body">
-        <table class="table table-bordered saves-table">
-            <thead>
-                <tr>
-                    <th>Session</th>
-                    <th>File Name</th>
-                    <th>Last Updated</th>
-                    <th>Size</th>
-                    <th>Mods</th>
-                    <th width="80px">Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%agent.saves.forEach(save=>{%>
+  <div class="card-header">
+    <h5><%=agent.agentName%> - Save Files</h5>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered saves-table">
+      <thead>
+        <tr>
+          <th>Session</th>
+          <th>File Name</th>
+          <th>Last Updated</th>
+          <th>Size</th>
+          <th>Mods</th>
+          <th width="80px">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%agent.saves.forEach(save=>{%>
 
 
-                    <%
+        <%
                     Number.prototype.pad = function (width, z) {
                         let n = this;
                         z = z || "0";
@@ -46,7 +46,7 @@
                        
                 
                         const date = new Date(save.stats.mtime);
-                        const day = date.getDate()
+                        const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
                 
@@ -67,18 +67,18 @@
                             return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
                         }
                         %>
-                <tr>
-                    <td><%=save.sessionName%></td>
-                    <td><%=save.fileName%></td>
-                    <td><%=dateStr%></td>
-                    <td><%=formatBytes(save.stats.size)%></td>
-                    <td><%=save.mods.length%></td>
-                    <td> <a target="_blank" href="/dashboard/saves/download/<%=agent._id%>/<%=save.fileName%>" class="btn btn-primary">
-                            <i class="fas fa-download"></i>
-                        </a></td>
-                </tr>
-                <%})%>
-            </tbody>
-        </table>
-    </div>
+        <tr>
+          <td><%=save.sessionName%></td>
+          <td><%=save.fileName%></td>
+          <td><%=dateStr%></td>
+          <td><%=formatBytes(save.stats.size)%></td>
+          <td><%=save.mods.length%></td>
+          <td> <a target="_blank" href="/dashboard/saves/download/<%=agent._id%>/<%=save.fileName%>" class="btn btn-primary">
+              <i class="fas fa-download"></i>
+            </a></td>
+        </tr>
+        <%})%>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -54,6 +54,10 @@ exports.getDashboard = async (req, res, next) => {
     }
 
     const theAccount = await Account.findOne({ users: req.session.user._id });
+
+    let message = req.flash("success");
+    message.length > 0 ? (message = message[0]) : (message = null);
+
     if (theAccount) {
         await theAccount.populate("agents");
 
@@ -68,6 +72,7 @@ exports.getDashboard = async (req, res, next) => {
             accountName: theAccount.accountName,
             agents: theAccount.agents,
             errorMessage: "",
+            message,
         });
     } else {
         res.render("dashboard/dashboard", {
@@ -75,6 +80,7 @@ exports.getDashboard = async (req, res, next) => {
             pageTitle: "Dashboard",
             accountName: "",
             agents: [],
+            message,
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
@@ -163,6 +169,14 @@ exports.getServerAction = async (req, res, next) => {
     const message = await MessageQueueItem.create({ action: actionString });
     theAgent.messageQueue.push(message);
     await theAgent.save();
+
+    const successMessageData = {
+        agentId: theAgent._id,
+        message:
+            "Server Action was successfully sent to the server and will run in the background.",
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
 
     res.redirect("/dashboard");
 };
