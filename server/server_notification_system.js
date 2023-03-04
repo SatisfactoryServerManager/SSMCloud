@@ -78,19 +78,21 @@ class NotificationSystem {
     };
 
     CreateNotification = async (eventType, eventData, AccountID) => {
+        if (eventType == "") return;
+
         const theAccount = await AccountModel.findOne({
             _id: AccountID,
         }).select("+notifications");
 
         if (theAccount == null) {
-            throw new Error("Account was Null!");
+            throw new Error(`Account (${AccountID}) was Null!`);
         }
 
         const theEventType = await NotificationEventTypeModel.findOne({
             eventTypeName: eventType,
         });
         if (theEventType == null) {
-            throw new Error("Event Type was Null!");
+            throw new Error(`Event Type (${eventType}) was Null!`);
         }
 
         await theAccount.populate("notificationSettings");
