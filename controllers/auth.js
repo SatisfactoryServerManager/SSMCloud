@@ -179,6 +179,13 @@ exports.postLogin = async (req, res, next) => {
 exports.postSignUp = async (req, res, next) => {
     const { email, password, confirmPassword, accountName } = req.body;
 
+    const ip =
+        req.headers["x-forwarded-for"] ||
+        req.headers["x-real-ip"] ||
+        req.socket.remoteAddress;
+
+    console.log(req.body, ip);
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).render("auth/signup", {

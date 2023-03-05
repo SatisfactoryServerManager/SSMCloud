@@ -5,6 +5,7 @@ const authController = require("../controllers/auth");
 const router = express.Router();
 
 const User = require("../models/user");
+const Account = require("../models/account");
 const UserInvite = require("../models/user_invite");
 
 router.get("/login", authController.getLogin);
@@ -52,10 +53,22 @@ router.post(
             }
             return true;
         }),
-        body("accountName", "Account name must be provided").isLength({
-            min: 4,
-            max: 200,
-        }),
+        body("accountName", "Account name must be provided")
+            .isLength({
+                min: 4,
+                max: 200,
+            })
+            .custom((value, { req }) => {
+                return Account.findOne({ accountName: value }).then(
+                    (accountDoc) => {
+                        if (accountDoc) {
+                            return Promise.reject(
+                                "Account Name is already in use."
+                            );
+                        }
+                    }
+                );
+            }),
     ],
     authController.postSignUp
 );
