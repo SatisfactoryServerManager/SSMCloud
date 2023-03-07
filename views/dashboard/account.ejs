@@ -271,9 +271,11 @@
                             <td><%=user.email%></td>
                             <td><%=user.role.roleName%></td>
                             <td>
+                              <%if(user.isAccountAdmin == false){%>
                               <a href="/dashboard/account/deleteuser/<%=user._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
                                 <i class="fas fa-trash"></i>
                               </a>
+                              <%}%>
                             </td>
                           </tr>
                           <%}})%> <%}%>
