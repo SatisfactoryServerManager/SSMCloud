@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.44](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.43...v1.0.44) (2023-03-07)
+
+
+### Features
+
+* Signup debugging ([94f0d84](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/94f0d84890ffcce4d78e8d958ab6ad9466738082))
+
 ### [1.0.43](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.42...v1.0.43) (2023-03-05)
 
 
