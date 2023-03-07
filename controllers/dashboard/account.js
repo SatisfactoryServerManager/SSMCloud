@@ -361,6 +361,18 @@ exports.getDeleteUser = async (req, res, next) => {
         theAccount.userInvites.splice(userInvite, 1);
     }
 
+    const theUserToDelete = await User.findOne({ _id: userId });
+
+    if (theUserToDelete.isAccountAdmin) {
+        const errorMessageData = {
+            section: "user",
+            message: "You want delete this user as they are Account Admins!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/account");
+    }
+
     theAccount.users.splice(foundIndex, 1);
 
     await User.deleteOne({ _id: userId });
