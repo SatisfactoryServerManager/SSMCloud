@@ -7,6 +7,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const Config = require("../../server/server_config");
+const rimraf = require("rimraf")
 
 const NotificationSystem = require("../../server/server_notification_system");
 
@@ -425,6 +426,12 @@ exports.getServerDelete = async (req, res, next) => {
         await Agent.deleteOne({ _id: theAgent._id });
         theAccount.agents.splice(agentIndex, 1);
         await theAccount.save();
+
+        const agentUploadDir = path.join(Config.get("ssm.uploadsdir"), theAgent._id.toString())
+
+        if(fs.existsSync(agentUploadDir)){
+            rimraf.sync(agentUploadDir);
+        }
 
         const successMessageData = {
             section: "serverlist",
