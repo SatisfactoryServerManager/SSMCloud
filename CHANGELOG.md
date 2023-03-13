@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.47](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.46...v1.0.47) (2023-03-13)
+
+
+### Features
+
+* Cleanup agent folder once deleted ([227071c](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/227071c60ca650389ca9f56b1709c1c1c974f3c2))
+
+
+### Bug Fixes
+
+* Agent delete notification ([bff7868](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/bff786804203acd9466617df4c29c5f5801dea71))
+* Agent deletion ([ec27367](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ec273670dc664f84d84a8097cfbd8b85ebb9701d))
+
 ### [1.0.46](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.45...v1.0.46) (2023-03-07)
 
 
