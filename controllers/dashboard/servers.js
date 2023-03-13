@@ -7,7 +7,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const Config = require("../../server/server_config");
-const rimraf = require("rimraf")
+const rimraf = require("rimraf");
 
 const NotificationSystem = require("../../server/server_notification_system");
 
@@ -397,13 +397,39 @@ exports.getServerDelete = async (req, res, next) => {
         return res.redirect("/dashboard/servers");
     }
 
-    const agentIndex = theAccount.agents.indexOf(agentid);
+    let agentIndex = -1;
+
+    for (let i = 0; i < theAccount.agents.length; i++) {
+        const agent = theAccount.agents[i];
+        if (agent._id.toString() == agentid) {
+            agentIndex = i;
+            break;
+        }
+    }
 
     await theAccount.populate("agents");
 
     const theAgent = theAccount.agents.find((agent) => agent._id == agentid);
 
     if (theAgent) {
+        theAccount.agents.splice(agentIndex, 1);
+        await theAccount.save();
+
+        await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
+        await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
+        await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
+
+        await Agent.deleteOne({ _id: theAgent._id });
+
+        const agentUploadDir = path.join(
+            Config.get("ssm.uploadsdir"),
+            theAgent._id.toString()
+        );
+
+        if (fs.existsSync(agentUploadDir)) {
+            rimraf.sync(agentUploadDir);
+        }
+
         try {
             await NotificationSystem.CreateNotification(
                 "agent.delete",
@@ -417,20 +443,6 @@ exports.getServerDelete = async (req, res, next) => {
             );
         } catch (err) {
             console.log(err);
-        }
-
-        await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
-        await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
-        await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
-
-        await Agent.deleteOne({ _id: theAgent._id });
-        theAccount.agents.splice(agentIndex, 1);
-        await theAccount.save();
-
-        const agentUploadDir = path.join(Config.get("ssm.uploadsdir"), theAgent._id.toString())
-
-        if(fs.existsSync(agentUploadDir)){
-            rimraf.sync(agentUploadDir);
         }
 
         const successMessageData = {
