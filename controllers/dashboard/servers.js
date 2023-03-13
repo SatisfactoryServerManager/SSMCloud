@@ -405,7 +405,7 @@ exports.getServerDelete = async (req, res, next) => {
     if (theAgent) {
         try {
             await NotificationSystem.CreateNotification(
-                "agent.deleted",
+                "agent.delete",
                 {
                     account_id: theAccount._id,
                     account_name: theAccount.accountName,
