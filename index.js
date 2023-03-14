@@ -69,6 +69,14 @@ class SSMCloud_App {
             collection: "sessions",
         });
 
+        const rawBodyBuffer = (req, res, buf, encoding) => {
+            if (buf && buf.length) {
+                req.rawBody = buf.toString(encoding || "utf8");
+            }
+        };
+
+        app.use(bodyParser.json());
+
         // SET STORAGE
         var storage = multer.diskStorage({
             destination: function (req, file, cb) {
@@ -113,28 +121,10 @@ class SSMCloud_App {
             next();
         });
 
-        const rawBodyBuffer = (req, res, buf, encoding) => {
-            if (buf && buf.length) {
-                req.rawBody = buf.toString(encoding || "utf8");
-            }
-        };
-
         // methodOverride
         app.use(methodOverride("_method"));
 
         app.use(cookieParser());
-
-        app.use(
-            bodyParser.urlencoded({
-                verify: rawBodyBuffer,
-                extended: true,
-            })
-        );
-        app.use(
-            bodyParser.json({
-                verify: rawBodyBuffer,
-            })
-        );
 
         app.use(
             helmet({
