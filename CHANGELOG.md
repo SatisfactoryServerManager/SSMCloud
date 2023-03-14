@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.48](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.47...v1.0.48) (2023-03-14)
+
+
+### Features
+
+* **saves:** Better success/error reporting ([8e1135f](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/8e1135f44786f72842aa6af7d7c9d6b80ef67194))
+
+
+### Bug Fixes
+
+* **notifications:** Fixes for notification system ([f4857db](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/f4857db2a44f7a7b84e3ccf2d3485f008a59ea08))
+
 ### [1.0.47](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.46...v1.0.47) (2023-03-13)
 
 
