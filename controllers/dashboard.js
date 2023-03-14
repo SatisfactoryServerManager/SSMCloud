@@ -337,20 +337,30 @@ exports.getSaves = async (req, res, next) => {
             await agent.populate("saves");
         }
 
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         res.render("dashboard/saves", {
             path: "/saves",
             pageTitle: "Saves",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
-            errorMessage: "",
+            errorMessage,
+            message,
         });
     } else {
-        res.render("dashboard/account", {
-            path: "/account",
-            pageTitle: "Account",
+        res.render("dashboard/saves", {
+            path: "/saves",
+            pageTitle: "Saves",
             accountName: "",
             agents: [],
             saves: [],
+            message: "",
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
@@ -362,15 +372,23 @@ exports.postSaves = async (req, res, next) => {
     const file = req.file;
 
     if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Invalid Session User ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/saves");
     }
 
     if (!ObjectId.isValid(data.inp_agentid)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Invalid Requested Server ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/saves");
     }
 
     let theUser = await User.findOne({ _id: req.session.user._id });
@@ -378,14 +396,13 @@ exports.postSaves = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("saves.upload");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
+        const errorMessageData = {
+            section: "serverlist",
+            message: "You dont have permission to perform this action!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/saves");
     }
 
     const theAccount = await Account.findOne({
@@ -394,9 +411,13 @@ exports.postSaves = async (req, res, next) => {
     });
 
     if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "serverlist",
+            message: "Cant Find Session Account details!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect("/dashboard/saves");
     }
 
     const theAgent = await Agent.findOne({ _id: data.inp_agentid }).select(
@@ -428,19 +449,13 @@ exports.postSaves = async (req, res, next) => {
     theAgent.messageQueue.push(message);
     await theAgent.save();
 
-    await theAccount.populate("agents");
-    for (let i = 0; i < theAccount.agents.length; i++) {
-        const agent = theAccount.agents[i];
-        await agent.populate("saves");
-    }
+    const successMessageData = {
+        section: "serverlist",
+        message: `Save file has been successfully uploaded, transfering save file to Server in the background.`,
+    };
 
-    res.render("dashboard/saves", {
-        path: "/saves",
-        pageTitle: "Saves",
-        accountName: theAccount.accountName,
-        agents: theAccount.agents,
-        errorMessage: "",
-    });
+    req.flash("success", JSON.stringify(successMessageData));
+    return res.redirect("/dashboard/saves");
 };
 
 exports.getDownloadSave = async (req, res, next) => {
@@ -790,6 +805,14 @@ exports.getNotifications = async (req, res, next) => {
             await notification.populate("notificationSetting");
         }
 
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         res.render("dashboard/notifications", {
             path: "/notifications",
             pageTitle: "Notifications",
@@ -798,7 +821,8 @@ exports.getNotifications = async (req, res, next) => {
             notificationSettings: theAccount.notificationSettings,
             notifications: theAccount.notifications,
             eventTypes,
-            errorMessage: "",
+            message,
+            errorMessage,
         });
     } else {
         res.render("dashboard/notifications", {
@@ -809,6 +833,7 @@ exports.getNotifications = async (req, res, next) => {
             notificationSettings: [],
             notifications: [],
             eventTypes: [],
+            message: "",
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
@@ -820,15 +845,25 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     const data = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "settings",
+            id: notificationSettingId,
+            message: "Invalid Session User ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     if (!ObjectId.isValid(notificationSettingId)) {
-        const error = new Error("Invalid Notification Settings ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "settings",
+            id: notificationSettingId,
+            message: "Invalid Requested Notification Settings ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     let theUser = await User.findOne({ _id: req.session.user._id });
@@ -836,14 +871,14 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("notifications.update");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
+        const errorMessageData = {
+            section: "settings",
+            id: notificationSettingId,
+            message: "You dont have permission to perform this action!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     const theNotificationSetting = await NotificationSettingsModel.findOne({
@@ -851,9 +886,30 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     });
 
     if (theNotificationSetting == null) {
-        const error = new Error("Notification Settings is Null!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "settings",
+            id: notificationSettingId,
+            message: "Cant Find Notification Settings details!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
+    }
+
+    try {
+        if (data.sel_type.toLowerCase() == "webhook") {
+            await NotificationSystem.TestWebhook(data.inp_url);
+        } else {
+        }
+    } catch (err) {
+        const errorMessageData = {
+            section: "settings",
+            id: notificationSettingId,
+            message: "Failed to connect to notification url endpoint!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     theNotificationSetting.notificationType = data.sel_type.toLowerCase();
@@ -865,16 +921,27 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     theNotificationSetting.eventTypes = eventTypes;
 
     await theNotificationSetting.save();
-    res.status(200).json({});
+    const successMessageData = {
+        section: "settings",
+        id: notificationSettingId,
+        message: `Notification settings has been updated successfully!`,
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+    return res.json({});
 };
 
 exports.postNewNotitifcationSettings = async (req, res, next) => {
     const data = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+        const errorMessageData = {
+            section: "newsettings",
+            message: "Invalid Session User ID Format",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     let theUser = await User.findOne({ _id: req.session.user._id });
@@ -882,19 +949,43 @@ exports.postNewNotitifcationSettings = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("notifications.update");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
+        const errorMessageData = {
+            section: "newsettings",
+            message: "You dont have permission to perform this action!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
     }
 
     const theAccount = await Account.findOne({
         users: req.session.user._id,
     }).select("+notifications");
+
+    try {
+        if (data.sel_type.toLowerCase() == "webhook") {
+            await NotificationSystem.TestWebhook(data.inp_url);
+        } else {
+        }
+    } catch (err) {
+        const errorMessageData = {
+            section: "newsettings",
+            message: "Failed to connect to notification url endpoint!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
+    }
+
+    if (data.eventTypes == null || data.eventTypes.length == 0) {
+        const errorMessageData = {
+            section: "newsettings",
+            message: "Must contain at least one event type!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.json({});
+    }
 
     const eventTypes = await NotificationEventTypeModel.find({
         _id: { $in: data.eventTypes },
@@ -908,7 +999,13 @@ exports.postNewNotitifcationSettings = async (req, res, next) => {
 
     theAccount.notificationSettings.push(newNotificationSettings);
     await theAccount.save();
-    res.status(200).json({});
+    const successMessageData = {
+        section: "newsettings",
+        message: `Notification settings has been created successfully!`,
+    };
+
+    req.flash("success", JSON.stringify(successMessageData));
+    return res.json({});
 };
 
 exports.getDeleteNotificationSettings = async (req, res, next) => {

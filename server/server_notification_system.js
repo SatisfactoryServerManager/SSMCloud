@@ -246,6 +246,17 @@ class NotificationSystem {
             await Notification.save();
         }
     };
+
+    TestWebhook = async (url) => {
+        try {
+            await axios.post(url, {
+                event_type: "test",
+                data: {},
+            });
+        } catch (err) {
+            throw err;
+        }
+    };
 }
 
 const notificationSystem = new NotificationSystem();

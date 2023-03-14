@@ -41,6 +41,19 @@
                   <h5>Add New Notification</h5>
                 </div>
                 <div class="card-body">
+                  <% if(locals.message){ const messageData = JSON.parse(message); 
+                    if(messageData.section == "newsettings"){%>
+                  <div class="alert alert-success">
+                    <%=messageData.message%>
+                  </div>
+                  <%}}%>
+
+                  <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                    if(errorMessageData.section == "newsettings"){%>
+                  <div class="alert alert-danger">
+                    <%=errorMessageData.message%>
+                  </div>
+                  <%}}%>
                   <form action="/dashboard/notifications/add" method="post" class="add-notification-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="row">
@@ -49,11 +62,10 @@
                         <div class="input-group mb-2">
                           <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
                           <select name="sel_type" id="sel_type" class="form-select">
-                            <option>
+                            <option value="webhook">
                               Webhook
                             </option>
-                            <option>Discord</option>
-                            <option>Email</option>
+                            <option value="discord">Discord</option>
                           </select>
                         </div>
                         <label for="inp_url" class="form-label">Notification URL:</label>
@@ -74,13 +86,13 @@
                           <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
 
                             <%
-                                                        for(let i=0; i < eventTypes.length; i++){
-                                                            const et = eventTypes[i];
-                                                            %>
+                            for(let i=0; i < eventTypes.length; i++){
+                                const et = eventTypes[i];
+                            %>
                             <option value="<%=et._id%>"><%=et.description%></option>
                             <%
-                                                        }
-                                                    %>
+                                }
+                            %>
 
 
                           </select>
@@ -104,7 +116,20 @@
                   <%if(notificationSettings.length == 0){%>
                   <div class="alert alert-info">It looks like Notifications has not been setup yet!</div>
                   <%}%>
-                                    <%notificationSettings.forEach(setting=>{%>
+                <%notificationSettings.forEach(setting=>{%>
+                  <% if(locals.message){ const messageData = JSON.parse(message); 
+                        if(messageData.section == "settings" && messageData.id == setting._id){%>
+                  <div class="alert alert-success">
+                    <%=messageData.message%>
+                  </div>
+                  <%}}%>
+
+                  <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                    if(errorMessageData.section == "settings" && errorMessageData.id == setting._id){%>
+                  <div class="alert alert-danger">
+                    <%=errorMessageData.message%>
+                  </div>
+                  <%}}%>
                   <form action="/dashboard/notifications/update/<%=setting._id%>" method="post" class="edit-notification-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="row">
@@ -114,16 +139,15 @@
                           <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
                           <select name="sel_type" id="sel_type" class="form-select">
                             <option <%if(setting.notificationType == "webhook"){%>selected<%}%>>
-                                                            Webhook
-                                                            </option>
-                                                            <option <%if(setting.notificationType == "discord"){%>selected<%}%>>Discord</option>
-                                                            <option <%if(setting.notificationType == "email"){%>selected<%}%>>Email</option>
-                                                        </select>
-                                                    </div>
-                                                    <label for="inp_url" class="form-label">Notification URL:</label>
-                                                     <div class="input-group mb-2">
-                                                        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
-                                                         <input class="form-control" type="text" name="inp_url" id="inp_url" value="<%=setting.url%>">
+                                Webhook
+                                </option>
+                                <option <%if(setting.notificationType == "discord"){%>selected<%}%>>Discord</option>
+                            </select>
+                        </div>
+                        <label for="inp_url" class="form-label">Notification URL:</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+                            <input class="form-control" type="text" name="inp_url" id="inp_url" value="<%=setting.url%>">
                         </div>
                       </div>
                       <div class="col-12 col-lg-6">
