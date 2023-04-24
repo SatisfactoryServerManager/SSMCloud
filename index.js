@@ -69,13 +69,13 @@ class SSMCloud_App {
             collection: "sessions",
         });
 
-        const rawBodyBuffer = (req, res, buf, encoding) => {
-            if (buf && buf.length) {
-                req.rawBody = buf.toString(encoding || "utf8");
-            }
-        };
-
         app.use(bodyParser.json());
+
+        app.use(
+            bodyParser.urlencoded({
+                extended: true,
+            })
+        );
 
         // SET STORAGE
         var storage = multer.diskStorage({

@@ -383,7 +383,7 @@ exports.postUploadLog = async (req, res, next) => {
         let logFileData = file.originalname.replace(".log", "");
 
         if (logFileData != "FactoryGame") {
-            logFileData = logFileData.split("-")[1];
+            logFileData = logFileData.split("-")[0];
         }
 
         if (theAgent.logs == null) {
@@ -511,6 +511,7 @@ exports.postInstalledMods = async (req, res, next) => {
 
 const GetLogFileData = async (LogFile) => {
     if (!fs.existsSync(LogFile)) {
+        console.log(`Log Doesn't Exist ${LogFile}`);
         return;
     }
 
