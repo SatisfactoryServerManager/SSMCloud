@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.50](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.49...v1.0.50) (2023-04-24)
+
+
+### Bug Fixes
+
+* Fixes to session store ([edbb991](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/edbb99171c78d214917ea81bcdf02bff9cbb171f))
+
 ### [1.0.49](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.48...v1.0.49) (2023-04-24)
 
 
