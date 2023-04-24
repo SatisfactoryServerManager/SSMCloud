@@ -1,6 +1,9 @@
 const Agent = require("../models/agent");
 const MessageQueueItem = require("../models/messagequeueitem");
 const Account = require("../models/account");
+const AgentBackupModel = require("../models/agent_backup");
+
+const fs = require("fs-extra");
 
 const Logger = require("./server_logger");
 
@@ -25,6 +28,7 @@ class AgentHandler {
             await this.CheckAllAgentsLastOnline();
             await this.PurgeMessageQueues();
             await this.CheckAllAgentsNeedUpdate();
+            await this.CleanupAgentBackups();
         }, 30000);
     }
 
@@ -55,6 +59,46 @@ class AgentHandler {
                 agent.online = false;
                 await agent.save();
             }
+        }
+    };
+
+    CleanupAgentBackups = async () => {
+        const Agents = await Agent.find();
+
+        for (let i = 0; i < Agents.length; i++) {
+            const Agent = Agents[i];
+
+            if (Agent.config == null || Agent.config.version == null) {
+                continue;
+            }
+
+            if (Agent.config.backup == null) {
+                continue;
+            }
+
+            await Agent.populate("backups");
+
+            if (Agent.backups.length <= Agent.config.backup.keep) {
+                continue;
+            }
+
+            const count = Agent.backups.length - Agent.config.backup.keep;
+
+            for (let j = 0; j < count; j++) {
+                const AgentBackup = Agent.backups[j];
+
+                if (fs.existsSync(AgentBackup.fileName)) {
+                    fs.unlinkSync(AgentBackup.fileName);
+                    Logger.debug(
+                        `Removing Agent Backup: ${AgentBackup.fileName}`
+                    );
+                }
+
+                await AgentBackupModel.deleteOne({ _id: AgentBackup._id });
+                Agent.backups.pull({ _id: AgentBackup._id });
+            }
+
+            await Agent.save();
         }
     };
 
