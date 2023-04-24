@@ -6,12 +6,85 @@ const NotificationEventModel = require("../models/notification_event");
 const NotificationEventTypeModel = require("../models/notification_event_type");
 const AccountModel = require("../models/account");
 
-const axios = require("axios");
+const WebHooks = require("node-webhooks");
 
 const { Webhook, MessageBuilder } = require("discord-webhook-node");
 
 class NotificationSystem {
     init = async () => {
+        this.webHooks = new WebHooks({
+            db: {},
+            httpSuccessCodes: [200, 201, 202, 203, 204],
+        });
+
+        var emitter = this.webHooks.getEmitter();
+
+        emitter.on("*.success", async (shortname, statusCode, body) => {
+            const Notification = await NotificationModel.findOne({
+                _id: shortname,
+            });
+
+            if (Notification) {
+                Notification.completed = true;
+
+                this.webHooks.remove(shortname);
+
+                await Notification.populate("events");
+                const lastEventIndex = Notification.events.length - 1;
+                const lastEvent = Notification.events[lastEventIndex];
+
+                if (lastEvent) {
+                    lastEvent.lastResponseCode = statusCode;
+                    lastEvent.lastResponseData = body || "";
+                    await lastEvent.save();
+                }
+
+                await Notification.save();
+            }
+
+            console.log(
+                "Success on trigger webHook " + shortname + " with status code",
+                statusCode,
+                "and body",
+                body
+            );
+        });
+
+        emitter.on("*.failure", async (shortname, statusCode, body) => {
+            const Notification = await NotificationModel.findOne({
+                _id: shortname,
+            });
+
+            if (Notification) {
+                Notification.retries += 1;
+
+                if (Notification.retries >= 5) {
+                    Notification.failed = true;
+                    Notification.error = "Too Many Retries!";
+                    this.webHooks.remove(shortname);
+                }
+
+                await Notification.populate("events");
+                const lastEventIndex = Notification.events.length - 1;
+                const lastEvent = Notification.events[lastEventIndex];
+
+                if (lastEvent) {
+                    lastEvent.lastResponseCode = statusCode;
+                    lastEvent.lastResponseData = body || "";
+                    await lastEvent.save();
+                }
+
+                await Notification.save();
+            }
+
+            console.error(
+                "Error on trigger webHook " + shortname + " with status code",
+                statusCode,
+                "and body",
+                body
+            );
+        });
+
         await this.SetupNotificationEvents();
         await this.ProcessPendingNotifications();
 
@@ -166,28 +239,16 @@ class NotificationSystem {
 
     DispatchWebhookEvent = async (Notification, Event) => {
         try {
-            const url = Notification.notificationSetting.url;
-            const res = await axios.post(url, Event.eventData);
+            const shortName = Notification._id.toString();
 
-            if (res.status == 200) {
-                Event.lastResponseCode = res.status;
-                Event.lastResponseData = res.data;
-                await Event.save();
-                Notification.completed = true;
-                await Notification.save();
-            }
+            await this.webHooks.add(
+                shortName,
+                Notification.notificationSetting.url
+            );
+
+            this.webHooks.trigger(shortName, Event.eventData);
         } catch (err) {
-            const res = err.response;
-            Event.lastResponseCode = res.status;
-            Event.lastResponseData = res.data;
-            await Event.save();
-            Notification.completed = false;
-            Notification.retries += 1;
-            if (Notification.retries >= 5) {
-                Notification.failed = true;
-                Notification.error = "Too Many Retries!";
-            }
-            await Notification.save();
+            console.log(err);
         }
     };
 
@@ -249,9 +310,17 @@ class NotificationSystem {
 
     TestWebhook = async (url) => {
         try {
-            await axios.post(url, {
-                event_type: "test",
-                data: {},
+            const customHeaders = {
+                "Content-Type": "application/json",
+            };
+
+            await fetch(url, {
+                method: "POST",
+                headers: customHeaders,
+                body: JSON.stringify({
+                    event_type: "test",
+                    data: {},
+                }),
             });
         } catch (err) {
             throw err;

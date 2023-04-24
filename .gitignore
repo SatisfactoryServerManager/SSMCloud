@@ -3,7 +3,7 @@ scripts/*.exe
 scripts/Temp
 build
 assets/version.txt
-release-builds
+release
 tools/TOKEN.txt
 tools/DOCKERPASS.txt
 tools/app_config.txt
