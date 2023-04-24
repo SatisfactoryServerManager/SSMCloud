@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.49](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.48...v1.0.49) (2023-04-24)
+
+
+### Features
+
+* Cleanup agent backups ([64284dd](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/64284ddaa4e8025952cd5c26790f298f07418b25))
+
 ### [1.0.48](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.47...v1.0.48) (2023-03-14)
 
 
