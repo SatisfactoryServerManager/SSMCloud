@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
         return;
     }
 
-    req.session.agentKey = headerKey;
+    req.agentKey = headerKey;
 
     next();
 };

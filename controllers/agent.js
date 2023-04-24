@@ -21,7 +21,7 @@ const NotificationEventTypeModel = require("../models/notification_event_type");
 const ModManager = require("../server/server_mod_manager");
 
 exports.postAgentActiveState = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
@@ -65,7 +65,7 @@ exports.postAgentActiveState = async (req, res, next) => {
 };
 
 exports.postAgentInstalledState = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
@@ -79,7 +79,7 @@ exports.postAgentInstalledState = async (req, res, next) => {
 };
 
 exports.postAgentRunningState = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
     const theAccount = await Account.findOne({ agents: theAgent._id });
@@ -122,7 +122,7 @@ exports.postAgentRunningState = async (req, res, next) => {
 };
 
 exports.postAgentCpuMem = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
@@ -137,7 +137,7 @@ exports.postAgentCpuMem = async (req, res, next) => {
 };
 
 exports.getAgentMessageQueue = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey }).select(
         "+messageQueue"
@@ -179,7 +179,7 @@ exports.postUpdateAgentMessageQueueItem = async (req, res, next) => {
 };
 
 exports.postUpdateAgentConfigData = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
 
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
@@ -196,7 +196,7 @@ exports.postUploadBackupFile = async (req, res, next) => {
     try {
         const file = req.file;
 
-        const AgentAPIKey = req.session.agentKey;
+        const AgentAPIKey = req.agentKey;
         const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
         const newFilePath = path.join(
@@ -229,7 +229,7 @@ exports.postUploadBackupFile = async (req, res, next) => {
 };
 
 exports.getSaveFile = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     const filePath = path.join(
@@ -251,7 +251,7 @@ exports.getSaveFile = async (req, res, next) => {
 };
 
 exports.postAgentSaveInfo = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     await theAgent.populate("saves");
@@ -311,7 +311,7 @@ exports.postUploadSaveFile = async (req, res, next) => {
     try {
         const file = req.file;
 
-        const AgentAPIKey = req.session.agentKey;
+        const AgentAPIKey = req.agentKey;
         const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
         const newFilePath = path.join(
@@ -345,7 +345,7 @@ exports.postUploadLog = async (req, res, next) => {
     try {
         const file = req.file;
 
-        const AgentAPIKey = req.session.agentKey;
+        const AgentAPIKey = req.agentKey;
         const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
         const theLogInfo = await AgentLogInfo.findOne({
@@ -449,7 +449,7 @@ exports.getMod = async (req, res, next) => {
 };
 
 exports.postInstalledMods = async (req, res, next) => {
-    const AgentAPIKey = req.session.agentKey;
+    const AgentAPIKey = req.agentKey;
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     await theAgent.populate("installedMods");
