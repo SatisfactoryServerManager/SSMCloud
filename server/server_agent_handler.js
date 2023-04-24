@@ -87,14 +87,14 @@ class AgentHandler {
             for (let j = 0; j < count; j++) {
                 const AgentBackup = Agent.backups[j];
 
-                if(AgentBackup != null && AgentBackup.fileName != null){
+                if (AgentBackup != null && AgentBackup.fileName != null) {
                     if (fs.existsSync(AgentBackup.fileName)) {
                         fs.unlinkSync(AgentBackup.fileName);
                         Logger.debug(
                             `Removing Agent Backup: ${AgentBackup.fileName}`
                         );
                     }
-    
+
                     await AgentBackupModel.deleteOne({ _id: AgentBackup._id });
                     Agent.backups.pull({ _id: AgentBackup._id });
                 }
@@ -203,6 +203,15 @@ class AgentHandler {
                 await agent.save();
             }
         }
+    };
+
+    UpdateAgentLastCommDate = async (Agent) => {
+        if (Agent.online == false) {
+            Agent.online = true;
+        }
+        Agent.lastCommDate = new Date();
+
+        await Agent.save();
     };
 }
 

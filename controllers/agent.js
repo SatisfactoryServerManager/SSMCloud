@@ -13,6 +13,8 @@ const Account = require("../models/account");
 const ModModel = require("../models/mod");
 const AgentModModel = require("../models/agent_mod");
 
+const AgentHandler = require("../server/server_agent_handler");
+
 const Config = require("../server/server_config");
 
 const NotificationSystem = require("../server/server_notification_system");
@@ -56,8 +58,9 @@ exports.postAgentActiveState = async (req, res, next) => {
     }
 
     theAgent.online = req.body.active;
-    theAgent.lastCommDate = Date.now();
     await theAgent.save();
+
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
     res.json({
         success: true,
@@ -70,8 +73,9 @@ exports.postAgentInstalledState = async (req, res, next) => {
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     theAgent.installed = req.body.installed;
-    theAgent.lastCommDate = Date.now();
     await theAgent.save();
+
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
     res.json({
         success: true,
@@ -131,6 +135,8 @@ exports.postAgentCpuMem = async (req, res, next) => {
 
     await theAgent.save();
 
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
+
     res.json({
         success: true,
     });
@@ -149,8 +155,8 @@ exports.getAgentMessageQueue = async (req, res, next) => {
         retries: { $lt: 10 },
     });
 
-    theAgent.lastCommDate = Date.now();
     await theAgent.save();
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
     res.json({
         success: true,
@@ -184,8 +190,9 @@ exports.postUpdateAgentConfigData = async (req, res, next) => {
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     theAgent.config = req.body.config;
-    theAgent.lastCommDate = Date.now();
     await theAgent.save();
+
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
     res.json({
         success: true,
@@ -215,6 +222,8 @@ exports.postUploadBackupFile = async (req, res, next) => {
         });
         theAgent.backups.push(newBackup);
         await theAgent.save();
+
+        await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
         res.json({
             success: true,
@@ -302,6 +311,8 @@ exports.postAgentSaveInfo = async (req, res, next) => {
 
     await theAgent.save();
 
+    await AgentHandler.UpdateAgentLastCommDate(theAgent);
+
     res.json({
         success: true,
     });
@@ -328,6 +339,8 @@ exports.postUploadSaveFile = async (req, res, next) => {
 
             fs.moveSync(file.path, newFilePath);
         } catch (err) {}
+
+        await AgentHandler.UpdateAgentLastCommDate(theAgent);
 
         res.json({
             success: true,
@@ -408,6 +421,8 @@ exports.postUploadLog = async (req, res, next) => {
             fs.moveSync(file.path, newFilePath);
         } catch (err) {}
 
+        await AgentHandler.UpdateAgentLastCommDate(theAgent);
+
         res.json({
             success: true,
         });
@@ -460,8 +475,6 @@ exports.postInstalledMods = async (req, res, next) => {
     }
 
     const mods = req.body.mods;
-
-    console.log(mods);
 
     for (let i = 0; i < mods.length; i++) {
         const mod = mods[i];
