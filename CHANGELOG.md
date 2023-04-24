@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.51](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.50...v1.0.51) (2023-04-24)
+
+
+### Bug Fixes
+
+* Fixed axios notification system ([88fbb31](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/88fbb31ff6e8f9bfb0084b0aaa435039c02a8c7e))
+
 ### [1.0.50](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.49...v1.0.50) (2023-04-24)
 
 
