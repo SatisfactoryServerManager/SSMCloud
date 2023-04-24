@@ -182,18 +182,25 @@ class SSMCloud_App {
             express.static(__dirname + "/node_modules/bootstrap-select")
         );
 
-        app.use(
-            session({
-                secret: "my secret",
-                resave: false,
-                saveUninitialized: false,
-                store,
-            })
-        );
         app.use(morgan("combined"));
 
         const APIRoutes = require("./routes/api");
         app.use("/api", APIRoutes);
+
+        app.use(
+            session({
+                secret: "SSMCloud",
+                resave: false,
+                saveUninitialized: false,
+                rolling: true,
+                unset: "destroy",
+                store,
+                cookie: {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: false,
+                },
+            })
+        );
 
         app.use(csrfProtection);
         app.use(flash());
