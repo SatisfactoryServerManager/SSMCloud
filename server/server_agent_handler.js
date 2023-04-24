@@ -165,7 +165,8 @@ class AgentHandler {
 
             this._LatestAgentRelease = semver.clean(releaseData[0].tag_name);
         } catch (err) {
-            console.log(err);
+            this._LatestAgentRelease = "0.0.0";
+            //console.log(err);
         }
     };
 
