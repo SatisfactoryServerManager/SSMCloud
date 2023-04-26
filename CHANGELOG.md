@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.56](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.55...v1.0.56) (2023-04-26)
+
+
+### Features
+
+* ping api endpoint ([3eaffe8](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/3eaffe897238db9eaee577c441a4cbf3b52106e0))
+
+
+### Bug Fixes
+
+* fixes to new log reader ([764aed3](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/764aed31a3e2c77dbf1acead978821dbff594869))
+
 ### [1.0.55](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.54...v1.0.55) (2023-04-24)
 
 
