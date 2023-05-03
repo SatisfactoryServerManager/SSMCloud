@@ -179,8 +179,8 @@ fi
 if [ $INSTALLMONGO -eq 1 ]; then
     start_spinner "${YELLOW}Installing MongoDB 5.0${NC}"
     apt-get install gnupg > /dev/null
-    wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add - > /dev/null 2>&1
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list > /dev/null 2>&1
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc |  gpg --dearmor | tee /etc/apt/trusted.gpg.d/mongo.gpg > /dev/null 2>&1
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list > /dev/null 2>&1
     apt-get update > /dev/null;
     apt-get install -y mongodb-org mongodb-org-shell > /dev/null;
     stop_spinner $?
@@ -216,9 +216,11 @@ else
         echo -e "${RED}MongoDB install skipped...${NC}"
     fi
     start_spinner "${YELLOW}Installing MongoDB Tools...${NC}"
-    wget https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/5.0/multiverse/binary-amd64/mongodb-org-database-tools-extra_5.0.6_amd64.deb > /dev/null 2>&1;
-    dpkg -i mongodb-org-database-tools-extra_5.0.6_amd64.deb > /dev/null 2>&1;
-    rm -rf mongodb-org-database-tools-extra_5.0.6_amd64.deb > /dev/null 2>&1
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc |  gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mongo.gpg > /dev/null 2>&1
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list > /dev/null 2>&1
+    wget https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/6.0/multiverse/binary-amd64/mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1;
+    dpkg -i mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1;
+    rm -rf mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1
     stop_spinner $?
   
 fi
