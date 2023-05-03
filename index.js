@@ -50,6 +50,9 @@ class SSMCloud_App {
         Logger.init();
         Logger.info("[APP] [PREINIT] - Loading Configs..");
         await Config.load();
+        Logger.info(
+            `[APP] [PREINIT] - Loaded Config: ${Config._options.configFilePath}`
+        );
 
         Logger.info(`[APP] [PREINIT] - Version: v${Config.get("ssm.version")}`);
         Logger.info("[APP] [PREINIT] - Starting SSM..");
@@ -116,7 +119,7 @@ class SSMCloud_App {
             );
             res.header(
                 "Content-Security-Policy",
-                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com"
+                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://js.hcaptcha.com"
             );
             next();
         });

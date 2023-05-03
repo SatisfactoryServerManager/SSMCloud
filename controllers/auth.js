@@ -15,6 +15,10 @@ const QRCode = require("qrcode");
 
 const { authenticator } = require("otplib");
 
+const Config = require("../server/server_config");
+
+const verifyHcaptcha = require("hcaptcha").verify;
+
 exports.getLogout = async (req, res) => {
     const ip =
         req.headers["X-Real-IP"] ||
@@ -54,6 +58,8 @@ exports.getLogin = (req, res) => {
         path: "/login",
         pageTitle: "Log In",
         errorMessage: message,
+        enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+        hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
         oldInput: {
             email: "",
             password: "",
@@ -70,6 +76,8 @@ exports.getSignUp = (req, res) => {
         path: "/signup",
         pageTitle: "Sign Up",
         errorMessage: message,
+        enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+        hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
         oldInput: {
             email: "",
             password: "",
@@ -87,6 +95,8 @@ exports.postLogin = async (req, res, next) => {
             path: "/login",
             pageTitle: "Log In",
             errorMessage: errors.array()[0].msg,
+            enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+            hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
             oldInput: {
                 email,
                 password,
@@ -95,20 +105,32 @@ exports.postLogin = async (req, res, next) => {
         });
     }
 
-    try {
-        const user = await User.findOne({ email }).select("+password");
-
-        if (!user) {
+    if (Config.get("ssm.hcaptcha.enabled")) {
+        const secret = Config.get("ssm.hcaptcha.secret");
+        const verified = await verifyHcaptcha(
+            secret,
+            req.body["h-captcha-response"]
+        );
+        if (verified.success == false) {
             return res.status(422).render("auth/login", {
                 path: "/login",
                 pageTitle: "Log In",
-                errorMessage: "Invalid email or password.",
+                errorMessage: "HCaptcha Failed!",
+                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
                 oldInput: {
                     email,
                     password,
                 },
                 validationErrors: [],
             });
+        }
+    }
+
+    try {
+        const user = await User.findOne({ email }).select("+password");
+
+        if (!user) {
         }
 
         const theAccount = await Account.findOne({ users: user });
@@ -118,6 +140,8 @@ exports.postLogin = async (req, res, next) => {
                 path: "/login",
                 pageTitle: "Log In",
                 errorMessage: "Cant find account information!",
+                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
                 oldInput: {
                     email,
                     password,
@@ -141,6 +165,9 @@ exports.postLogin = async (req, res, next) => {
 
         if (doMatch) {
             req.session.user = user;
+            user.lastActiveDate = new Date();
+            await user.save();
+
             return req.session.save(async (err) => {
                 if (err) {
                     console.log(err);
@@ -162,6 +189,8 @@ exports.postLogin = async (req, res, next) => {
                 path: "/login",
                 pageTitle: "Log In",
                 errorMessage: "Invalid email or password.",
+                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
                 oldInput: {
                     email,
                     password,
@@ -190,13 +219,32 @@ exports.postSignUp = async (req, res, next) => {
         return res.status(422).render("auth/signup", {
             path: "/signup",
             pageTitle: "Sign Up",
+            enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+            hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
             errorMessage: errors.array()[0].msg,
             oldInput: { email, password, confirmPassword },
             validationErrors: errors.array(),
         });
     }
 
-    console.log(req.body, ip);
+    if (Config.get("ssm.hcaptcha.enabled")) {
+        const secret = Config.get("ssm.hcaptcha.secret");
+        const verified = await verifyHcaptcha(
+            secret,
+            req.body["h-captcha-response"]
+        );
+        if (verified.success == false) {
+            return res.status(422).render("auth/signup", {
+                path: "/signup",
+                pageTitle: "Sign Up",
+                errorMessage: "HCaptcha Failed!",
+                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
+                oldInput: { email, password, confirmPassword },
+                validationErrors: [],
+            });
+        }
+    }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 

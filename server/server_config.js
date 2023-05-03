@@ -39,6 +39,9 @@ class ServerConfig extends iConfig {
         super.get("ssm.db.pass", "#SSMPa$£");
         super.get("ssm.db.host", "127.0.0.1");
         super.get("ssm.db.database", "ssm");
+        super.get("ssm.hcaptcha.enabled", false);
+        super.get("ssm.hcaptcha.sitekey", "");
+        super.get("ssm.hcaptcha.secret", "");
     };
 }
 

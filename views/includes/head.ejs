@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SSM Cloud - <%= pageTitle %></title>
+
+<head>
+  <title>SSM Cloud - <%= pageTitle %></title>
+  <%if(locals.enableHcaptcha){%>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <%}%>
         <script defer src="/libraries/jquery/dist/jquery.min.js"></script>
         <script
             defer

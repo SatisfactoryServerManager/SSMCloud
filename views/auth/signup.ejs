@@ -68,6 +68,15 @@
             </div>
           </div>
         </div>
+        <%if(locals.enableHcaptcha){%>
+        <div class="row">
+          <div class="col-12 mt-2 text-center">
+
+            <div class="h-captcha" data-sitekey="<%=locals.hcaptchaSiteKey%>"></div>
+
+          </div>
+        </div>
+        <%}%>
         <div class="row">
           <div class="col-12 text-center">
             <button class="btn btn-success login-btn">

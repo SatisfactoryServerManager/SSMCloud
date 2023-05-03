@@ -33,6 +33,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    lastActiveDate: {
+        type: Date,
+        default: Date.now,
+    },
     creationDate: {
         type: Date,
         default: Date.now,
