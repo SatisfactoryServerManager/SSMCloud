@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.57](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.56...v1.0.57) (2023-05-03)
+
+
+### Features
+
+* hcaptcha setup ([50d2e5d](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/50d2e5dff827ebad5683657a9ccc648595ff4019))
+
 ### [1.0.56](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.55...v1.0.56) (2023-04-26)
 
 
