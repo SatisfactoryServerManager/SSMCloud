@@ -218,7 +218,7 @@ else
     start_spinner "${YELLOW}Installing MongoDB Tools...${NC}"
     wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc |  gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mongo.gpg > /dev/null 2>&1
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list > /dev/null 2>&1
-    wget https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/6.0/multiverse/binary-amd64/mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1;
+    wget https://repo.mongodb.org/apt/ubuntu/dists/jammy/mongodb-org/6.0/multiverse/binary-amd64/mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1;
     dpkg -i mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1;
     rm -rf mongodb-org-database-tools-extra_6.0.5_amd64.deb > /dev/null 2>&1
     stop_spinner $?
