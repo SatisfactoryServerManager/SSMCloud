@@ -12,6 +12,8 @@ const UserInvite = require("../../models/user_invite");
 const Permission = require("../../models/permission");
 const ApiKey = require("../../models/apikey");
 
+const EmailHandler = require("../../server/server_email_handler");
+
 const { validationResult } = require("express-validator");
 
 exports.getAccount = async (req, res, next) => {
@@ -164,14 +166,42 @@ exports.postAccountUser = async (req, res, next) => {
         return res.redirect("/dashboard/account");
     }
 
-    const newUser = await User.create({
+    let inviteUser = await User.findOne({
         email: data.inp_useremail,
-        password: "TempPaSS!",
-        role: data.inp_userrole,
+        active: false,
     });
-    theAccount.users.push(newUser);
 
-    const newInvite = await UserInvite.create({ user: newUser });
+    if (inviteUser == null) {
+        inviteUser = await User.create({
+            email: data.inp_useremail,
+            password: "TempPaSS!",
+            role: data.inp_userrole,
+        });
+        theAccount.users.push(inviteUser);
+    } else {
+        await theAccount.populate("users");
+        const accountUser = theAccount.users.find(
+            (u) => u.email == inviteUser.email
+        );
+
+        if (accountUser == null) {
+            theAccount.users.push(inviteUser);
+        }
+
+        const existingInvite = await UserInvite.findOne({ user: inviteUser });
+
+        if (existingInvite) {
+            const errorMessageData = {
+                section: "user",
+                message: "User has already been invited to join SSM Cloud.",
+            };
+
+            req.flash("error", JSON.stringify(errorMessageData));
+            return res.redirect("/dashboard/account");
+        }
+    }
+
+    const newInvite = await UserInvite.create({ user: inviteUser });
     theAccount.userInvites.push(newInvite);
 
     await theAccount.save();
@@ -179,6 +209,22 @@ exports.postAccountUser = async (req, res, next) => {
         section: "user",
         message: `User Invite Successfully Created!`,
     };
+
+    const protocol = req.protocol;
+    const host = req.hostname;
+
+    const Email = EmailHandler.createEmail(
+        inviteUser.email,
+        "New SSM Invite",
+        "user_invite",
+        {
+            inviteURL: `${protocol}://${host}/acceptinvite`,
+            inviteId: newInvite._id,
+            accountName: theAccount.accountName,
+        }
+    );
+
+    EmailHandler.sendEmail(Email);
 
     req.flash("success", JSON.stringify(successMessageData));
     res.redirect("/dashboard/account");
@@ -469,6 +515,9 @@ exports.getDeleteUserInvite = async (req, res, next) => {
         req.flash("error", JSON.stringify(errorMessageData));
         return res.redirect("/dashboard/account");
     }
+
+    const theInvite = await UserInvite.findOne({ _id: inviteId });
+    await theInvite.populate("user");
 
     theAccount.userInvites.splice(userInvite, 1);
     await theAccount.save();

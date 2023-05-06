@@ -39,9 +39,23 @@ class ServerConfig extends iConfig {
         super.get("ssm.db.pass", "#SSMPa$£");
         super.get("ssm.db.host", "127.0.0.1");
         super.get("ssm.db.database", "ssm");
+
+        // hCaptcha Config
         super.get("ssm.hcaptcha.enabled", false);
         super.get("ssm.hcaptcha.sitekey", "");
         super.get("ssm.hcaptcha.secret", "");
+
+        //Mail Config
+        super.get("ssm.mail.enabled", false);
+        super.get("ssm.mail.sender", "SSM <ssm@example.com>");
+        super.get("ssm.mail.transport.host", "mail.example.com");
+        super.get("ssm.mail.transport.port", 25);
+        super.get("ssm.mail.transport.secure", false);
+        super.get("ssm.mail.transport.tls.servername", "mail.exmaple.com");
+        super.get("ssm.mail.transport.tls.ciphers", "SSLv3");
+        super.get("ssm.mail.transport.ignoreTLS", true);
+        super.get("ssm.mail.transport.auth.user", "EMAIL");
+        super.get("ssm.mail.transport.auth.pass", "PASSWORD");
     };
 }
 

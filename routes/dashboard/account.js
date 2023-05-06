@@ -29,17 +29,18 @@ router.post(
             .withMessage("Please enter a valid email.")
             // Method found in validator.js docs. validator.js implicitly installed with express-validator
             .custom((value, { req }) => {
-                return User.findOne({ email: value }).then((userDoc) => {
-                    if (userDoc) {
-                        return Promise.reject("Email already in use.");
+                return User.findOne({ email: value, active: true }).then(
+                    (userDoc) => {
+                        if (userDoc) {
+                            return Promise.reject("Email already in use.");
+                        }
                     }
-                });
+                );
             })
             .normalizeEmail(),
         body("inp_userrole")
             // Method found in validator.js docs. validator.js implicitly installed with express-validator
             .custom((value, { req }) => {
-                console.log(value, req.body);
                 return Account.findOne({
                     users: req.session.user._id,
                     userRoles: value,
