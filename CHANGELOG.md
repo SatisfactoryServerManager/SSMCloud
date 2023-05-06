@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.58](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.57...v1.0.58) (2023-05-06)
+
+
+### Features
+
+* Email user invites ([90cb340](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/90cb3409a1837cfbf9c1bf377c3ac4bbc0ff3c86))
+
 ### [1.0.57](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.56...v1.0.57) (2023-05-03)
 
 
