@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.59](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.58...v1.0.59) (2023-05-06)
+
+
+### Features
+
+* Include missing email templates ([8ebbcb8](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/8ebbcb89e77d0852be1b64a4bbd3d6f9319828f2))
+
 ### [1.0.58](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.57...v1.0.58) (2023-05-06)
 
 
