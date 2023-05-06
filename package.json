@@ -81,7 +81,7 @@
     "scripts": {
         "start": "node index.js",
         "watch": "watchify src/app.js -o public/js/bundle.js",
-        "bundle": "browserify -g uglifyify src/app.js -o public/js/bundle.js",
+        "bundle": "browserify --plugin tinyify src/app.js -o public/js/bundle.js",
         "clean-css": "bash scripts/clean-css.sh",
         "release": "standard-version",
         "release:minor": "standard-version --release-as minor",
@@ -118,6 +118,6 @@
     },
     "devDependencies": {
         "standard-version": "^9.1.1",
-        "uglifyify": "^5.0.2"
+        "tinyify": "^4.0.0"
     }
 }
