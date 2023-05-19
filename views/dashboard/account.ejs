@@ -10,7 +10,7 @@
           <%- include('../includes/page-header.ejs') %>
           <div class="row">
             <div class="col-12">
-              <div class="card border-secondary mb-3">
+              <div class="card border-secondary mb-3 bg-glass">
                 <div class="card-header">
                   <h5>Account Events</h5>
                 </div>
@@ -80,7 +80,7 @@
           </div>
           <div class="row">
             <div class="col-12 col-lg-6">
-              <div class="card border-secondary mb-3 shadow">
+              <div class="card border-secondary mb-3 shadow bg-glass">
                 <div class="card-header">
                   <h5>API Keys</h5>
                 </div>
@@ -155,7 +155,7 @@
               </div>
             </div>
             <div class="col-12 col-lg-6">
-              <div class="card border-secondary mb-3 shadow">
+              <div class="card border-secondary mb-3 shadow bg-glass">
                 <div class="card-header">
                   <h5>User Invites</h5>
                 </div>
@@ -189,7 +189,7 @@
                       <tr>
                         <td><%=invite.user.email%></td>
                         <td>
-                          <a href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
+                          <a class="btn btn-primary" href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
                         </td>
                         <td>
                           <a href="/dashboard/account/deleteinvite/<%=invite._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation">
@@ -207,7 +207,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-md-6">
-                            <div class="card border-secondary mb-3 shadow">
+                            <div class="card border-secondary mb-3 shadow bg-glass">
                                 <div class="card-header">
                                     <h5>Users</h5>
                                 </div>
@@ -285,7 +285,7 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="card border-secondary mb-3">
+                            <div class="card border-secondary mb-3 bg-glass">
                                 <div class="card-header">
                                     <button
                                         id="btn-addrole"

@@ -1,24 +1,32 @@
 <%- include('../includes/head.ejs') %>
 
-<div class="card border-dark mb-3 login-card shadow">
-  <div class="card-header">
-    <div class="logo"><img src="/public/images/ssm_logo256.png" /></div>
-  </div>
-  <div class="card-body">
-    <h4 class="card-title">Enter your 2FA token</h4>
+<body>
+  <div class="container-fluid main-container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-dark bg-glass login-card shadow">
+          <div class="card-header">
+            <div class="logo"><img src="/public/images/ssm_logo_new_256.svg" /></div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Enter your 2FA token</h4>
 
-    <form action="" method="post" class="form-horizontal">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-      <div class="form-group">
-        <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" autofocus />
+            <form action="" method="post" class="form-horizontal">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <div class="form-group">
+                <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" autofocus />
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-primary" type="submit">
+                  Verify Token
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div class="d-grid">
-        <button class="btn btn-primary" type="submit">
-          Verify Token
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+    </div>
 
-<%- include('../includes/footer.ejs') %>
+    <%- include('../includes/footer.ejs') %>
+  </div>
+</body>

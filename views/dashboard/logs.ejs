@@ -11,12 +11,12 @@
           <div class="row">
             <%agents.forEach(agent=>{%>
             <div class="col-12 col-xl-6 mb-3">
-              <div class="card shadow">
+              <div class="card shadow bg-glass">
                 <div class="card-header">
                   <h5><%=agent.agentName%> - Log Files</h5>
                 </div>
                 <div class="card-body">
-                  <div class="card border-secondary mb-3">
+                  <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
                     <div class="card-header">
                       <a href="/dashboard/logs/download/<%=agent._id%>/SSMLog" class="btn btn-primary float-end">
                         <i class="fas fa-download"></i> SSM Log File
@@ -41,7 +41,7 @@
                     </div>
                   </div>
 
-                  <div class="card border-secondary mb-3">
+                  <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
                     <div class="card-header">
                       <a href="/dashboard/logs/download/<%=agent._id%>/SteamLog" class="btn btn-primary float-end">
                         <i class="fas fa-download"></i> Steam Log File
@@ -65,7 +65,7 @@
                     </div>
                   </div>
 
-                  <div class="card border-secondary mb-3">
+                  <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
                     <div class="card-header">
                       <a href="/dashboard/logs/download/<%=agent._id%>/SFLog" class="btn btn-primary float-end">
                         <i class="fas fa-download"></i> Satisfactory Log File

@@ -1,5 +1,5 @@
 <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-  <div class="card shadow" id="server-card-<%=agent._id%>">
+  <div class="card shadow bg-glass mb-2" id="server-card-<%=agent._id%>">
     <div class="card-header">
       <a class="float-end" href="/dashboard/servers/<%=agent._id%>"><button class="btn btn-primary">
           <i class="fas fa-cog"></i></button></a>
@@ -52,15 +52,20 @@
             Data:"0", Icon:"fa-pencil-ruler"}) %>
 
       <hr />
-      <div class="progress-bar-wrapper">
-        <div class="circle mem_progress" data-percent="<%=agent.ramUsage%>">
-          <strong></strong>
-          <h6>RAM</h6>
+      <label class="mb-1">CPU: </label>
+      <div class="position-relative">
+        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.cpuUsage*100%>" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.cpuUsage*100%>%;"></div>
         </div>
-        <div class="circle cpu_progress" data-percent="<%=agent.cpuUsage%>">
-          <strong></strong>
-          <h6>CPU</h6>
+        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.cpuUsage*100%>%</div>
+      </div>
+
+      <label class="mb-1 mt-3">RAM: </label>
+      <div class="position-relative">
+        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.ramUsage*100%>" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.ramUsage*100%>%;"></div>
         </div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.ramUsage*100%>%</div>
       </div>
       <hr />
 

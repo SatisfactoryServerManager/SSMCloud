@@ -8,29 +8,44 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     color: #fff;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .main-container {
-    padding: 15px 15px 15px 15px;
     min-height: 100%;
     overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }
 
 .form-control {
     font-size: 13px;
 }
 
+.input-group-text {
+    background: #086e99;
+    color: #fff;
+    font-size: 15px;
+}
+
+.btn-primary {
+    background-color: #086e99;
+    border-color: #054966;
+    padding: 8px 12px;
+    font-size: 15px;
+}
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: #0b92cc !important;
+}
+
 .login-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    max-width: 400px;
     width: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.8) !important;
-    box-sizing: content-box !important;
-    margin-top: 15px;
+    max-width: 400px;
+    border: 1px solid #000000cc !important;
+    box-sizing: border-box !important;
 }
 
 .login-card .card-header {
@@ -41,7 +56,7 @@ body {
 
 .login-card .card-header .logo {
     position: absolute;
-    top: -90px;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -70,11 +85,11 @@ body {
 .login-card label {
     line-height: 29px;
     margin: 0;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .login-card .error-content {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-align: center;
     color: darkred;
@@ -88,8 +103,17 @@ body {
 
 .login-card .btn {
     padding: 5px 8px;
-    font-size: 12px;
+    font-size: 15px;
     margin-top: 10px;
+    background-color: #0caaed;
+    border-color: #086e99;
+    padding: 8px 12px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.login-card .btn:hover {
+    background-color: #0b92cc;
 }
 
 .login-card .pass-wrapper {
@@ -108,4 +132,16 @@ body {
     font-weight: bold;
     font-size: 30px;
     letter-spacing: 15px;
+}
+
+.card-header {
+    background-color: #0b92cc;
+}
+
+.bg-glass {
+    background: #0b92cc33;
+    box-shadow: 0 4px 30px #0000001a;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-color: #636363 !important;
 }

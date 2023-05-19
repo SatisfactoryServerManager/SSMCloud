@@ -1,91 +1,74 @@
 <%- include('../includes/head.ejs') %>
-<div class="card border-dark mb-3 login-card shadow">
-    <div class="card-header">
-        <div class="logo"><img src="/public/images/ssm_logo256.png" /></div>
-    </div>
-    <div class="card-body">
-        <h4 class="card-title">Accept Your SSM Cloud Invite</h4>
-        <div class="error-content"><%=errorMessage%></div>
-        <form class="form-horizontal signup-form" method="post" action="">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
-            <fieldset>
+<body>
+  <div class="container-fluid main-container">
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-dark login-card shadow bg-glass">
+          <div class="card-header">
+            <div class="logo"><img src="/public/images/ssm_logo_new_256.svg" /></div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Accept Your SSM Cloud Invite</h4>
+            <div class="error-content"><%=errorMessage%></div>
+            <form class="form-horizontal signup-form" method="post" action="">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+              <fieldset>
                 <h6 class="mt-3">User Details:</h6>
                 <p>
-                    Please confirm your user details that was used to create
-                    this account.
+                  Please confirm your user details that was used to create
+                  this account.
                 </p>
                 <div class="row form-group required">
-                    <label class="col-12 control-label" for="email"
-                        >Email Address:</label
-                    >
-                    <div class="col-12">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-user"></i>
-                            </span>
-                            <input
-                                id="email"
-                                name="email"
-                                placeholder=""
-                                class="form-control input-md"
-                                type="email"
-                                value="<%=oldInput.email%>"
-                            />
-                        </div>
+                  <label class="col-12 control-label" for="email">Email Address:</label>
+                  <div class="col-12">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                      </span>
+                      <input id="email" name="email" placeholder="" class="form-control input-md" type="email" value="<%=oldInput.email%>" />
                     </div>
+                  </div>
                 </div>
 
                 <div class="row form-group required">
-                    <label class="col-12 control-label" for="password"
-                        >New Password:</label
-                    >
-                    <div class="col-12">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-key"></i>
-                            </span>
-                            <input
-                                id="password"
-                                name="password"
-                                placeholder=""
-                                class="form-control input-md"
-                                type="password"
-                                value="<%=oldInput.password%>"
-                            />
-                        </div>
+                  <label class="col-12 control-label" for="password">New Password:</label>
+                  <div class="col-12">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-key"></i>
+                      </span>
+                      <input id="password" name="password" placeholder="" class="form-control input-md" type="password" value="<%=oldInput.password%>" />
                     </div>
+                  </div>
                 </div>
                 <div class="row form-group required">
-                    <label class="col-12 control-label" for="confirmPassword"
-                        >Confirm Password:</label
-                    >
-                    <div class="col-12">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-key"></i>
-                            </span>
-                            <input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                placeholder=""
-                                class="form-control input-md"
-                                type="password"
-                                value="<%=oldInput.confirmPassword%>"
-                            />
-                        </div>
+                  <label class="col-12 control-label" for="confirmPassword">Confirm Password:</label>
+                  <div class="col-12">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-key"></i>
+                      </span>
+                      <input id="confirmPassword" name="confirmPassword" placeholder="" class="form-control input-md" type="password" value="<%=oldInput.confirmPassword%>" />
                     </div>
+                  </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 text-center">
-                        <button class="btn btn-success login-btn">
-                            Accept Invite
-                        </button>
-                    </div>
+                  <div class="col-12 text-center">
+                    <button class="btn btn-primary login-btn">
+                      Accept Invite
+                    </button>
+                  </div>
                 </div>
-            </fieldset>
-        </form>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<%- include('../includes/footer.ejs') %>
+    <%- include('../includes/footer.ejs') %>
+  </div>
+</body>

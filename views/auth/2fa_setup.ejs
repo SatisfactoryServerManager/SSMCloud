@@ -1,34 +1,34 @@
 <%- include('../includes/head.ejs') %>
 
-<div class="card border-dark mb-3 login-card shadow">
-    <div class="card-header">
-        <div class="logo"><img src="/public/images/ssm_logo256.png" /></div>
-    </div>
-    <div class="card-body">
-        <h4 class="card-title">Setup 2FA with your authenticator app.</h4>
-        <img style="display: block; margin: auto" src="<%=QRCODE%>" />
+<body>
+  <div class="container-fluid main-container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-dark mb-3 login-card shadow">
+          <div class="card-header">
+            <div class="logo"><img src="/public/images/ssm_logo256.png" /></div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Setup 2FA with your authenticator app.</h4>
+            <img style="display: block; margin: auto" src="<%=QRCODE%>" />
 
-        <form action="/2fa/setup" method="post" class="form-horizontal">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <div class="form-group">
-                <input
-                    class="form-control mt-3 text-center"
-                    type="text"
-                    name="token"
-                    id="token"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    autocomplete="one-time-code"
-                    placeholder="123456"
-                />
-            </div>
-            <div class="d-grid">
+            <form action="/2fa/setup" method="post" class="form-horizontal">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <div class="form-group">
+                <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" />
+              </div>
+              <div class="d-grid">
                 <button class="btn btn-primary" type="submit">
-                    Verify Token
+                  Verify Token
                 </button>
-            </div>
-        </form>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<%- include('../includes/footer.ejs') %>
+    <%- include('../includes/footer.ejs') %>
+
+  </div>
+</body>

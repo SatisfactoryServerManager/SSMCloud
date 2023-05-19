@@ -5,7 +5,48 @@ body {
 
 body {
     color: #fff;
-    font-size: 13px;
+    font-size: 15px;
+    background: #032a3b url("/public/images/logonbg.webp") fixed 0 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.bg-glass {
+    background: rgba(100, 100, 100, 0.2);
+    box-shadow: 0 4px 30px #0000001a;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-color: #021a25 !important;
+}
+
+.bg-glass-blue {
+    background: #0b92cc33;
+}
+
+.card.bg-glass .card-header {
+    background: #086e99;
+}
+
+.btn-primary {
+    background-color: #086e99;
+    border-color: #054966;
+    padding: 8px 12px;
+    font-size: 15px;
+}
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: #0b92cc !important;
+}
+
+.input-group-text {
+    background: #086e99;
+    color: #fff;
+    font-size: 15px;
+}
+
+.progress {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Toggle Styles */
@@ -46,7 +87,7 @@ body {
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: #4f4f4f;
+    background: #086e99;
 }
 
 #viewport.minimal #sidebar {
@@ -63,7 +104,7 @@ body {
 }
 
 #sidebar .navbar-header {
-    background-color: #333333;
+    background-color: #086e99;
     line-height: 52px;
     text-align: center;
     font-family: "hemihead";
@@ -116,7 +157,7 @@ body {
 
 #sidebar .nav-item a {
     background: none;
-    border-bottom: 1px solid #686868;
+    border-bottom: 1px solid #054966;
     color: #cfd8dc;
     font-size: 25px;
     padding: 16px 24px;
@@ -129,7 +170,7 @@ body {
 
 #sidebar .nav-item.nav-item-bottom a {
     background: none;
-    border-top: 1px solid #686868;
+    border-top: 1px solid #054966;
     border-bottom: 0;
 }
 
@@ -163,12 +204,14 @@ body {
 
 .page-header {
     padding: 12px 12px 0 12px;
-    background-color: #333;
+    background-color: #086e99;
     margin-bottom: 12px;
 }
 
 .page-header .profile-btn-group .btn {
-    font-size: 13px !important;
+    background-color: #eee;
+    color: #313131;
+    font-size: 15px !important;
     height: 45px;
     font-weight: bold;
     line-height: 30px !important;
@@ -271,11 +314,11 @@ body {
 }
 
 .form-control {
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .btn {
-    font-size: 12px;
+    font-size: 15px;
     font-weight: bold;
 }
 
@@ -344,7 +387,7 @@ body {
 .status-info-card .status-info-card-icon {
     position: absolute;
     right: 20px;
-    top: 7px;
+    top: 8px;
     font-size: 20px;
     line-height: 29px;
     color: #cccccc;
@@ -360,6 +403,20 @@ body {
 
 .status-info-card.green .status-info-card-icon {
     color: #1e8135;
+}
+.page-header .status-info-card {
+    width: auto !important;
+    float: right;
+}
+.page-header .status-info-card .status-info-card-icon {
+    right: unset;
+    left: 12px;
+}
+
+.page-header .status-info-card .status-info-card-secondary {
+    margin-left: 30px;
+    font-weight: bold;
+    font-size: 15px;
 }
 
 .server-action-btn {
@@ -459,7 +516,7 @@ pre {
 }
 
 .settings-prop {
-    font-size: 13px;
+    font-size: 15px;
     display: block;
 }
 
@@ -649,7 +706,6 @@ pre {
         height: auto;
         margin-left: 0;
         overflow-y: auto;
-        background: #4f4f4f;
     }
 
     #viewport #sidebar .navbar {
@@ -668,7 +724,27 @@ pre {
         font-size: 14px;
     }
 
+    #sidebar .nav-item a {
+        padding: 8px 12px;
+    }
+
+    #sidebar .nav-item a svg {
+        font-size: 16px;
+        margin-right: 8px;
+    }
+    #sidebar .nav-item a span {
+        font-size: 15px;
+    }
+
     .server-action-btn {
         font-size: 13px;
+    }
+
+    .page-header h3 {
+        text-align: center;
+    }
+
+    .page-header .status-info-card {
+        width: 100% !important;
     }
 }

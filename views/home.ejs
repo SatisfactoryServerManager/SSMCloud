@@ -40,11 +40,15 @@
     }
 
     .navbar {
-      background-color: #333;
+      background-color: #086e99;
     }
 
     .navbar a {
       color: white;
+    }
+
+    .navbar a:hover {
+      color: #ddd
     }
 
     .bg-glass {
@@ -53,6 +57,14 @@
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
       border-color: #636363 !important;
+    }
+
+    .bg-glass-blue {
+      background: #0b92cc33;
+    }
+
+    .bg-glass .card-header {
+      background: #086e99;
     }
 
     .b-divider {
@@ -80,6 +92,19 @@
     .nav-item a {
       font-size: 15px;
     }
+
+    .btn-primary {
+      background-color: #086e99;
+      border-color: #054966;
+      padding: 8px 12px;
+      font-size: 15px;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:focus {
+      background-color: #0b92cc !important;
+    }
   </style>
 
   <meta name="HandheldFriendly" content="True" />
@@ -87,7 +112,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-glass">
+  <nav class="navbar navbar-expand-lg">
     <div class="container">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -131,7 +156,7 @@
     </div>
   </nav>
   <div class="px-4 pt-5 text-center border-bottom bg-glass">
-    <img src="/public/images/ssm_logo256_trimmed.webp" alt="ssm logo" class="ssm-logo" loading="lazy" width="256px" height="160px" />
+    <img src="/public/images/ssm_logo_new_256.svg" alt="ssm logo" class="ssm-logo" loading="lazy" width="256px" height="160px" />
     <div class="col-lg-6 mt-3 mx-auto">
       <p class="lead mb-4">
         Easily manage and monitor multiple Satisfactory servers with
@@ -155,7 +180,7 @@
     </div>
   </div>
   <div class="b-divider"></div>
-  <div class="px-4 border-bottom border-top bg-glass">
+  <div class="px-4 border-bottom border-top bg-glass bg-glass-blue">
     <div class="container col-xxl-8 px-4 py-5">
       <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
@@ -209,7 +234,7 @@
     </div>
   </div>
 
-  <footer class="page-footer font-small blue bg-dark">
+  <footer class="page-footer font-small blue bg-glass bg-glass-blue">
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">
       © 2020 - 2023 Copyright:
