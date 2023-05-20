@@ -39,23 +39,23 @@
                 }
             %>
 
-    <div class="row">
+      <div class="row">
         <div class="col-12 col-md-6 col-xl-4">
-<%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
-            ClassID:"status", Title:"Status", Data:statusText, Icon:"fa-server"})
+          <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
+            ClassID:"status", Title:"", Data:statusText, Icon:"fa-server"})
             %>
         </div>
         <div class="col-12 col-md-6 col-xl-4">
- <%- include('../includes/status-info-card.ejs',
+          <%- include('../includes/status-info-card.ejs',
             {ClassColour:"orange", ClassID:"users", Title:"Players",
             Data:playerCount, Icon:"fa-user"}) %>
         </div>
         <div class="col-12 col-md-6 col-xl-4">
- <%- include('../includes/status-info-card.ejs',
+          <%- include('../includes/status-info-card.ejs',
             {ClassColour:"green", ClassID:"mods", Title:"Mods",
             Data:"0", Icon:"fa-pencil-ruler"}) %>
         </div>
-    </div>
+      </div>
 
       <hr />
       <label class="mb-1">CPU: </label>

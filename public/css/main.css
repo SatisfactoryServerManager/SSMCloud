@@ -66,6 +66,10 @@ body {
     color: #fff;
 }
 
+.bg-primary {
+    background-color: #086e99 !important;
+}
+
 /* Toggle Styles */
 
 #server-running-loading {
@@ -525,10 +529,10 @@ pre {
 
 .settings-row {
     margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 
 .settings-row > div {
-    border-bottom: 1px solid #eee;
     padding-bottom: 15px;
 }
 

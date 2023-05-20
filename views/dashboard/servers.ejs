@@ -113,7 +113,7 @@
                                         </li>
                                     </ul>
 
-                                    <div class="card bg-secondary">
+                                    <div class="card bg-primary">
                                         <div class="card-body">
                                         <ul class="nav nav-tabs" role="tablist">
                                             <li
@@ -237,77 +237,18 @@
                         <%=errorMessageData.message%>
                       </div>
                       <%}}%>
-                      <table class="table table-bordered" id="agents-table">
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>Online</th>
-                            <th>Installed</th>
-                            <th>Version</th>
-                            <th>SF Branch</th>
-                            <th>SF Version</th>
-                            <th>SF Avaliable Version</th>
-                            <th width="80px">Options</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% if(agents.length > 0){ %>
-                          <div class=" row">
-                            <% agents.forEach(agent => { %>
-                            <tr>
-                              <td><%=agent.agentName%></td>
-                              <td>
-                                <%if(agent.online){%>
-                                <i class="fas fa-circle-check text-success"></i>
-                                <%} else {%>
-                                <i class="fas fa-circle-xmark text-danger"></i>
-                                <%}%>
-                                            </td>
-                                            <td>
-                                                <%if(agent.installed){%>
-                                <i class="fas fa-circle-check text-success"></i>
-                                <%} else {%>
-                                <i class="fas fa-circle-xmark text-danger"></i>
-                                <%}%>
-                                            </td>
-                                            <%if(agent.config.version){%>
-                              <td>
-                                v<%=agent.config.version%> /
-                                v<%=latestVersion%>
-                              </td>
-                              <td><%=agent.config.sfBranch%></td>
-                              <td>
-                                <%=agent.config.sfVersions.installed%>
-                              </td>
-                              <td>
-                                <%=agent.config.sfVersions.available%>
-                              </td>
-                              <%}else{%>
-                              <td>
-                                v0.0.0 / v<%=latestVersion%>
-                              </td>
-                              <td>public</td>
-                              <td>0</td>
-                              <td>0</td>
-                              <%}%>
-                                            <td>
-                                                <a
-                                                    href="/dashboard/servers/<%=agent._id%>"
-                              >
-                              <button class="btn btn-primary float-start me-2">
-                                <i class="fas fa-cog"></i>
-                              </button>
-                              </a>
-                              <a href="/dashboard/servers/delete/<%=agent._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete Agent Confirmation">
-                                <i class="fas fa-trash"></i>
-                              </a>
-                              </td>
-                            </tr>
-                            <%})%>
-                          </div>
-                          <%}%>
-                                </tbody>
-                            </table>
+
+
+
+                      <% if(agents.length > 0){ %>
+                      <div class="row">
+                        <% agents.forEach(agent => { %>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                          <%- include("../includes/server-card.ejs", {agent})%>
+                        </div>
+                        <%})%>
+                      </div>
+                      <%}%>
                         </div>
                     </div>
                 </div>

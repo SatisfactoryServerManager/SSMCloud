@@ -254,7 +254,7 @@ function main() {
 
                 reader.onload = function (evt) {
                     ProcessSMMMetaDataFile(
-                        $this.parent().find(".toInstallWrapper"),
+                        $this.parent().find(".mod-list"),
                         evt.target.result
                     );
                 };
@@ -325,8 +325,6 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
         return;
     }
 
-    $wrapper.empty();
-
     let localStorageMods = null;
     try {
         localStorageMods = JSON.parse(localStorage.getItem("mods"));
@@ -340,29 +338,24 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
     const smlVersion = JsonData.smlVersion;
     const installedMods = JsonData.installedMods;
 
-    function modBox(modRef, Version) {
-        const $inputGroup = $("<div/>").addClass("input-group my-2");
-        $inputGroup.append(`<div class="input-group-text">
-        <input class="form-check-input mt-0" type="checkbox" value="">
-      </div>`);
-        $inputGroup.append(
-            `<div style="flex-grow:1" class="input-group-text">${modRef}</div>`
-        );
-        $inputGroup.append(`<div class="input-group-text">${Version}</div>`);
-        return $inputGroup;
-    }
-
-    $wrapper.append(modBox("SML", smlVersion));
+    const modRefs = [];
 
     for (let modRef in installedMods) {
         const existingMod = localStorageMods.mods.find(
             (m) => m.modName == modRef
         );
         if (existingMod) {
-            const version = installedMods[modRef];
-            $wrapper.append(modBox(modRef, version));
+            modRefs.push(modRef);
         }
     }
+
+    $wrapper.find(".input-group").each((index, ele) => {
+        const $ele = $(ele);
+        if (modRefs.includes($ele.attr("data-modref"))) {
+            $ele.find("input").prop("checked", true);
+            console.log($ele.attr("data-modref"));
+        }
+    });
 }
 
 function OpenCreateServerModal() {
