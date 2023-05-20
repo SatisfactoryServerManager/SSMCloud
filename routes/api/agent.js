@@ -41,4 +41,6 @@ router.get("/mod/:modReference", isAgent, AgentController.getMod);
 
 router.post("/mods", isAgent, AgentController.postInstalledMods);
 
+router.get("/modstate", isAgent, AgentController.getModState);
+router.post("/modstate", isAgent, AgentController.postModState);
 module.exports = router;

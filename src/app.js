@@ -233,6 +233,63 @@ function main() {
         .on("click", ".event-types-pills svg", (e) => {
             const $this = $(e.currentTarget);
             $this.parent().remove();
+        })
+        .on("change", ".smm-metadata-file", (e) => {
+            const $this = $(e.currentTarget);
+
+            if ($this.val() == "") {
+                return;
+            }
+
+            if (!$this.val().endsWith(".json")) {
+                console.log("Not Json file extension!");
+                return;
+            }
+
+            const file = $this.prop("files")[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+
+                reader.onload = function (evt) {
+                    ProcessSMMMetaDataFile(
+                        $this.parent().find(".toInstallWrapper"),
+                        evt.target.result
+                    );
+                };
+            }
+        })
+        .on("keyup", ".mod-search", (e) => {
+            const $this = $(e.currentTarget);
+            const searchText = $this.val().toLowerCase();
+            const $modList = $this.parent().parent().find(".mod-list");
+
+            $modList.find(".input-group").each((index, ele) => {
+                const $ele = $(ele);
+                if (
+                    !$ele.attr("data-modref").toLowerCase().includes(searchText)
+                ) {
+                    $ele.addClass("hidden");
+                } else {
+                    $ele.removeClass("hidden");
+                }
+            });
+        })
+        .on("click", ".install-mod-btn", (e) => {
+            const $this = $(e.currentTarget);
+
+            const agentId = $this.attr("data-agentid");
+            const modId = $this.attr("data-modid");
+
+            $.post(
+                "/dashboard/mods/installmod",
+                {
+                    _csrf: $("#_csrf").val(),
+                    agentId,
+                    modId,
+                },
+                () => {}
+            );
         });
 
     $("#inp_maxplayers").on("input change", () => {
@@ -255,6 +312,56 @@ function main() {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+}
+
+function ProcessSMMMetaDataFile($wrapper, fileData) {
+    let JsonData = null;
+    try {
+        JsonData = JSON.parse(fileData);
+    } catch (err) {}
+
+    if (JsonData == null) {
+        return;
+    }
+
+    $wrapper.empty();
+
+    let localStorageMods = null;
+    try {
+        localStorageMods = JSON.parse(localStorage.getItem("mods"));
+    } catch (err) {}
+
+    if (localStorageMods == null) {
+        console.log("LocalStorage mods is null!");
+        return;
+    }
+
+    const smlVersion = JsonData.smlVersion;
+    const installedMods = JsonData.installedMods;
+
+    function modBox(modRef, Version) {
+        const $inputGroup = $("<div/>").addClass("input-group my-2");
+        $inputGroup.append(`<div class="input-group-text">
+        <input class="form-check-input mt-0" type="checkbox" value="">
+      </div>`);
+        $inputGroup.append(
+            `<div style="flex-grow:1" class="input-group-text">${modRef}</div>`
+        );
+        $inputGroup.append(`<div class="input-group-text">${Version}</div>`);
+        return $inputGroup;
+    }
+
+    $wrapper.append(modBox("SML", smlVersion));
+
+    for (let modRef in installedMods) {
+        const existingMod = localStorageMods.mods.find(
+            (m) => m.modName == modRef
+        );
+        if (existingMod) {
+            const version = installedMods[modRef];
+            $wrapper.append(modBox(modRef, version));
+        }
+    }
 }
 
 function OpenCreateServerModal() {

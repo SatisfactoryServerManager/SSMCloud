@@ -25,11 +25,16 @@ const AgentModModel = require("../models/agent_mod");
 const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
+const AgentModStateModel = require("../models/agent_mod_state.model");
 
 const NotificationEventTypeModel = require("../models/notification_event_type");
 const NotificationSettingsModel = require("../models/account_notification_setting");
 
+const SelectedModSchema = require("../models/selectedMod.schema");
+
 const AgentHandler = require("../server/server_agent_handler");
+
+const semver = require("semver");
 
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -566,11 +571,16 @@ exports.getMods = async (req, res, next) => {
         for (let i = 0; i < theAccount.agents.length; i++) {
             const agent = theAccount.agents[i];
 
-            await agent.populate("installedMods");
+            if (agent.modState) {
+                await agent.populate("modState");
 
-            for (let j = 0; j < agent.installedMods.length; j++) {
-                const mod = agent.installedMods[j];
-                await mod.populate("mod");
+                for (let j = 0; j < agent.modState.selectedMods.length; j++) {
+                    await agent.modState.populate(`selectedMods.${j}.mod`);
+                }
+            } else {
+                const newModState = await AgentModStateModel.create({});
+                agent.modState = newModState;
+                await agent.save();
             }
         }
 
@@ -600,7 +610,7 @@ exports.getMods = async (req, res, next) => {
 };
 
 exports.postInstallMod = async (req, res, next) => {
-    const { inp_agentid, inp_modid, inp_modversion } = req.body;
+    const { agentId, modId } = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -608,7 +618,7 @@ exports.postInstallMod = async (req, res, next) => {
         return next(error);
     }
 
-    if (!ObjectId.isValid(inp_agentid)) {
+    if (!ObjectId.isValid(agentId)) {
         const error = new Error("Invalid Agent ID!");
         error.httpStatusCode = 500;
         return next(error);
@@ -631,7 +641,7 @@ exports.postInstallMod = async (req, res, next) => {
 
     const theAccount = await Account.findOne({
         users: req.session.user._id,
-        agents: inp_agentid,
+        agents: agentId,
     });
 
     if (theAccount == null) {
@@ -642,35 +652,78 @@ exports.postInstallMod = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = await Agent.findOne({ _id: inp_agentid }).select(
-        "+messageQueue"
-    );
+    const theAgent = await Agent.findOne({ _id: agentId });
 
     const theMod = await ModModel.findOne({
-        modId: inp_modid,
+        _id: modId,
     });
 
-    const message = await MessageQueueItem.create({
-        action: "installmod",
-        data: {
-            modId: inp_modid,
-            modVersion: inp_modversion,
-            modInfo: theMod.toJSON(),
-        },
-    });
+    if (theMod.versions.length == 0) {
+        const error = new Error("Cant Find Mod Versions");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
 
-    theAgent.messageQueue.push(message);
-    await theAgent.save();
+    await theAgent.populate("modState");
 
-    const successMessageData = {
-        agentId: inp_agentid,
-        message:
-            "Install Mod Request has been sent and will be installed in the background.",
-    };
+    const modState = theAgent.modState;
 
-    req.flash("success", JSON.stringify(successMessageData));
+    for (let i = 0; i < modState.selectedMods.length; i++) {
+        await modState.populate(`selectedMods.${i}.mod`);
+    }
 
-    res.redirect("/dashboard/mods");
+    const selectedMod = modState.selectedMods.find(
+        (sm) => sm.mod._id == theMod._id.toString()
+    );
+
+    const lastestVersion = theMod.versions[0];
+
+    if (selectedMod == null) {
+        const newSelectedMod = {
+            mod: theMod,
+            desiredVersion: lastestVersion.version,
+        };
+        modState.selectedMods.push(newSelectedMod);
+        await modState.save();
+    } else {
+        selectedMod.desiredVersion = lastestVersion.version;
+        await modState.save();
+    }
+
+    if (lastestVersion.dependencies.length > 0) {
+        for (let i = 0; i < lastestVersion.dependencies.length; i++) {
+            const depMod = lastestVersion.dependencies[i];
+
+            const depVersion = semver.coerce(depMod.condition).version;
+
+            const theModDep = await ModModel.findOne({
+                modName: depMod.mod_id,
+            });
+
+            if (theModDep == null) {
+                continue;
+            }
+
+            const selectedDepMod = modState.selectedMods.find(
+                (sm) => sm.mod._id == theModDep._id.toString()
+            );
+
+            if (selectedDepMod == null) {
+                const newSelectedDepMod = {
+                    mod: theModDep,
+                    desiredVersion: depVersion,
+                };
+                console.log(newSelectedDepMod);
+                modState.selectedMods.push(newSelectedDepMod);
+                await modState.save();
+            } else {
+                if (semver.lt(selectedDepMod.desiredVersion, depVersion)) {
+                    selectedDepMod.desiredVersion = depVersion;
+                    await modState.save();
+                }
+            }
+        }
+    }
 };
 
 exports.getUpdateMod = async (req, res, next) => {

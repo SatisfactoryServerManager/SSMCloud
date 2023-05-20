@@ -509,6 +509,51 @@ exports.postInstalledMods = async (req, res, next) => {
     });
 };
 
+exports.getModState = async (req, res, next) => {
+    const AgentAPIKey = req.agentKey;
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    await theAgent.populate("modState");
+    for (let i = 0; i < theAgent.modState.selectedMods.length; i++) {
+        await theAgent.modState.populate(`selectedMods.${i}.mod`);
+    }
+
+    res.status(200).json({
+        success: true,
+        modState: theAgent.modState,
+    });
+};
+
+exports.postModState = async (req, res, next) => {
+    const AgentAPIKey = req.agentKey;
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+    await theAgent.populate("modState");
+    for (let i = 0; i < theAgent.modState.selectedMods.length; i++) {
+        await theAgent.modState.populate(`selectedMods.${i}.mod`);
+    }
+
+    const newModState = req.body;
+
+    for (let i = 0; i < newModState.selectedMods.length; i++) {
+        const newSelectedMod = newModState.selectedMods[i];
+        const selectedMod = theAgent.modState.selectedMods.find(
+            (sm) => sm._id == newSelectedMod._id
+        );
+
+        if (selectedMod == null) continue;
+
+        selectedMod.installed = newSelectedMod.installed;
+        selectedMod.installedVersion = newSelectedMod.installedVersion;
+    }
+
+    await theAgent.modState.save();
+
+    res.status(200).json({
+        success: true,
+    });
+};
+
 const GetLogFileData = async (LogFile) => {
     if (!fs.existsSync(LogFile)) {
         console.log(`Log Doesn't Exist ${LogFile}`);

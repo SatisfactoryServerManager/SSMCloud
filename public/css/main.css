@@ -49,6 +49,23 @@ body {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.pagination .page-item.disabled a {
+    background-color: #054966;
+}
+
+.pagination .page-item.active a,
+.pagination .page-item a:hover {
+    background-color: #0caaed;
+}
+
+.pagination .page-item a {
+    background-color: #0b92cc;
+}
+
+.pagination .page-item a:focus {
+    color: #fff;
+}
+
 /* Toggle Styles */
 
 #server-running-loading {
@@ -370,7 +387,7 @@ body {
 }
 
 .status-info-card .status-info-card-main {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 29px;
     display: inline-block;
@@ -378,7 +395,7 @@ body {
 }
 
 .status-info-card .status-info-card-secondary {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 29px;
     display: inline-block;
