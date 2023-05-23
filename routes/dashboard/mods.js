@@ -14,10 +14,4 @@ router.post("/installmod", isAuth, dashboardController.postInstallMod);
 
 router.post("/uninstallmod", isAuth, dashboardController.postUninstallMod);
 
-router.get(
-    "/update/:agentId/:agentModId",
-    isAuth,
-    dashboardController.getUpdateMod
-);
-
 module.exports = router;
