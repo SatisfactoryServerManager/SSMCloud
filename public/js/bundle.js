@@ -308,6 +308,12 @@ function main() {
                     $ele.parent().removeClass("hidden");
                 }
             });
+        })
+        .on("keyup", ".server-search", (e) => {
+            FilterServerList();
+        })
+        .on("change", ".server-filter-checkbox", (e) => {
+            FilterServerList();
         });
 
     $("#inp_maxplayers").on("input change", () => {
@@ -329,6 +335,38 @@ function main() {
     );
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+function FilterServerList() {
+    $wrapper = $("#serverlist-wrapper");
+
+    const search = $(".server-search").val().toLowerCase();
+    const FilterOnline = $("#server-filter-online").prop("checked") ? 1 : 0;
+    const FilterInstalled = $("#server-filter-installed").prop("checked")
+        ? 1
+        : 0;
+    console.log(search);
+
+    function doesMatch($el) {
+        if (
+            $el.attr("data-agentname").toLowerCase().includes(search) &&
+            $el.attr("data-online") == FilterOnline &&
+            $el.attr("data-installed") == FilterInstalled
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $wrapper.find(".server-card").each((index, ele) => {
+        const $ele = $(ele);
+        if (!doesMatch($ele)) {
+            $ele.parent().addClass("hidden");
+        } else {
+            $ele.parent().removeClass("hidden");
+        }
     });
 }
 

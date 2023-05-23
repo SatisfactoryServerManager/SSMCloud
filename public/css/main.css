@@ -35,7 +35,8 @@ body {
 }
 .btn-primary:hover,
 .btn-primary:active,
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-primary:focus-within {
     background-color: #0b92cc !important;
 }
 
@@ -68,6 +69,21 @@ body {
 
 .bg-primary {
     background-color: #086e99 !important;
+}
+
+.dropdown-menu {
+    background-color: #eee;
+    color: #313131;
+    font-size: 15px !important;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #313131;
+    font-weight: 700;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #aaa;
 }
 
 /* Toggle Styles */
