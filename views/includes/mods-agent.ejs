@@ -1,4 +1,4 @@
-<div class="col-12 col-md-6 col-lg-4 mb-3">
+<div class="col-12 col-md-6 col-lg-6 col-xl-4 mb-3">
   <div class="card bg-glass">
     <div class="card-header">
       <h5><%=agent.agentName%> - Mods</h5>
@@ -7,6 +7,10 @@
       <%
         const modState = agent.modState;
         const installedModsCount = modState.selectedMods.filter(m=>m.installed).length;
+
+        function truncate(str, n){
+            return (str.length > n) ? str.slice(0, n-1) + '...' : str;
+          };
       %>
       <div class="row">
         <div class="col-12 col-lg-6">
@@ -29,7 +33,7 @@
           <h5>Mods</h5>
         </div>
         <div class="card-body">
-            <input type="hidden" id="_csrf" name="_csrf" value="<%= csrfToken %>" />
+          <input type="hidden" id="_csrf" name="_csrf" value="<%= csrfToken %>" />
           <label class="form-label">Select Mods from Mod Manager Profile</label>
           <input type="file" class="form-control smm-metadata-file" name="">
           <hr>
@@ -51,11 +55,11 @@
               <div class="input-group-text">
                 <input class="form-check-input mt-0 mod-selected-checkbox" type="checkbox" value="">
               </div>
-              <div style="flex-grow:1" class="input-group-text"><%=mod.modName%></div>
+              <div style="flex-grow:1" class="input-group-text"><%=truncate(mod.modName, 20)%></div>
               <%if(isInstalled){
                 if(selectedMod.needsUpdate){%>
-                    <button class="btn btn-warning update-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-upload"></i></button>
-                <%}%>
+              <button class="btn btn-warning update-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-upload"></i></button>
+              <%}%>
                 <button class="btn btn-danger uninstall-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-trash"></i></button>
               <%}else{%>
               <button class="btn btn-primary install-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-download"></i></button>
@@ -65,8 +69,8 @@
             </div>
 
             <div class="d-flex flex-column flex-md-row mt-3 gap-2">
-                <button class="btn btn-primary w-100"><i class="fas fa-download"></i> Install Selected</button>
-                <button class="btn btn-danger w-100"><i class="fas fa-trash"></i> Uninstall Selected</button>
+              <button class="btn btn-primary w-100"><i class="fas fa-download"></i> Install Selected</button>
+              <button class="btn btn-danger w-100"><i class="fas fa-trash"></i> Uninstall Selected</button>
             </div>
 
           </div>
