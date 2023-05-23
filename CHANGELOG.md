@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.64](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.63...v1.0.64) (2023-05-23)
+
+
+### Features
+
+* Backup search bar ([ad9af7b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ad9af7bac118300cdf3666b141bbad406ff09372))
+* Server list search ([ae59612](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ae59612f29ea55567e579d30ad7fd9e7084f624c))
+* Truncate mod name for mobile ([c9f109b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/c9f109b70370364426f737c0236937280abf3256))
+* Updates to mod manager ([8c1e614](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/8c1e6142af854c8d08b32e4c94f4336a1bf3323c))
+
+
+### Bug Fixes
+
+* Removed unused endpoints ([6c72db6](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/6c72db6742dfd695e08a8d5838a4f056cd9727b5))
+
 ### [1.0.63](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.62...v1.0.63) (2023-05-20)
 
 ### [1.0.62](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.61...v1.0.62) (2023-05-20)
