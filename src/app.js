@@ -275,7 +275,7 @@ function main() {
                 }
             });
         })
-        .on("click", ".install-mod-btn", (e) => {
+        .on("click", ".install-mod-btn, .update-mod-btn", (e) => {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
@@ -283,6 +283,22 @@ function main() {
 
             $.post(
                 "/dashboard/mods/installmod",
+                {
+                    _csrf: $("#_csrf").val(),
+                    agentId,
+                    modId,
+                },
+                () => {}
+            );
+        })
+        .on("click", ".uninstall-mod-btn", (e) => {
+            const $this = $(e.currentTarget);
+
+            const agentId = $this.attr("data-agentid");
+            const modId = $this.attr("data-modid");
+
+            $.post(
+                "/dashboard/mods/uninstallmod",
                 {
                     _csrf: $("#_csrf").val(),
                     agentId,

@@ -11,7 +11,6 @@ const AgentSave = require("../models/agent_save");
 const AgentLogInfo = require("../models/agent_log_info");
 const Account = require("../models/account");
 const ModModel = require("../models/mod");
-const AgentModModel = require("../models/agent_mod");
 
 const AgentHandler = require("../server/server_agent_handler");
 
@@ -460,52 +459,6 @@ exports.getMod = async (req, res, next) => {
     res.status(200).json({
         success: true,
         data: theMod.toJSON(),
-    });
-};
-
-exports.postInstalledMods = async (req, res, next) => {
-    const AgentAPIKey = req.agentKey;
-    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
-
-    await theAgent.populate("installedMods");
-
-    for (let i = 0; i < theAgent.installedMods.length; i++) {
-        const mod = theAgent.installedMods[i];
-        await mod.populate("mod");
-    }
-
-    const mods = req.body.mods;
-
-    for (let i = 0; i < mods.length; i++) {
-        const mod = mods[i];
-
-        const ExistingMod = theAgent.installedMods.find(
-            (m) => m.mod.modReference == mod._modReference
-        );
-
-        if (ExistingMod) {
-            ExistingMod.version = mod._version;
-            await ExistingMod.save();
-        } else {
-            const theMod = await ModModel.findOne({
-                modReference: mod._modReference,
-            });
-
-            if (theMod) {
-                const newAgentMod = await AgentModModel.create({
-                    version: mod._version,
-                    mod: theMod,
-                });
-
-                theAgent.installedMods.push(newAgentMod);
-            }
-        }
-    }
-
-    await theAgent.save();
-
-    res.status(200).json({
-        success: true,
     });
 };
 

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const MessageQueueItem = require("./messagequeueitem");
 const AgentBackup = require("./agent_backup");
 const AgentLogInfo = require("./agent_log_info");
-const AgentMod = require("./agent_mod");
 const AgentModState = require("./agent_mod_state.model");
 
 const Schema = mongoose.Schema;

@@ -21,7 +21,6 @@ const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 const AgentSaveFile = require("../models/agent_save");
 const AgentBackup = require("../models/agent_backup");
-const AgentModModel = require("../models/agent_mod");
 const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
@@ -687,6 +686,7 @@ exports.postInstallMod = async (req, res, next) => {
         await modState.save();
     } else {
         selectedMod.desiredVersion = lastestVersion.version;
+        selectedMod.needsUpdate = false;
         await modState.save();
     }
 
@@ -726,9 +726,8 @@ exports.postInstallMod = async (req, res, next) => {
     }
 };
 
-exports.getUpdateMod = async (req, res, next) => {
-    const agentModId = req.params.agentModId;
-    const agentId = req.params.agentId;
+exports.postUninstallMod = async (req, res, next) => {
+    const { agentId, modId } = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -736,9 +735,15 @@ exports.getUpdateMod = async (req, res, next) => {
         return next(error);
     }
 
+    if (!ObjectId.isValid(agentId)) {
+        const error = new Error("Invalid Agent ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
     let theUser = await User.findOne({ _id: req.session.user._id });
 
-    const hasPermission = await theUser.HasPermission("server.mods.update");
+    const hasPermission = await theUser.HasPermission("server.mods.install");
 
     if (!hasPermission) {
         res.status(403).render("403", {
@@ -750,16 +755,6 @@ exports.getUpdateMod = async (req, res, next) => {
         });
         return;
     }
-
-    const theAgentMod = await AgentModModel.findOne({ _id: agentModId });
-
-    if (theAgentMod == null) {
-        const error = new Error("The Agent doesn't have this mod installed!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAgentMod.populate("mod");
 
     const theAccount = await Account.findOne({
         users: req.session.user._id,
@@ -774,41 +769,28 @@ exports.getUpdateMod = async (req, res, next) => {
 
     await theAccount.populate("agents");
 
-    const theAgent = await Agent.findOne({ _id: agentId }).select(
-        "+messageQueue"
-    );
+    const theAgent = await Agent.findOne({ _id: agentId });
 
-    if (theAgentMod.mod.versions.length <= 0) {
-        const error = new Error("No mod versions found!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const latestVersion = theAgentMod.mod.versions[0];
-
-    const message = await MessageQueueItem.create({
-        action: "updatemod",
-        data: {
-            modId: theAgentMod.mod.modId,
-            modVersion: latestVersion.version,
-            modInfo: theAgentMod.mod.toJSON(),
-        },
+    const theMod = await ModModel.findOne({
+        _id: modId,
     });
 
-    console.log(message);
+    await theAgent.populate("modState");
 
-    theAgent.messageQueue.push(message);
-    await theAgent.save();
+    const modState = theAgent.modState;
 
-    const successMessageData = {
-        agentId: agentId,
-        message:
-            "Update Mod Request has been sent and will be installed in the background.",
-    };
+    for (let i = 0; i < modState.selectedMods.length; i++) {
+        await modState.populate(`selectedMods.${i}.mod`);
+    }
 
-    req.flash("success", JSON.stringify(successMessageData));
+    const selectedMod = modState.selectedMods.find(
+        (sm) => sm.mod._id == theMod._id.toString()
+    );
 
-    res.redirect("/dashboard/mods");
+    if (selectedMod != null) {
+        modState.selectedMods.pull(selectedMod);
+        await modState.save();
+    }
 };
 
 exports.Logs = require("./dashboard/logs");

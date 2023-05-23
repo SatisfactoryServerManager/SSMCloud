@@ -56,6 +56,23 @@ class ServerConfig extends iConfig {
         super.get("ssm.mail.transport.ignoreTLS", true);
         super.get("ssm.mail.transport.auth.user", "EMAIL");
         super.get("ssm.mail.transport.auth.pass", "PASSWORD");
+
+        // Mods
+
+        super.get("ssm.mods.usedev", true);
+        super.get("ssm.mods.useexp", false);
+        if (super.get("ssm.mods.usedev")) {
+            if (super.get("ssm.mods.useexp")) {
+                super.set(
+                    "ssm.mods.api",
+                    "https://ficsit-api.mircearoata.duckdns.org"
+                );
+            } else {
+                super.set("ssm.mods.api", "https://api.ficsit.dev");
+            }
+        } else {
+            super.set("ssm.mods.api", "https://api.ficsit.app");
+        }
     };
 }
 
