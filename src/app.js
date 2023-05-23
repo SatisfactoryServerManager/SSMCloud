@@ -290,6 +290,23 @@ function main() {
                 },
                 () => {}
             );
+        })
+        .on("keyup", ".backup-search", (e) => {
+            const $this = $(e.currentTarget);
+            const $backupCard = $this.parent().parent().parent().parent();
+
+            const search = $this.val().toLowerCase();
+            console.log(search);
+            $backupCard.find(".backup-card").each((index, ele) => {
+                const $ele = $(ele);
+                if (
+                    !$ele.attr("data-backupname").toLowerCase().includes(search)
+                ) {
+                    $ele.parent().addClass("hidden");
+                } else {
+                    $ele.parent().removeClass("hidden");
+                }
+            });
         });
 
     $("#inp_maxplayers").on("input change", () => {
