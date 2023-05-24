@@ -160,7 +160,7 @@ stop_spinner $?
 INSTALLMONGO=0;
 
 
-if [ $QUIET -eq 0 ]; then
+if [[ $QUIET -eq 0 ]] && [[ $SKIPMONGO -eq 0 ]]; then
     read -r -p "Do you want to install MongoDB? [y/N]: " response </dev/tty
     case $response in
     [yY]*)
