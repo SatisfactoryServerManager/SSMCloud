@@ -16,7 +16,7 @@
         <div class="col-12 col-lg-6">
           <%-include('../includes/status-info-card.ejs',{ClassColour:"blue",
             ClassID:"status",Title:"SML Version",
-            Data:"v0.0.0",Icon:"fa-wrench"}) %>
+            Data:"v"+modState.installedSMLVersion,Icon:"fa-wrench"}) %>
         </div>
         <div class="col-12 col-lg-6">
           <%-include('../includes/status-info-card.ejs',{ClassColour:"green",

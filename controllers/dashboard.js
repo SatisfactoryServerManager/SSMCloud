@@ -694,7 +694,7 @@ exports.postInstallMod = async (req, res, next) => {
         for (let i = 0; i < lastestVersion.dependencies.length; i++) {
             const depMod = lastestVersion.dependencies[i];
 
-            const depVersion = semver.coerce(depMod.condition).version;
+            const depVersion = depMod.condition.replace("^", "");
 
             const theModDep = await ModModel.findOne({
                 modName: depMod.mod_id,

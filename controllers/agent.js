@@ -488,6 +488,8 @@ exports.postModState = async (req, res, next) => {
 
     const newModState = req.body;
 
+    theAgent.modState.installedSMLVersion = newModState.installedSMLVersion;
+
     for (let i = 0; i < newModState.selectedMods.length; i++) {
         const newSelectedMod = newModState.selectedMods[i];
         const selectedMod = theAgent.modState.selectedMods.find(
