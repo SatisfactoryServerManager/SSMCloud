@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.65](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.64...v1.0.65) (2023-05-29)
+
+
+### Features
+
+* update ModState SML version ([1bc9b5b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/1bc9b5b5df309896f71dcdd9cda9af5b1bd0f221))
+
 ### [1.0.64](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.63...v1.0.64) (2023-05-23)
 
 
