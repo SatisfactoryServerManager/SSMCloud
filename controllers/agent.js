@@ -124,6 +124,50 @@ exports.postAgentRunningState = async (req, res, next) => {
     });
 };
 
+exports.postAgentState = async (req, res, next) => {
+    const AgentAPIKey = req.agentKey;
+
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+    const theAccount = await Account.findOne({ agents: theAgent._id });
+
+    let EventName = "";
+    let fireEvent = false;
+
+    if (theAgent.running && !req.body.running) {
+        EventName = "agent.sf.stopped";
+        fireEvent = true;
+    } else if (!theAgent.running && req.body.running) {
+        EventName = "agent.sf.running";
+        fireEvent = true;
+    }
+
+    try {
+        if (fireEvent) {
+            await NotificationSystem.CreateNotification(
+                EventName,
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: theAgent._id,
+                    agent_name: theAgent.agentName,
+                },
+                theAccount._id
+            );
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+    theAgent.installed = req.body.installed;
+    theAgent.running = req.body.running;
+    theAgent.lastCommDate = Date.now();
+    await theAgent.save();
+
+    res.json({
+        success: true,
+    });
+};
+
 exports.postAgentCpuMem = async (req, res, next) => {
     const AgentAPIKey = req.agentKey;
 
