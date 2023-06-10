@@ -34,6 +34,7 @@ router.post("/uploadsave", isAgent, AgentController.postUploadSaveFile);
 router.get("/saves/download/:filename", isAgent, AgentController.getSaveFile);
 
 router.post("/saves/info", isAgent, AgentController.postAgentSaveInfo);
+router.post("/saves/newinfo", isAgent, AgentController.postAgentSaveNewInfo);
 
 router.post("/uploadlog", isAgent, AgentController.postUploadLog);
 

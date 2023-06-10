@@ -236,6 +236,7 @@ class SSMCloud_App {
 
         // Error-handling middleware. Express executes this middleware when you call next() with an error passed to it
         app.use((error, req, res, next) => {
+            console.log(error);
             res.status(500).render("500", {
                 pageTitle: "Server Error",
                 path: "/500",

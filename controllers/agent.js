@@ -302,6 +302,106 @@ exports.getSaveFile = async (req, res, next) => {
     });
 };
 
+exports.postAgentSaveNewInfo = async (req, res, next) => {
+    try {
+        const AgentAPIKey = req.agentKey;
+        const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+        await theAgent.populate("saves");
+        const SaveIdsToRemove = [];
+
+        const data = req.body.saveDatas;
+
+        for (let i = 0; i < data.length; i++) {
+            const saveSession = data[i];
+
+            const saveFiles = saveSession.saveFiles;
+
+            for (let j = 0; j < saveFiles.length; j++) {
+                const saveFile = saveFiles[j];
+
+                const existing = theAgent.saves.find(
+                    (s) =>
+                        s.sessionName == saveSession.sessionName &&
+                        s.fileName == saveFile.fileName
+                );
+
+                const modifiedTime = new Date(saveFile.modTime);
+
+                if (existing) {
+                    existing.level = saveFile.level;
+                    existing.stats = {
+                        mtime: modifiedTime,
+                        size: saveFile.size,
+                    };
+                    existing.mods = [];
+
+                    await existing.save();
+                } else {
+                    const newSave = await AgentSave.create({
+                        sessionName: saveSession.sessionName,
+                        fileName: saveFile.fileName,
+                        level: saveFile.level,
+                        stats: {
+                            mtime: modifiedTime,
+                            size: saveFile.size,
+                        },
+                        mods: [],
+                    });
+
+                    theAgent.saves.push(newSave);
+                }
+            }
+        }
+
+        for (let i = 0; i < theAgent.saves.length; i++) {
+            const save = theAgent.saves[i];
+
+            let doesExist = false;
+
+            for (let j = 0; j < data.length; j++) {
+                const saveSession = data[j];
+
+                if (save.sessionName != saveSession.sessionName) {
+                    continue;
+                }
+
+                const saveFiles = saveSession.saveFiles;
+
+                for (let k = 0; k < saveFiles.length; k++) {
+                    const saveFile = saveFiles[k];
+
+                    if (save.fileName == saveFile.fileName) {
+                        doesExist = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!doesExist) {
+                SaveIdsToRemove.push(save._id);
+                theAgent.saves.splice(i, 1);
+            }
+        }
+        await AgentSave.deleteMany({ _id: { $in: SaveIdsToRemove } });
+
+        await theAgent.save();
+
+        await AgentHandler.UpdateAgentLastCommDate(theAgent);
+
+        res.json({
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+
+        res.json({
+            success: false,
+            error: err.message,
+        });
+    }
+};
+
 exports.postAgentSaveInfo = async (req, res, next) => {
     const AgentAPIKey = req.agentKey;
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
