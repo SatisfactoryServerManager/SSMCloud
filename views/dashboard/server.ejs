@@ -117,7 +117,7 @@
                       </span>
                     </div>
                     <div class="col-12 col-md-6">
-                      <b id="agent-publicip">1.2.3.4</b>
+                      <b id="agent-publicip"><%=agent.config.ip%></b>
                     </div>
                   </div>
                   <div class="row settings-row">
@@ -183,6 +183,20 @@
                       <h5>Satisfactory Server Settings</h5>
                     </div>
                     <div class="card-body">
+
+                      <% if(locals.message){ const messageData = JSON.parse(message); 
+                            if(messageData.section == "sfsettings"){%>
+                      <div class="alert alert-success">
+                        <%=messageData.message%>
+                      </div>
+                      <%}}%>
+
+                      <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                            if(errorMessageData.section == "sfsettings"){%>
+                      <div class="alert alert-danger">
+                        <%=errorMessageData.message%>
+                      </div>
+                      <%}}%>
                       <form action="" method="post" class="form-horizontal">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <input type="hidden" name="_ConfigSetting" value="sfsettings" />
@@ -253,8 +267,20 @@
                       <h5>Backup Settings</h5>
                     </div>
                     <div class="card-body">
-                      <form action="" method="post">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <% if(locals.message){ const messageData = JSON.parse(message); 
+                            if(messageData.section == "backupsettings"){%> <div class="alert alert-success">
+                            <%=messageData.message%>
+                          </div>
+                          <%}}%>
+
+                          <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
+                            if(errorMessageData.section == "backupsettings"){%>
+                          <div class="alert alert-danger">
+                            <%=errorMessageData.message%>
+                          </div>
+                          <%}}%>
+                          <form action="" method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                             <input type="hidden" name="_ConfigSetting" value="backupsettings" />
                             <div class="row settings-row">
                               <div class="col-12 col-md-4">
@@ -336,46 +362,47 @@
                                   Update Settings</button>
                               </div>
                             </div>
-                      </form>
+                          </form>
+
+                        </div>
 
                     </div>
-
                   </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="card border-danger mb-3 bg-glass">
-                    <div class="card-header">
-                      <h5>Server Options</h5>
-                    </div>
-                    <div class="card-body">
-                      <div class="row settings-row">
-                        <div class="col-12 col-md-4">
-                          <b class="settings-prop">Install/Reinstall Server:</b>
-                          <span class="settings-info">
-                            Install or Reinstall Satisfactory Server
-                          </span>
-                        </div>
-                        <div class="col-12 col-md-8">
-                          <a href="/dashboard/serveraction/<%=agent._id%>/install">
-                            <button class="btn btn-danger" id="settings-dangerarea-installsf"><i class="fas fa-download"></i> Install / Reinstall</button>
-                          </a>
-
-                        </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="card border-danger mb-3 bg-glass">
+                      <div class="card-header">
+                        <h5>Server Options</h5>
                       </div>
-                      <div class="row settings-row">
-                        <div class="col-12 col-md-4">
-                          <b class="settings-prop">Update Server:</b>
-                          <span class="settings-info">
-                            Update Satisfactory Server
-                          </span>
+                      <div class="card-body">
+                        <div class="row settings-row">
+                          <div class="col-12 col-md-4">
+                            <b class="settings-prop">Install/Reinstall Server:</b>
+                            <span class="settings-info">
+                              Install or Reinstall Satisfactory Server
+                            </span>
+                          </div>
+                          <div class="col-12 col-md-8">
+                            <a href="/dashboard/serveraction/<%=agent._id%>/install">
+                              <button class="btn btn-danger" id="settings-dangerarea-installsf"><i class="fas fa-download"></i> Install / Reinstall</button>
+                            </a>
+
+                          </div>
                         </div>
-                        <div class="col-12 col-md-8">
-                          <a href="/dashboard/serveraction/<%=agent._id%>/update">
-                            <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
-                              Update Server</button>
-                          </a>
+                        <div class="row settings-row">
+                          <div class="col-12 col-md-4">
+                            <b class="settings-prop">Update Server:</b>
+                            <span class="settings-info">
+                              Update Satisfactory Server
+                            </span>
+                          </div>
+                          <div class="col-12 col-md-8">
+                            <a href="/dashboard/serveraction/<%=agent._id%>/update">
+                              <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
+                                Update Server</button>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -383,20 +410,19 @@
                 </div>
               </div>
             </div>
-          </div>
 
 
 
 
-          <%}%>
+            <%}%>
 
                     
                 </div>
             </div>
 
             <%- include('../includes/footer-main.ejs') %>
+          </div>
         </div>
-      </div>
 </body>
 
 <script>

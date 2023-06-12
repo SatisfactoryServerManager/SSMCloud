@@ -240,6 +240,14 @@ exports.getServer = async (req, res, next) => {
     if (theAgent) {
         theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
 
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         res.render("dashboard/server", {
             path: "/server",
             pageTitle: `Server - ${theAgent.agentName}`,
@@ -248,7 +256,8 @@ exports.getServer = async (req, res, next) => {
             latestVersion: AgentHandler._LatestAgentRelease,
             agent: theAgent,
             apiKey: encodeBase64(theAgent.apiKey),
-            errorMessage: "",
+            errorMessage,
+            message,
         });
     } else {
         res.render("dashboard/server", {
@@ -287,14 +296,13 @@ exports.postServer = async (req, res, next) => {
     const hasPermission = await theUser.HasPermission("server.update");
 
     if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
+        const errorMessageData = {
+            section: "",
+            message: "You dont have permission to perform this action!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect(`/dashboard/servers/${agentid}`);
     }
 
     const theAccount = await Account.findOne({
@@ -314,28 +322,36 @@ exports.postServer = async (req, res, next) => {
         "+messageQueue"
     );
 
-    if (theAccount) {
-        await theAccount.populate("agents");
-
-        res.render("dashboard/server", {
-            path: "/server",
-            pageTitle: `Server - ${theAgent.agentName}`,
-            accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            agent: theAgent,
-            errorMessage: "",
-        });
-    } else {
-        res.render("dashboard/server", {
-            path: "/serves",
-            pageTitle: "Server",
-            accountName: "",
-            agents: [],
-            agent: {},
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
+    if (theAgent == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
     }
+
+    const successMessageData = {
+        section: data._ConfigSetting,
+        message: `Settings Have Been Successfully Updated!`,
+    };
+
+    if (data._ConfigSetting == "sfsettings") {
+        theAgent.config.maxPlayers = parseInt(data.inp_maxplayers);
+
+        theAgent.config.checkForUpdatesOnStart =
+            data.inp_updatesfonstart == "on" ? true : false;
+
+        theAgent.config.workerThreads = parseInt(data.inp_workerthreads);
+
+        theAgent.config.sfBranch =
+            data.inp_sfbranch == "on" ? "experimental" : "public";
+    }
+
+    if (data._ConfigSetting == "backupsettings") {
+        theAgent.config.backup.keep = parseInt(data.inp_backupkeep);
+
+        theAgent.config.backup.interval = parseInt(data.inp_backupinterval);
+    }
+
+    theAgent.markModified("config");
 
     const message = await MessageQueueItem.create({
         action: "updateconfig",
@@ -344,6 +360,9 @@ exports.postServer = async (req, res, next) => {
 
     theAgent.messageQueue.push(message);
     await theAgent.save();
+
+    req.flash("success", JSON.stringify(successMessageData));
+    res.redirect(`/dashboard/servers/${agentid}`);
 };
 
 exports.getServerDelete = async (req, res, next) => {

@@ -124,7 +124,7 @@ class AgentHandler {
                     dayDiff = Math.floor((t2 - t1) / (24 * 3600 * 1000));
                 }
 
-                if (message.completed || message.retries == 10 || dayDiff > 5) {
+                if (message.completed || message.retries >= 10 || dayDiff > 5) {
                     await MessageQueueItem.deleteOne({ _id: message._id });
                     agent.messageQueue.splice(j, 1);
                     await agent.save();

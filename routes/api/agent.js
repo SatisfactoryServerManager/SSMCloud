@@ -20,6 +20,10 @@ router.post("/cpumem", isAgent, AgentController.postAgentCpuMem);
 
 router.post("/configData", isAgent, AgentController.postUpdateAgentConfigData);
 
+router.post("/config", isAgent, AgentController.postConfig);
+
+router.get("/config", isAgent, AgentController.getConfig);
+
 router.post(
     "/messagequeue",
     isAgent,

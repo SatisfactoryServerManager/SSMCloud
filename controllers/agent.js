@@ -242,6 +242,51 @@ exports.postUpdateAgentConfigData = async (req, res, next) => {
     });
 };
 
+exports.postConfig = async (req, res, next) => {
+    try {
+        const AgentAPIKey = req.agentKey;
+
+        const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+
+        const configData = req.body;
+
+        const theConfig = theAgent.config;
+
+        theConfig.version = configData.version;
+        if (theConfig.sfVersions == null) {
+            theConfig.sfVersions = {};
+        }
+
+        theConfig.sfVersions.installed = configData.sfinstalledver;
+        theConfig.sfVersions.available = configData.sfavailablever;
+
+        theConfig.ip = configData.ipaddress;
+
+        theAgent.config = theConfig;
+
+        theAgent.markModified("config");
+        await theAgent.save();
+
+        await AgentHandler.UpdateAgentLastCommDate(theAgent);
+
+        res.json({
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.getConfig = async (req, res, next) => {
+    const AgentAPIKey = req.agentKey;
+
+    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
+    res.json({
+        success: true,
+        data: theAgent.config,
+    });
+};
+
 exports.postUploadBackupFile = async (req, res, next) => {
     try {
         const file = req.file;
