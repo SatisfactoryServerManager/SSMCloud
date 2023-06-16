@@ -499,10 +499,6 @@ function BuildAgentInstallCommands() {
     const portString = parseFloat($("#inp_serverport").val());
     const portOffset = portString - 15777;
 
-    const serverqueryport = 15777 + portOffset;
-    const beaconport = 15000 + portOffset;
-    const port = 7777 + portOffset;
-
     let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory}`;
     let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}"`;
 
@@ -510,13 +506,8 @@ function BuildAgentInstallCommands() {
     let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}"`;
 
     if (portOffset > 0) {
-        WindowsInstallCommand += ` -SERVERQUERYPORT ${serverqueryport}`;
-        WindowsInstallCommand += ` -BEACONPORT ${beaconport}`;
-        WindowsInstallCommand += ` -PORT ${port}`;
-
-        LinuxInstallCommand += ` --serverqueryport ${serverqueryport}`;
-        LinuxInstallCommand += ` --beaconport ${beaconport}`;
-        LinuxInstallCommand += ` --port ${port}`;
+        WindowsInstallCommand += ` -PORTOFFSET ${portOffset}`;
+        LinuxInstallCommand += ` --portoffset ${portOffset}`;
     }
 
     WindowsStandaloneInstallCommand += ` -PORTOFFSET ${portOffset}`;

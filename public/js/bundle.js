@@ -511,13 +511,8 @@ function BuildAgentInstallCommands() {
     let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}"`;
 
     if (portOffset > 0) {
-        WindowsInstallCommand += ` -SERVERQUERYPORT ${serverqueryport}`;
-        WindowsInstallCommand += ` -BEACONPORT ${beaconport}`;
-        WindowsInstallCommand += ` -PORT ${port}`;
-
-        LinuxInstallCommand += ` --serverqueryport ${serverqueryport}`;
-        LinuxInstallCommand += ` --beaconport ${beaconport}`;
-        LinuxInstallCommand += ` --port ${port}`;
+        WindowsInstallCommand += ` -PORTOFFSET ${portOffset}`;
+        LinuxInstallCommand += ` --portoffset ${portOffset}`;
     }
 
     WindowsStandaloneInstallCommand += ` -PORTOFFSET ${portOffset}`;

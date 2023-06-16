@@ -57,9 +57,11 @@ exports.postAgentActiveState = async (req, res, next) => {
     }
 
     theAgent.online = req.body.active;
-    await theAgent.save();
+    theAgent.markModified("online");
 
-    await AgentHandler.UpdateAgentLastCommDate(theAgent);
+    const changed = await theAgent.save();
+
+    await AgentHandler.UpdateAgentLastCommDate(theAgent, false);
 
     res.json({
         success: true,
@@ -663,6 +665,7 @@ exports.getModState = async (req, res, next) => {
     res.status(200).json({
         success: true,
         modState: theAgent.modState,
+        data: theAgent.modState,
     });
 };
 
@@ -681,8 +684,9 @@ exports.postModState = async (req, res, next) => {
 
     for (let i = 0; i < newModState.selectedMods.length; i++) {
         const newSelectedMod = newModState.selectedMods[i];
+
         const selectedMod = theAgent.modState.selectedMods.find(
-            (sm) => sm._id == newSelectedMod._id
+            (sm) => sm._id.toString() == newSelectedMod._id
         );
 
         if (selectedMod == null) continue;

@@ -205,8 +205,8 @@ class AgentHandler {
         }
     };
 
-    UpdateAgentLastCommDate = async (Agent) => {
-        if (Agent.online == false) {
+    UpdateAgentLastCommDate = async (Agent, updateOnlineState = true) => {
+        if (Agent.online == false && updateOnlineState == true) {
             Agent.online = true;
         }
         Agent.lastCommDate = new Date();

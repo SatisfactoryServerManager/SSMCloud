@@ -713,7 +713,6 @@ exports.postInstallMod = async (req, res, next) => {
                     mod: theModDep,
                     desiredVersion: depVersion,
                 };
-                console.log(newSelectedDepMod);
                 modState.selectedMods.push(newSelectedDepMod);
                 await modState.save();
             } else {
