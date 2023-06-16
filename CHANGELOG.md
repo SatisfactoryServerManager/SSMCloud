@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.69](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.68...v1.0.69) (2023-06-16)
+
+
+### Features
+
+* New install agent command ([0734315](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/0734315cd39db4c716a7b9f4501a1148a1e1ca93))
+
 ### [1.0.68](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.67...v1.0.68) (2023-06-12)
 
 
