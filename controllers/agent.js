@@ -20,6 +20,7 @@ const NotificationSystem = require("../server/server_notification_system");
 const NotificationEventTypeModel = require("../models/notification_event_type");
 
 const ModManager = require("../server/server_mod_manager");
+const AgentModStateModel = require("../models/agent_mod_state.model");
 
 exports.postAgentActiveState = async (req, res, next) => {
     const AgentAPIKey = req.agentKey;
@@ -369,7 +370,7 @@ exports.postAgentSaveNewInfo = async (req, res, next) => {
         await theAgent.populate("saves");
         const SaveIdsToRemove = [];
 
-        const data = req.body.saveDatas;
+        const data = req.body.saveDatas || [];
 
         for (let i = 0; i < data.length; i++) {
             const saveSession = data[i];
@@ -670,6 +671,13 @@ exports.getModState = async (req, res, next) => {
     const theAgent = await Agent.findOne({ apiKey: AgentAPIKey });
 
     await theAgent.populate("modState");
+
+    if (theAgent.modState == null) {
+        const newModState = await AgentModStateModel.create({});
+        theAgent.modState = newModState;
+        await theAgent.save();
+    }
+
     for (let i = 0; i < theAgent.modState.selectedMods.length; i++) {
         await theAgent.modState.populate(`selectedMods.${i}.mod`);
     }
