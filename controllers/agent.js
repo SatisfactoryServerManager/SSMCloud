@@ -163,6 +163,9 @@ exports.postAgentState = async (req, res, next) => {
     theAgent.installed = req.body.installed;
     theAgent.running = req.body.running;
     theAgent.lastCommDate = Date.now();
+    theAgent.cpuUsage = req.body.cpu;
+    theAgent.ramUsage = req.body.mem;
+
     await theAgent.save();
 
     res.json({
