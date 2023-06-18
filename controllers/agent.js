@@ -257,6 +257,15 @@ exports.postConfig = async (req, res, next) => {
         theConfig.version = configData.version;
         if (theConfig.sfVersions == null) {
             theConfig.sfVersions = {};
+            theConfig.backup = {
+                interval: 1,
+                keep: 24,
+                nextbackup: 0,
+            };
+            theConfig.checkForUpdatesOnStart = true;
+            theConfig.workerThreads = 20;
+            theConfig.maxPlayers = 4;
+            theConfig.sfBranch = "public";
         }
 
         theConfig.sfVersions.installed = configData.sfinstalledver;
