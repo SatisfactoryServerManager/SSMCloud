@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.74](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.73...v1.0.74) (2023-06-18)
+
+
+### Bug Fixes
+
+* Fixed default values for agent config ([47541dd](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/47541dd88bddcde3b8760f0d1489e956f7bf82f2))
+
 ### [1.0.73](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.72...v1.0.73) (2023-06-18)
 
 
