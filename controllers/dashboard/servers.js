@@ -21,6 +21,7 @@ const AgentLogInfo = require("../../models/agent_log_info");
 
 const AgentHandler = require("../../server/server_agent_handler");
 const { validationResult } = require("express-validator");
+const AgentModStateModel = require("../../models/agent_mod_state.model");
 
 exports.getServers = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
@@ -155,6 +156,7 @@ exports.postServers = async (req, res, next) => {
     const APIKey = "AGT-API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
 
     const newLogInfo = await AgentLogInfo.create({});
+    const newModState = await AgentModStateModel.create({});
 
     const newAgent = await Agent.create({
         agentName: req.body.inp_servername,
@@ -162,6 +164,7 @@ exports.postServers = async (req, res, next) => {
         apiKey: APIKey,
         memory: req.body.inp_servermemory * 1024 * 1024 * 1024,
         logInfo: newLogInfo,
+        modState: newModState,
     });
     theAccount.agents.push(newAgent);
     await theAccount.save();
