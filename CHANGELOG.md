@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.71](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.70...v1.0.71) (2023-06-18)
+
+
+### Bug Fixes
+
+* Create new mod state ([a00f90b](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/a00f90bb4519d6e0b0fb3f5e363e85cd546a6117))
+
 ### [1.0.70](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.69...v1.0.70) (2023-06-18)
 
 
