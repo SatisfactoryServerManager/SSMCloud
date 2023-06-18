@@ -68,7 +68,23 @@ const agentSchema = new Schema(
         },
         config: {
             type: Object,
-            default: {},
+            default: {
+                version: "v0.0.0",
+                backup: {
+                    keep: 24,
+                    interval: 1,
+                    nextbackup: 0,
+                },
+                workerThreads: 20,
+                maxPlayers: 4,
+                checkForUpdatesOnStart: true,
+                sfBranch: "public",
+                ip: "",
+                sfVersions: {
+                    installed: 0,
+                    available: 0,
+                },
+            },
         },
         backups: [
             {
