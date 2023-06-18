@@ -440,6 +440,7 @@ exports.getServerDelete = async (req, res, next) => {
         await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
         await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
         await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
+        await AgentModStateModel.deleteOne({ _id: theAgent.modState });
 
         await Agent.deleteOne({ _id: theAgent._id });
 
