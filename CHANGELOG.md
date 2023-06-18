@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.72](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.71...v1.0.72) (2023-06-18)
+
+
+### Features
+
+* Report cpu and mem usage ([53034a2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/53034a294cfc059facbf1a0ff4cb487d084e6ff4))
+
+
+### Bug Fixes
+
+* Delete mod state on agent deletion ([95d9090](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/95d90909f6faf8398abb95f61bbd69a5c49b40b2))
+
 ### [1.0.71](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.70...v1.0.71) (2023-06-18)
 
 
