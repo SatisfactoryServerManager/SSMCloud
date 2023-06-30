@@ -6,8 +6,17 @@ const User = require("../models/user");
 const UserRoleModel = require("../models/user_role");
 const UserInvite = require("../models/user_invite");
 
+const Agent = require("../models/agent");
+const AgentModStateModel = require("../../models/agent_mod_state.model");
+const AgentLogInfo = require("../../models/agent_log_info");
+
+const Mrhid6Utils = require("mrhid6utils");
+const Tools = Mrhid6Utils.Tools;
+
 const bcrypt = require("bcryptjs");
 const { authenticator } = require("otplib");
+
+const NotificationSystem = require("../../server/server_notification_system");
 
 exports.postLogin = async (req, res, next) => {
     const { email, password, otp } = req.body;
@@ -95,7 +104,7 @@ exports.getAccount = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -110,7 +119,7 @@ exports.getAccount = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        account: theAccount.toJSON(),
+        data: theAccount.toJSON(),
     });
 };
 
@@ -139,7 +148,7 @@ exports.putAccount = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -148,7 +157,7 @@ exports.putAccount = async (req, res, next) => {
     if (xAccountName == "" || xAccountName == null) {
         res.status(403).json({
             success: false,
-            account: null,
+            data: null,
             error: "xAccountName was empty or null!",
         });
         return;
@@ -184,7 +193,7 @@ exports.getUsers = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -194,7 +203,7 @@ exports.getUsers = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        users: theAccount.users,
+        data: theAccount.users,
     });
 };
 
@@ -231,7 +240,7 @@ exports.getSingleUser = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -244,7 +253,7 @@ exports.getSingleUser = async (req, res, next) => {
     if (theUser == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find user with that id!",
         });
         return;
@@ -252,7 +261,7 @@ exports.getSingleUser = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        user: theUser,
+        data: theUser,
     });
 };
 
@@ -279,7 +288,7 @@ exports.postUsers = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -374,7 +383,7 @@ exports.postUsers = async (req, res, next) => {
         const inviteUrl = `${protocol}://${host}/acceptinvite/${newInvite._id}`;
         res.status(200).json({
             success: true,
-            user: theNewUser,
+            data: theNewUser,
             inviteUrl,
         });
     } catch (err) {
@@ -408,7 +417,7 @@ exports.getServers = async (req, res, next) => {
     if (theAccount == null) {
         res.status(404).json({
             success: false,
-            account: null,
+            data: null,
             error: "Cannot find account with that api key!",
         });
         return;
@@ -418,6 +427,89 @@ exports.getServers = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        servers: theAccount.agents,
+        data: theAccount.agents,
+    });
+};
+
+exports.postServers = async (req, res, next) => {
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
+
+    const theKey = await ApiKey.findOne({ key: apiKey });
+
+    let theUser = await User.findOne({ _id: theKey.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.create");
+
+    if (!hasPermission) {
+        res.status(403).json({
+            success: false,
+            error: "403 - Forbidden",
+        });
+        return;
+    }
+
+    const theAccount = await Account.findOne({ apiKeys: apiKeyId });
+
+    if (theAccount == null) {
+        res.status(404).json({
+            success: false,
+            data: null,
+            error: "Cannot find account with that api key!",
+        });
+        return;
+    }
+
+    await theAccount.populate("agents");
+
+    const data = req.body;
+
+    const existingAgentWithName = theAccount.agents.find(
+        (agent) => agent.agentName == data.name
+    );
+
+    if (existingAgentWithName) {
+        return res.status(400).json({
+            success: false,
+            error: "Server with the same name already exists on this Account!",
+        });
+    }
+
+    const APIKey = "AGT-API-" + Tools.generateUUID("XXXXXXXXXXXXXXXXXXXXXXX");
+
+    const newLogInfo = await AgentLogInfo.create({});
+    const newModState = await AgentModStateModel.create({});
+
+    const newAgent = await Agent.create({
+        agentName: data.name,
+        sfPortNum: parseInt(data.portOffset || 0) + 15777,
+        apiKey: APIKey,
+        memory: parseInt(data.memory || 0) * 1024 * 1024 * 1024,
+        logInfo: newLogInfo,
+        modState: newModState,
+    });
+    theAccount.agents.push(newAgent);
+    await theAccount.save();
+
+    try {
+        await NotificationSystem.CreateNotification(
+            "agent.created",
+            {
+                account_id: theAccount._id,
+                account_name: theAccount.accountName,
+                agent_id: newAgent._id,
+                agent_name: newAgent.agentName,
+                server_port: newAgent.sfPortNum,
+                memory: newAgent.memory,
+            },
+            theAccount._id
+        );
+    } catch (err) {
+        console.log(err);
+    }
+
+    res.status(200).json({
+        success: true,
+        data: newAgent,
     });
 };
