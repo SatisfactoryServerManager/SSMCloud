@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.78](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.77...v1.0.78) (2023-06-30)
+
+
+### Features
+
+* API Create Agent route ([fda5c99](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/fda5c994713b0182705cc4a0cfea76fd651cd095))
+
 ### [1.0.77](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.76...v1.0.77) (2023-06-30)
 
 
