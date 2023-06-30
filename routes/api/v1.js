@@ -28,6 +28,8 @@ router.post("/users", isApiKey, v1Controller.postUsers);
 
 router.get("/servers", isApiKey, v1Controller.getServers);
 
+router.post("/servers", isApiKey, v1Controller.postServers);
+
 router.use("*", (req, res, next) => {
     res.status(404).json({
         success: false,
