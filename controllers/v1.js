@@ -7,8 +7,8 @@ const UserRoleModel = require("../models/user_role");
 const UserInvite = require("../models/user_invite");
 
 const Agent = require("../models/agent");
-const AgentModStateModel = require("../../models/agent_mod_state.model");
-const AgentLogInfo = require("../../models/agent_log_info");
+const AgentModStateModel = require("../models/agent_mod_state.model");
+const AgentLogInfo = require("../models/agent_log_info");
 
 const Mrhid6Utils = require("mrhid6utils");
 const Tools = Mrhid6Utils.Tools;
@@ -16,7 +16,7 @@ const Tools = Mrhid6Utils.Tools;
 const bcrypt = require("bcryptjs");
 const { authenticator } = require("otplib");
 
-const NotificationSystem = require("../../server/server_notification_system");
+const NotificationSystem = require("../server/server_notification_system");
 
 exports.postLogin = async (req, res, next) => {
     const { email, password, otp } = req.body;
