@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.75](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.74...v1.0.75) (2023-06-30)
+
+
+### Bug Fixes
+
+* Fixed api crash ([e21fb97](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/e21fb9702ffdc8705ec781dcb0556a771a9b47ee))
+
 ### [1.0.74](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.73...v1.0.74) (2023-06-18)
 
 
