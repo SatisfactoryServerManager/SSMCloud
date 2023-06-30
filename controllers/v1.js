@@ -73,8 +73,8 @@ exports.postLogin = async (req, res, next) => {
 };
 
 exports.getAccount = async (req, res, next) => {
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 
@@ -117,8 +117,8 @@ exports.getAccount = async (req, res, next) => {
 exports.putAccount = async (req, res, next) => {
     const { xAccountName } = req.body;
 
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 
@@ -162,8 +162,8 @@ exports.putAccount = async (req, res, next) => {
 };
 
 exports.getUsers = async (req, res, next) => {
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 
@@ -199,8 +199,8 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.getSingleUser = async (req, res, next) => {
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 
@@ -257,8 +257,8 @@ exports.getSingleUser = async (req, res, next) => {
 };
 
 exports.postUsers = async (req, res, next) => {
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 
@@ -386,8 +386,8 @@ exports.postUsers = async (req, res, next) => {
 };
 
 exports.getServers = async (req, res, next) => {
-    const apiKey = req.session.apikey;
-    const apiKeyId = req.session.apikeyId;
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
 
     const theKey = await ApiKey.findOne({ key: apiKey });
 

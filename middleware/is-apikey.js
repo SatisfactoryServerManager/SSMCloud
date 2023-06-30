@@ -23,8 +23,8 @@ module.exports = async (req, res, next) => {
         return;
     }
 
-    req.session.apikey = headerKey;
-    req.session.apikeyId = theApiKey._id;
+    req.apikey = headerKey;
+    req.apikeyId = theApiKey._id;
 
     next();
 };
