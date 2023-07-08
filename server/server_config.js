@@ -35,10 +35,10 @@ class ServerConfig extends iConfig {
         super.get("ssm.http_port", 3000);
 
         // Mongo DB Config
-        super.get("ssm.db.user", "ssm");
-        super.get("ssm.db.pass", "#SSMPa$£");
-        super.get("ssm.db.host", "127.0.0.1");
-        super.get("ssm.db.database", "ssm");
+        super.get("ssm.db.user", process.env.MONGODB_USER || "ssm");
+        super.get("ssm.db.pass", process.end.MONGODB_PASS || "#SSMPa$£");
+        super.get("ssm.db.host", process.env.MONGODB_SERVER || "127.0.0.1");
+        super.get("ssm.db.database", process.env.MONGODB_DB || "ssm");
 
         // hCaptcha Config
         super.get("ssm.hcaptcha.enabled", false);

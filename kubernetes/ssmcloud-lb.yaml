@@ -3,6 +3,19 @@ kind: Namespace
 metadata:
     name: ssm
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: ssmcloud-secret
+    namespace: ssmagent
+stringData:
+    mongodb_server: 127.0.0.1
+    mongodb_db: ssm
+    mongodb_user: ssm
+    mongodb_pass: "#SSMPa$£"
+type: Opaque
+
+---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -39,6 +52,27 @@ spec:
                   persistentVolumeClaim:
                       claimName: ssmcloud-data-pvc
             containers:
+                - env:
+                      - name: MONGODB_SERVER
+                        valueFrom:
+                            secretKeyRef:
+                                key: mongodb_server
+                                name: ssmcloud-secret
+                      - name: MONGODB_DB
+                        valueFrom:
+                            secretKeyRef:
+                                key: mongodb_db
+                                name: ssmcloud-secret
+                      - name: MONGODB_USER
+                        valueFrom:
+                            secretKeyRef:
+                                key: mongodb_user
+                                name: ssmcloud-secret
+                      - name: MONGODB_PASS
+                        valueFrom:
+                            secretKeyRef:
+                                key: mongodb_pass
+                                name: ssmcloud-secret
                 - name: ssmcloud
                   image: mrhid6/ssmcloud:latest
                   ports:
