@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.82](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.81...v1.0.82) (2023-07-08)
+
+
+### Features
+
+* dockerize ssm cloud ([69cfe58](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/69cfe58c45ff971555349e907f5afcd354f07561))
+* dockerize ssm cloud ([ef63ebb](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ef63ebb1c3522f6145dfc81f2ee6449f24803fec))
+* Get mongodb config from env ([9ba6257](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/9ba62572111d18400738c3a6a11e6ed2dfb47c7e))
+
 ### [1.0.81](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.80...v1.0.81) (2023-07-08)
 
 
