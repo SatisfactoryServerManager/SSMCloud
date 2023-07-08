@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.80](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.79...v1.0.80) (2023-07-08)
+
+
+### Features
+
+* dockerize ssm cloud ([301f76e](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/301f76e810e5e6f03fc72548adecfbbd1b1787c1))
+
 ### [1.0.79](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.78...v1.0.79) (2023-07-08)
 
 
