@@ -36,7 +36,7 @@ class ServerConfig extends iConfig {
 
         // Mongo DB Config
         super.get("ssm.db.user", process.env.MONGODB_USER || "ssm");
-        super.get("ssm.db.pass", process.end.MONGODB_PASS || "#SSMPa$£");
+        super.get("ssm.db.pass", process.env.MONGODB_PASS || "#SSMPa$£");
         super.get("ssm.db.host", process.env.MONGODB_SERVER || "127.0.0.1");
         super.get("ssm.db.database", process.env.MONGODB_DB || "ssm");
 
