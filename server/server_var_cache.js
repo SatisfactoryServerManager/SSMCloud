@@ -14,11 +14,11 @@ class ServerVarCache extends iVarCache {
     }
 
     setupWindowsVarCache() {
-        super.get("homedir", "C:\\ProgramData\\SSM_Cloud");
+        super.get("homedir", "C:\\ProgramData\\SSM\\Cloud\\data");
     }
 
     setupLinuxVarCache() {
-        super.get("homedir", path.join(osHomeDir, "SSM_Cloud"));
+        super.get("homedir", "/SSM/Cloud/data");
     }
 }
 
