@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: ssm
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
     name: ssmcloud
+    namespace: ssm
 spec:
     selector:
         matchLabels:
@@ -22,6 +28,7 @@ apiVersion: v1
 kind: Service
 metadata:
     name: ssmcloud-svc
+    namespace: ssm
 spec:
     type: LoadBalancer
     selector:
@@ -29,3 +36,19 @@ spec:
     ports:
         - port: 3000
           targetPort: 3000
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+    name: ssmcloud-data-pvc
+    namespace: ssm
+    annotations:
+        volume.alpha.kubernetes.io/storage-class: "generic"
+    labels:
+        app.kubernetes.io/name: ssmcloud
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 20Gi
