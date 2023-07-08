@@ -3,40 +3,6 @@ kind: Namespace
 metadata:
     name: ssm
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-    name: ssmcloud
-    namespace: ssm
-spec:
-    selector:
-        matchLabels:
-            app: ssmcloud
-    replicas: 1
-    template:
-        metadata:
-            labels:
-                app: ssmcloud
-        spec:
-            containers:
-                - name: ssmcloud
-                  image: mrhid6/ssmcloud:latest
-                  ports:
-                      - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: ssmcloud-svc
-    namespace: ssm
-spec:
-    type: LoadBalancer
-    selector:
-        app: ssmcloud
-    ports:
-        - port: 3000
-          targetPort: 3000
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -52,3 +18,44 @@ spec:
     resources:
         requests:
             storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ssmcloud
+    namespace: ssm
+spec:
+    selector:
+        matchLabels:
+            app: ssmcloud
+    replicas: 2
+    template:
+        metadata:
+            labels:
+                app: ssmcloud
+        spec:
+            volumes:
+                - name: ssmdata
+                  persistentVolumeClaim:
+                      claimName: ssmcloud-data-pvc
+            containers:
+                - name: ssmcloud
+                  image: mrhid6/ssmcloud:latest
+                  ports:
+                      - containerPort: 3000
+                  volumeMounts:
+                      - mountPath: "/SSM/Cloud/data"
+                        name: ssmdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: ssmcloud-svc
+    namespace: ssm
+spec:
+    type: LoadBalancer
+    selector:
+        app: ssmcloud
+    ports:
+        - port: 3000
+          targetPort: 3000
