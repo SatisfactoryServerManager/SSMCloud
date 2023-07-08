@@ -12,9 +12,8 @@ RUN apt-get -qq update -y
 
 RUN useradd -m -u 9999 -s /bin/bash ssm 
 
-RUN mkdir /opt/SSM/Cloud
+RUN mkdir -p /opt/SSM/Cloud
 VOLUME /opt/SSM/Cloud
-RUN ls -l
 COPY release/linux/* /opt/SSM/Cloud
 RUN chown -R ssm:ssm /opt/SSM/Cloud
 
