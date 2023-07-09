@@ -66,6 +66,8 @@ class SSMCloud_App {
             "ssm.db.host"
         )}/${Config.get("ssm.db.database")}`;
 
+        console.log("Mongo URI: ", this.MONGODB_URI);
+
         const app = express();
         const store = new MongoDBStore({
             uri: this.MONGODB_URI,
