@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.85](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.84...v1.0.85) (2023-07-10)
+
+
+### Features
+
+* Delete endpoint ([772603f](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/772603f9a55f6d1917f5141467c4d75348a83a4a))
+
 ### [1.0.84](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.83...v1.0.84) (2023-07-09)
 
 ### [1.0.83](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.82...v1.0.83) (2023-07-08)
