@@ -30,6 +30,8 @@ router.get("/servers", isApiKey, v1Controller.getServers);
 
 router.post("/servers", isApiKey, v1Controller.postServers);
 
+router.delete("/servers/:agentid", isApiKey, v1Controller.deleteServer);
+
 router.use("*", (req, res, next) => {
     res.status(404).json({
         success: false,

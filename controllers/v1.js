@@ -18,6 +18,8 @@ const { authenticator } = require("otplib");
 
 const NotificationSystem = require("../server/server_notification_system");
 
+const Config = require("../server/server_config");
+
 exports.postLogin = async (req, res, next) => {
     const { email, password, otp } = req.body;
 
@@ -511,5 +513,88 @@ exports.postServers = async (req, res, next) => {
     res.status(200).json({
         success: true,
         data: newAgent,
+    });
+};
+
+exports.deleteServer = async (req, res, next) => {
+    const apiKey = req.apikey;
+    const apiKeyId = req.apikeyId;
+
+    const { agentid } = req.params;
+
+    const theKey = await ApiKey.findOne({ key: apiKey });
+
+    let theUser = await User.findOne({ _id: theKey.user._id });
+
+    const hasPermission = await theUser.HasPermission("server.create");
+
+    if (!hasPermission) {
+        res.status(403).json({
+            success: false,
+            error: "403 - Forbidden",
+        });
+        return;
+    }
+
+    const theAccount = await Account.findOne({ apiKeys: apiKeyId });
+
+    if (theAccount == null) {
+        res.status(404).json({
+            success: false,
+            data: null,
+            error: "Cannot find account with that api key!",
+        });
+        return;
+    }
+
+    await theAccount.populate("agents");
+    const theAgent = await Agent.findById(agentid);
+
+    theAccount.agents.pull(theAgent);
+    await theAccount.save();
+
+    if (theAgent) {
+        await AgentLogInfo.deleteOne({ _id: theAgent.logInfo });
+        await AgentSaveFile.deleteMany({ _id: { $in: theAgent.saves } });
+        await AgentBackup.deleteMany({ _id: { $in: theAgent.backups } });
+        await AgentModStateModel.deleteOne({ _id: theAgent.modState });
+
+        await Agent.deleteOne({ _id: agentid });
+
+        const agentUploadDir = path.join(
+            Config.get("ssm.uploadsdir"),
+            theAgent._id.toString()
+        );
+
+        if (fs.existsSync(agentUploadDir)) {
+            rimraf.sync(agentUploadDir);
+        }
+
+        try {
+            await NotificationSystem.CreateNotification(
+                "agent.delete",
+                {
+                    account_id: theAccount._id,
+                    account_name: theAccount.accountName,
+                    agent_id: theAgent._id,
+                    agent_name: theAgent.agentName,
+                },
+                theAccount._id
+            );
+        } catch (err) {
+            console.log(err);
+        }
+
+        res.status(200).json({
+            success: true,
+            data: null,
+        });
+        return;
+    }
+
+    res.status(404).json({
+        success: false,
+        data: null,
+        error: "Agent not found",
     });
 };

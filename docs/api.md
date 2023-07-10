@@ -303,7 +303,8 @@ Create a new user on the account.
 
 ```shell
 curl -H "x-ssm-key: {APIKEY}" \
-     -d "{Request Body}"
+     -X POST \
+     -d "{Request Body}" \
      -l http://{URL}/api/v1/users
 ```
 
@@ -389,6 +390,92 @@ Retrived the account successfully
 {
     "success": true,
     "servers": []
+}
+```
+
+<!-- tabs:end -->
+
+## Create
+
+Get all servers on the account.
+
+<div class="pill-wrapper pill-post">
+    <span>POST</span> /api/v1/servers
+</div>
+
+<!-- tabs:start -->
+
+#### ** Request **
+
+**Usage:**
+
+```shell
+curl -H "x-ssm-key: {APIKEY}" \
+     -X POST \
+     -d "{Request Body}" \
+     -l http://{URL}/api/v1/servers
+```
+
+**Request Body:**
+
+```json
+{
+    "name": "AgentName",
+    "portOffset": 0,
+    "memory": 12884901888
+}
+```
+
+#### ** Response **
+
+**200: OK**
+
+Retrived the account successfully
+
+```json
+{
+    "success": true,
+    "data": {}
+}
+```
+
+<!-- tabs:end -->
+
+## Delete
+
+Get all servers on the account.
+
+<div class="pill-wrapper pill-delete">
+    <span>DELETE</span> /api/v1/servers/{agentId}
+</div>
+
+<!-- tabs:start -->
+
+#### ** Request **
+
+**Usage:**
+
+```shell
+curl -H "x-ssm-key: {APIKEY}" \
+     -X DELETE \
+     -l http://{URL}/api/v1/servers/{agentId}
+```
+
+**Request Body:**
+
+```
+Request requires no body.
+```
+
+#### ** Response **
+
+**200: OK**
+
+Retrived the account successfully
+
+```json
+{
+    "success": true
 }
 ```
 
