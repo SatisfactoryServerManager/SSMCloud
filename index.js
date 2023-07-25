@@ -63,8 +63,8 @@ class SSMCloud_App {
         this.MONGODB_URI = `mongodb://${Config.get(
             "ssm.db.user"
         )}:${encodeURIComponent(Config.get("ssm.db.pass"))}@${Config.get(
-            "ssm.db.host"
-        )}/${Config.get("ssm.db.database")}`;
+            "ssm.db.server"
+        )}:${Config.get("ssm.db.port")}/${Config.get("ssm.db.database")}`;
 
         console.log("Mongo URI: ", this.MONGODB_URI);
 

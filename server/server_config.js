@@ -32,35 +32,55 @@ class ServerConfig extends iConfig {
         );
         fs.ensureDirSync(super.get("ssm.uploadsdir"));
 
-        super.get("ssm.http_port", 3000);
+        super.get("ssm.http_port", parseInt(process.env.HTTP_PORT || 3000));
+
+        this.GetConfigDefaultValue("ssm.http_port", 3000, true);
 
         // Mongo DB Config
-        super.get("ssm.db.user", process.env.MONGODB_USER || "ssm");
-        super.get("ssm.db.pass", process.env.MONGODB_PASS || "#SSMPa$£");
-        super.get("ssm.db.host", process.env.MONGODB_SERVER || "127.0.0.1");
-        super.get("ssm.db.database", process.env.MONGODB_DB || "ssm");
+        this.GetConfigDefaultValue("ssm.db.user", "ssm");
+        this.GetConfigDefaultValue("ssm.db.pass", "#SSMP@$£");
+        this.GetConfigDefaultValue("ssm.db.database", "ssm");
+        this.GetConfigDefaultValue("ssm.db.server", "127.0.0.1");
+        this.GetConfigDefaultValue("ssm.db.port", 27017, true);
 
         // hCaptcha Config
-        super.get("ssm.hcaptcha.enabled", false);
-        super.get("ssm.hcaptcha.sitekey", "");
-        super.get("ssm.hcaptcha.secret", "");
+        this.GetConfigDefaultValue("ssm.hcaptcha.enabled", false, false, true);
+        this.GetConfigDefaultValue("ssm.hcaptcha.sitekey", "");
+        this.GetConfigDefaultValue("ssm.hcaptcha.secret", "");
 
         //Mail Config
-        super.get("ssm.mail.enabled", false);
-        super.get("ssm.mail.sender", "SSM <ssm@example.com>");
-        super.get("ssm.mail.transport.host", "mail.example.com");
-        super.get("ssm.mail.transport.port", 25);
-        super.get("ssm.mail.transport.secure", false);
-        super.get("ssm.mail.transport.tls.servername", "mail.exmaple.com");
-        super.get("ssm.mail.transport.tls.ciphers", "SSLv3");
-        super.get("ssm.mail.transport.ignoreTLS", true);
-        super.get("ssm.mail.transport.auth.user", "EMAIL");
-        super.get("ssm.mail.transport.auth.pass", "PASSWORD");
+        this.GetConfigDefaultValue("ssm.mail.enabled", false, false, true);
+        this.GetConfigDefaultValue("ssm.mail.sender", "SSM <ssm@example.com>");
+        this.GetConfigDefaultValue(
+            "ssm.mail.transport.host",
+            "mail.example.com"
+        );
+        this.GetConfigDefaultValue("ssm.mail.transport.port", 25, true);
+        this.GetConfigDefaultValue(
+            "ssm.mail.transport.secure",
+            false,
+            false,
+            true
+        );
+        this.GetConfigDefaultValue(
+            "ssm.mail.transport.tls.servername",
+            "mail.example.com"
+        );
+        this.GetConfigDefaultValue("ssm.mail.transport.tls.ciphers", "SSLv3");
+        this.GetConfigDefaultValue(
+            "ssm.mail.transport.ignoreTLS",
+            true,
+            false,
+            true
+        );
+        this.GetConfigDefaultValue("ssm.mail.transport.auth.user", "EMAIL");
+        this.GetConfigDefaultValue("ssm.mail.transport.auth.pass", "PASSWORD");
 
         // Mods
 
-        super.get("ssm.mods.usedev", true);
-        super.get("ssm.mods.useexp", false);
+        this.GetConfigDefaultValue("ssm.mods.usedev", true, false, true);
+        this.GetConfigDefaultValue("ssm.mods.useexp", false, false, true);
+
         if (super.get("ssm.mods.usedev")) {
             if (super.get("ssm.mods.useexp")) {
                 super.set(
@@ -74,6 +94,29 @@ class ServerConfig extends iConfig {
             super.set("ssm.mods.api", "https://api.ficsit.app");
         }
     };
+
+    GetConfigDefaultValue(key, defaultVal, isInt = false, isBool = false) {
+        const envKey = key.replaceAll(".", "_").toUpperCase();
+        const envVar = process.env[envKey];
+
+        if (envVar != null) {
+            defaultVal = envVar;
+        } else {
+            console.log(
+                `Couldn't find environment variable ${envKey} using default value of ${defaultVal}`
+            );
+        }
+
+        if (isInt && typeof defaultVal != "number") {
+            defaultVal = parseInt(defaultVal);
+        }
+
+        if (isBool && typeof defaultVal != "boolean") {
+            defaultVal = defaultVal === "true" || defaultVal === 1;
+        }
+
+        return super.get(key, defaultVal);
+    }
 }
 
 const serverConfig = new ServerConfig();
