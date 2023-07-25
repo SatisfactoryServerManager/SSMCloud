@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.90](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.89...v1.0.90) (2023-07-25)
+
+
+### Features
+
+* Octopus Deploy ([50b4335](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/50b43358c2d119eba28f4f6050b1bd92cf9aae76))
+
 ### [1.0.89](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.88...v1.0.89) (2023-07-25)
 
 
