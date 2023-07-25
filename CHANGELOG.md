@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.86](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.85...v1.0.86) (2023-07-25)
+
+
+### Features
+
+* Update dependencies ([c312c68](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/c312c684abc048651a94fade9b22e221089bfe2b))
+
+
+### Bug Fixes
+
+* Docker script ([ccbdf32](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ccbdf32fb9e56136d28b02f0ce3e1eb2d1af60ec))
+* Fixed k8s namespaces ([328aef5](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/328aef593106623f8f3746d3ea70541c11d4b513))
+
 ### [1.0.85](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.84...v1.0.85) (2023-07-10)
 
 
