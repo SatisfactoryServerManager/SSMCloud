@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.87](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.86...v1.0.87) (2023-07-25)
+
+
+### Features
+
+* Handle environmental variables ([7cf0226](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/7cf0226bdb79b243b653a276e7b62ef974663758))
+
+
+### Bug Fixes
+
+* k8s pvc ([0948a5d](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/0948a5dea0f224245c49f28f8c9762ded88a7eab))
+
 ### [1.0.86](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.85...v1.0.86) (2023-07-25)
 
 
