@@ -1,6 +1,7 @@
 ---
 name: Build SSM Cloud
 on:
+    workflow_dispatch
     push:
         tags:
             - "*"
