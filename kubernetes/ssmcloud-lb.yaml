@@ -65,7 +65,7 @@ spec:
                             secretKeyRef:
                                 key: mongodb_pass
                                 name: ssmcloud-secret
-                - name: ssmcloud
+                  name: ssmcloud
                   image: mrhid6/ssmcloud:latest
                   ports:
                       - containerPort: 3000
