@@ -86,6 +86,13 @@ body {
     background-color: #aaa;
 }
 
+.dataTable,
+.dataTable tr,
+.dataTable tr td,
+.dataTable tr th {
+    color: #fff !important;
+}
+
 /* Toggle Styles */
 
 #server-running-loading {
