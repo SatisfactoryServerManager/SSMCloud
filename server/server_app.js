@@ -33,8 +33,8 @@ class ServerApp {
             { name: "page.saves", description: "View Saves Page" },
             { name: "page.profile", description: "View Profile Page" },
             {
-                name: "page.notifications",
-                description: "View Notifications Page",
+                name: "page.intergrations",
+                description: "View Intergrations Page",
             },
             { name: "user.create", description: "Create A New User" },
             { name: "user.delete", description: "Delete User" },
@@ -59,11 +59,11 @@ class ServerApp {
             { name: "saves.upload", description: "Upload Save File" },
             { name: "saves.download", description: "Download Save File" },
             {
-                name: "notifications.create",
+                name: "intergrations.create",
                 description: "Create Notification Setting",
             },
             {
-                name: "notifications.update",
+                name: "intergrations.update",
                 description: "Update Notification Settings",
             },
         ];

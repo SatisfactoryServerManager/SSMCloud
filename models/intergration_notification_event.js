@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const notificationEventSchema = new Schema({
+const IntergrationNotificationEventSchema = new Schema({
     eventData: {
         type: Object,
         required: true,
@@ -17,4 +17,7 @@ const notificationEventSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model("NotificationEvent", notificationEventSchema);
+module.exports = mongoose.model(
+    "IntergrationNotificationEvent",
+    IntergrationNotificationEventSchema
+);

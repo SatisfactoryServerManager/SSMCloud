@@ -4,8 +4,8 @@ const User = require("./user");
 const UserRole = require("./user_role");
 const UserInvites = require("./user_invite");
 const ApiKey = require("./apikey");
-const AccountNotificationSetting = require("./account_notification_setting");
-const Notification = require("./notification");
+const AccountIntergrations = require("./account_intergrations");
+const IntergrationNotification = require("./intergration_notification");
 const AccountEvent = require("./account_event");
 
 const Schema = mongoose.Schema;
@@ -45,10 +45,10 @@ const accountSchema = new Schema({
             ref: "ApiKey",
         },
     ],
-    notificationSettings: [
+    intergrations: [
         {
             type: Schema.Types.ObjectId,
-            ref: "AccountNotificationSetting",
+            ref: "AccountIntergrations",
         },
     ],
 
@@ -56,7 +56,7 @@ const accountSchema = new Schema({
         type: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "Notification",
+                ref: "IntergrationNotification",
             },
         ],
         select: false,

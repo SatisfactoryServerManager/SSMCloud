@@ -1,32 +1,9 @@
 var ObjectId = require("mongoose").Types.ObjectId;
 
-const Mrhid6Utils = require("mrhid6utils");
-const Tools = Mrhid6Utils.Tools;
-
 const fs = require("fs-extra");
-const path = require("path");
-
-const Config = require("../../server/server_config");
-
-const NotificationSystem = require("../../server/server_notification_system");
 
 const Account = require("../../models/account");
-const Agent = require("../../models/agent");
-const MessageQueueItem = require("../../models/messagequeueitem");
 const User = require("../../models/user");
-const UserInvite = require("../../models/user_invite");
-const UserRole = require("../../models/user_role");
-const Permission = require("../../models/permission");
-const AgentSaveFile = require("../../models/agent_save");
-const AgentBackup = require("../../models/agent_backup");
-const ApiKey = require("../../models/apikey");
-const ModModel = require("../../models/mod");
-const AgentLogInfo = require("../../models/agent_log_info");
-
-const NotificationEventTypeModel = require("../../models/notification_event_type");
-const NotificationSettingsModel = require("../../models/account_notification_setting");
-
-const AgentHandler = require("../../server/server_agent_handler");
 
 exports.GetLogsPage = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {

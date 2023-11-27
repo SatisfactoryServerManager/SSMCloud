@@ -1,9 +1,9 @@
 const Config = require("./server_config");
 const Logger = require("./server_logger");
 
-const NotificationModel = require("../models/notification");
-const NotificationEventModel = require("../models/notification_event");
-const NotificationEventTypeModel = require("../models/notification_event_type");
+const NotificationModel = require("../models/intergration_notification");
+const NotificationEventModel = require("../models/intergration_notification_event");
+const NotificationEventTypeModel = require("../models/intergration_event_type");
 const AccountModel = require("../models/account");
 
 const WebHooks = require("node-webhooks");
@@ -168,19 +168,19 @@ class NotificationSystem {
             throw new Error(`Event Type (${eventType}) was Null!`);
         }
 
-        await theAccount.populate("notificationSettings");
+        await theAccount.populate("intergrations");
 
-        for (let i = 0; i < theAccount.notificationSettings.length; i++) {
-            const notificationSetting = theAccount.notificationSettings[i];
-            await notificationSetting.populate("eventTypes");
+        for (let i = 0; i < theAccount.intergrations.length; i++) {
+            const intergration = theAccount.intergrations[i];
+            await intergration.populate("eventTypes");
 
-            const hasEventType = notificationSetting.eventTypes.find(
+            const hasEventType = intergration.eventTypes.find(
                 (et) => et.eventTypeName == theEventType.eventTypeName
             );
 
             if (hasEventType) {
                 const theNotification = await NotificationModel.create({
-                    notificationSetting,
+                    intergration,
                     eventType: theEventType,
                     data: eventData,
                 });
@@ -205,7 +205,7 @@ class NotificationSystem {
 
         for (let i = 0; i < allNotifications.length; i++) {
             const notification = allNotifications[i];
-            await notification.populate("notificationSetting");
+            await notification.populate("intergration");
             await notification.populate("eventType");
             await this.CreateEventForNotification(notification);
         }
@@ -228,11 +228,9 @@ class NotificationSystem {
         Notification.events.push(theEvent);
         await Notification.save();
 
-        if (Notification.notificationSetting.notificationType == "webhook") {
+        if (Notification.intergration.type == "webhook") {
             await this.DispatchWebhookEvent(Notification, theEvent);
-        } else if (
-            Notification.notificationSetting.notificationType == "discord"
-        ) {
+        } else if (Notification.intergration.type == "discord") {
             await this.DispatchDiscordEvent(Notification, theEvent);
         }
     };
@@ -241,10 +239,7 @@ class NotificationSystem {
         try {
             const shortName = Notification._id.toString();
 
-            await this.webHooks.add(
-                shortName,
-                Notification.notificationSetting.url
-            );
+            await this.webHooks.add(shortName, Notification.intergration.url);
 
             this.webHooks.trigger(shortName, Event.eventData);
         } catch (err) {
@@ -256,7 +251,7 @@ class NotificationSystem {
         const SSMLogo =
             "https://ssmcloud.hostxtra.co.uk/public/images/ssm_logo128.png";
 
-        const url = Notification.notificationSetting.url;
+        const url = Notification.intergration.url;
         try {
             const hook = new Webhook(url);
             hook.setUsername("SSM Notifier");

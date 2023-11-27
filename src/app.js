@@ -196,7 +196,7 @@ function main() {
                 enctype: "multipart/form-data",
                 data: data,
             }).then(() => {
-                window.location = "/dashboard/notifications";
+                window.location = "/dashboard/intergrations";
             });
 
             return true;
@@ -225,7 +225,7 @@ function main() {
                 enctype: "multipart/form-data",
                 data: data,
             }).then(() => {
-                window.location = "/dashboard/notifications";
+                window.location = "/dashboard/intergrations";
             });
 
             return true;

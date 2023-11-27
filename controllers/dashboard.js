@@ -26,8 +26,8 @@ const ModModel = require("../models/mod");
 const AgentLogInfo = require("../models/agent_log_info");
 const AgentModStateModel = require("../models/agent_mod_state.model");
 
-const NotificationEventTypeModel = require("../models/notification_event_type");
-const NotificationSettingsModel = require("../models/account_notification_setting");
+const NotificationEventTypeModel = require("../models/intergration_event_type");
+const NotificationSettingsModel = require("../models/account_intergrations");
 
 const SelectedModSchema = require("../models/selectedMod.schema");
 
@@ -794,7 +794,7 @@ exports.postUninstallMod = async (req, res, next) => {
 
 exports.Logs = require("./dashboard/logs");
 
-exports.getNotifications = async (req, res, next) => {
+exports.getIntergrationsPage = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
@@ -803,7 +803,7 @@ exports.getNotifications = async (req, res, next) => {
 
     let theUser = await User.findOne({ _id: req.session.user._id });
 
-    const hasPermission = await theUser.HasPermission("page.notifications");
+    const hasPermission = await theUser.HasPermission("page.intergrations");
 
     if (!hasPermission) {
         res.status(403).render("403", {
@@ -824,11 +824,11 @@ exports.getNotifications = async (req, res, next) => {
 
     if (theAccount) {
         await theAccount.populate("agents");
-        await theAccount.populate("notificationSettings");
+        await theAccount.populate("intergrations");
         await theAccount.populate("notifications");
 
-        for (let i = 0; i < theAccount.notificationSettings.length; i++) {
-            const setting = theAccount.notificationSettings[i];
+        for (let i = 0; i < theAccount.intergrations.length; i++) {
+            const setting = theAccount.intergrations[i];
             await setting.populate("eventTypes");
         }
 
@@ -836,7 +836,7 @@ exports.getNotifications = async (req, res, next) => {
             const notification = theAccount.notifications[i];
             await notification.populate("events");
             await notification.populate("eventType");
-            await notification.populate("notificationSetting");
+            await notification.populate("intergration");
         }
 
         let message = req.flash("success");
@@ -847,24 +847,24 @@ exports.getNotifications = async (req, res, next) => {
             ? (errorMessage = errorMessage[0])
             : (errorMessage = null);
 
-        res.render("dashboard/notifications", {
-            path: "/notifications",
-            pageTitle: "Notifications",
+        res.render("dashboard/intergrations", {
+            path: "/intergrations",
+            pageTitle: "Intergrations",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
-            notificationSettings: theAccount.notificationSettings,
+            intergrations: theAccount.intergrations,
             notifications: theAccount.notifications,
             eventTypes,
             message,
             errorMessage,
         });
     } else {
-        res.render("dashboard/notifications", {
-            path: "/notifications",
-            pageTitle: "Notifications",
+        res.render("dashboard/intergrations", {
+            path: "/intergrations",
+            pageTitle: "Intergrations",
             accountName: "",
             agents: [],
-            notificationSettings: [],
+            intergrations: [],
             notifications: [],
             eventTypes: [],
             message: "",
@@ -875,13 +875,13 @@ exports.getNotifications = async (req, res, next) => {
 };
 
 exports.postUpdateNotificationSettings = async (req, res, next) => {
-    const notificationSettingId = req.params.settingsId;
+    const intergrationId = req.params.settingsId;
     const data = req.body;
 
     if (!ObjectId.isValid(req.session.user._id)) {
         const errorMessageData = {
             section: "settings",
-            id: notificationSettingId,
+            id: intergrationId,
             message: "Invalid Session User ID Format",
         };
 
@@ -889,10 +889,10 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
         return res.json({});
     }
 
-    if (!ObjectId.isValid(notificationSettingId)) {
+    if (!ObjectId.isValid(intergrationId)) {
         const errorMessageData = {
             section: "settings",
-            id: notificationSettingId,
+            id: intergrationId,
             message: "Invalid Requested Notification Settings ID Format",
         };
 
@@ -907,7 +907,7 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     if (!hasPermission) {
         const errorMessageData = {
             section: "settings",
-            id: notificationSettingId,
+            id: intergrationId,
             message: "You dont have permission to perform this action!",
         };
 
@@ -916,13 +916,13 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     }
 
     const theNotificationSetting = await NotificationSettingsModel.findOne({
-        _id: notificationSettingId,
+        _id: intergrationId,
     });
 
     if (theNotificationSetting == null) {
         const errorMessageData = {
             section: "settings",
-            id: notificationSettingId,
+            id: intergrationId,
             message: "Cant Find Notification Settings details!",
         };
 
@@ -938,7 +938,7 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     } catch (err) {
         const errorMessageData = {
             section: "settings",
-            id: notificationSettingId,
+            id: intergrationId,
             message: "Failed to connect to notification url endpoint!",
         };
 
@@ -957,7 +957,7 @@ exports.postUpdateNotificationSettings = async (req, res, next) => {
     await theNotificationSetting.save();
     const successMessageData = {
         section: "settings",
-        id: notificationSettingId,
+        id: intergrationId,
         message: `Notification settings has been updated successfully!`,
     };
 
@@ -1031,7 +1031,7 @@ exports.postNewNotitifcationSettings = async (req, res, next) => {
         eventTypes: eventTypes,
     });
 
-    theAccount.notificationSettings.push(newNotificationSettings);
+    theAccount.intergrations.push(newNotificationSettings);
     await theAccount.save();
     const successMessageData = {
         section: "newsettings",
@@ -1043,7 +1043,7 @@ exports.postNewNotitifcationSettings = async (req, res, next) => {
 };
 
 exports.getDeleteNotificationSettings = async (req, res, next) => {
-    const notificationSettingId = req.params.settingsId;
+    const intergrationId = req.params.settingsId;
 
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -1051,7 +1051,7 @@ exports.getDeleteNotificationSettings = async (req, res, next) => {
         return next(error);
     }
 
-    if (!ObjectId.isValid(notificationSettingId)) {
+    if (!ObjectId.isValid(intergrationId)) {
         const error = new Error("Invalid Notification Settings ID!");
         error.httpStatusCode = 500;
         return next(error);
@@ -1078,14 +1078,14 @@ exports.getDeleteNotificationSettings = async (req, res, next) => {
         },
         {
             $pullAll: {
-                notificationSettings: [{ _id: notificationSettingId }],
+                intergrations: [{ _id: intergrationId }],
             },
         }
     );
 
-    await NotificationSettingsModel.deleteOne({ _id: notificationSettingId });
+    await NotificationSettingsModel.deleteOne({ _id: intergrationId });
 
-    res.redirect("/dashboard/notifications");
+    res.redirect("/dashboard/intergrations");
 };
 
 exports.getProfile = async (req, res, next) => {

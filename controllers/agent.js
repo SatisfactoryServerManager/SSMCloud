@@ -17,7 +17,7 @@ const AgentHandler = require("../server/server_agent_handler");
 const Config = require("../server/server_config");
 
 const NotificationSystem = require("../server/server_notification_system");
-const NotificationEventTypeModel = require("../models/notification_event_type");
+const NotificationEventTypeModel = require("../models/intergration_event_type");
 
 const ModManager = require("../server/server_mod_manager");
 const AgentModStateModel = require("../models/agent_mod_state.model");

@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
 
-const AccountNotificationSetting = require("./account_notification_setting");
-const NotificationEvent = require("./notification_event");
+const AccountIntergrations = require("./account_intergrations");
+const IntergrationNotificationEvent = require("./intergration_notification_event");
 
 const Schema = mongoose.Schema;
 
-const notificationSchema = new Schema({
-    notificationSetting: {
+const IntergrationNotificationSchema = new Schema({
+    intergration: {
         type: Schema.Types.ObjectId,
-        ref: "AccountNotificationSetting",
+        ref: "AccountIntergrations",
     },
     eventType: {
         type: Schema.Types.ObjectId,
-        ref: "NotificationEventType",
+        ref: "IntergrationEventType",
     },
     retries: {
         type: Number,
@@ -33,7 +33,7 @@ const notificationSchema = new Schema({
     events: [
         {
             type: Schema.Types.ObjectId,
-            ref: "NotificationEvent",
+            ref: "IntergrationNotificationEvent",
         },
     ],
     data: {
@@ -46,4 +46,7 @@ const notificationSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model("Notification", notificationSchema);
+module.exports = mongoose.model(
+    "IntergrationNotification",
+    IntergrationNotificationSchema
+);

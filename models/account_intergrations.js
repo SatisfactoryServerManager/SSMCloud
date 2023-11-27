@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
 
-const NotificationEventType = require("./notification_event_type");
+const IntergrationEventType = require("./intergration_event_type");
 
 const Schema = mongoose.Schema;
 
-const accountNotificationSettingSchema = new Schema({
+const accountIntergrationsSchema = new Schema({
     eventTypes: [
         {
             type: Schema.Types.ObjectId,
-            ref: "NotificationEventType",
+            ref: "IntergrationEventType",
         },
     ],
-    notificationType: {
+    type: {
         type: String,
         default: "webhook",
     },
@@ -26,6 +26,6 @@ const accountNotificationSettingSchema = new Schema({
 });
 
 module.exports = mongoose.model(
-    "AccountNotificationSetting",
-    accountNotificationSettingSchema
+    "AccountIntergrations",
+    accountIntergrationsSchema
 );
