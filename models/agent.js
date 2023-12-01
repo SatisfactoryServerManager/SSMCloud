@@ -4,6 +4,8 @@ const MessageQueueItem = require("./messagequeueitem");
 const AgentBackup = require("./agent_backup");
 const AgentLogInfo = require("./agent_log_info");
 const AgentModState = require("./agent_mod_state.model");
+const AgentSave = require("./agent_save");
+const GamePlayer = require("./game_player");
 
 const Schema = mongoose.Schema;
 
@@ -119,5 +121,38 @@ const agentSchema = new Schema(
     },
     { minimize: false }
 );
+
+const _preDelete = async function () {
+    const doc = await this.model.findOne(this.getFilter());
+
+    if (doc == null) return;
+
+    console.log("preDelete", doc._id);
+
+    await AgentModState.deleteOne({ _id: doc.modState });
+    await AgentLogInfo.deleteOne({ _id: doc.logInfo });
+
+    for (let si = 0; si < doc.saves.length; si++) {
+        const o = doc.saves[si];
+        await AgentSave.deleteOne({ _id: o });
+    }
+
+    for (let si = 0; si < doc.backups.length; si++) {
+        const o = doc.backups[si];
+        await AgentBackup.deleteOne({ _id: o });
+    }
+
+    for (let si = 0; si < doc.messageQueue.length; si++) {
+        const o = doc.messageQueue[si];
+        await MessageQueueItem.deleteOne({ _id: o });
+    }
+    for (let si = 0; si < doc.players.length; si++) {
+        const o = doc.players[si];
+        await GamePlayer.deleteOne({ _id: o });
+    }
+};
+
+agentSchema.pre("deleteOne", { document: true, query: true }, _preDelete);
+agentSchema.pre("deleteMany", { document: true, query: true }, _preDelete);
 
 module.exports = mongoose.model("Agent", agentSchema);

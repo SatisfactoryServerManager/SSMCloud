@@ -46,6 +46,28 @@ const IntergrationNotificationSchema = new Schema({
     },
 });
 
+const _preDelete = async function () {
+    const doc = await this.model.findOne(this.getFilter());
+
+    if (doc == null) return;
+
+    for (let si = 0; si < doc.events.length; si++) {
+        const o = doc.events[si];
+        await IntergrationNotificationEvent.deleteOne({ _id: o });
+    }
+};
+
+IntergrationNotificationSchema.pre(
+    "deleteOne",
+    { document: true, query: true },
+    _preDelete
+);
+IntergrationNotificationSchema.pre(
+    "deleteMany",
+    { document: true, query: true },
+    _preDelete
+);
+
 module.exports = mongoose.model(
     "IntergrationNotification",
     IntergrationNotificationSchema

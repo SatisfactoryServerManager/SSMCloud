@@ -1,6 +1,7 @@
 const Config = require("./server_config");
 const Logger = require("./server_logger");
 
+const AccountManager = require("./server_account_manager");
 const AgentHandler = require("./server_agent_handler");
 const ModManager = require("./server_mod_manager");
 const NotificationSystem = require("./server_notification_system");
@@ -18,6 +19,7 @@ class ServerApp {
         await NotificationSystem.init();
         GamePlayerHandler.init();
         EmailHandler.init();
+        AccountManager.init();
     };
 
     CheckDBPermissionsCollection = async () => {

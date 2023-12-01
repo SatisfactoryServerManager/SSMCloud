@@ -150,6 +150,22 @@ exports.postLogin = async (req, res, next) => {
             });
         }
 
+        if (theAccount.state.inactive) {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Log In",
+                errorMessage:
+                    "Account is no longer active due to inactivity. Please contact support to reactivate the account.",
+                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
+                oldInput: {
+                    email,
+                    password,
+                },
+                validationErrors: [],
+            });
+        }
+
         const ip =
             req.headers["x-forwarded-for"] ||
             req.headers["x-real-ip"] ||
