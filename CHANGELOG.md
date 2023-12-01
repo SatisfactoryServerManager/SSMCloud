@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.93](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.92...v1.0.93) (2023-12-01)
+
+
+### Features
+
+* Delete account ([ffc5da6](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/ffc5da6480a3f9739d2ac397a45e39e4e5111e49))
+
 ### [1.0.92](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.91...v1.0.92) (2023-11-27)
 
 
