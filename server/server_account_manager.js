@@ -57,9 +57,6 @@ class AccountManager {
                             { state: Account.state }
                         );
                     }
-                    console.log(
-                        `Account ${Account.accountName} is actively being used!`
-                    );
                     continue;
                 }
 
@@ -70,6 +67,10 @@ class AccountManager {
                     await AccountModel.updateOne(
                         { _id: Account._id },
                         { state: Account.state }
+                    );
+
+                    logger.info(
+                        `Account ${Account.accountName} has been marked as inactive`
                     );
                 }
             }
