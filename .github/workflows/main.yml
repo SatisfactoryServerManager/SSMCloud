@@ -9,10 +9,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - name: Use NodeJS 18.5
+            - name: Use NodeJS 19.8.1
               uses: actions/setup-node@v3
               with:
-                  node-version: 18.5
+                  node-version: 19.8.1
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
@@ -47,10 +47,10 @@ jobs:
         runs-on: self-hosted
         steps:
             - uses: actions/checkout@v3
-            - name: Use NodeJS 18.5
+            - name: Use NodeJS 19.8.1
               uses: actions/setup-node@v3
               with:
-                  node-version: 18.5
+                  node-version: 19.8.1
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/windows
