@@ -17,8 +17,9 @@ jobs:
             - run: yarn
             - run: mkdir -p ./release/linux
             - run:
-                  pkg index.js -c package.json -t node19-linux-x64 --out-path ./release/linux
+                  pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
                   -d |tee ./release/linux/build.log
+            - run: if [ ! -f release/linux/SSMCloud ]; then exit 1; fi
             - uses: vimtor/action-zip@v1
               with:
                   files: release/linux/SSMCloud release/linux/build.log
@@ -55,7 +56,7 @@ jobs:
             - run: yarn
             - run: mkdir -p ./release/windows
             - run:
-                  pkg index.js -c package.json -t node19-win-x64 --out-path ./release/windows
+                  pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows
                   -d | tee ./release/windows/build.log
             - uses: vimtor/action-zip@v1
               with:
