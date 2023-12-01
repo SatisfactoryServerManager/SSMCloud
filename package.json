@@ -117,7 +117,7 @@
         ]
     },
     "devDependencies": {
-        "standard-version": "^9.1.1",
+        "standard-version": "^9.5.0",
         "tinyify": "^4.0.0"
     }
 }
