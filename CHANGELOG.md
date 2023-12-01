@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.98](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.97...v1.0.98) (2023-12-01)
+
+
+### Features
+
+* Update node version ([857cae5](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/857cae5e7116298a313ea7f7d9ca7438f289d32d))
+
 ### [1.0.97](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.96...v1.0.97) (2023-12-01)
 
 
