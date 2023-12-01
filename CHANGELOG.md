@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.94](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.93...v1.0.94) (2023-12-01)
+
+
+### Features
+
+* Better logging for inactive account ([b731eb2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/b731eb2d6a7fdb81f942a5d5bb5f836b8078bcaf))
+* Update deps ([d6ed5c7](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/d6ed5c7f0b104372c6422891623f54c0355d4657))
+
 ### [1.0.93](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.92...v1.0.93) (2023-12-01)
 
 
