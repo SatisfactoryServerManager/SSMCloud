@@ -18,7 +18,7 @@ jobs:
             - run: mkdir -p ./release/linux
             - run:
                   pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
-                  -d |tee ./release/linux/build.log
+                  -d > ./release/linux/build.log
             - run: if [ ! -f release/linux/SSMCloud ]; then exit 1; fi
             - uses: vimtor/action-zip@v1
               with:
@@ -57,7 +57,7 @@ jobs:
             - run: mkdir -p ./release/windows
             - run:
                   pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows
-                  -d | tee ./release/windows/build.log
+                  -d > ./release/windows/build.log
             - uses: vimtor/action-zip@v1
               with:
                   files: release/windows/SSMCloud.exe release/windows/build.log
