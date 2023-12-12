@@ -168,6 +168,11 @@ class ModManager {
 
             const installedVersion = selectedMod.installedVersion;
             let NeedsUpdate = false;
+
+            if (selectedMod.mod == null) {
+                continue;
+            }
+
             for (let j = 0; j < selectedMod.mod.versions.length; j++) {
                 const modVersion = selectedMod.mod.versions[j];
 
