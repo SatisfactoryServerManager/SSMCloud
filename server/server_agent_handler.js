@@ -109,6 +109,11 @@ class AgentHandler {
         for (let i = 0; i < Backups.length; i++) {
             const Backup = Backups[i];
 
+            if (!fs.existsSync(Backup.fileName)) {
+                await AgentBackupModel.deleteOne({ _id: Backup._id });
+                continue;
+            }
+
             const FoundAgents = await Agent.find({
                 backups: { $in: [Backup._id] },
             });
