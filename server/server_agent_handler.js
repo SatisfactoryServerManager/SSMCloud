@@ -15,6 +15,7 @@ class AgentHandler {
         this.CheckAllAgentsLastOnline();
         this.PurgeMessageQueues();
         this.GetMostRecentGHAgentVersion();
+        this.CleanupAgentBackups();
 
         this.SetupTimers();
     }
@@ -101,6 +102,27 @@ class AgentHandler {
             }
 
             await Agent.save();
+        }
+
+        const Backups = await AgentBackupModel.find();
+
+        for (let i = 0; i < Backups.length; i++) {
+            const Backup = Backups[i];
+
+            const FoundAgents = await Agent.find({
+                backups: { $in: [Backup._id] },
+            });
+
+            if (FoundAgents.length > 0) continue;
+
+            if (Backup != null && Backup.fileName != null) {
+                if (fs.existsSync(Backup.fileName)) {
+                    fs.unlinkSync(Backup.fileName);
+                    Logger.debug(`Removing Agent Backup: ${Backup.fileName}`);
+                }
+
+                await AgentBackupModel.deleteOne({ _id: Backup._id });
+            }
         }
     };
 
