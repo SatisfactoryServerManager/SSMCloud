@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.104](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.103...v1.0.104) (2024-01-02)
+
+
+### Features
+
+* Check backup file exists ([39f9844](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/39f984412ae964f8fa26f7370a081aa2d3239bdf))
+
 ### [1.0.103](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.102...v1.0.103) (2024-01-02)
 
 ### [1.0.102](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.101...v1.0.102) (2024-01-02)
