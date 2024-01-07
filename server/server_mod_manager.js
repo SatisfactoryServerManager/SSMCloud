@@ -20,6 +20,7 @@ class ModManager {
         await this.UpdateModsInDB();
 
         setInterval(async () => {
+            await this.UpdateModsInDB();
             await this.CheckAgentsModStates();
         }, 5 * 60 * 1000);
     };
