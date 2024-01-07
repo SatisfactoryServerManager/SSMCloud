@@ -530,6 +530,10 @@ body {
     padding: 0 8px;
 }
 
+.mod-list .input-group {
+    flex-wrap: nowrap !important;
+}
+
 /* Logs Page */
 
 .log-viewer,

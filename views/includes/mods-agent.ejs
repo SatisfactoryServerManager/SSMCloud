@@ -55,7 +55,7 @@
               <div class="input-group-text">
                 <input class="form-check-input mt-0 mod-selected-checkbox" type="checkbox" value="">
               </div>
-              <div style="flex-grow:1" class="input-group-text"><%=truncate(mod.modName, 20)%></div>
+              <div style="flex-grow:1" class="input-group-text text-truncate"><%=mod.modName%></div>
               <%if(isInstalled){
                 if(selectedMod.needsUpdate){%>
               <button class="btn btn-warning update-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-upload"></i></button>
