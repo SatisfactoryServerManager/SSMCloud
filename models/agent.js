@@ -123,7 +123,9 @@ const agentSchema = new Schema(
 );
 
 const _preDelete = async function () {
-    const doc = await this.model.findOne(this.getFilter());
+    const doc = await this.model
+        .findOne(this.getFilter())
+        .select("+messageQueue");
 
     if (doc == null) return;
 
