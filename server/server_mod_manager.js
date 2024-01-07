@@ -7,6 +7,8 @@ const Account = require("../models/account");
 
 const semver = require("semver");
 
+const Logger = require("./server_logger");
+
 const Config = require("./server_config");
 
 class ModManager {
@@ -71,8 +73,12 @@ class ModManager {
     GetModListFromAPI = async () => {
         const count = await this.GetModCountFromAPI();
 
+        Logger.debug(`Found ${count} mods from API`);
+
         const ModList = [];
         for (let i = 0; i < count / 100; i++) {
+            Logger.debug(`Paging through mods ${i * 100} - ${(i + 1) * 100}`);
+
             const query = ` {
                 getMods(filter: {
                     limit: 100,
@@ -108,6 +114,7 @@ class ModManager {
                 const mods = modsRes.getMods.mods;
                 for (let i = 0; i < mods.length; i++) {
                     const mod = mods[i];
+
                     if (mod.versions.length == 0) continue;
 
                     const versionsFilter = mod.versions.filter((v) => {
@@ -122,6 +129,7 @@ class ModManager {
                         }
                         return false;
                     });
+
                     if (versionsFilter.length > 0) {
                         mod.versions = versionsFilter;
                         ModList.push(mod);
@@ -138,27 +146,33 @@ class ModManager {
     UpdateModsInDB = async () => {
         const ModList = await this.GetModListFromAPI();
 
-        for (let i = 0; i < ModList.length; i++) {
-            const mod = ModList[i];
+        console.log(`Found mod list ${ModList.length}`);
 
-            const existingMod = await ModModel.findOne({ modId: mod.id });
+        try {
+            for (let i = 0; i < ModList.length; i++) {
+                const mod = ModList[i];
 
-            if (existingMod) {
-                existingMod.modName = mod.name;
-                existingMod.hidden = mod.hidden;
-                existingMod.versions = mod.versions;
-                await existingMod.save();
-                return;
+                const existingMod = await ModModel.findOne({ modId: mod.id });
+
+                if (existingMod) {
+                    existingMod.modName = mod.name;
+                    existingMod.hidden = mod.hidden;
+                    existingMod.versions = mod.versions;
+                    await existingMod.save();
+                    continue;
+                }
+
+                await ModModel.create({
+                    modId: mod.id,
+                    modName: mod.name,
+                    modReference: mod.mod_reference,
+                    hidden: mod.hidden,
+                    logoUrl: mod.logo,
+                    versions: mod.versions,
+                });
             }
-
-            await ModModel.create({
-                modId: mod.id,
-                modName: mod.name,
-                modReference: mod.mod_reference,
-                hidden: mod.hidden,
-                logoUrl: mod.logo,
-                versions: mod.versions,
-            });
+        } catch (err) {
+            console.log(err);
         }
     };
 
