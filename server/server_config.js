@@ -78,7 +78,7 @@ class ServerConfig extends iConfig {
 
         // Mods
 
-        this.GetConfigDefaultValue("ssm.mods.usedev", true, false, true);
+        this.GetConfigDefaultValue("ssm.mods.usedev", false, false, true);
         this.GetConfigDefaultValue("ssm.mods.useexp", false, false, true);
 
         if (super.get("ssm.mods.usedev")) {
