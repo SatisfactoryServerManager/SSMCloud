@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.108](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.107...v1.0.108) (2024-01-07)
+
+
+### Bug Fixes
+
+* Fixed delete agent function ([6f77cc2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/6f77cc22d4ef94431a53d62100920b0f161e222b))
+
 ### [1.0.107](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.106...v1.0.107) (2024-01-07)
 
 
