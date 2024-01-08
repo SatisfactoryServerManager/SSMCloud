@@ -697,7 +697,7 @@ exports.postInstallMod = async (req, res, next) => {
             const depVersion = depMod.condition.replace("^", "");
 
             const theModDep = await ModModel.findOne({
-                modName: depMod.mod_id,
+                modReference: depMod.mod_id,
             });
 
             if (theModDep == null) {
