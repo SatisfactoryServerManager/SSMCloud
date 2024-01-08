@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.112](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.111...v1.0.112) (2024-01-08)
+
+
+### Features
+
+* Added server map to server page ([5fbacb4](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/5fbacb4782570eb30483ca8ed6e50ea8a4d6e25b))
+
 ### [1.0.111](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.110...v1.0.111) (2024-01-08)
 
 
