@@ -4,11 +4,13 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 
-const v1Controller = require("../../controllers/v1");
-const isApiKey = require("../../middleware/is-apikey");
-const rateLimit = require("../../middleware/ratelimit");
+const v1Controller = require("../../../controllers/v1");
+const isApiKey = require("../../../middleware/is-apikey");
+const rateLimit = require("../../../middleware/ratelimit");
 
 router.use(rateLimit.apiLimiter);
+
+router.use("/ssmmod", require("./ssmmod"));
 
 router.post("/login", v1Controller.postLogin);
 

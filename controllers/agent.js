@@ -599,10 +599,6 @@ exports.postUploadLog = async (req, res, next) => {
                 theLogInfo.FactoryGameData = await GetLogFileData(newFilePath);
                 await theLogInfo.save();
 
-                await GamePlayerHandler.ReadLogForPlayerEvents(
-                    theAgent._id,
-                    newFilePath
-                );
                 break;
             case "SSMAgent":
                 theLogInfo.SSMAgent = newFilePath;

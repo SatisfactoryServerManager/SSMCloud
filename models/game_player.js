@@ -18,9 +18,25 @@ const GamePlayerSchema = new Schema({
     logDate: {
         type: Date,
     },
+    online: {
+        type: Boolean,
+        default: false,
+    },
     creationDate: {
         type: Date,
         default: Date.now,
+    },
+    lastOnlineDate: {
+        type: Date,
+        default: Date.now,
+    },
+    location: {
+        type: Object,
+        default: {
+            x: 0,
+            y: 0,
+            z: 0,
+        },
     },
 });
 
