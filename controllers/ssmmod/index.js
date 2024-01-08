@@ -40,7 +40,7 @@ exports.postPlayers = async (req, res, next) => {
                 theAgent.players.push(newPlayer);
                 continue;
             }
-
+            let FoundPlayer = false;
             for (let j = 0; j < theAgent.players.length; j++) {
                 const agentPlayer = theAgent.players[j];
                 agentPlayer.online = false;
@@ -53,9 +53,15 @@ exports.postPlayers = async (req, res, next) => {
                         y: player.location.y || 0,
                         z: player.location.z || 0,
                     };
+
+                    FoundPlayer = true;
                 }
 
                 await agentPlayer.save();
+            }
+
+            if (!FoundPlayer) {
+                theAgent.players.push(existingPlayer);
             }
         }
 
