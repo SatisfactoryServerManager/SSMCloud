@@ -35,6 +35,88 @@ const AgentHandler = require("../server/server_agent_handler");
 
 const semver = require("semver");
 
+exports.getMapPage = async (req, res, next) => {
+    const { agentid } = req.params;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        const error = new Error("Invalid User ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    if (!ObjectId.isValid(agentid)) {
+        const error = new Error("Invalid Agent ID!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.server");
+
+    if (!hasPermission) {
+        res.status(403).render("403", {
+            path: "/dashboard",
+            pageTitle: "Dashboard",
+            accountName: "",
+            agents: [],
+            errorMessage: "You dont have permission to view this page.",
+        });
+        return;
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+        agents: agentid,
+    });
+
+    if (theAccount == null) {
+        const error = new Error("Cant Find Account details!");
+        error.httpStatusCode = 500;
+        return next(error);
+    }
+
+    await theAccount.populate("agents");
+
+    let theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+
+    if (theAgent) {
+        theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
+
+        await theAgent.populate("players");
+
+        let message = req.flash("success");
+        message.length > 0 ? (message = message[0]) : (message = null);
+
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
+        res.render("dashboard/map", {
+            path: "/map",
+            pageTitle: `Map - ${theAgent.agentName}`,
+            accountName: theAccount.accountName,
+            agents: theAccount.agents,
+            latestVersion: AgentHandler._LatestAgentRelease,
+            agent: theAgent,
+            errorMessage,
+            message,
+        });
+    } else {
+        res.render("dashboard/map", {
+            path: "/map",
+            pageTitle: "Map",
+            accountName: "",
+            agents: [],
+            latestVersion: "",
+            agent: {},
+            errorMessage:
+                "Cant Find Account details. Please contact SSM Support.",
+        });
+    }
+};
+
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");

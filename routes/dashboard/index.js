@@ -27,5 +27,6 @@ router.use("/intergrations", require("./intergrations"));
 router.use("/saves", require("./saves"));
 router.use("/servers", require("./servers"));
 router.use("/profile", require("./profile"));
+router.use("/map", require("./map"));
 
 module.exports = router;

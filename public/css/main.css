@@ -377,6 +377,11 @@ body {
     display: none;
 }
 
+#playerMap {
+    height: 500px;
+    width: 100%;
+}
+
 /* Dashboard Page*/
 
 .status-info-card {

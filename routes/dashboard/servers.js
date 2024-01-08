@@ -32,6 +32,8 @@ router.get("/:agentid", isAuth, dashboardServersController.getServer);
 
 router.post("/:agentid", isAuth, dashboardServersController.postServer);
 
+router.get("/:agentid/js", isAuth, dashboardServersController.getServerJS);
+
 router.get(
     "/delete/:agentid",
     isAuth,

@@ -351,6 +351,85 @@ function main() {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    window.agentMap = new AgentMap(window.agent);
+
+    window.agentMap.SetUpMap();
+}
+
+class AgentMap {
+    constructor(agent) {
+        this.agent = agent;
+    }
+    SetUpMap = () => {
+        if ($("#playerMap").length == 0) {
+            return;
+        }
+
+        let bounds = [
+            [-375e3, -324698.832031],
+            [375e3, 425301.832031],
+        ];
+
+        this.playerGroup = L.layerGroup([]);
+
+        const mapImg = L.imageOverlay("/public/images/map.png", bounds);
+
+        this.map = L.map("playerMap", {
+            minZoom: -10,
+            maxZoom: -5,
+            zoom: -9,
+            center: [0, 0],
+            bounds,
+            fullscreen: true,
+            crs: L.CRS.Simple,
+            layers: [mapImg, this.playerGroup],
+        });
+
+        this.map.setMaxBounds(bounds);
+
+        const layerControl = L.control.layers({}).addTo(this.map);
+        layerControl.addOverlay(this.playerGroup, "Players");
+
+        this.BuildMapPlayers();
+
+        setInterval(() => {
+            this.pollAgent();
+        }, 10000);
+        this.pollAgent();
+    };
+
+    BuildMapPlayers = () => {
+        this.playerGroup.clearLayers();
+
+        const players = this.agent.players;
+
+        for (let i = 0; i < players.length; i++) {
+            const player = players[i];
+
+            var playerMarker = L.marker([player.location.x, player.location.y]);
+            playerMarker.bindPopup(`<b>${player.playerName}</b>`);
+
+            this.playerGroup.addLayer(playerMarker);
+        }
+    };
+
+    pollAgent = async () => {
+        const agentId = window.agent._id;
+        try {
+            const res = await $.get("/dashboard/servers/" + agentId + "/js");
+
+            if (res.agent == null) {
+                return;
+            }
+
+            this.agent = res.agent;
+
+            this.BuildMapPlayers();
+        } catch (err) {
+            console.log(err);
+        }
+    };
 }
 
 function FilterServerList() {
@@ -426,10 +505,6 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
             console.log($ele.attr("data-modref"));
         }
     });
-}
-
-function OpenCreateServerModal() {
-    window.openModal("/public/modals", "create-server-modal", (modal) => {});
 }
 
 window.openModal = function (modal_dir, modal_name, var1, var2) {

@@ -243,6 +243,8 @@ exports.getServer = async (req, res, next) => {
     if (theAgent) {
         theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
 
+        await theAgent.populate("players");
+
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
 
@@ -274,6 +276,55 @@ exports.getServer = async (req, res, next) => {
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",
         });
+    }
+};
+
+exports.getServerJS = async (req, res, next) => {
+    const { agentid } = req.params;
+
+    if (!ObjectId.isValid(req.session.user._id)) {
+        res.json({ success: false, error: "invalid user id" });
+        return;
+    }
+
+    if (!ObjectId.isValid(agentid)) {
+        res.json({ success: false, error: "invalid agent id" });
+        return;
+    }
+
+    const theUser = await User.findOne({ _id: req.session.user._id });
+
+    const hasPermission = await theUser.HasPermission("page.server");
+
+    if (!hasPermission) {
+        res.json({ success: false, error: "permission denied" }).status(403);
+        return;
+    }
+
+    const theAccount = await Account.findOne({
+        users: req.session.user._id,
+        agents: agentid,
+    });
+
+    if (theAccount == null) {
+        res.json({ success: false, error: "account is null" });
+        return;
+    }
+
+    await theAccount.populate("agents");
+
+    let theAgent = theAccount.agents.find((agent) => agent._id == agentid);
+
+    if (theAgent) {
+        theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
+
+        await theAgent.populate("players");
+
+        res.json({
+            agent: theAgent,
+        });
+    } else {
+        res.json({ success: false, error: "agent is null" });
     }
 };
 
