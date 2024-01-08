@@ -21,6 +21,10 @@ const selectedModSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    config: {
+        type: String,
+        default: "{}",
+    },
 });
 
 module.exports = selectedModSchema;
