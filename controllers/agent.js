@@ -709,6 +709,7 @@ exports.postModState = async (req, res, next) => {
 
         selectedMod.installed = newSelectedMod.installed;
         selectedMod.installedVersion = newSelectedMod.installedVersion;
+        selectedMod.config = newSelectedMod.config;
     }
 
     await theAgent.modState.save();
