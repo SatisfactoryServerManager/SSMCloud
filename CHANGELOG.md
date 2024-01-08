@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.113](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.112...v1.0.113) (2024-01-08)
+
+
+### Bug Fixes
+
+* Add player to agent ([2ef2bd7](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/2ef2bd7deb62c6444a60fa9e19701628194a1100))
+* Updated node deps ([1d1dbc2](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/1d1dbc27a9eea0990abc8a2edc00fcf45afaeb00))
+
 ### [1.0.112](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.111...v1.0.112) (2024-01-08)
 
 
