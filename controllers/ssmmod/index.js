@@ -10,6 +10,15 @@ exports.postPlayers = async (req, res, next) => {
 
         const postData = req.body;
 
+        // Loop through all agent players and mark offline
+        for (let j = 0; j < theAgent.players.length; j++) {
+            const agentPlayer = theAgent.players[j];
+            agentPlayer.online = false;
+
+            await agentPlayer.save();
+        }
+
+        // Loop through all online players sent from ssm mod and update
         for (let i = 0; i < postData.players.length; i++) {
             const player = postData.players[i];
 
@@ -60,6 +69,7 @@ exports.postPlayers = async (req, res, next) => {
                 await agentPlayer.save();
             }
 
+            // If the player wasn't associated with the agent then do that
             if (!FoundPlayer) {
                 theAgent.players.push(existingPlayer);
             }

@@ -408,11 +408,24 @@ class AgentMap {
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
 
-            var playerMarker = L.marker([player.location.x, player.location.y]);
-            playerMarker.bindPopup(`<b>${player.playerName}</b>`);
+            var playerMarker = L.marker(
+                this.GamelocationToMapLocation(
+                    player.location.x,
+                    player.location.y
+                )
+            );
+            playerMarker.bindPopup(
+                `<b>${player.playerName}</b><br><b>Online:</b>${
+                    player.online ? "true" : "false"
+                }`
+            );
 
             this.playerGroup.addLayer(playerMarker);
         }
+    };
+
+    GamelocationToMapLocation = (x, y) => {
+        return [-y, x];
     };
 
     pollAgent = async () => {
