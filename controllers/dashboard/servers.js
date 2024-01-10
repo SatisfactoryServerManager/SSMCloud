@@ -251,6 +251,10 @@ exports.getServer = async (req, res, next) => {
         await theAgent.populate("saves");
         await theAgent.populate("backups");
 
+        for (let i = 0; i < theAgent.modState.selectedMods.length; i++) {
+            await theAgent.modState.populate(`selectedMods.${i}.mod`);
+        }
+
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
 
