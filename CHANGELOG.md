@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.119](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.118...v1.0.119) (2024-01-10)
+
+
+### Features
+
+* added flas to disable purging inactive accounts ([086123d](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/086123ddb3c052db9a29efdfa354e41e4e4e70c0))
+
+
+### Bug Fixes
+
+* Fixed environment variables ([1ce9e1a](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/1ce9e1a3c915df67ffa5dad771f83f6eee163d1b))
+* Fixed k8s env vars ([2f59a03](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/2f59a03db5a260fc3961831cb0709d219fb00cf8))
+
 ### [1.0.118](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.117...v1.0.118) (2024-01-10)
 
 
