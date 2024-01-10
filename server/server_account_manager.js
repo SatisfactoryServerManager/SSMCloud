@@ -4,6 +4,8 @@ const AccountModel = require("../models/account");
 const AgentModel = require("../models/agent");
 const logger = require("./server_logger");
 
+const Config = require("./server_config");
+
 class AccountManager {
     init() {
         this.CheckAccountActivity();
@@ -18,6 +20,10 @@ class AccountManager {
     }
 
     CheckAccountActivity = async () => {
+        if (Config.get("ssm.flags.deleteinactiveaccounts") == false) {
+            return;
+        }
+
         const Accounts = await AccountModel.find();
 
         try {
@@ -80,6 +86,10 @@ class AccountManager {
     };
 
     PurgeInactiveAccounts = async () => {
+        if (Config.get("ssm.flags.deleteinactiveaccounts") == false) {
+            return;
+        }
+
         const Accounts = await AccountModel.find();
 
         try {

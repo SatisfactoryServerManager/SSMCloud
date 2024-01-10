@@ -79,20 +79,21 @@ class ServerConfig extends iConfig {
         // Mods
 
         this.GetConfigDefaultValue("ssm.mods.usedev", false, false, true);
-        this.GetConfigDefaultValue("ssm.mods.useexp", false, false, true);
 
         if (super.get("ssm.mods.usedev")) {
-            if (super.get("ssm.mods.useexp")) {
-                super.set(
-                    "ssm.mods.api",
-                    "https://ficsit-api.mircearoata.duckdns.org"
-                );
-            } else {
-                super.set("ssm.mods.api", "https://api.ficsit.dev");
-            }
+            super.set("ssm.mods.api", "https://api.ficsit.dev");
         } else {
             super.set("ssm.mods.api", "https://api.ficsit.app");
         }
+
+        // Flags
+
+        this.GetConfigDefaultValue(
+            "ssm.flags.deleteinactiveaccounts",
+            true,
+            false,
+            true
+        );
     };
 
     GetConfigDefaultValue(key, defaultVal, isInt = false, isBool = false) {
