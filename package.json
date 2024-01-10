@@ -1,6 +1,6 @@
 {
     "name": "SSMCloud",
-    "version": "1.0.115",
+    "version": "1.0.116",
     "main": "index.js",
     "repository": "git@github.com:mrhid6/SatisfactoryServerManager.git",
     "author": "Mrhid6 <mrhid6@gmail.com>",

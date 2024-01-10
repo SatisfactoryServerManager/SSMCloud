@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.116](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.115...v1.0.116) (2024-01-10)
+
+
+### Features
+
+* Moved pages to the server page in tabs ([dfa9505](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/dfa950520d2ec33ada54625c43975cc87d42e5f2))
+
+
+### Bug Fixes
+
+* Mark players offline and map coords ([be2cc5a](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/be2cc5a542262ba10f74353ddddc7c7575cb72e2))
+
 ### [1.0.115](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.114...v1.0.115) (2024-01-08)
 
 
