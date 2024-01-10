@@ -248,6 +248,8 @@ exports.getServer = async (req, res, next) => {
         await theAgent.populate("players");
         await theAgent.populate("logInfo");
         await theAgent.populate("modState");
+        await theAgent.populate("saves");
+        await theAgent.populate("backups");
 
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
