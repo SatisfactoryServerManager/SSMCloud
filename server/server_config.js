@@ -116,6 +116,12 @@ class ServerConfig extends iConfig {
             defaultVal = defaultVal === "true" || defaultVal === 1;
         }
 
+        if (envVar != null) {
+            if (envVar != super.get(key)) {
+                super.set(key, envVar);
+            }
+        }
+
         return super.get(key, defaultVal);
     }
 }
