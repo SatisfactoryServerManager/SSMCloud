@@ -118,7 +118,7 @@ class ServerConfig extends iConfig {
 
         if (envVar != null) {
             if (envVar != super.get(key)) {
-                super.set(key, envVar);
+                super.set(key, defaultVal);
             }
         }
 
