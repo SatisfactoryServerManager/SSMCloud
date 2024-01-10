@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.117](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.116...v1.0.117) (2024-01-10)
+
+
+### Bug Fixes
+
+* Agent population ([172144c](hhttps://github.com/SatisfactoryServerManager/SSMCloud/commits/172144ce5f180f5cd54141e63316908c4ee55933))
+
 ### [1.0.116](https://github.com/SatisfactoryServerManager/SSMCloud/compare/v1.0.115...v1.0.116) (2024-01-10)
 
 
