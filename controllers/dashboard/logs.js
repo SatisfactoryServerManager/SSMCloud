@@ -5,57 +5,6 @@ const fs = require("fs-extra");
 const Account = require("../../models/account");
 const User = require("../../models/user");
 
-exports.GetLogsPage = async (req, res, next) => {
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    let theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.logs");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({ users: req.session.user._id });
-
-    if (theAccount) {
-        await theAccount.populate("agents");
-
-        for (let i = 0; i < theAccount.agents.length; i++) {
-            const agent = theAccount.agents[i];
-            await agent.populate("logInfo");
-        }
-
-        res.render("dashboard/logs", {
-            path: "/logs",
-            pageTitle: "Logs",
-            accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            errorMessage: "",
-        });
-    } else {
-        res.render("dashboard/logs", {
-            path: "/logs",
-            pageTitle: "Logs",
-            accountName: "",
-            agents: [],
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
-    }
-};
-
 exports.DownloadLog = async (req, res, next) => {
     const agentId = req.params.agentId;
     const logFile = req.params.logfile;

@@ -7,9 +7,6 @@ const dashboardController = require("../../controllers/dashboard");
 const { check, body } = require("express-validator");
 
 const router = express.Router();
-router.get("/", isAuth, dashboardController.getSaves);
-
-router.post("/", isAuth, dashboardController.postSaves);
 
 router.get(
     "/download/:agentId/:fileName",

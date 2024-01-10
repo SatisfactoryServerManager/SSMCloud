@@ -19,6 +19,8 @@ const AgentSaveFile = require("../../models/agent_save");
 const AgentBackup = require("../../models/agent_backup");
 const AgentLogInfo = require("../../models/agent_log_info");
 
+const ModModel = require("../../models/mod");
+
 const AgentHandler = require("../../server/server_agent_handler");
 const { validationResult } = require("express-validator");
 const AgentModStateModel = require("../../models/agent_mod_state.model");
@@ -244,6 +246,8 @@ exports.getServer = async (req, res, next) => {
         theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
 
         await theAgent.populate("players");
+        await theAgent.populate("logInfo");
+        await theAgent.populate("modState");
 
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
@@ -252,7 +256,7 @@ exports.getServer = async (req, res, next) => {
         errorMessage.length > 0
             ? (errorMessage = errorMessage[0])
             : (errorMessage = null);
-
+        const mods = await ModModel.find().sort({ modName: 1 });
         res.render("dashboard/server", {
             path: "/server",
             pageTitle: `Server - ${theAgent.agentName}`,
@@ -263,6 +267,7 @@ exports.getServer = async (req, res, next) => {
             apiKey: encodeBase64(theAgent.apiKey),
             errorMessage,
             message,
+            mods,
         });
     } else {
         res.render("dashboard/server", {
@@ -272,6 +277,7 @@ exports.getServer = async (req, res, next) => {
             agents: [],
             latestVersion: "",
             agent: {},
+            mods: [],
             apiKey: "",
             errorMessage:
                 "Cant Find Account details. Please contact SSM Support.",

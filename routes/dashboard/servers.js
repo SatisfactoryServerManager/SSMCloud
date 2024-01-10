@@ -2,6 +2,7 @@ const path = require("path");
 
 const express = require("express");
 const isAuth = require("../../middleware/is-auth");
+const dashboardController = require("../../controllers/dashboard");
 const dashboardServersController = require("../../controllers/dashboard/servers");
 
 const { check, body } = require("express-validator");
@@ -33,6 +34,8 @@ router.get("/:agentid", isAuth, dashboardServersController.getServer);
 router.post("/:agentid", isAuth, dashboardServersController.postServer);
 
 router.get("/:agentid/js", isAuth, dashboardServersController.getServerJS);
+
+router.post("/:agentid/saves", isAuth, dashboardController.postSaves);
 
 router.get(
     "/delete/:agentid",

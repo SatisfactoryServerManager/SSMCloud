@@ -270,9 +270,9 @@ function main() {
                 if (
                     !$ele.attr("data-modref").toLowerCase().includes(searchText)
                 ) {
-                    $ele.addClass("hidden");
+                    $ele.parent().addClass("hidden");
                 } else {
-                    $ele.removeClass("hidden");
+                    $ele.parent().removeClass("hidden");
                 }
             });
         })
@@ -330,6 +330,11 @@ function main() {
         })
         .on("change", ".server-filter-checkbox", (e) => {
             FilterServerList();
+        })
+        .on("click", "#ssmagent-shortkey", (e) => {
+            const $this = $(e.currentTarget);
+
+            navigator.clipboard.writeText($this.attr("data-bs-original-title"));
         });
 
     $("#inp_maxplayers").on("input change", () => {
@@ -355,17 +360,29 @@ function main() {
 
     window.agentMap = new AgentMap(window.agent);
 
-    window.agentMap.SetUpMap();
+    $('a[data-bs-toggle="tab"]').on("shown.bs.tab", (e) => {
+        var target = $(e.target).attr("href"); // activated tab
+        if (target == "#map") {
+            window.agentMap.SetUpMap();
+        }
+    });
 }
 
 class AgentMap {
     constructor(agent) {
         this.agent = agent;
+        this.created = false;
     }
     SetUpMap = () => {
         if ($("#playerMap").length == 0) {
             return;
         }
+
+        if (this.created) {
+            return;
+        }
+
+        this.created = true;
 
         let bounds = [
             [-375e3, -324698.832031],

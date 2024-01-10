@@ -2,7 +2,7 @@
   <div class="card-header">
     <div class="row">
       <div class="col-12 col-md-6 col-lg-7 col-xl-8">
-        <h5><%=agent.agentName%> - Backups</h5>
+        <h5>Backups</h5>
       </div>
       <div class="col-12 col-md-6 col-lg-5 col-xl-4">
         <input type="text" name="" id="" placeholder="Search Backups" class="form-control backup-search">
@@ -14,9 +14,14 @@
 
     <div style="max-height:400px; overflow-y: auto; overflow-x: hidden;">
       <div class="row pe-3">
+
+        <%if (agent.backups.length == 0) {%>
+        <p>There are currently no backup for this server yet.</p>
+        <%}%>
+
         <%agent.backups.reverse().forEach(backup=>{%>
         <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-          <%- include("../includes/backup-card.ejs", {backup})%>
+          <%- include("../../includes/backup-card.ejs", {backup})%>
         </div>
         <%})%>
 

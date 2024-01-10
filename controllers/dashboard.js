@@ -35,88 +35,6 @@ const AgentHandler = require("../server/server_agent_handler");
 
 const semver = require("semver");
 
-exports.getMapPage = async (req, res, next) => {
-    const { agentid } = req.params;
-
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    if (!ObjectId.isValid(agentid)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.server");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-        agents: agentid,
-    });
-
-    if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAccount.populate("agents");
-
-    let theAgent = theAccount.agents.find((agent) => agent._id == agentid);
-
-    if (theAgent) {
-        theAgent = await Agent.findOne({ _id: agentid }).select("+apiKey");
-
-        await theAgent.populate("players");
-
-        let message = req.flash("success");
-        message.length > 0 ? (message = message[0]) : (message = null);
-
-        let errorMessage = req.flash("error");
-        errorMessage.length > 0
-            ? (errorMessage = errorMessage[0])
-            : (errorMessage = null);
-
-        res.render("dashboard/map", {
-            path: "/map",
-            pageTitle: `Map - ${theAgent.agentName}`,
-            accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            latestVersion: AgentHandler._LatestAgentRelease,
-            agent: theAgent,
-            errorMessage,
-            message,
-        });
-    } else {
-        res.render("dashboard/map", {
-            path: "/map",
-            pageTitle: "Map",
-            accountName: "",
-            agents: [],
-            latestVersion: "",
-            agent: {},
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
-    }
-};
-
 exports.getDashboard = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
@@ -269,61 +187,6 @@ exports.getServerAction = async (req, res, next) => {
 
 exports.Servers = require("./dashboard/servers");
 
-exports.getBackups = async (req, res, next) => {
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.backups");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({ users: req.session.user._id });
-    if (theAccount) {
-        await theAccount.populate("agents");
-        for (let i = 0; i < theAccount.agents.length; i++) {
-            const agent = theAccount.agents[i];
-            await agent.populate("backups");
-        }
-
-        res.render("dashboard/backups", {
-            path: "/backups",
-            pageTitle: "Backups",
-            accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            errorMessage: "",
-            newApiKey: "",
-            oldInput: {
-                inp_servername: "",
-                inp_serverport: "",
-                inp_servermemory: "",
-            },
-        });
-    } else {
-        res.render("dashboard/backups", {
-            path: "/backups",
-            pageTitle: "Backups",
-            accountName: "",
-            agents: [],
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
-    }
-};
-
 exports.getDownloadBackup = async (req, res, next) => {
     const backupId = req.params.backupId;
 
@@ -391,69 +254,9 @@ exports.getDownloadBackup = async (req, res, next) => {
 
 exports.Account = require("./dashboard/account");
 
-exports.getSaves = async (req, res, next) => {
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    let theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.saves");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({ users: req.session.user._id });
-
-    if (theAccount) {
-        await theAccount.populate("agents");
-
-        for (let i = 0; i < theAccount.agents.length; i++) {
-            const agent = theAccount.agents[i];
-            await agent.populate("saves");
-        }
-
-        let message = req.flash("success");
-        message.length > 0 ? (message = message[0]) : (message = null);
-
-        let errorMessage = req.flash("error");
-        errorMessage.length > 0
-            ? (errorMessage = errorMessage[0])
-            : (errorMessage = null);
-
-        res.render("dashboard/saves", {
-            path: "/saves",
-            pageTitle: "Saves",
-            accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            errorMessage,
-            message,
-        });
-    } else {
-        res.render("dashboard/saves", {
-            path: "/saves",
-            pageTitle: "Saves",
-            accountName: "",
-            agents: [],
-            saves: [],
-            message: "",
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
-    }
-};
-
 exports.postSaves = async (req, res, next) => {
+    const { agentid } = req.params;
+
     const data = req.body;
     const file = req.file;
 
@@ -464,7 +267,7 @@ exports.postSaves = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/saves");
+        return res.redirect(`/dashboard/servers/${agentid}`);
     }
 
     if (!ObjectId.isValid(data.inp_agentid)) {
@@ -474,7 +277,7 @@ exports.postSaves = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/saves");
+        return res.redirect(`/dashboard/servers/${agentid}`);
     }
 
     let theUser = await User.findOne({ _id: req.session.user._id });
@@ -488,7 +291,7 @@ exports.postSaves = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/saves");
+        return res.redirect(`/dashboard/servers/${agentid}`);
     }
 
     const theAccount = await Account.findOne({
@@ -503,12 +306,22 @@ exports.postSaves = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/saves");
+        return res.redirect(`/dashboard/servers/${agentid}`);
     }
 
     const theAgent = await Agent.findOne({ _id: data.inp_agentid }).select(
         "+messageQueue"
     );
+
+    if (file == null) {
+        const errorMessageData = {
+            section: "serverlist",
+            message: "No save file was selected",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+        return res.redirect(`/dashboard/servers/${agentid}`);
+    }
 
     const newFilePath = path.join(
         Config.get("ssm.uploadsdir"),
@@ -541,7 +354,7 @@ exports.postSaves = async (req, res, next) => {
     };
 
     req.flash("success", JSON.stringify(successMessageData));
-    return res.redirect("/dashboard/saves");
+    return res.redirect(`/dashboard/servers/${agentid}`);
 };
 
 exports.getDownloadSave = async (req, res, next) => {

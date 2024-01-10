@@ -8,8 +8,6 @@ const { check, body } = require("express-validator");
 
 const router = express.Router();
 
-router.get("/", isAuth, dashboardLogsController.GetLogsPage);
-
 router.get(
     "/download/:agentId/:logfile",
     isAuth,

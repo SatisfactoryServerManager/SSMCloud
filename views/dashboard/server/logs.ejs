@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-12 col-lg-6 col-xl-4">
+    <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
+      <div class="card-header">
+        <a href="/dashboard/logs/download/<%=agent._id%>/SSMLog" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i> SSM Log File
+        </a>
+        <h5>SSM Log</h5>
+      </div>
+      <div class="card-body">
+        <div class="log-viewer">
+          <% 
+            const logInfo = agent.logInfo;
+            if(logInfo != null){
+                if(logInfo.SSMAgentData.length>0){
+                logInfo.SSMAgentData.forEach(line=>{%>
+          <p><%=line%></p>
+
+          <%})}else{%>
+          <p>No log entries for this log type.</p>
+          <%}
+                                                }
+                                                %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6 col-xl-4">
+    <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
+      <div class="card-header">
+        <a href="/dashboard/logs/download/<%=agent._id%>/SteamLog" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i> Steam Log File
+        </a>
+        <h5>Steam Log</h5>
+      </div>
+      <div class="card-body">
+        <div class="log-viewer">
+          <% 
+            if(logInfo != null){
+                if(logInfo.SSMSteamCMDData.length>0){
+                logInfo.SSMSteamCMDData.forEach(line=>{%>
+          <p><%=line%></p>
+
+          <%})}else{%>
+          <p>No log entries for this log type.</p>
+          <%}
+                                                }
+                                                %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6 col-xl-4">
+    <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
+      <div class="card-header">
+        <a href="/dashboard/logs/download/<%=agent._id%>/SFLog" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i> Satisfactory Log File
+        </a>
+        <h5>Satisfactory Log</h5>
+      </div>
+      <div class="card-body">
+        <div class="log-viewer">
+          <% 
+            if(logInfo != null){
+                if(logInfo.FactoryGameData.length>0){
+                logInfo.FactoryGameData.forEach(line=>{%>
+          <p><%=line%></p>
+
+          <%})}else{%>
+          <p>No log entries for this log type.</p>
+          <%}
+            }
+            %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

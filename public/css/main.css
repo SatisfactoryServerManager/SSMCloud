@@ -468,6 +468,23 @@ body {
     font-size: 15px;
 }
 
+.server-tabs-header {
+    padding: 12px 12px 0 12px;
+    background-color: #064e6d;
+    margin-top: -12px;
+    margin-bottom: 12px;
+}
+
+.server-tabs-header .nav-link:hover {
+    background-color: #387c99;
+    border-color: #043950;
+}
+
+.server-tabs-header .nav-link.active {
+    background-color: #086e99;
+    border-color: #043950;
+}
+
 .server-action-btn {
     color: #fff !important;
     font-weight: 700;
