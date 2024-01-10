@@ -45,22 +45,22 @@ spec:
                       claimName: ssmcloud-data-pvc
             containers:
                 - env:
-                      - name: MONGODB_SERVER
+                      - name: SSM_DB_SERVER
                         valueFrom:
                             secretKeyRef:
                                 key: mongodb_server
                                 name: ssmcloud-secret
-                      - name: MONGODB_DB
+                      - name: SSM_DB_DATABASE
                         valueFrom:
                             secretKeyRef:
                                 key: mongodb_db
                                 name: ssmcloud-secret
-                      - name: MONGODB_USER
+                      - name: SSM_DB_USER
                         valueFrom:
                             secretKeyRef:
                                 key: mongodb_user
                                 name: ssmcloud-secret
-                      - name: MONGODB_PASS
+                      - name: SSM_DB_PASS
                         valueFrom:
                             secretKeyRef:
                                 key: mongodb_pass
