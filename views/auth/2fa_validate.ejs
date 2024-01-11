@@ -11,16 +11,22 @@
           <div class="card-body">
             <h4 class="card-title">Enter your 2FA token</h4>
 
+            <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage);%>
+            <div class="alert alert-danger text-center fw-bold fs-6">
+              <%=errorMessageData.message%>
+            </div>
+            <%}%>
+
             <form action="" method="post" class="form-horizontal">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-              <div class="form-group">
-                <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" autofocus />
-              </div>
-              <div class="d-grid">
-                <button class="btn btn-primary" type="submit">
-                  Verify Token
-                </button>
-              </div>
+            <div class="form-group">
+              <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" autofocus />
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-primary" type="submit">
+                Verify Token
+              </button>
+            </div>
             </form>
           </div>
         </div>

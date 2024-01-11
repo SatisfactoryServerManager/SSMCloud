@@ -488,9 +488,18 @@ exports.get2FAValidate = async (req, res, next) => {
         return;
     }
 
+    let message = req.flash("success");
+    message.length > 0 ? (message = message[0]) : (message = null);
+
+    let errorMessage = req.flash("error");
+    errorMessage.length > 0
+        ? (errorMessage = errorMessage[0])
+        : (errorMessage = null);
+
     res.render("auth/2fa_validate.ejs", {
         path: "/2fa/validate",
         pageTitle: "Validate 2FA",
+        errorMessage,
     });
 };
 
@@ -516,12 +525,26 @@ exports.post2FAValidate = async (req, res, next) => {
     if (!authenticator.check(token, secret)) {
         //redirect back
         console.log("ERROR: 2fa failed Verify", secret);
+
+        const errorMessageData = {
+            section: "",
+            message: "Invalid 2FA Code!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
+
         return res.redirect("/2fa/validate");
     }
 
     const theAccount = await Account.findOne({ users: user });
 
     if (theAccount == null) {
+        const errorMessageData = {
+            section: "",
+            message: "Something went wrong!",
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
         return res.redirect("/2fa/validate");
     }
 
