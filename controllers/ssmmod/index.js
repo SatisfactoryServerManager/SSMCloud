@@ -22,10 +22,6 @@ exports.postPlayers = async (req, res, next) => {
         for (let i = 0; i < postData.players.length; i++) {
             const player = postData.players[i];
 
-            const existingPlayer = await GamePlayer.findOne({
-                playerName: player.name,
-            });
-
             if (player.location == null) {
                 player.location = {
                     x: 0,
@@ -33,6 +29,10 @@ exports.postPlayers = async (req, res, next) => {
                     z: 0,
                 };
             }
+
+            const existingPlayer = await GamePlayer.findOne({
+                playerName: player.name,
+            });
 
             if (existingPlayer == null) {
                 const newPlayer = await GamePlayer.create({
@@ -52,9 +52,8 @@ exports.postPlayers = async (req, res, next) => {
             let FoundPlayer = false;
             for (let j = 0; j < theAgent.players.length; j++) {
                 const agentPlayer = theAgent.players[j];
-                agentPlayer.online = false;
 
-                if (agentPlayer._id.equals(existingPlayer._id)) {
+                if (agentPlayer.playerName == existingPlayer.playerName) {
                     agentPlayer.online = true;
                     agentPlayer.lastOnlineDate = new Date();
                     agentPlayer.location = {
@@ -62,11 +61,10 @@ exports.postPlayers = async (req, res, next) => {
                         y: player.location.y || 0,
                         z: player.location.z || 0,
                     };
+                    await agentPlayer.save();
 
                     FoundPlayer = true;
                 }
-
-                await agentPlayer.save();
             }
 
             // If the player wasn't associated with the agent then do that
