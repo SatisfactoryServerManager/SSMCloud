@@ -69,6 +69,10 @@ exports.getLogin = (req, res) => {
 };
 
 exports.getSignUp = (req, res) => {
+    if (Config.get("ssm.flags.disablesignuppage")) {
+        res.redirect("/login");
+    }
+
     let message = req.flash("error");
     message.length > 0 ? (message = message[0]) : (message = null);
 
@@ -222,6 +226,10 @@ exports.postLogin = async (req, res, next) => {
 };
 
 exports.postSignUp = async (req, res, next) => {
+    if (Config.get("ssm.flags.disablesignuppage")) {
+        res.redirect("/login");
+    }
+
     const { email, password, confirmPassword, accountName } = req.body;
 
     const ip =

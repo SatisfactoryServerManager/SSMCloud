@@ -16,9 +16,7 @@ jobs:
             - run: npm i -g yarn pkg
             - run: yarn
             - run: mkdir -p ./release/linux
-            - run:
-                  pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux
-                  -d > ./release/linux/build.log
+            - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux -d > ./release/linux/build.log
             - run: if [ ! -f release/linux/SSMCloud ]; then exit 1; fi
             - uses: vimtor/action-zip@v1
               with:
@@ -29,6 +27,9 @@ jobs:
               with:
                   name: ssm-build
                   path: ${{ github.workspace }}/SSMCloud-Linux-amd64.zip
+            - name: Get version
+              id: versionnum
+              run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v2
             - name: Set up Docker Buildx
@@ -43,7 +44,7 @@ jobs:
               with:
                   context: .
                   push: true
-                  tags: mrhid6/ssmcloud:latest
+                  tags: mrhid6/ssmcloud:latest , mrhid6/ssmcloud:v${{ steps.versionnum.outputs.version }}
     build-windows:
         runs-on: self-hosted
         steps:
@@ -79,17 +80,17 @@ jobs:
               with:
                   name: ssm-build
             - run: ls -l
-            - name: get-npm-version
-              id: package-version
-              uses: martinbeentjes/npm-get-version-action@main
+            - name: Get version
+              id: versionnum
+              run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
             - name: Create Release
               id: create_release
               uses: actions/create-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: v${{ steps.package-version.outputs.current-version }}
-                  release_name: Release v${{ steps.package-version.outputs.current-version }}
+                  tag_name: v${{ steps.versionnum.outputs.version }}
+                  release_name: Release v${{ steps.versionnum.outputs.version }}
                   draft: false
                   prerelease: false
             - name: Upload Linux Release Asset
@@ -118,9 +119,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - name: get-npm-version
-              id: package-version
-              uses: martinbeentjes/npm-get-version-action@main
+            - name: Get version
+              id: versionnum
+              run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
             - name: Install Octopus CLI
               uses: OctopusDeploy/install-octopus-cli-action@v1
               with:
@@ -132,6 +133,6 @@ jobs:
                   server: ${{ secrets.OCTOPUSSERVERURL }}
                   space: ${{ secrets.OCTOPUSSERVER_SPACE }}
                   project: SSMCloud
-                  release_number: ${{ steps.package-version.outputs.current-version }}
+                  release_number: ${{ steps.versionnum.outputs.version }}
                   deploy_to: Dev
                   progress: false

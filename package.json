@@ -1,6 +1,6 @@
 {
     "name": "SSMCloud",
-    "version": "1.0.120",
+    "version": "0.0.1",
     "main": "index.js",
     "repository": "git@github.com:mrhid6/SatisfactoryServerManager.git",
     "author": "Mrhid6 <mrhid6@gmail.com>",
@@ -82,12 +82,7 @@
         "start": "node index.js",
         "watch": "watchify src/app.js -o public/js/bundle.js",
         "bundle": "browserify --plugin tinyify src/app.js -o public/js/bundle.js",
-        "clean-css": "bash scripts/clean-css.sh",
-        "release": "standard-version",
-        "release:minor": "standard-version --release-as minor",
-        "release:patch": "standard-version --release-as patch",
-        "release:major": "standard-version --release-as major",
-        "release:prerelease": "standard-version --prerelease alpha"
+        "clean-css": "bash scripts/clean-css.sh"
     },
     "resolutions": {
         "graceful-fs": "^4.2.10"
@@ -117,7 +112,6 @@
         ]
     },
     "devDependencies": {
-        "standard-version": "^9.5.0",
         "tinyify": "^4.0.0"
     }
 }

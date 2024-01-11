@@ -94,6 +94,13 @@ class ServerConfig extends iConfig {
             false,
             true
         );
+
+        this.GetConfigDefaultValue(
+            "ssm.flags.disablesignuppage",
+            false,
+            false,
+            true
+        );
     };
 
     GetConfigDefaultValue(key, defaultVal, isInt = false, isBool = false) {
