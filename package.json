@@ -2,7 +2,7 @@
     "name": "SSMCloud",
     "version": "1.0.121",
     "main": "index.js",
-    "repository": "git@github.com:mrhid6/SatisfactoryServerManager.git",
+    "repository": "git@github.com:SatisfactoryServerManager/SSMCloud.git",
     "author": "Mrhid6 <mrhid6@gmail.com>",
     "license": "MIT",
     "dependencies": {
