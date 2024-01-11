@@ -114,6 +114,28 @@
               <input type="hidden" name="_ConfigSetting" value="sfsettings" />
               <div class="row settings-row">
                 <div class="col-12 col-md-4">
+                  <b class="settings-prop">Update Server On Start:</b>
+                  <span class="settings-info">
+                    Update Satisfactory server on start of SSM.
+                  </span>
+                </div>
+                <div class="col-12 col-md-8">
+                  <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                    </div>
+                </div>
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                      <b class="settings-prop">Auto Restart Server:</b>
+                      <span class="settings-info">
+                        Automatically restarts the SF server if it crashes.
+                      </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                      <input name="inp_autorestart" id="inp_autorestart" type="checkbox" <%if(agent.config.autoRestartServer){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                        </div>
+                    </div>
+              <div class="row settings-row">
+                <div class="col-12 col-md-4">
                   <b class="settings-prop">Max Players:</b>
                   <span class="settings-info">
                     Number of players that can join the server.
@@ -127,27 +149,17 @@
                   <span id="max-players-value">0 / 500</span>
                 </div>
               </div>
+
+
               <div class="row settings-row">
                 <div class="col-12 col-md-4">
-                  <b class="settings-prop">Update Server On Start:</b>
+                  <b class="settings-prop">Worker Threads:</b>
                   <span class="settings-info">
-                    Update Satisfactory server on start of SSM.
+                    Number of worker threads to allocate to the server.
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
-                    </div>
-                </div>
-
-                <div class="row settings-row">
-                    <div class="col-12 col-md-4">
-                        <b class="settings-prop">Worker Threads:</b>
-                        <span class="settings-info">
-                            Number of worker threads to allocate to the server.
-                        </span>
-                    </div>
-                    <div class="col-12 col-md-8">
-                        <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
+                  <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
                 </div>
               </div>
               <div class="row settings-row">

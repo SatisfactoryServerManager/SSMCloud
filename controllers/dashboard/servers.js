@@ -409,6 +409,9 @@ exports.postServer = async (req, res, next) => {
 
         theAgent.config.sfBranch =
             data.inp_sfbranch == "on" ? "experimental" : "public";
+
+        theAgent.config.autoRestartServer =
+            data.inp_autorestart == "on" ? true : false;
     }
 
     if (data._ConfigSetting == "backupsettings") {

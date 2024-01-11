@@ -80,6 +80,7 @@ const agentSchema = new Schema(
                 workerThreads: 20,
                 maxPlayers: 4,
                 checkForUpdatesOnStart: true,
+                autoRestartServer: false,
                 sfBranch: "public",
                 ip: "",
                 sfVersions: {
