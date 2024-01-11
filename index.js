@@ -34,8 +34,12 @@ const ServerApp = require("./server/server_app");
 const errorController = require("./controllers/error");
 
 process.on("uncaughtException", function (err) {
-    console.error(err);
-    fs.writeFileSync("log.txt", err.message);
+    console.log(err);
+    try {
+        fs.writeFileSync("log.txt", err.message);
+    } catch (fserr) {
+        console.log(fserr);
+    }
     process.exit(1);
 });
 
