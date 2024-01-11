@@ -86,13 +86,16 @@
             </span>
           </div>
           <div class="col-12 col-md-6">
-            <%
+            <div class="d-flex align-items-center">
+              <%
                     let apiKeyData = agent.apiKey.split("-")
                     const keyPart = apiKeyData[2];
                     const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
                     const shortenedKey = `${apiKeyData[0]}-${apiKeyData[1]} - XXXX${shortenedKeyPart}`
                 %>
-            <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="<%=agent.apiKey%>"><%=shortenedKey%></b>
+              <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="<%=agent.apiKey%>"><%=shortenedKey%></b>
+              <button class="btn btn-primary ms-2" id="ssmagent-copykey" data-key="<%=agent.apiKey%>"><i class="fas fa-copy"></i></button>
+            </div>
           </div>
         </div>
       </div>
