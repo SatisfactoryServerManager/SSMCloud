@@ -1,4 +1,4 @@
-<div class="col-12 col-lg-4 mb-3">
+<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3">
 
   <div class="mod-card d-flex" data-modref="<%=mod.modName%>">
     <div class="mod-image">
@@ -9,20 +9,22 @@
       <%}%>
       <a href="https://ficsit.app/mod/<%=mod.modReference%>" target="_blank"><i class="fas fa-link"></i></a>
     </div>
-    <div class="mod-info flex-grow-1">
+    <div class="mod-info flex-shrink-1">
       <div class="d-flex flex-column">
-        <h4><%=mod.modName%> <a class="d-md-none" href="https://ficsit.app/mod/<%=mod.modReference%>" target="_blank"><i class="fas fa-link"></i></a></h4>
-        <div class="d-flex flex-column flex-md-row">
-          <span class="badge bg-light border-light text-black mb-1 mb-md-0 p-2">Latest Version: <%=mod.versions[0].version%></span>
+        <a href="https://ficsit.app/mod/<%=mod.modReference%>" target="_blank">
+          <h4><%=mod.modName%></h4>
+        </a>
+        <div class="d-flex flex-column flex-xl-row">
+          <span class="badge bg-light border-light text-black mb-1 mb-xl-0 p-2">Latest Version: <%=mod.versions[0].version%></span>
           <%if(isInstalled){%>
-          <span class="badge bg-success border-success text-black p-2 mb-1 mb-md-0 ms-md-2">Installed Version: <%=selectedMod.installedVersion%></span>
+          <span class="badge bg-success border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Installed Version: <%=selectedMod.installedVersion%></span>
           <%}else if(selectedMod != null){%>
-          <span class="badge bg-warning border-success text-black p-2 mb-1 mb-md-0 ms-md-2">Pending Version: <%=selectedMod.desiredVersion%></span>
+          <span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: <%=selectedMod.desiredVersion%></span>
           <%}%>
       </div>
     </div>
   </div>
-  <div class="mod-buttons d-flex flex-column">
+  <div class="mod-buttons ms-auto d-flex flex-column">
     <%if(!isInstalled && selectedMod == null){%>
           <button class="btn btn-primary flex-grow-1 install-mod-btn" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-download"></i></button>
           <%}else{%>

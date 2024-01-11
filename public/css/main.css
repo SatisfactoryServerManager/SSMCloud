@@ -602,16 +602,33 @@ body {
 }
 
 .mod-card .mod-buttons {
-    width: 100px;
+    width: 80px;
+    font-size: 30px;
 }
 
 .mod-card .mod-info {
     padding: 12px;
+    max-width: calc(100% - 200px);
+    overflow: hidden;
+    width: 100%;
 }
 
 .mod-card .mod-info h4 {
     font-size: 20px;
     text-overflow: ellipsis;
+    text-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.mod-card .mod-info a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.mod-card .mod-info a:hover {
+    color: #eee;
+    text-decoration: underline;
 }
 
 /* Logs Page */
@@ -816,6 +833,12 @@ pre {
     border-bottom: 1px solid #666;
 }
 
+@media (max-width: 1199.98px) {
+    .mod-card .mod-info h4 {
+        font-size: 18px;
+    }
+}
+
 @media (max-width: 991px) {
     #viewport {
         padding-left: 0 !important;
@@ -876,11 +899,11 @@ pre {
         width: 100% !important;
     }
 
+    .mod-card .mod-info {
+        max-width: calc(100% - 150px);
+    }
+
     .mod-card .mod-info h4 {
-        width: 150px;
-        text-wrap: nowrap;
-        white-space: nowrap;
-        overflow: hidden;
         font-size: 18px;
     }
     .mod-card .mod-info .badge {
