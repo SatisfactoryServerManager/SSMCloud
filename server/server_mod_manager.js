@@ -158,6 +158,7 @@ class ModManager {
                     existingMod.modName = mod.name;
                     existingMod.hidden = mod.hidden;
                     existingMod.versions = mod.versions;
+                    existingMod.logoUrl = mod.logo;
                     await existingMod.save();
                     continue;
                 }

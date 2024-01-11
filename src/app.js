@@ -264,7 +264,7 @@ function main() {
             const searchText = $this.val().toLowerCase();
             const $modList = $this.parent().parent().find(".mod-list");
 
-            $modList.find(".input-group").each((index, ele) => {
+            $modList.find(".mod-card").each((index, ele) => {
                 const $ele = $(ele);
                 if (
                     !$ele.attr("data-modref").toLowerCase().includes(searchText)
@@ -330,10 +330,10 @@ function main() {
         .on("change", ".server-filter-checkbox", (e) => {
             FilterServerList();
         })
-        .on("click", "#ssmagent-shortkey", (e) => {
+        .on("click", "#ssmagent-copykey", (e) => {
             const $this = $(e.currentTarget);
 
-            navigator.clipboard.writeText($this.attr("data-bs-original-title"));
+            navigator.clipboard.writeText($this.attr("data-key"));
         });
 
     $("#inp_maxplayers").on("input change", () => {

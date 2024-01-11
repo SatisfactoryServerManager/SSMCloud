@@ -556,6 +556,64 @@ body {
     flex-wrap: nowrap !important;
 }
 
+.mod-card {
+    height: 100px;
+    border-radius: 5px;
+    border: 1px solid #000;
+    overflow: hidden;
+    background: #064e6d;
+}
+
+.mod-card .mod-image {
+    position: relative;
+}
+
+.mod-card .mod-image a {
+    display: none;
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #fff;
+    font-size: 50px;
+}
+
+.mod-card .mod-image svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.mod-card .mod-image svg path {
+    stroke: black;
+    stroke-width: 40;
+}
+
+.mod-card .mod-image:hover a {
+    display: block;
+}
+
+.mod-card .mod-image img {
+    width: 100px;
+    height: 100px;
+}
+
+.mod-card .mod-buttons {
+    width: 100px;
+}
+
+.mod-card .mod-info {
+    padding: 12px;
+}
+
+.mod-card .mod-info h4 {
+    font-size: 20px;
+    text-overflow: ellipsis;
+}
+
 /* Logs Page */
 
 .log-viewer,
@@ -816,5 +874,19 @@ pre {
 
     .page-header .status-info-card {
         width: 100% !important;
+    }
+
+    .mod-card .mod-info h4 {
+        width: 150px;
+        text-wrap: nowrap;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: 18px;
+    }
+    .mod-card .mod-info .badge {
+        padding: 4px !important;
+    }
+    .mod-card .mod-buttons {
+        width: 50px;
     }
 }

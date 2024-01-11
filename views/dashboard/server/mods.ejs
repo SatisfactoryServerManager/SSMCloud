@@ -46,39 +46,25 @@
         const selectedMod = modState.selectedMods.find(m=>m.mod.modName == mod.modName)
         const isInstalled = selectedMod != null && selectedMod.installed;
         %>
-        <div class="col-12 col-lg-4">
-          <div class="input-group mb-1" data-modref="<%=mod.modName%>">
-            <div class="input-group-text">
-              <input class="form-check-input mt-0 mod-selected-checkbox" type="checkbox" value="">
-            </div>
-            <div style="flex-grow:1" class="input-group-text text-truncate"><%=mod.modName%></div>
-            <%if(isInstalled){
-                if(selectedMod.needsUpdate){%>
-            <button class="btn btn-warning update-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-upload"></i></button>
-            <%}%>
-                <button class="btn btn-danger uninstall-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-trash"></i></button>
-            <%}else{%>
-            <button class="btn btn-primary install-mod-btn" style="width:42px" data-agentid="<%=agent._id%>" data-modid="<%=mod._id%>"><i class="fas fa-download"></i></button>
-            <%}%>
-            </div>
-            </div>
+
+        <%-include('../../includes/mod-card.ejs', {mod, selectedMod, isInstalled})%>
+
         <%})%>
-          </div>
-
-          <div class="d-flex flex-column flex-md-row mt-3 gap-2">
-            <button class="btn btn-primary w-100"><i class="fas fa-download"></i> Install Selected</button>
-            <button class="btn btn-danger w-100"><i class="fas fa-trash"></i> Uninstall Selected</button>
-          </div>
-
-        </div>
       </div>
+
+      <div class="d-flex flex-column flex-md-row mt-3 gap-2">
+        <button class="btn btn-primary w-100"><i class="fas fa-download"></i> Install Selected</button>
+        <button class="btn btn-danger w-100"><i class="fas fa-trash"></i> Uninstall Selected</button>
+      </div>
+
     </div>
   </div>
+</div>
 
 
-  <script>
-    let mods = <%- JSON.stringify(mods) %>;
-    localStorage.setItem('mods', JSON.stringify({
-      'mods': mods
-    }));
-  </script>
+<script>
+  let mods = <%- JSON.stringify(mods) %>;
+  localStorage.setItem('mods', JSON.stringify({
+    'mods': mods
+  }));
+</script>
