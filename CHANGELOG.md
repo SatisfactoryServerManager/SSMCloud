@@ -1,3 +1,7 @@
+## 1.0.123 (January 11, 2024)
+  - feat: Added auto restart feature server setting
+  - fix: Fixed player appearing offline on map
+
 ## 1.0.122 (January 11, 2024)
   - Merge pull request #10 from budak7273/fix-1
   - fix: Fixed responsiveness layout mods page
