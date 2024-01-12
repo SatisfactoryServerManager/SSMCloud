@@ -1,3 +1,8 @@
+## 1.0.124 (January 12, 2024)
+  - feat: Map updates
+  - fix: Fixed integrations typeo
+  - feat: Added total player count to map
+
 ## 1.0.123 (January 11, 2024)
   - feat: Added auto restart feature server setting
   - fix: Fixed player appearing offline on map
