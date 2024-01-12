@@ -81,6 +81,7 @@
     "scripts": {
         "start": "node index.js",
         "watch": "watchify src/app.js -o public/js/bundle.js",
+        "watch:map": "watchify src/map.js -o public/js/map.bundle.js",
         "bundle": "browserify --plugin tinyify src/app.js -o public/js/bundle.js",
         "clean-css": "bash scripts/clean-css.sh"
     },

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>SSM Cloud</title>
+
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/fontawesome.min.js"></script>
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/brands.min.js"></script>
+  <script async src="/libraries/@fortawesome/fontawesome-free/js/solid.min.js"></script>
+
+
+  <link rel="stylesheet" href="/libraries/bootstrap/dist/css/bootstrap.min.css">
+
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/fontawesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/brands.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/libraries/@fortawesome/fontawesome-free/css/solid.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/public/css/bootswatch.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="/public/css/bootswatch.min.css">
+    <link rel="stylesheet" href="/libraries/@fortawesome/fontawesome-free/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libraries/@fortawesome/fontawesome-free/css/brands.min.css">
+    <link rel="stylesheet" href="/libraries/@fortawesome/fontawesome-free/css/solid.min.css">
+  </noscript>
+
+
+  <link rel="preload" href="/public/images/logonbg.webp" as="image" />
+  <link rel="preload" href="/public/images/home_dashboard_preview.webp" as="image" />
+  <link rel="preload" href="/public/images/home_responsive.webp" as="image" />
+  <link rel="preload" href="/public/images/home_notifications.webp" as="image" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <meta name="description" content="Satisfactory Server Manager (SSM) offers a cloud solution to manage all your Satisfactory server in one place" />
+
+  <link rel="canonical" href="https://ssmcloud.hostxtra.co.uk" />
+  <link rel="stylesheet" href="/public/css/public.min.css" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+</head>
+
+<body>
+
+  <%-include("./includes/public/navigation.ejs")%>
+
+  <div class="map-wrapper">
+    <div id="playerMap" style="height:calc(100% - 46px)"></div>
+  </div>
+
+  <footer class="page-footer font-small blue bg-glass bg-glass-blue">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">
+      © 2020 - 2024 Copyright:
+      <a href="https://github.com/SatisfactoryServerManager/SSMCloud">
+        Refined R&D</a>
+      MIT License.
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <script defer src="/libraries/jquery/dist/jquery.min.js"></script>
+  <script defer src="/libraries/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="/public/js/map.bundle.js"></script>
+</body>
+
+</html>

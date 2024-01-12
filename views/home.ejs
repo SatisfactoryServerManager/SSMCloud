@@ -31,130 +31,15 @@
   <meta name="description" content="Satisfactory Server Manager (SSM) offers a cloud solution to manage all your Satisfactory server in one place" />
 
   <link rel="canonical" href="https://ssmcloud.hostxtra.co.uk" />
-  <style>
-    body {
-      background: #1d1d1d url("/public/images/logonbg.webp") fixed 0 0;
-      background-size: cover;
-      background-repeat: no-repeat;
-      font-size: 14px;
-    }
-
-    .navbar {
-      background-color: #086e99;
-    }
-
-    .navbar a {
-      color: white;
-    }
-
-    .navbar a:hover {
-      color: #ddd
-    }
-
-    .bg-glass {
-      background: rgba(100, 100, 100, 0.2);
-      box-shadow: 0 4px 30px #0000001a;
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      border-color: #636363 !important;
-    }
-
-    .bg-glass-blue {
-      background: #0b92cc33;
-    }
-
-    .bg-glass .card-header {
-      background: #086e99;
-    }
-
-    .b-divider {
-      height: 3rem;
-      background-color: rgba(0, 0, 0, 0.1);
-      border: solid rgba(0, 0, 0, 0.15);
-      border-width: 1px 0;
-      box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
-        inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
-    }
-
-    .ssm-logo {
-      z-index: 100;
-    }
-
-    .navbar {
-      padding: 3px 0;
-      border-bottom: 1px solid #636363;
-    }
-
-    .navbar-brand {
-      padding: 0;
-    }
-
-    .nav-item a {
-      font-size: 15px;
-    }
-
-    .btn-primary {
-      background-color: #086e99;
-      border-color: #054966;
-      padding: 8px 12px;
-      font-size: 15px;
-    }
-
-    .btn-primary:hover,
-    .btn-primary:active,
-    .btn-primary:focus {
-      background-color: #0b92cc !important;
-    }
-  </style>
+  <link rel="stylesheet" href="/public/css/public.min.css" />
 
   <meta name="HandheldFriendly" content="True" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="https://discord.gg/Vt8Rt2Vsqf">
-              <i class="fab fa-discord me-1"></i>
-              Discord
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://github.com/SatisfactoryServerManager/SSMCloud">
-              <i class="fab fa-github me-1"></i>
-              GitHub
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/docs">
-              <i class="fas fa-book me-1"></i>
-              Docs
-            </a>
-          </li>
-        </ul>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/signup">
-              <i class="fas fa-user-plus me-1"></i>
-              Sign Up
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/login">
-              <i class="fas fa-user me-1"></i>
-              Log In
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <%-include("./includes/public/navigation.ejs")%>
+
   <div class="px-4 pt-5 text-center border-bottom bg-glass">
     <img src="/public/images/ssm_logo_new_256.svg" alt="ssm logo" class="ssm-logo" loading="lazy" width="256px" height="160px" />
     <div class="col-lg-6 mt-3 mx-auto">
@@ -237,7 +122,7 @@
   <footer class="page-footer font-small blue bg-glass bg-glass-blue">
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">
-      © 2020 - 2023 Copyright:
+      © 2020 - 2024 Copyright:
       <a href="https://github.com/SatisfactoryServerManager/SSMCloud">
         Refined R&D</a>
       MIT License.

@@ -1,3 +1,5 @@
+const AgentMap = require("./agentmap");
+
 function main() {
     toastr.options.closeButton = true;
     toastr.options.closeMethod = "fadeOut";
@@ -365,101 +367,6 @@ function main() {
             window.agentMap.SetUpMap();
         }
     });
-}
-
-class AgentMap {
-    constructor(agent) {
-        this.agent = agent;
-        this.created = false;
-    }
-    SetUpMap = () => {
-        if ($("#playerMap").length == 0) {
-            return;
-        }
-
-        if (this.created) {
-            return;
-        }
-
-        this.created = true;
-
-        let bounds = [
-            [-375e3, -324698.832031],
-            [375e3, 425301.832031],
-        ];
-
-        this.playerGroup = L.layerGroup([]);
-
-        const mapImg = L.imageOverlay("/public/images/map.png", bounds);
-
-        this.map = L.map("playerMap", {
-            minZoom: -10,
-            maxZoom: -5,
-            zoom: -9,
-            center: [0, 0],
-            bounds,
-            fullscreen: true,
-            crs: L.CRS.Simple,
-            layers: [mapImg, this.playerGroup],
-        });
-
-        this.map.setMaxBounds(bounds);
-
-        const layerControl = L.control.layers({}).addTo(this.map);
-        layerControl.addOverlay(this.playerGroup, "Players");
-
-        this.BuildMapPlayers();
-
-        setInterval(() => {
-            this.pollAgent();
-        }, 10000);
-        this.pollAgent();
-    };
-
-    BuildMapPlayers = () => {
-        this.playerGroup.clearLayers();
-
-        const players = this.agent.players;
-
-        for (let i = 0; i < players.length; i++) {
-            const player = players[i];
-
-            var playerMarker = L.marker(
-                this.GamelocationToMapLocation(
-                    player.location.x,
-                    player.location.y
-                )
-            );
-            playerMarker.bindPopup(
-                `<b>${player.playerName}</b><br><b>Online:</b>${
-                    player.online ? "true" : "false"
-                }`
-            );
-
-            this.playerGroup.addLayer(playerMarker);
-        }
-    };
-
-    GamelocationToMapLocation = (x, y) => {
-        return [-y, x];
-    };
-
-    pollAgent = async () => {
-        const agentId = window.agent._id;
-        try {
-            const res = await $.get("/dashboard/servers/" + agentId + "/js");
-
-            if (res.agent == null) {
-                return;
-            }
-
-            this.agent = res.agent;
-
-            this.BuildMapPlayers();
-        } catch (err) {
-            console.log(err);
-        }
-    };
 }
 
 function FilterServerList() {
