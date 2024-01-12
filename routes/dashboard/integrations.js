@@ -8,7 +8,7 @@ const { check, body } = require("express-validator");
 
 const router = express.Router();
 
-router.get("/", isAuth, dashboardController.getIntergrationsPage);
+router.get("/", isAuth, dashboardController.getIntegrationsPage);
 
 router.post(
     "/update/:settingsId",

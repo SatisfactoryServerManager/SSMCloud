@@ -618,7 +618,7 @@ exports.postUninstallMod = async (req, res, next) => {
 
 exports.Logs = require("./dashboard/logs");
 
-exports.getIntergrationsPage = async (req, res, next) => {
+exports.getIntegrationsPage = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {
         const error = new Error("Invalid User ID!");
         error.httpStatusCode = 500;
@@ -671,9 +671,9 @@ exports.getIntergrationsPage = async (req, res, next) => {
             ? (errorMessage = errorMessage[0])
             : (errorMessage = null);
 
-        res.render("dashboard/intergrations", {
-            path: "/intergrations",
-            pageTitle: "Intergrations",
+        res.render("dashboard/integrations", {
+            path: "/integrations",
+            pageTitle: "Integrations",
             accountName: theAccount.accountName,
             agents: theAccount.agents,
             intergrations: theAccount.intergrations,
@@ -683,9 +683,9 @@ exports.getIntergrationsPage = async (req, res, next) => {
             errorMessage,
         });
     } else {
-        res.render("dashboard/intergrations", {
-            path: "/intergrations",
-            pageTitle: "Intergrations",
+        res.render("dashboard/integrations", {
+            path: "/integrations",
+            pageTitle: "Integrations",
             accountName: "",
             agents: [],
             intergrations: [],

@@ -23,7 +23,7 @@ router.use("/account", require("./account"));
 router.use("/backups", require("./backups"));
 router.use("/logs", require("./logs"));
 router.use("/mods", require("./mods"));
-router.use("/intergrations", require("./intergrations"));
+router.use("/integrations", require("./integrations"));
 router.use("/saves", require("./saves"));
 router.use("/servers", require("./servers"));
 router.use("/profile", require("./profile"));

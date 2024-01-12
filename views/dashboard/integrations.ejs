@@ -38,7 +38,7 @@
             <div class="col-12 col-lg-6">
               <div class="card mb-3 bg-glass">
                 <div class="card-header">
-                  <h5>Add New Intergration</h5>
+                  <h5>Add New Integration</h5>
                 </div>
                 <div class="card-body">
                   <% if(locals.message){ const messageData = JSON.parse(message); 
@@ -58,7 +58,7 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="row">
                       <div class="col-12 col-lg-6">
-                        <label for="sel_type" class="form-label">Intergration Type:</label>
+                        <label for="sel_type" class="form-label">Integration Type:</label>
                         <div class="input-group mb-2">
                           <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
                           <select name="sel_type" id="sel_type" class="form-select">
@@ -68,7 +68,7 @@
                             <option value="discord">Discord</option>
                           </select>
                         </div>
-                        <label for="inp_url" class="form-label">Intergration URL:</label>
+                        <label for="inp_url" class="form-label">Integration URL:</label>
                         <div class="input-group mb-2">
                           <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
                           <input class="form-control" type="text" name="inp_url" id="inp_url" value="">
@@ -102,7 +102,7 @@
                         </div>
                       </div>
                     </div>
-                    <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Intergration</button>
+                    <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Integration</button>
                   </form>
                 </div>
               </div>
@@ -110,11 +110,11 @@
 
               <div class="card mb-3 bg-glass">
                 <div class="card-header">
-                  <h5>Intergrations</h5>
+                  <h5>Integrations</h5>
                 </div>
                 <div class="card-body">
                   <%if(intergrations.length == 0){%>
-                  <div class="alert alert-info">It looks like Intergrations has not been setup yet!</div>
+                  <div class="alert alert-info">It looks like integrations has not been setup yet!</div>
                   <%}%>
                 <%intergrations.forEach(setting=>{%>
                   <% if(locals.message){ const messageData = JSON.parse(message); 
@@ -134,7 +134,7 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="row">
                       <div class="col-12 col-lg-6">
-                        <label for="sel_type" class="form-label">Intergration Type:</label>
+                        <label for="sel_type" class="form-label">Integration Type:</label>
                         <div class="input-group mb-2">
                           <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
                           <select name="sel_type" id="sel_type" class="form-select">
@@ -144,7 +144,7 @@
                                 <option <%if(setting.notificationType == "discord"){%>selected<%}%>>Discord</option>
                             </select>
                         </div>
-                        <label for="inp_url" class="form-label">Intergration URL:</label>
+                        <label for="inp_url" class="form-label">Integration URL:</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
                             <input class="form-control" type="text" name="inp_url" id="inp_url" value="<%=setting.url%>">
@@ -185,8 +185,8 @@
                         </div>
                       </div>
                     </div>
-                    <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Intergration</button>
-                    <a href="/dashboard/intergrations/delete/<%=setting._id%>" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Intergration</a>
+                    <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Integration</button>
+                    <a href="/dashboard/intergrations/delete/<%=setting._id%>" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Integration</a>
                   </form>
                   <hr>
                   <%})%>
@@ -196,7 +196,7 @@
             <div class="col-12 col-lg-6">
               <div class="card mb-3 bg-glass">
                 <div class="card-header">
-                  <h5>Intergration Events</h5>
+                  <h5>Integration Events</h5>
                 </div>
                 <div class="card-body" style="max-height: 1000px; overflow-y: auto;">
                   <%if(notifications.length == 0){%>
