@@ -196,7 +196,10 @@ class ModManager {
             for (let j = 0; j < selectedMod.mod.versions.length; j++) {
                 const modVersion = selectedMod.mod.versions[j];
 
-                if (semver.lt(installedVersion, modVersion.version)) {
+                if (
+                    semver.lt(installedVersion, modVersion.version) &&
+                    semver.lt(selectedMod.desiredVersion, modVersion.version)
+                ) {
                     NeedsUpdate = true;
                 }
             }

@@ -20,7 +20,7 @@
   </div>
 </div>
 
-
+<input type="hidden" id="csrf" name="_csrf" value="<%= csrfToken %>" />
 
 
 <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
@@ -73,7 +73,11 @@
 
 <script>
   let mods = <%- JSON.stringify(mods) %>;
+  let selectedMods = <%- JSON.stringify(modState.selectedMods) %>;
   localStorage.setItem('mods', JSON.stringify({
     'mods': mods
+  }));
+  localStorage.setItem('selectedMods', JSON.stringify({
+    'selectedMods': selectedMods
   }));
 </script>

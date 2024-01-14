@@ -412,22 +412,53 @@ exports.postServer = async (req, res, next) => {
 
         theAgent.config.autoRestartServer =
             data.inp_autorestart == "on" ? true : false;
-    }
-
-    if (data._ConfigSetting == "backupsettings") {
+    } else if (data._ConfigSetting == "backupsettings") {
         theAgent.config.backup.keep = parseInt(data.inp_backupkeep);
-
         theAgent.config.backup.interval = parseInt(data.inp_backupinterval);
+    } else if (data._ConfigSetting == "modsettings") {
+        await theAgent.populate("modState");
+        const modState = theAgent.modState;
+        for (let i = 0; i < modState.selectedMods.length; i++) {
+            await modState.populate(`selectedMods.${i}.mod`);
+        }
+
+        const selectedMod = modState.selectedMods.find(
+            (sm) => sm.mod.modReference == data.modReference
+        );
+
+        if (selectedMod == null) {
+            const errorMessageData = {
+                section: "",
+                message:
+                    "Error saving mod settings with error: Couldn't find selected mod",
+            };
+
+            req.flash("error", JSON.stringify(errorMessageData));
+            return res.redirect(`/dashboard/servers/${agentid}`);
+        }
+
+        selectedMod.config = data.modConfig;
+
+        await modState.save();
+
+        const message = await MessageQueueItem.create({
+            action: "updateModConfig",
+            data,
+        });
+
+        theAgent.messageQueue.push(message);
     }
 
     theAgent.markModified("config");
 
-    const message = await MessageQueueItem.create({
-        action: "updateconfig",
-        data,
-    });
+    if (data._ConfigSetting != "modsettings") {
+        const message = await MessageQueueItem.create({
+            action: "updateconfig",
+            data,
+        });
 
-    theAgent.messageQueue.push(message);
+        theAgent.messageQueue.push(message);
+    }
     await theAgent.save();
 
     req.flash("success", JSON.stringify(successMessageData));

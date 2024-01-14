@@ -714,6 +714,8 @@ exports.postModState = async (req, res, next) => {
 
     await theAgent.modState.save();
 
+    ModManager.CheckAgentModState(theAgent.modState);
+
     res.status(200).json({
         success: true,
     });

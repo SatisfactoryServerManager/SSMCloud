@@ -511,6 +511,67 @@ function main() {
             const value = $("#mods-sortby").val();
             const ascending = $("#mods-sortby-direction").val() == "asc";
             SortMods(value, ascending);
+        })
+        .on("click", ".settings-mod-btn", (e) => {
+            const $this = $(e.currentTarget);
+            const $card = $this.closest(".mod-card");
+            const modReference = $card.attr("data-modref");
+
+            const mods = JSON.parse(localStorage.getItem("mods")).mods;
+            const selectedMods = JSON.parse(
+                localStorage.getItem("selectedMods")
+            ).selectedMods;
+
+            const mod = mods.find((m) => m.modReference == modReference);
+            const selectedMod = selectedMods.find(
+                (sm) => sm.mod.modReference == modReference
+            );
+
+            if (mod == null || selectedMod == null) {
+                return;
+            }
+
+            let modConfig = {};
+            try {
+                modConfig = JSON.parse(selectedMod.config);
+            } catch (err) {
+                modConfig = {};
+            }
+
+            window.openModal("/public/modals", "mod-settings", (modal) => {
+                modal.find(".modal-title").text(`${mod.modName} Settings`);
+                modal
+                    .find("#mod-settings-config")
+                    .val(JSON.stringify(modConfig, null, 4));
+                modal.find("#inp_mod_ref").val(mod.modReference);
+                modal.find("#mod-csrf").val($("#csrf").val());
+            });
+        })
+        .on("keyup", "#mod-settings-config", (e) => {
+            const $this = $(e.currentTarget);
+
+            let isValid = false;
+            try {
+                JSON.parse($this.val());
+
+                isValid = true;
+            } catch (err) {
+                isValid = false;
+            }
+
+            if (isValid) {
+                $("#mod-settings-config-valid")
+                    .removeClass()
+                    .addClass("text-success")
+                    .text("Valid Mod Config");
+                $("#mod-settings-save-btn").prop("disabled", false);
+            } else {
+                $("#mod-settings-config-valid")
+                    .removeClass()
+                    .addClass("text-danger")
+                    .text("Invalid Mod Config");
+                $("#mod-settings-save-btn").prop("disabled", true);
+            }
         });
 
     function SortMods(sortBy, ascending) {

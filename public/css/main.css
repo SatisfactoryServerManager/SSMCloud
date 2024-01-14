@@ -702,8 +702,8 @@ pre {
 
 /* Modals */
 
-.ssm-modal i,
-.ssm-modal svg {
+.ssm-modal .info-icon i,
+.ssm-modal .info-icon svg {
     font-size: 50px;
 }
 
@@ -722,7 +722,8 @@ pre {
 }
 
 .ssm-modal .input-group i,
-.ssm-modal .btn i {
+.ssm-modal .btn i,
+.ssm-modal .btn svg {
     font-size: unset;
 }
 
