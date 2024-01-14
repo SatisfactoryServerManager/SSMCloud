@@ -1,3 +1,9 @@
+## 1.0.125 (January 14, 2024)
+  - feat: Auto Pause & Auto Save
+  - feat: Update mod config
+  - fix: Fixed dashboard mods and player count
+  - feat: Mod sorting
+
 ## 1.0.124 (January 12, 2024)
   - feat: Map updates
   - fix: Fixed integrations typeo
