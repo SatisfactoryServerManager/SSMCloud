@@ -91,8 +91,10 @@ class ModManager {
                         hidden,
                         logo,
                         mod_reference,
+                        downloads,
                         versions {
                             version,
+                            created_at,
                             link,
                             targets {
                                 targetName
@@ -159,6 +161,7 @@ class ModManager {
                     existingMod.hidden = mod.hidden;
                     existingMod.versions = mod.versions;
                     existingMod.logoUrl = mod.logo;
+                    existingMod.downloads = mod.downloads;
                     await existingMod.save();
                     continue;
                 }
@@ -169,6 +172,7 @@ class ModManager {
                     modReference: mod.mod_reference,
                     hidden: mod.hidden,
                     logoUrl: mod.logo,
+                    downloads: mod.downloads,
                     versions: mod.versions,
                 });
             }

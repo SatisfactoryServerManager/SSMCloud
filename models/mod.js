@@ -23,6 +23,10 @@ const ModSchema = new Schema({
         type: String,
         default: "/public/images/ssm_logo128_outline.png",
     },
+    downloads: {
+        type: Number,
+        default: 0,
+    },
     versions: [
         {
             type: Object,

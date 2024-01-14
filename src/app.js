@@ -336,7 +336,88 @@ function main() {
             const $this = $(e.currentTarget);
 
             navigator.clipboard.writeText($this.attr("data-key"));
+        })
+        .on("change", "#mods-sortby", (e) => {
+            const value = $("#mods-sortby").val();
+            const ascending = $("#mods-sortby-direction").val() == "asc";
+            SortMods(value, ascending);
+        })
+        .on("change", "#mods-sortby-direction", (e) => {
+            const value = $("#mods-sortby").val();
+            const ascending = $("#mods-sortby-direction").val() == "asc";
+            SortMods(value, ascending);
         });
+
+    function SortMods(sortBy, ascending) {
+        let cards = [];
+
+        console.log(sortBy, ascending);
+
+        if (sortBy == "downloads") {
+            cards = getSortedInt(
+                ".mod-list .mod-card",
+                "data-mod-downloads",
+                ascending
+            );
+        } else if (sortBy == "updated") {
+            cards = getSortedInt(
+                ".mod-list .mod-card",
+                "data-mod-updated",
+                ascending
+            );
+        } else if (sortBy == "needsupdate") {
+            cards = getSortedInt(
+                ".mod-list .mod-card",
+                "data-mod-needs-update",
+                ascending
+            );
+        } else if (sortBy == "az") {
+            cards = getSorted(".mod-list .mod-card", "data-modref", ascending);
+        }
+
+        $(".mod-list .row").empty();
+
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            const $col = $("<div/>").addClass(
+                "col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"
+            );
+            $col.append(card);
+            $(".mod-list .row").append($col);
+        }
+    }
+
+    function getSorted(selector, attrName, ascending) {
+        return $(
+            $(selector)
+                .toArray()
+                .sort(function (a, b) {
+                    var aVal = a.getAttribute(attrName),
+                        bVal = b.getAttribute(attrName);
+                    if (ascending) {
+                        return aVal > bVal ? 1 : -1;
+                    } else {
+                        return bVal < aVal ? -1 : 1;
+                    }
+                })
+        );
+    }
+
+    function getSortedInt(selector, attrName, ascending) {
+        return $(
+            $(selector)
+                .toArray()
+                .sort(function (a, b) {
+                    var aVal = parseInt(a.getAttribute(attrName)),
+                        bVal = parseInt(b.getAttribute(attrName));
+                    if (ascending) {
+                        return aVal - bVal;
+                    } else {
+                        return bVal - aVal;
+                    }
+                })
+        );
+    }
 
     $("#inp_maxplayers").on("input change", () => {
         const val = $("#inp_maxplayers").val();

@@ -32,10 +32,25 @@
     <label class="form-label">Select Mods from Mod Manager Profile</label>
     <input type="file" class="form-control smm-metadata-file" name="">
     <hr>
-    <label for="" class="form-label">Search Mod List:</label>
-    <div class="input-group">
-      <input type="text" class="form-control mod-search" name="" id="">
-      <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+
+    <div class="d-flex flex-column flex-md-row">
+      <div class="input-group flex-shrink-1 w-auto">
+        <input type="text" class="form-control mod-search" name="" id="" placeholder="Search Mods">
+        <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+      </div>
+      <div class="flex-grow-1"></div>
+      <div class="ms-md-4 d-flex mt-3 mt-md-0">
+        <select class="form-select me-2 w-100" style="min-width: 150px;" name=" inp_mod_sortby" id="mods-sortby">
+          <option value="az">A-Z</option>
+          <option value="downloads">Downloads</option>
+          <option value="updated">Updated Date</option>
+          <option value="needsupdate">Needs Update</option>
+        </select>
+        <select class="form-select w-100" name="inp_mod_sortby_direction" id="mods-sortby-direction">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
     </div>
 
     <div class="mod-list mt-2">
