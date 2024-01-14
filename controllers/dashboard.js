@@ -68,6 +68,7 @@ exports.getDashboard = async (req, res, next) => {
         for (let i = 0; i < theAccount.agents.length; i++) {
             const agent = theAccount.agents[i];
             await agent.populate("players");
+            await agent.populate("modState");
         }
 
         res.render("dashboard/dashboard", {

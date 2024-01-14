@@ -29,16 +29,6 @@
                 }
             %>
 
-      <%
-                let playerCount = 0;
-                for(let i=0;i<agent.players.length;i++){
-                    const player = agent.players[i];
-                    if(player.state == "online")
-                        playerCount++;
-                        
-                }
-            %>
-
       <div class="row">
         <div class="col-12 col-md-6 col-xl-4">
           <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
@@ -48,12 +38,12 @@
         <div class="col-12 col-md-6 col-xl-4">
           <%- include('../includes/status-info-card.ejs',
             {ClassColour:"orange", ClassID:"users", Title:"Players",
-            Data:playerCount, Icon:"fa-user"}) %>
+            Data:agent.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
         </div>
         <div class="col-12 col-md-6 col-xl-4">
           <%- include('../includes/status-info-card.ejs',
             {ClassColour:"green", ClassID:"mods", Title:"Mods",
-            Data:"0", Icon:"fa-pencil-ruler"}) %>
+            Data:agent.modState.selectedMods.length, Icon:"fa-pencil-ruler"}) %>
         </div>
       </div>
 
