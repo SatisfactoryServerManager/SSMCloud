@@ -121,8 +121,8 @@
                 </div>
                 <div class="col-12 col-md-8">
                   <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
-                    </div>
                 </div>
+            </div>
                 <div class="row settings-row">
                     <div class="col-12 col-md-4">
                       <b class="settings-prop">Auto Restart Server:</b>
@@ -132,8 +132,30 @@
                     </div>
                     <div class="col-12 col-md-8">
                       <input name="inp_autorestart" id="inp_autorestart" type="checkbox" <%if(agent.config.autoRestartServer){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
-                        </div>
                     </div>
+                </div>
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                        <b class="settings-prop">Auto Pause Server:</b>
+                        <span class="settings-info">
+                        Automatically pause server if no players are online
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <input name="inp_autoPause" id="inp_autoPause" type="checkbox" <%if(agent.config.autoPause){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                    </div>
+                </div>
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                        <b class="settings-prop">Auto Save On Disconnect:</b>
+                        <span class="settings-info">
+                        Automatically save server when player disconnects.
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <input name="inp_autoSaveOnDisconnect" id="inp_autoSaveOnDisconnect" type="checkbox" <%if(agent.config.autoSaveOnDisconnect){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                    </div>
+                </div>
               <div class="row settings-row">
                 <div class="col-12 col-md-4">
                   <b class="settings-prop">Max Players:</b>

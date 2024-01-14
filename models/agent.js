@@ -81,6 +81,8 @@ const agentSchema = new Schema(
                 maxPlayers: 4,
                 checkForUpdatesOnStart: true,
                 autoRestartServer: false,
+                autoPause: false,
+                autoSaveOnDisconnect: true,
                 sfBranch: "public",
                 ip: "",
                 sfVersions: {

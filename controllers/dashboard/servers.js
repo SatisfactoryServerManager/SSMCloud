@@ -405,6 +405,10 @@ exports.postServer = async (req, res, next) => {
         theAgent.config.checkForUpdatesOnStart =
             data.inp_updatesfonstart == "on" ? true : false;
 
+        theAgent.config.autoPause = data.inp_autoPause == "on" ? true : false;
+        theAgent.config.autoSaveOnDisconnect =
+            data.inp_autoSaveOnDisconnect == "on" ? true : false;
+
         theAgent.config.workerThreads = parseInt(data.inp_workerthreads);
 
         theAgent.config.sfBranch =
@@ -436,6 +440,9 @@ exports.postServer = async (req, res, next) => {
             req.flash("error", JSON.stringify(errorMessageData));
             return res.redirect(`/dashboard/servers/${agentid}`);
         }
+
+        data.modConfig = JSON.parse(data.modConfig);
+        data.modConfig = JSON.stringify(data.modConfig);
 
         selectedMod.config = data.modConfig;
 
