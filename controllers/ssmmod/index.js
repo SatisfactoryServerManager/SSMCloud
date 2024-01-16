@@ -82,3 +82,9 @@ exports.postPlayers = async (req, res, next) => {
         res.json({ success: false, error: err.message });
     }
 };
+
+exports.postBuildings = async (req, res, next) => {
+    res.json({
+        success: true,
+    });
+};

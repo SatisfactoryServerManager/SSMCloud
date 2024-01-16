@@ -1,6 +1,6 @@
 <div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3">
 
-  <div class="mod-card d-flex" data-modref="<%=mod.modReference%>" data-mod-downloads="<%=mod.downloads%>" data-mod-updated="<%=new Date(mod.versions[0].created_at).getTime()%>" data-mod-needs-update="<%=(!isInstalled || selectedMod == null)?0:(selectedMod.needsUpdate)?1:0%>">
+  <div class="mod-card d-flex" data-modref="<%=mod.modReference%>" data-mod-downloads="<%=mod.downloads%>" data-mod-updated="<%=new Date(mod.versions[0].created_at).getTime()%>" data-mod-installed="<%=(isInstalled)?1:0%>" data-mod-needs-update="<%=(!isInstalled || selectedMod == null)?0:(selectedMod.needsUpdate)?1:0%>">
     <div class="mod-image">
       <%if(mod.logoUrl == ""){%>
       <img src="https://ficsit.app/images/no_image.webp" alt="">

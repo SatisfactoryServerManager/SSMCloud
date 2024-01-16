@@ -8,5 +8,6 @@ const SSMController = require("../../../../controllers/ssmmod");
 const router = express.Router();
 
 router.post("/players", isAgent, SSMController.postPlayers);
+router.post("/buildings", isAgent, SSMController.postBuildings);
 
 module.exports = router;

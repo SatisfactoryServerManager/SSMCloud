@@ -13,11 +13,11 @@ class AgentMap {
         var MarkerIcon = L.Icon.extend({
             options: {
                 shadowUrl: "",
-                iconSize: [60, 60],
-                shadowSize: [60, 60],
-                iconAnchor: [30, 60],
-                shadowAnchor: [30, 60],
-                popupAnchor: [0, -64],
+                iconSize: [50, 50],
+                shadowSize: [50, 50],
+                iconAnchor: [25, 50],
+                shadowAnchor: [25, 50],
+                popupAnchor: [0, -50],
             },
         });
 
@@ -35,6 +35,9 @@ class AgentMap {
         });
         this.MarkerIcons.Station = new MarkerIcon({
             iconUrl: "/public/images/map/station_marker.png",
+        });
+        this.MarkerIcons.SpaceElevator = new MarkerIcon({
+            iconUrl: "/public/images/map/selevator_marker.png",
         });
     };
 

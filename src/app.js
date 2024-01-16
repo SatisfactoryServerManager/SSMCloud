@@ -264,7 +264,7 @@ function main() {
         .on("keyup", ".mod-search", (e) => {
             const $this = $(e.currentTarget);
             const searchText = $this.val().toLowerCase();
-            const $modList = $this.parent().parent().find(".mod-list");
+            const $modList = $this.parent().parent().parent().find(".mod-list");
 
             $modList.find(".mod-card").each((index, ele) => {
                 const $ele = $(ele);
@@ -434,6 +434,12 @@ function main() {
             );
         } else if (sortBy == "az") {
             cards = getSorted(".mod-list .mod-card", "data-modref", ascending);
+        } else if (sortBy == "installed") {
+            cards = getSortedInt(
+                ".mod-list .mod-card",
+                "data-mod-installed",
+                ascending
+            );
         }
 
         $(".mod-list .row").empty();
@@ -446,6 +452,16 @@ function main() {
             $col.append(card);
             $(".mod-list .row").append($col);
         }
+
+        const searchText = $(".mod-search").val();
+        cards.each((index, ele) => {
+            const $ele = $(ele);
+            if (!$ele.attr("data-modref").toLowerCase().includes(searchText)) {
+                $ele.parent().addClass("hidden");
+            } else {
+                $ele.parent().removeClass("hidden");
+            }
+        });
     }
 
     function getSorted(selector, attrName, ascending) {
