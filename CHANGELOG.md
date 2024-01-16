@@ -1,3 +1,6 @@
+## 1.0.126 (January 16, 2024)
+  - fix: Fixed mod search with sortby
+
 ## 1.0.125 (January 14, 2024)
   - feat: Auto Pause & Auto Save
   - feat: Update mod config
