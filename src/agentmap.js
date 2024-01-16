@@ -117,8 +117,79 @@ class AgentMap {
         }
     };
 
+    rotatePoints(center, points, yaw) {
+        var res = [];
+        var angle = yaw * (Math.PI / 180); // not really sure what this is
+        for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            // translate to center
+            var p2 = [p[0] - center[0], p[1] - center[1]];
+            // rotate using matrix rotation
+            var p3 = [
+                Math.cos(angle) * p2[0] - Math.sin(angle) * p2[1],
+                Math.sin(angle) * p2[0] + Math.cos(angle) * p2[1],
+            ];
+            // translate back to center
+            var p4 = [p3[0] + center[0], p3[1] + center[1]];
+            // done with that point
+            res.push(p4);
+        }
+        return res;
+    }
+
+    CalcBuildingPolygon = (x, y, w, l, r) => {
+        w = w * 100;
+        l = l * 100;
+
+        const points = [
+            [x, y],
+            [x + l, y],
+            [x + l, y + w],
+            [x, y + w],
+        ];
+
+        var polygon = L.polygon(points, {
+            color: "green",
+        });
+
+        var center = [x, y];
+
+        const polygonRotated = this.rotatePoints(center, points, r);
+        polygon.setLatLngs(polygonRotated);
+
+        return polygon;
+    };
+
     AddBuildingMarkers = () => {
         return;
+        this.buildingGroup.clearLayers();
+        const buildingLocation = this.GamelocationToMapLocation(
+            -50938.7109375,
+            274269.9375
+        );
+        const buildingPoly = this.CalcBuildingPolygon(
+            buildingLocation[0],
+            buildingLocation[1],
+            54,
+            54,
+            0
+        );
+
+        this.buildingGroup.addLayer(buildingPoly);
+
+        const buildingLocation2 = this.GamelocationToMapLocation(
+            -45500,
+            277800
+        );
+        const buildingPoly2 = this.CalcBuildingPolygon(
+            buildingLocation2[0],
+            buildingLocation2[1],
+            14,
+            26,
+            0
+        );
+
+        this.buildingGroup.addLayer(buildingPoly2);
 
         // WIP
         this.buildingGroup.clearLayers();
