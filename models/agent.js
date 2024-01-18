@@ -83,6 +83,8 @@ const agentSchema = new Schema(
                 autoRestartServer: false,
                 autoPause: false,
                 autoSaveOnDisconnect: true,
+                autoSaveInterval: 300,
+                disableSeasonalEvents: false,
                 sfBranch: "public",
                 ip: "",
                 sfVersions: {

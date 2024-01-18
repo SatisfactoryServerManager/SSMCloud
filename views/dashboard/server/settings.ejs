@@ -156,6 +156,35 @@
                         <input name="inp_autoSaveOnDisconnect" id="inp_autoSaveOnDisconnect" type="checkbox" <%if(agent.config.autoSaveOnDisconnect){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                     </div>
                 </div>
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                        <b class="settings-prop">Auto Save Interval:</b>
+                        <span class="settings-info">
+                        Auto Save Interval
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <select name="inp_autoSaveInterval" id="inp_autoSaveInterval" class="form-select">
+                            <option value="60" <%=(agent.config.autoSaveInterval==60)?"selected":""%>>1 Minute</option>
+                  <option value="300" <%=(agent.config.autoSaveInterval==300)?"selected":""%>>5 Minutes</option>
+                  <option value="600" <%=(agent.config.autoSaveInterval==600)?"selected":""%>>10 Minutes</option>
+                  <option value="900" <%=(agent.config.autoSaveInterval==900)?"selected":""%>>15 Minutes</option>
+                  <option value="1800" <%=(agent.config.autoSaveInterval==1800)?"selected":""%>>30 Minutes</option>
+                  <option value="3600" <%=(agent.config.autoSaveInterval==3600)?"selected":""%>>1 Hour</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row settings-row">
+                <div class="col-12 col-md-4">
+                  <b class="settings-prop">Seasonal Events:</b>
+                  <span class="settings-info">
+                    Enable Or Disable Seasonal Events
+                  </span>
+                </div>
+                <div class="col-12 col-md-8">
+                  <input name="inp_seasonalEvents" id="inp_seasonalEvents" type="checkbox" <%if(!agent.config.disableSeasonalEvents){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                </div>
+            </div>
               <div class="row settings-row">
                 <div class="col-12 col-md-4">
                   <b class="settings-prop">Max Players:</b>

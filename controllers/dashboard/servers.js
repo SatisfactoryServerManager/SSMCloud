@@ -416,6 +416,13 @@ exports.postServer = async (req, res, next) => {
 
         theAgent.config.autoRestartServer =
             data.inp_autorestart == "on" ? true : false;
+
+        theAgent.config.autoSaveInterval = parseFloat(
+            data.inp_autoSaveInterval
+        );
+
+        theAgent.config.disableSeasonalEvents =
+            data.inp_seasonalEvents == "on" ? false : true;
     } else if (data._ConfigSetting == "backupsettings") {
         theAgent.config.backup.keep = parseInt(data.inp_backupkeep);
         theAgent.config.backup.interval = parseInt(data.inp_backupinterval);
