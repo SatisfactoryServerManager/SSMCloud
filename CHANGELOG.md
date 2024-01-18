@@ -1,3 +1,7 @@
+## 1.0.127 (January 18, 2024)
+  - feat: Seasonal Events and auto save interval
+  - feat: Work on map
+
 ## 1.0.126 (January 16, 2024)
   - fix: Fixed mod search with sortby
 
