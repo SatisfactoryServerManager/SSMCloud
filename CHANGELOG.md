@@ -1,3 +1,6 @@
+## 1.0.128 (January 21, 2024)
+  - fix: clean version number from SMR api
+
 ## 1.0.127 (January 18, 2024)
   - feat: Seasonal Events and auto save interval
   - feat: Work on map
