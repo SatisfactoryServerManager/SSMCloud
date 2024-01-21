@@ -132,6 +132,11 @@ class ModManager {
                         return false;
                     });
 
+                    for (let j = 0; j < versionsFilter.length; j++) {
+                        const v = versionsFilter[j];
+                        v.version = semver.clean(v.version);
+                    }
+
                     if (versionsFilter.length > 0) {
                         mod.versions = versionsFilter;
                         ModList.push(mod);
@@ -186,7 +191,7 @@ class ModManager {
             const selectedMod = ModState.selectedMods[i];
             await ModState.populate(`selectedMods.${i}.mod`);
 
-            const installedVersion = selectedMod.installedVersion;
+            const installedVersion = semver.clean(selectedMod.installedVersion);
             let NeedsUpdate = false;
 
             if (selectedMod.mod == null) {
@@ -197,8 +202,14 @@ class ModManager {
                 const modVersion = selectedMod.mod.versions[j];
 
                 if (
-                    semver.lt(installedVersion, modVersion.version) &&
-                    semver.lt(selectedMod.desiredVersion, modVersion.version)
+                    semver.lt(
+                        installedVersion,
+                        semver.clean(modVersion.version)
+                    ) &&
+                    semver.lt(
+                        semver.clean(selectedMod.desiredVersion),
+                        semver.clean(modVersion.version)
+                    )
                 ) {
                     NeedsUpdate = true;
                 }
@@ -218,56 +229,6 @@ class ModManager {
 
             if (modState.selectedMods.length > 0) {
                 this.CheckAgentModState(modState);
-            }
-        }
-
-        return;
-
-        const mods = await AgentModModel.find({});
-
-        for (let i = 0; i < mods.length; i++) {
-            const mod = mods[i];
-            await mod.populate("mod");
-
-            let satifiesAllVersions = true;
-
-            if (mod.mod.versions.length == 0) {
-                continue;
-            }
-
-            for (let j = 0; j < mod.mod.versions.length; j++) {
-                const modVersion = mod.mod.versions[j];
-
-                if (semver.lt(mod.version, modVersion.version)) {
-                    satifiesAllVersions = false;
-                }
-            }
-
-            const prevNeedUpdate = mod.needsUpdate;
-            if (satifiesAllVersions == false) {
-                mod.needsUpdate = true;
-            } else {
-                mod.needsUpdate = false;
-            }
-
-            if (prevNeedUpdate != mod.needsUpdate) {
-                const theAgent = await AgentModel.findOne({
-                    installedMods: mod,
-                });
-                if (theAgent) {
-                    const theAccount = await Account.findOne({
-                        agents: theAgent,
-                    });
-                    if (theAccount) {
-                        await theAccount.CreateEvent(
-                            "AGENT",
-                            `Mod (${mod.mod.modName}) requires updating on Agent: ${theAgent.agentName}. Current Version: ${mod.version}, Latest Version: ${mod.mod.versions[0].version}`,
-                            5
-                        );
-                    }
-                }
-
-                await mod.save();
             }
         }
     };
