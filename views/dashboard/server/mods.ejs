@@ -24,8 +24,9 @@
 
 
 <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
-  <div class="card-header">
+  <div class="card-header d-flex align-items-center">
     <h5>Mods</h5>
+    <div class="badge bg-light text-black ms-auto"><%=modState.selectedMods.length%> / <%=mods.length%></div>
   </div>
   <div class="card-body">
     <input type="hidden" id="_csrf" name="_csrf" value="<%= csrfToken %>" />
@@ -52,20 +53,40 @@
           <option value="desc">Descending</option>
         </select>
       </div>
+      <div>
+        <ul class="pagination m-0 ms-2" id="mods-pagination">
+          <li class="page-item disabled flex-fill d-inline-block">
+            <a class="page-link mod-page-prev h-100">
+              <i class="fa-solid fa-chevron-left mt-1"></i>
+            </a>
+          </li>
+          <%for(let i=0;i<mods.length/30;i++){%>
+          <li class="page-item">
+            <a class="page-link mod-page" data-page-start="<%=i*30%>" data-page-end="<%=(i+1)*30%>"><%=i+1%></a>
+          </li>
+          <%}%>
+          <li class="page-item flex-fill d-inline-block">
+            <a class="page-link mod-page-next h-100">
+              <i class="fa-solid fa-chevron-right mt-1"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="mod-list mt-2">
       <div class="row">
-        <%mods.forEach(mod=>{%>
-
-        <%
+        <%for(let i=0;i<mods.length;i++){
+            
+        const mod = mods[i];
+        const modPage = Math.floor(i/30)+1;
         const selectedMod = modState.selectedMods.find(m=>m.mod.modName == mod.modName)
         const isInstalled = selectedMod != null && selectedMod.installed;
         %>
 
-        <%-include('../../includes/mod-card.ejs', {mod, selectedMod, isInstalled})%>
+          <%-include('../../includes/mod-card.ejs', {mod, selectedMod, isInstalled, modPage})%>
 
-        <%})%>
+          <%}%>
       </div>
     </div>
   </div>
@@ -74,11 +95,11 @@
 
 <script>
   let mods = <%- JSON.stringify(mods) %>;
-  let selectedMods = <%- JSON.stringify(modState.selectedMods) %>;
-  localStorage.setItem('mods', JSON.stringify({
-    'mods': mods
-  }));
-  localStorage.setItem('selectedMods', JSON.stringify({
-    'selectedMods': selectedMods
-  }));
-</script>
+          let selectedMods = <%- JSON.stringify(modState.selectedMods) %>;
+          localStorage.setItem('mods', JSON.stringify({
+          'mods': mods
+          }));
+          localStorage.setItem('selectedMods', JSON.stringify({
+          'selectedMods': selectedMods
+          }));
+          </script>

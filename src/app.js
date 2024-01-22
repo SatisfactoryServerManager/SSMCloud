@@ -338,14 +338,10 @@ function main() {
             navigator.clipboard.writeText($this.attr("data-key"));
         })
         .on("change", "#mods-sortby", (e) => {
-            const value = $("#mods-sortby").val();
-            const ascending = $("#mods-sortby-direction").val() == "asc";
-            SortMods(value, ascending);
+            SortMods();
         })
         .on("change", "#mods-sortby-direction", (e) => {
-            const value = $("#mods-sortby").val();
-            const ascending = $("#mods-sortby-direction").val() == "asc";
-            SortMods(value, ascending);
+            SortMods();
         })
         .on("click", ".settings-mod-btn", (e) => {
             const $this = $(e.currentTarget);
@@ -407,12 +403,136 @@ function main() {
                     .text("Invalid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", true);
             }
+        })
+        .on("click", "#mods-pagination .mod-page", (e) => {
+            $("#mods-pagination li").removeClass("active");
+            const $this = $(e.currentTarget);
+
+            $this.parent().addClass("active");
+
+            window.modsPagination_start = parseInt(
+                $this.attr("data-page-start")
+            );
+            window.modsPagination_end = parseInt($this.attr("data-page-end"));
+
+            if (window.modsPagination_start > 0) {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            const max = parseInt(
+                $("#mods-pagination .mod-page:last").attr("data-page-start")
+            );
+
+            if (window.modsPagination_start < max) {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            SortMods();
+        })
+        .on("click", "#mods-pagination .mod-page-prev", (e) => {
+            const start = window.modsPagination_start || 0;
+            const end = window.modsPagination_end || 30;
+            const max = parseInt(
+                $("#mods-pagination .mod-page:last").attr("data-page-start")
+            );
+
+            if (start <= 0) {
+                return;
+            }
+
+            window.modsPagination_start = start - 30;
+            window.modsPagination_end = end - 30;
+
+            if (window.modsPagination_start > 0) {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            if (window.modsPagination_start < max) {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            $("#mods-pagination li").removeClass("active");
+
+            $(
+                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
+            )
+                .parent()
+                .addClass("active");
+
+            SortMods();
+        })
+        .on("click", "#mods-pagination .mod-page-next", (e) => {
+            const start = window.modsPagination_start || 0;
+            const end = window.modsPagination_end || 30;
+            const max = parseInt(
+                $("#mods-pagination .mod-page:last").attr("data-page-start")
+            );
+
+            window.modsPagination_start = start + 30;
+            window.modsPagination_end = end + 30;
+
+            if (window.modsPagination_start < max) {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-next")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            if (window.modsPagination_start > 0) {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .removeClass("disabled");
+            } else {
+                $("#mods-pagination .mod-page-prev")
+                    .parent()
+                    .addClass("disabled");
+            }
+
+            $("#mods-pagination li").removeClass("active");
+
+            $(
+                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
+            )
+                .parent()
+                .addClass("active");
+
+            SortMods();
         });
 
-    function SortMods(sortBy, ascending) {
-        let cards = [];
+    SortMods();
 
-        console.log(sortBy, ascending);
+    function SortMods() {
+        const sortBy = $("#mods-sortby").val();
+        const ascending = $("#mods-sortby-direction").val() == "asc";
+
+        let cards = [];
 
         if (sortBy == "downloads") {
             cards = getSortedInt(
@@ -433,7 +553,11 @@ function main() {
                 ascending
             );
         } else if (sortBy == "az") {
-            cards = getSorted(".mod-list .mod-card", "data-modref", ascending);
+            cards = getSorted(
+                ".mod-list .mod-card",
+                "data-mod-name",
+                ascending
+            );
         } else if (sortBy == "installed") {
             cards = getSortedInt(
                 ".mod-list .mod-card",
@@ -452,14 +576,30 @@ function main() {
             $col.append(card);
             $(".mod-list .row").append($col);
         }
+        const start = window.modsPagination_start || 0;
+        const end = window.modsPagination_end || 30;
 
         const searchText = $(".mod-search").val();
         cards.each((index, ele) => {
             const $ele = $(ele);
-            if (!$ele.attr("data-modref").toLowerCase().includes(searchText)) {
-                $ele.parent().addClass("hidden");
+            const $col = $ele.parent();
+
+            let ShouldHide = false;
+
+            if (
+                !$ele.attr("data-mod-name").toLowerCase().includes(searchText)
+            ) {
+                ShouldHide = true;
+            }
+
+            if (index < start || index >= end) {
+                ShouldHide = true;
+            }
+
+            if (ShouldHide) {
+                $col.addClass("hidden");
             } else {
-                $ele.parent().removeClass("hidden");
+                $col.removeClass("hidden");
             }
         });
     }
