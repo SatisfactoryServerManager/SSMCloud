@@ -1,3 +1,6 @@
+## 1.0.129 (January 22, 2024)
+  - feat: Mod pagination
+
 ## 1.0.128 (January 21, 2024)
   - fix: clean version number from SMR api
 
