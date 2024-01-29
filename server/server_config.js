@@ -36,6 +36,9 @@ class ServerConfig extends iConfig {
 
         this.GetConfigDefaultValue("ssm.http_port", 3000, true);
 
+        // Backend Config
+        this.GetConfigDefaultValue("ssm.backend.url", "http://127.0.0.1:3000");
+
         // Mongo DB Config
         this.GetConfigDefaultValue("ssm.db.user", "ssm");
         this.GetConfigDefaultValue("ssm.db.pass", "#SSMP@$£");

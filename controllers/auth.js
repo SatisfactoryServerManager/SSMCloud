@@ -7,6 +7,8 @@ const UserInvite = require("../models/user_invite");
 const UserRole = require("../models/user_role");
 const Permission = require("../models/permission");
 
+const BackendAPI = require("../utils/backend-api");
+
 var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
@@ -132,96 +134,45 @@ exports.postLogin = async (req, res, next) => {
     }
 
     try {
-        const user = await User.findOne({ email }).select("+password");
-
-        if (!user) {
-        }
-
-        const theAccount = await Account.findOne({ users: user });
-
-        if (theAccount == null) {
-            return res.status(422).render("auth/login", {
-                path: "/login",
-                pageTitle: "Log In",
-                errorMessage: "Cant find account information!",
-                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
-                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
-                oldInput: {
-                    email,
-                    password,
-                },
-                validationErrors: [],
-            });
-        }
-
-        if (theAccount.state.inactive) {
-            return res.status(422).render("auth/login", {
-                path: "/login",
-                pageTitle: "Log In",
-                errorMessage:
-                    "Account is no longer active due to inactivity. Please contact support to reactivate the account.",
-                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
-                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
-                oldInput: {
-                    email,
-                    password,
-                },
-                validationErrors: [],
-            });
-        }
-
-        const ip =
-            req.headers["x-forwarded-for"] ||
-            req.headers["x-real-ip"] ||
-            req.socket.remoteAddress;
-
-        await theAccount.CreateEvent(
-            "AUTH",
-            `Login Attempt for user: [${user.email}] with ip: [${ip}]`,
-            0
+        let apires = await BackendAPI.POST_APICall_NoToken(
+            "/api/v1/account/login",
+            { email, password }
         );
 
-        const doMatch = await bcrypt.compare(password, user.password);
+        const loginSession = apires.session;
+        req.session.token = loginSession;
 
-        if (doMatch) {
-            req.session.user = user;
-            user.lastActiveDate = new Date();
-            await user.save();
+        apires = await BackendAPI.GET_APICall_Token(
+            "/api/v1/account/users/me",
+            loginSession
+        );
 
-            return req.session.save(async (err) => {
-                if (err) {
-                    console.log(err);
-                }
+        const user = apires.user;
 
-                if (user.twoFASetup == false) {
-                    res.redirect("/2fa/setup");
-                } else {
-                    res.redirect("/2fa/validate");
-                }
-            });
-        } else {
-            await theAccount.CreateEvent(
-                "AUTH",
-                `Login FAILED for user: [${user.email}] with ip: [${ip}]`,
-                5
-            );
-            return res.status(422).render("auth/login", {
-                path: "/login",
-                pageTitle: "Log In",
-                errorMessage: "Invalid email or password.",
-                enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
-                hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
-                oldInput: {
-                    email,
-                    password,
-                },
-                validationErrors: [],
-            });
-        }
+        return req.session.save(async (err) => {
+            if (err) {
+                console.log(err);
+            }
+
+            if (user.twoFAState.twoFASetup == false) {
+                res.redirect("/2fa/setup");
+            } else {
+                res.redirect("/2fa/validate");
+            }
+        });
     } catch (err) {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
+        return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Log In",
+            errorMessage: err.message,
+            enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+            hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
+            oldInput: {
+                email,
+                password,
+            },
+            validationErrors: [],
+        });
     }
 };
 
@@ -232,11 +183,6 @@ exports.postSignUp = async (req, res, next) => {
 
     const { email, password, confirmPassword, accountName } = req.body;
 
-    const ip =
-        req.headers["x-forwarded-for"] ||
-        req.headers["x-real-ip"] ||
-        req.socket.remoteAddress;
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         console.log("Signup returned validation Errors:", errors);
@@ -246,7 +192,7 @@ exports.postSignUp = async (req, res, next) => {
             enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
             hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
             errorMessage: errors.array()[0].msg,
-            oldInput: { email, password, confirmPassword },
+            oldInput: { email, password, confirmPassword, accountName },
             validationErrors: errors.array(),
         });
     }
@@ -264,35 +210,29 @@ exports.postSignUp = async (req, res, next) => {
                 errorMessage: "HCaptcha Failed!",
                 enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
                 hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
-                oldInput: { email, password, confirmPassword },
+                oldInput: { email, password, confirmPassword, accountName },
                 validationErrors: [],
             });
         }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     try {
-        const NewAccount = await Account.create({ accountName });
-
-        const newUser = await User.create({
+        await BackendAPI.POST_APICall_NoToken("/api/v1/account/signup", {
             email,
-            password: hashedPassword,
-            isAccountAdmin: true,
-            active: true,
+            password,
+            accountName,
         });
-
-        NewAccount.users.push(newUser);
-
-        await CreateAccountUserRoles(NewAccount);
-
-        await NewAccount.save();
         res.redirect("/login");
     } catch (err) {
-        console.log(err);
-        const error = err;
-        error.httpStatusCode = 500;
-        return next(error);
+        return res.status(422).render("auth/signup", {
+            path: "/signup",
+            pageTitle: "Sign Up",
+            errorMessage: err.message,
+            enableHcaptcha: Config.get("ssm.hcaptcha.enabled"),
+            hcaptchaSiteKey: Config.get("ssm.hcaptcha.sitekey"),
+            oldInput: { email, password, confirmPassword, accountName },
+            validationErrors: [],
+        });
     }
 };
 
@@ -373,82 +313,52 @@ exports.postAcceptInvite = async (req, res, next) => {
     }
 };
 
-const CreateAccountUserRoles = async (theAccount) => {
-    const AllPermissions = await Permission.find();
-
-    const AdminUserRole = await UserRole.create({
-        roleName: "Administrator",
-        permissions: AllPermissions,
-        canEdit: false,
-    });
-
-    theAccount.users[0].role = AdminUserRole;
-    await theAccount.users[0].save();
-
-    const SuperUserPerms = await Permission.find({
-        $or: [
-            { permissionName: /page\./ },
-            { permissionName: "user.create" },
-            { permissionName: "user.update" },
-            { permissionName: "userrole.create" },
-            { permissionName: "userrole.update" },
-            { permissionName: "serveraction.start" },
-            { permissionName: "serveraction.stop" },
-            { permissionName: "serveraction.kill" },
-            { permissionName: /server\./ },
-            { permissionName: /mods\./ },
-            { permissionName: /saves\./ },
-        ],
-    });
-
-    const SuperUserRole = await UserRole.create({
-        roleName: "Super User",
-        permissions: SuperUserPerms,
-    });
-
-    theAccount.userRoles.push(AdminUserRole);
-    theAccount.userRoles.push(SuperUserRole);
-};
-
 exports.get2FASetup = async (req, res, next) => {
-    if (req.session == null || req.session.user == null) {
+    if (req.session == null || req.session.token == null) {
         res.redirect("/login");
         return;
     }
 
-    const user = await User.findOne({ _id: req.session.user._id }).select(
-        "+twoFASecret"
-    );
+    try {
+        let apires = await BackendAPI.GET_APICall_Token(
+            "/api/v1/account/users/me",
+            req.session.token
+        );
 
-    if (user == null) {
-        res.redirect("/login");
-        return;
-    }
+        const user = apires.user;
 
-    if (user.twoFASetup == true) {
-        res.redirect("/login");
-        return;
-    }
-
-    const secret = authenticator.generateSecret();
-    user.twoFASecret = secret;
-
-    await user.save();
-
-    QRCode.toDataURL(
-        authenticator.keyuri(user.email, "SSM Cloud", secret),
-        (err, url) => {
-            if (err) {
-                throw err;
-            }
-
-            res.render("auth/2fa_setup.ejs", {
-                path: "/2fa/setup",
-                pageTitle: "Setup 2FA",
-                QRCODE: url,
-            });
+        if (user == null) {
+            res.redirect("/login");
+            return;
         }
-    );
+
+        if (user.twoFAState.twoFASetup == true) {
+            res.redirect("/login");
+            return;
+        }
+
+        apires = await BackendAPI.POST_APICall_Token(
+            "/api/v1/account/users/me/twofa/generate",
+            req.session.token
+        );
+
+        const secret = apires.secret;
+
+        QRCode.toDataURL(
+            authenticator.keyuri(user.email, "SSM Cloud", secret),
+            (err, url) => {
+                if (err) {
+                    throw err;
+                }
+
+                res.render("auth/2fa_setup.ejs", {
+                    path: "/2fa/setup",
+                    pageTitle: "Setup 2FA",
+                    QRCODE: url,
+                });
+            }
+        );
+    } catch (err) {}
 };
 
 exports.post2faSetup = async (req, res, next) => {

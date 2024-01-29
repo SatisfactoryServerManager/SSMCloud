@@ -33,14 +33,6 @@ router.post(
         check("email")
             .isEmail()
             .withMessage("Please enter a valid email.")
-            // Method found in validator.js docs. validator.js implicitly installed with express-validator
-            .custom((value, { req }) => {
-                return User.findOne({ email: value }).then((userDoc) => {
-                    if (userDoc) {
-                        return Promise.reject("Email already in use.");
-                    }
-                });
-            })
             .normalizeEmail(),
         // Adding validation error message as second argument as alternative to using withMessage() after each validator since using message for both checks
         body(
@@ -53,22 +45,10 @@ router.post(
             }
             return true;
         }),
-        body("accountName", "Account name must be provided")
-            .isLength({
-                min: 4,
-                max: 200,
-            })
-            .custom((value, { req }) => {
-                return Account.findOne({ accountName: value }).then(
-                    (accountDoc) => {
-                        if (accountDoc) {
-                            return Promise.reject(
-                                "Account Name is already in use."
-                            );
-                        }
-                    }
-                );
-            }),
+        body("accountName", "Account name must be provided").isLength({
+            min: 4,
+            max: 200,
+        }),
     ],
     authController.postSignUp
 );

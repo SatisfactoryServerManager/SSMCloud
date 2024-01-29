@@ -44,7 +44,7 @@ jobs:
               with:
                   context: .
                   push: true
-                  tags: mrhid6/ssmcloud:latest , mrhid6/ssmcloud:v${{ steps.versionnum.outputs.version }}
+                  tags: mrhid6/ssmcloud:dev
     build-windows:
         runs-on: self-hosted
         steps:
@@ -92,7 +92,7 @@ jobs:
                   tag_name: v${{ steps.versionnum.outputs.version }}
                   release_name: Release v${{ steps.versionnum.outputs.version }}
                   draft: false
-                  prerelease: false
+                  prerelease: true
             - name: Upload Linux Release Asset
               id: upload-linux-release-asset
               uses: actions/upload-release-asset@v1
@@ -132,7 +132,7 @@ jobs:
                   api_key: ${{ secrets.OCTOPUSSERVERAPIKEY }}
                   server: ${{ secrets.OCTOPUSSERVERURL }}
                   space: ${{ secrets.OCTOPUSSERVER_SPACE }}
-                  project: SSMCloud
+                  project: ssmcloud-frontend
                   release_number: ${{ steps.versionnum.outputs.version }}
                   deploy_to: Dev
                   progress: false

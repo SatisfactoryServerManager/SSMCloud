@@ -11,8 +11,11 @@ const EmailHandler = require("./server_email_handler");
 const UserRoleModel = require("../models/user_role");
 const PermissionModel = require("../models/permission");
 
+const BackendAPI = require("../utils/backend-api");
+
 class ServerApp {
     init = async () => {
+        BackendAPI.init();
         await this.CheckDBPermissionsCollection();
         AgentHandler.init();
         await ModManager.init();
