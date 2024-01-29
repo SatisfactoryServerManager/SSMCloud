@@ -1,3 +1,6 @@
+## 1.0.130 (January 29, 2024)
+  - fix: Fixed mod dependency checks
+
 ## 1.0.129 (January 22, 2024)
   - feat: Mod pagination
 
