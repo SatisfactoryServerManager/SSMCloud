@@ -519,8 +519,6 @@ exports.postInstallMod = async (req, res, next) => {
         for (let i = 0; i < lastestVersion.dependencies.length; i++) {
             const depMod = lastestVersion.dependencies[i];
 
-            const depVersion = depMod.condition.replace("^", "");
-
             const theModDep = await ModModel.findOne({
                 modReference: depMod.mod_id,
             });
@@ -529,6 +527,8 @@ exports.postInstallMod = async (req, res, next) => {
                 continue;
             }
 
+            const latestDepModVersion = theModDep.versions[0];
+
             const selectedDepMod = modState.selectedMods.find(
                 (sm) => sm.mod._id == theModDep._id.toString()
             );
@@ -536,13 +536,13 @@ exports.postInstallMod = async (req, res, next) => {
             if (selectedDepMod == null) {
                 const newSelectedDepMod = {
                     mod: theModDep,
-                    desiredVersion: depVersion,
+                    desiredVersion: latestDepModVersion.version,
                 };
                 modState.selectedMods.push(newSelectedDepMod);
                 await modState.save();
             } else {
-                if (semver.lt(selectedDepMod.desiredVersion, depVersion)) {
-                    selectedDepMod.desiredVersion = depVersion;
+                if (semver.lt(selectedDepMod.desiredVersion, latestDepModVersion.version)) {
+                    selectedDepMod.desiredVersion = latestDepModVersion.version;
                     await modState.save();
                 }
             }
