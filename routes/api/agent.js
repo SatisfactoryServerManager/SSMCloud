@@ -24,14 +24,6 @@ router.post("/config", isAgent, AgentController.postConfig);
 
 router.get("/config", isAgent, AgentController.getConfig);
 
-router.post(
-    "/messagequeue",
-    isAgent,
-    AgentController.postUpdateAgentMessageQueueItem
-);
-
-router.get("/messagequeue", isAgent, AgentController.getAgentMessageQueue);
-
 router.post("/uploadbackup", isAgent, AgentController.postUploadBackupFile);
 router.post("/uploadsave", isAgent, AgentController.postUploadSaveFile);
 
@@ -41,8 +33,6 @@ router.post("/saves/info", isAgent, AgentController.postAgentSaveInfo);
 router.post("/saves/newinfo", isAgent, AgentController.postAgentSaveNewInfo);
 
 router.post("/uploadlog", isAgent, AgentController.postUploadLog);
-
-router.get("/getsmlversions", isAgent, AgentController.getModsSMLVersions);
 
 router.get("/mod/:modReference", isAgent, AgentController.getMod);
 

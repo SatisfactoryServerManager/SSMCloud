@@ -1,11 +1,7 @@
-const crypto = require("crypto");
-
 const bcrypt = require("bcryptjs");
 const Account = require("../models/account");
 const User = require("../models/user");
 const UserInvite = require("../models/user_invite");
-const UserRole = require("../models/user_role");
-const Permission = require("../models/permission");
 
 const BackendAPI = require("../utils/backend-api");
 
@@ -344,56 +340,91 @@ exports.get2FASetup = async (req, res, next) => {
 
         const secret = apires.secret;
 
+        let errorMessage = req.flash("error");
+        errorMessage.length > 0
+            ? (errorMessage = errorMessage[0])
+            : (errorMessage = null);
+
         QRCode.toDataURL(
             authenticator.keyuri(user.email, "SSM Cloud", secret),
             (err, url) => {
-                if (err) {
-                    throw err;
-                }
+                const errorMessageData = {
+                    section: "",
+                    message: err ? err.message : "",
+                };
 
                 res.render("auth/2fa_setup.ejs", {
                     path: "/2fa/setup",
                     pageTitle: "Setup 2FA",
                     QRCODE: url,
+                    errorMessage: err
+                        ? JSON.stringify(errorMessageData)
+                        : errorMessage,
                 });
             }
         );
-    } catch (err) {}
+    } catch (err) {
+        const errorMessageData = {
+            section: "",
+            message: err.message,
+        };
+
+        res.render("auth/2fa_setup.ejs", {
+            path: "/2fa/setup",
+            pageTitle: "Setup 2FA",
+            QRCODE: "",
+            errorMessage: JSON.stringify(errorMessageData),
+        });
+    }
 };
 
 exports.post2faSetup = async (req, res, next) => {
     const post = req.body;
     const token = post.token;
-    if (req.session == null || req.session.user == null) {
+    if (req.session == null || req.session.token == null) {
         res.redirect("/login");
         return;
     }
 
-    const user = await User.findOne({ _id: req.session.user._id }).select(
-        "+twoFASecret"
-    );
+    try {
+        let apires = await BackendAPI.GET_APICall_Token(
+            "/api/v1/account/users/me",
+            req.session.token
+        );
 
-    if (user == null) {
+        const user = apires.user;
+
+        if (user == null) {
+            res.redirect("/login");
+            return;
+        }
+
+        if (user.twoFAState.twoFASetup == true) {
+            res.redirect("/login");
+            return;
+        }
+
+        await BackendAPI.POST_APICall_Token(
+            "/api/v1/account/users/me/twofa/validate",
+            req.session.token,
+            { token }
+        );
+
         res.redirect("/login");
-        return;
-    }
+    } catch (err) {
+        console.log(err);
+        const errorMessageData = {
+            section: "",
+            message: err.message,
+        };
 
-    const secret = user.twoFASecret;
-
-    if (!authenticator.check(token, secret)) {
-        //redirect back
-        console.log("ERROR: 2fa failed Verify", secret);
+        req.flash("error", JSON.stringify(errorMessageData));
         return res.redirect("/2fa/setup");
     }
-
-    user.twoFASetup = true;
-    await user.save();
-
-    res.redirect("/login");
 };
 
 exports.get2FAValidate = async (req, res, next) => {
-    if (req.session == null || req.session.user == null) {
+    if (req.session == null || req.session.token == null) {
         res.redirect("/login");
         return;
     }
@@ -416,58 +447,43 @@ exports.get2FAValidate = async (req, res, next) => {
 exports.post2FAValidate = async (req, res, next) => {
     const post = req.body;
     const token = post.token;
-    if (req.session == null || req.session.user == null) {
+    if (req.session == null || req.session.token == null) {
         res.redirect("/login");
         return;
     }
 
-    const user = await User.findOne({ _id: req.session.user._id }).select(
-        "+twoFASecret"
-    );
+    try {
+        let apires = await BackendAPI.GET_APICall_Token(
+            "/api/v1/account/users/me",
+            req.session.token
+        );
 
-    if (user == null) {
-        res.redirect("/login");
-        return;
-    }
+        const user = apires.user;
 
-    const secret = user.twoFASecret;
+        if (user == null) {
+            res.redirect("/login");
+            return;
+        }
 
-    if (!authenticator.check(token, secret)) {
-        //redirect back
-        console.log("ERROR: 2fa failed Verify", secret);
+        if (user.twoFAState.twoFASetup == false) {
+            res.redirect("/login");
+            return;
+        }
 
+        await BackendAPI.POST_APICall_Token(
+            "/api/v1/account/users/me/twofa/validate",
+            req.session.token,
+            { token }
+        );
+    } catch (err) {
         const errorMessageData = {
             section: "",
-            message: "Invalid 2FA Code!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-
-        return res.redirect("/2fa/validate");
-    }
-
-    const theAccount = await Account.findOne({ users: user });
-
-    if (theAccount == null) {
-        const errorMessageData = {
-            section: "",
-            message: "Something went wrong!",
+            message: err.message,
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
         return res.redirect("/2fa/validate");
     }
-
-    const ip =
-        req.headers["x-forwarded-for"] ||
-        req.headers["x-real-ip"] ||
-        req.socket.remoteAddress;
-
-    await theAccount.CreateEvent(
-        "AUTH",
-        `Login Successful for user: [${user.email}] with ip: [${ip}]`,
-        0
-    );
 
     req.session.isLoggedIn = true;
 

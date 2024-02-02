@@ -8,11 +8,11 @@
     <div class="card-body">
 
       <% let statusText="Offline"; %>
-      <% if(agent.online) statusText = "Online" %>
-      <% if(agent.running) statusText = "Running" %>
+      <% if(agent.status.online) statusText = "Online" %>
+      <% if(agent.status.running) statusText = "Running" %>
 
-      <% if(!agent.installed) statusText = "Not Installed" %>
-      <% if(!agent.online) statusText = "Offline" %>
+      <% if(!agent.status.installed) statusText = "Not Installed" %>
+      <% if(!agent.status.online) statusText = "Offline" %>
 
       <%
                 let startBtn = "disabled";
@@ -38,30 +38,30 @@
         <div class="col-12 col-md-6 col-xl-4">
           <%- include('../includes/status-info-card.ejs',
             {ClassColour:"orange", ClassID:"users", Title:"Players",
-            Data:agent.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
+            Data:agent.mapData.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
         </div>
         <div class="col-12 col-md-6 col-xl-4">
           <%- include('../includes/status-info-card.ejs',
             {ClassColour:"green", ClassID:"mods", Title:"Mods",
-            Data:agent.modState.selectedMods.length, Icon:"fa-pencil-ruler"}) %>
+            Data:0,Icon:"fa-pencil-ruler"}) %>
         </div>
       </div>
 
       <hr />
       <label class="mb-1">CPU: </label>
       <div class="position-relative">
-        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.cpuUsage%>" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.cpuUsage%>%;"></div>
+        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.status.cpu%>" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.status.cpu%>%;"></div>
         </div>
-        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.cpuUsage.toFixed(0)%> %</div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.status.cpu.toFixed(0)%> %</div>
       </div>
 
       <label class="mb-1 mt-3">RAM: </label>
       <div class="position-relative">
-        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.ramUsage%>" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.ramUsage%>%;"></div>
+        <div class="progress" style="height: 30px" aria-valuenow="<%=agent.status.ram%>" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: <%=agent.status.ram%>%;"></div>
         </div>
-        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.ramUsage.toFixed(0)%> %</div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle"><%=agent.status.ram.toFixed(0)%> %</div>
       </div>
       <hr />
 

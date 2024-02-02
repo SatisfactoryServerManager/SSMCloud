@@ -12,8 +12,6 @@ const semver = require("semver");
 
 class AgentHandler {
     init() {
-        this.CheckAllAgentsLastOnline();
-        this.PurgeMessageQueues();
         this.GetMostRecentGHAgentVersion();
         this.CleanupAgentBackups();
 
@@ -26,42 +24,10 @@ class AgentHandler {
         }, 4 * 60 * 60 * 1000);
 
         setInterval(async () => {
-            await this.CheckAllAgentsLastOnline();
-            await this.PurgeMessageQueues();
             await this.CheckAllAgentsNeedUpdate();
             await this.CleanupAgentBackups();
         }, 30000);
     }
-
-    CheckAllAgentsLastOnline = async () => {
-        Logger.info(
-            "[AgentHandler] - Checking All Agents Last Communication Dates"
-        );
-        const agents = await Agent.find();
-
-        for (let i = 0; i < agents.length; i++) {
-            const agent = agents[i];
-            await this.checkAgentLastOnline(agent);
-        }
-        Logger.info(
-            "[AgentHandler] - Checked All Agents Last Communication Dates"
-        );
-    };
-
-    checkAgentLastOnline = async (agent) => {
-        const lastCommDate = new Date(agent.lastCommDate);
-        const dateNow = Date.now();
-
-        const diffTime = Math.abs(dateNow - lastCommDate);
-        const diffMins = Math.ceil(diffTime / (1000 * 60));
-
-        if (diffMins > 10) {
-            if (agent.online) {
-                agent.online = false;
-                await agent.save();
-            }
-        }
-    };
 
     CleanupAgentBackups = async () => {
         const Agents = await Agent.find();
@@ -136,54 +102,6 @@ class AgentHandler {
                 await AgentBackupModel.deleteOne({ _id: Backup._id });
             }
         }
-    };
-
-    PurgeMessageQueues = async () => {
-        Logger.info("[AgentHandler] - Purging Message Queue");
-
-        const agents = await Agent.find().select("+messageQueue");
-
-        for (let i = 0; i < agents.length; i++) {
-            const agent = agents[i];
-            await agent.populate("messageQueue");
-
-            for (let j = 0; j < agent.messageQueue.length; j++) {
-                const message = agent.messageQueue[j];
-
-                let dayDiff = 10;
-                if (message.created != null) {
-                    var t2 = new Date().getTime();
-                    var t1 = message.created.getTime();
-
-                    dayDiff = Math.floor((t2 - t1) / (24 * 3600 * 1000));
-                }
-
-                if (message.completed || message.retries >= 10 || dayDiff > 5) {
-                    await MessageQueueItem.deleteOne({ _id: message._id });
-                    agent.messageQueue.splice(j, 1);
-                    await agent.save();
-                    break;
-                }
-            }
-        }
-
-        var cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 5);
-
-        const staleItems = await MessageQueueItem.find({
-            $or: [
-                { completed: true },
-                { retries: 10 },
-                { created: { $lt: cutoff } },
-            ],
-        });
-
-        for (let i = 0; i < staleItems.length; i++) {
-            const message = staleItems[i];
-            await MessageQueueItem.deleteOne({ _id: message._id });
-        }
-
-        Logger.info("[AgentHandler] - Completed Purging Message Queue");
     };
 
     GetMostRecentGHAgentVersion = async () => {

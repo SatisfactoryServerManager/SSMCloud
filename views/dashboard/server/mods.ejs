@@ -1,5 +1,5 @@
 <%
-        const modState = agent.modState;
+        const modState = agent.modConfig;
         const installedModsCount = modState.selectedMods.filter(m=>m.installed).length;
 
         function truncate(str, n){
@@ -80,7 +80,7 @@
             
         const mod = mods[i];
         const modPage = Math.floor(i/30)+1;
-        const selectedMod = modState.selectedMods.find(m=>m.mod.modName == mod.modName)
+        const selectedMod = modState.selectedMods.find(m=>m.mod.mod_reference == mod.mod_reference)
         const isInstalled = selectedMod != null && selectedMod.installed;
         %>
 

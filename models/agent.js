@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-const MessageQueueItem = require("./messagequeueitem");
 const AgentBackup = require("./agent_backup");
 const AgentLogInfo = require("./agent_log_info");
 const AgentModState = require("./agent_mod_state.model");
@@ -58,15 +57,6 @@ const agentSchema = new Schema(
         lastCommDate: {
             type: Date,
             default: Date.now,
-        },
-        messageQueue: {
-            type: [
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: "MessageQueueItem",
-                },
-            ],
-            select: false,
         },
         config: {
             type: Object,
@@ -147,11 +137,6 @@ const _preDelete = async function () {
     for (let si = 0; si < doc.backups.length; si++) {
         const o = doc.backups[si];
         await AgentBackup.deleteOne({ _id: o });
-    }
-
-    for (let si = 0; si < doc.messageQueue.length; si++) {
-        const o = doc.messageQueue[si];
-        await MessageQueueItem.deleteOne({ _id: o });
     }
     for (let si = 0; si < doc.players.length; si++) {
         const o = doc.players[si];

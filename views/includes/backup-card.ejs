@@ -23,7 +23,7 @@
                         ];
                         return monthNames[this.getMonth()];
                     };
-                        const date = new Date(backup.uploadDate);
+                        const date = new Date(backup.createdAt);
                         const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
@@ -49,14 +49,14 @@
                         %>
 
 
-<div class="card bg-glass bg-glass-blue backup-card" data-backupname="<%=backup.backupName%>">
+<div class="card bg-glass bg-glass-blue backup-card" data-backupname="<%=backup.fileName%>">
   <div class="card-body">
     <div class="row">
       <div class="col-12">
         <a target="_blank" href="/dashboard/backups/download/<%=backup._id%>" class="btn btn-primary float-end">
           <i class="fas fa-download"></i>
         </a>
-        <h6><%=backup.backupName%></h6>
+        <h6><%=backup.fileName%></h6>
       </div>
     </div>
     <div class="row">

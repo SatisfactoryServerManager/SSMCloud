@@ -3,7 +3,7 @@
     <div class="card border-secondary mb-3 bg-glass">
       <div class="card-header d-flex flex-col align-items-center">
         <h5 class="flex-grow-1">Map</h5>
-        <div class="badge bg-light text-black"><%=agent.players.filter(p=>p.online).length%> / <%=agent.players.length%></div>
+        <div class="badge bg-light text-black"><%=agent.mapData.players.filter(p=>p.online).length%> / <%=agent.mapData.players.length%></div>
         <a href="/map/<%=agent._id.toString().substring(agent._id.toString().length -8)%>" class="btn btn-light ms-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Public Map">
           <i class="fa-solid fa-earth-americas"></i>
         </a>

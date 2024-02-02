@@ -2,10 +2,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const es = require("event-stream");
 
-const GamePlayerHandler = require("../server/server_game_player_handler");
-
 const Agent = require("../models/agent");
-const MessageQueueItem = require("../models/messagequeueitem");
 const AgentBackup = require("../models/agent_backup");
 const AgentSave = require("../models/agent_save");
 const AgentLogInfo = require("../models/agent_log_info");
@@ -17,7 +14,6 @@ const AgentHandler = require("../server/server_agent_handler");
 const Config = require("../server/server_config");
 
 const NotificationSystem = require("../server/server_notification_system");
-const NotificationEventTypeModel = require("../models/intergration_event_type");
 
 const ModManager = require("../server/server_mod_manager");
 const AgentModStateModel = require("../models/agent_mod_state.model");
@@ -189,48 +185,6 @@ exports.postAgentCpuMem = async (req, res, next) => {
     res.json({
         success: true,
     });
-};
-
-exports.getAgentMessageQueue = async (req, res, next) => {
-    const AgentAPIKey = req.agentKey;
-
-    const theAgent = await Agent.findOne({ apiKey: AgentAPIKey }).select(
-        "+messageQueue"
-    );
-
-    const queue = await MessageQueueItem.find({
-        _id: { $in: theAgent.messageQueue },
-        completed: false,
-        retries: { $lt: 10 },
-    });
-
-    await theAgent.save();
-    await AgentHandler.UpdateAgentLastCommDate(theAgent);
-
-    res.json({
-        success: true,
-        data: queue,
-    });
-};
-
-exports.postUpdateAgentMessageQueueItem = async (req, res, next) => {
-    const item = req.body.item;
-    const messageItem = await MessageQueueItem.findOne({ _id: item._id });
-
-    if (messageItem) {
-        messageItem.completed = item.completed;
-        messageItem.error = item.error;
-        messageItem.retries = item.retries;
-        await messageItem.save();
-        res.json({
-            success: true,
-        });
-    } else {
-        res.json({
-            success: false,
-            error: "Unknown Message Queue Item!",
-        });
-    }
 };
 
 exports.postUpdateAgentConfigData = async (req, res, next) => {
@@ -632,15 +586,6 @@ exports.postUploadLog = async (req, res, next) => {
             error: err.message,
         });
     }
-};
-
-exports.getModsSMLVersions = async (req, res, next) => {
-    const data = await ModManager.GetSMLVersionsFromAPI();
-
-    res.status(200).json({
-        success: true,
-        data,
-    });
 };
 
 exports.getMod = async (req, res, next) => {

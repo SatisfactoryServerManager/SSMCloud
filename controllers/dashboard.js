@@ -1,81 +1,42 @@
 var ObjectId = require("mongoose").Types.ObjectId;
 
-const Mrhid6Utils = require("mrhid6utils");
-const Tools = Mrhid6Utils.Tools;
-
 const fs = require("fs-extra");
 const path = require("path");
 
 const Config = require("../server/server_config");
 
-const { validationResult } = require("express-validator");
-
 const NotificationSystem = require("../server/server_notification_system");
 
 const Account = require("../models/account");
 const Agent = require("../models/agent");
-const MessageQueueItem = require("../models/messagequeueitem");
 const User = require("../models/user");
-const UserInvite = require("../models/user_invite");
-const UserRole = require("../models/user_role");
-const Permission = require("../models/permission");
-const AgentSaveFile = require("../models/agent_save");
-const AgentBackup = require("../models/agent_backup");
-const ApiKey = require("../models/apikey");
 const ModModel = require("../models/mod");
-const AgentLogInfo = require("../models/agent_log_info");
-const AgentModStateModel = require("../models/agent_mod_state.model");
 
 const NotificationEventTypeModel = require("../models/intergration_event_type");
 const NotificationSettingsModel = require("../models/account_intergrations");
 
-const SelectedModSchema = require("../models/selectedMod.schema");
-
-const AgentHandler = require("../server/server_agent_handler");
-
 const semver = require("semver");
 
+const BackendAPI = require("../utils/backend-api");
+
+exports.Servers = require("./dashboard/servers");
+exports.Account = require("./dashboard/account");
+exports.Logs = require("./dashboard/logs");
+
 exports.getDashboard = async (req, res, next) => {
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.dashboard");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({ users: req.session.user._id });
+    const theAccount = await BackendAPI.GetAccount(req.session.token);
 
     let message = req.flash("success");
     message.length > 0 ? (message = message[0]) : (message = null);
 
     if (theAccount) {
-        await theAccount.populate("agents");
-
-        for (let i = 0; i < theAccount.agents.length; i++) {
-            const agent = theAccount.agents[i];
-            await agent.populate("players");
-            await agent.populate("modState");
-        }
+        const agents = await BackendAPI.GetAgents(req.session.token);
 
         res.render("dashboard/dashboard", {
             path: "/dashboard",
             pageTitle: "Dashboard",
             accountName: theAccount.accountName,
-            agents: theAccount.agents,
+            agents,
             errorMessage: "",
             message,
         });
@@ -95,98 +56,64 @@ exports.getDashboard = async (req, res, next) => {
 exports.getServerAction = async (req, res, next) => {
     const { agentid, action } = req.params;
 
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
+    try {
+        if (
+            action != "start" &&
+            action != "stop" &&
+            action != "kill" &&
+            action != "install" &&
+            action != "update"
+        ) {
+            throw new Error("Invalid server action");
+        }
 
-    if (!ObjectId.isValid(agentid)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
+        const theAccount = await BackendAPI.GetAccount(req.session.token);
 
-    if (
-        action != "start" &&
-        action != "stop" &&
-        action != "kill" &&
-        action != "install" &&
-        action != "update"
-    ) {
-        const error = new Error("Unknown Server Action!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
+        if (theAccount == null) {
+            throw new Error("Account is null!");
+        }
 
-    let theUser = await User.findOne({ _id: req.session.user._id });
+        let actionString = "";
 
-    const hasPermission = await theUser.HasPermission(`serveraction.${action}`);
+        switch (action) {
+            case "start":
+                actionString = "startsfserver";
+                break;
+            case "stop":
+                actionString = "stopsfserver";
+                break;
+            case "kill":
+                actionString = "killsfserver";
+                break;
+            case "install":
+                actionString = "installsfserver";
+                break;
+            case "update":
+                actionString = "updatesfserver";
+                break;
+        }
 
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
+        await BackendAPI.CreateAgentTask(req.session.token, agentid, {
+            action: actionString,
         });
-        return;
+
+        const successMessageData = {
+            agentId: agentid,
+            message:
+                "Server Action was successfully sent to the server and will run in the background.",
+        };
+
+        req.flash("success", JSON.stringify(successMessageData));
+    } catch (err) {
+        const errorMessageData = {
+            agentId: agentid,
+            message: err.message,
+        };
+
+        req.flash("error", JSON.stringify(errorMessageData));
     }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-        agents: agentid,
-    });
-
-    if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAccount.populate("agents");
-
-    const theAgent = await Agent.findOne({ _id: agentid }).select(
-        "+messageQueue"
-    );
-
-    let actionString = "";
-
-    switch (action) {
-        case "start":
-            actionString = "startsfserver";
-            break;
-        case "stop":
-            actionString = "stopsfserver";
-            break;
-        case "kill":
-            actionString = "killsfserver";
-            break;
-        case "install":
-            actionString = "installsfserver";
-            break;
-        case "update":
-            actionString = "updatesfserver";
-            break;
-    }
-
-    const message = await MessageQueueItem.create({ action: actionString });
-    theAgent.messageQueue.push(message);
-    await theAgent.save();
-
-    const successMessageData = {
-        agentId: theAgent._id,
-        message:
-            "Server Action was successfully sent to the server and will run in the background.",
-    };
-
-    req.flash("success", JSON.stringify(successMessageData));
-
     res.redirect("/dashboard");
 };
-
-exports.Servers = require("./dashboard/servers");
 
 exports.getDownloadBackup = async (req, res, next) => {
     const backupId = req.params.backupId;
@@ -253,108 +180,65 @@ exports.getDownloadBackup = async (req, res, next) => {
     res.download(backup.fileName);
 };
 
-exports.Account = require("./dashboard/account");
-
 exports.postSaves = async (req, res, next) => {
     const { agentid } = req.params;
 
-    const data = req.body;
     const file = req.file;
 
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const errorMessageData = {
-            section: "serverlist",
-            message: "Invalid Session User ID Format",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect(`/dashboard/servers/${agentid}`);
-    }
-
-    if (!ObjectId.isValid(data.inp_agentid)) {
-        const errorMessageData = {
-            section: "serverlist",
-            message: "Invalid Requested Server ID Format",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect(`/dashboard/servers/${agentid}`);
-    }
-
-    let theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("saves.upload");
-
-    if (!hasPermission) {
-        const errorMessageData = {
-            section: "serverlist",
-            message: "You dont have permission to perform this action!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect(`/dashboard/servers/${agentid}`);
-    }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-        agents: data.inp_agentid,
-    });
-
-    if (theAccount == null) {
-        const errorMessageData = {
-            section: "serverlist",
-            message: "Cant Find Session Account details!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect(`/dashboard/servers/${agentid}`);
-    }
-
-    const theAgent = await Agent.findOne({ _id: data.inp_agentid }).select(
-        "+messageQueue"
-    );
-
-    if (file == null) {
-        const errorMessageData = {
-            section: "serverlist",
-            message: "No save file was selected",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect(`/dashboard/servers/${agentid}`);
-    }
-
-    const newFilePath = path.join(
-        Config.get("ssm.uploadsdir"),
-        theAgent._id.toString(),
-        "saves",
-        file.originalname
-    );
-
     try {
+        const theAccount = await BackendAPI.GetAccount(req.session.token);
+        const theAgent = await BackendAPI.GetAgentById(
+            req.session.token,
+            agentid
+        );
+
+        if (theAccount == null) {
+            throw new Error("Account was null");
+        }
+
+        if (theAgent == null) {
+            throw new Error("Agent was null");
+        }
+
+        if (file == null) {
+            throw new Error("No save file was selected");
+        }
+
+        const newFilePath = path.join(
+            Config.get("ssm.uploadsdir"),
+            theAccount._id,
+            theAgent._id,
+            "saves",
+            file.originalname
+        );
         if (fs.existsSync(newFilePath)) {
             fs.unlinkSync(newFilePath);
         }
 
         fs.moveSync(file.path, newFilePath);
-    } catch (err) {}
 
-    const message = await MessageQueueItem.create({
-        action: "downloadSave",
-        data: {
-            saveFile: file.originalname,
-        },
-    });
+        await BackendAPI.CreateAgentTask(req.session.token, agentid, {
+            action: "downloadSave",
+            data: {
+                saveFile: file.originalname,
+            },
+        });
 
-    theAgent.messageQueue.push(message);
-    await theAgent.save();
+        const successMessageData = {
+            section: "serverlist",
+            message: `Save file has been successfully uploaded, transfering save file to Server in the background.`,
+        };
 
-    const successMessageData = {
-        section: "serverlist",
-        message: `Save file has been successfully uploaded, transfering save file to Server in the background.`,
-    };
+        req.flash("success", JSON.stringify(successMessageData));
+    } catch (err) {
+        const errorMessageData = {
+            section: "serverlist",
+            message: err.message,
+        };
 
-    req.flash("success", JSON.stringify(successMessageData));
+        req.flash("error", JSON.stringify(errorMessageData));
+    }
+
     return res.redirect(`/dashboard/servers/${agentid}`);
 };
 
@@ -436,188 +320,56 @@ exports.getDownloadSave = async (req, res, next) => {
 exports.postInstallMod = async (req, res, next) => {
     const { agentId, modId } = req.body;
 
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
+    try {
+        const theAccount = await BackendAPI.GetAccount(req.session.token);
+        const theAgent = await BackendAPI.GetAgentById(
+            req.session.token,
+            agentId
+        );
 
-    if (!ObjectId.isValid(agentId)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    let theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("server.mods.install");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-        agents: agentId,
-    });
-
-    if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAccount.populate("agents");
-
-    const theAgent = await Agent.findOne({ _id: agentId });
-
-    const theMod = await ModModel.findOne({
-        _id: modId,
-    });
-
-    if (theMod.versions.length == 0) {
-        const error = new Error("Cant Find Mod Versions");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAgent.populate("modState");
-
-    const modState = theAgent.modState;
-
-    for (let i = 0; i < modState.selectedMods.length; i++) {
-        await modState.populate(`selectedMods.${i}.mod`);
-    }
-
-    const selectedMod = modState.selectedMods.find(
-        (sm) => sm.mod._id == theMod._id.toString()
-    );
-
-    const lastestVersion = theMod.versions[0];
-
-    if (selectedMod == null) {
-        const newSelectedMod = {
-            mod: theMod,
-            desiredVersion: lastestVersion.version,
-        };
-        modState.selectedMods.push(newSelectedMod);
-        await modState.save();
-    } else {
-        selectedMod.desiredVersion = lastestVersion.version;
-        selectedMod.needsUpdate = false;
-        await modState.save();
-    }
-
-    if (lastestVersion.dependencies.length > 0) {
-        for (let i = 0; i < lastestVersion.dependencies.length; i++) {
-            const depMod = lastestVersion.dependencies[i];
-
-            const depVersion = depMod.condition.replace("^", "");
-
-            const theModDep = await ModModel.findOne({
-                modReference: depMod.mod_id,
-            });
-
-            if (theModDep == null) {
-                continue;
-            }
-
-            const selectedDepMod = modState.selectedMods.find(
-                (sm) => sm.mod._id == theModDep._id.toString()
-            );
-
-            if (selectedDepMod == null) {
-                const newSelectedDepMod = {
-                    mod: theModDep,
-                    desiredVersion: depVersion,
-                };
-                modState.selectedMods.push(newSelectedDepMod);
-                await modState.save();
-            } else {
-                if (semver.lt(selectedDepMod.desiredVersion, depVersion)) {
-                    selectedDepMod.desiredVersion = depVersion;
-                    await modState.save();
-                }
-            }
+        if (theAccount == null) {
+            throw new Error("Account was null");
         }
+
+        if (theAgent == null) {
+            throw new Error("Agent was null");
+        }
+
+        await BackendAPI.InstallAgentMod(req.session.token, agentId, modId);
+    } catch (err) {
+        console.log(err);
+        return res.json({ success: false, error: err.message });
     }
+
+    return res.json({ success: true });
 };
 
 exports.postUninstallMod = async (req, res, next) => {
     const { agentId, modId } = req.body;
 
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
+    try {
+        const theAccount = await BackendAPI.GetAccount(req.session.token);
+        const theAgent = await BackendAPI.GetAgentById(
+            req.session.token,
+            agentId
+        );
+
+        if (theAccount == null) {
+            throw new Error("Account was null");
+        }
+
+        if (theAgent == null) {
+            throw new Error("Agent was null");
+        }
+
+        await BackendAPI.UninstallAgentMod(req.session.token, agentId, modId);
+    } catch (err) {
+        console.log(err);
+        return res.json({ success: false, error: err.message });
     }
 
-    if (!ObjectId.isValid(agentId)) {
-        const error = new Error("Invalid Agent ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    let theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("server.mods.install");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "403 - Forbidden",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-        agents: agentId,
-    });
-
-    if (theAccount == null) {
-        const error = new Error("Cant Find Account details!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    await theAccount.populate("agents");
-
-    const theAgent = await Agent.findOne({ _id: agentId });
-
-    const theMod = await ModModel.findOne({
-        _id: modId,
-    });
-
-    await theAgent.populate("modState");
-
-    const modState = theAgent.modState;
-
-    for (let i = 0; i < modState.selectedMods.length; i++) {
-        await modState.populate(`selectedMods.${i}.mod`);
-    }
-
-    const selectedMod = modState.selectedMods.find(
-        (sm) => sm.mod._id == theMod._id.toString()
-    );
-
-    if (selectedMod != null) {
-        modState.selectedMods.pull(selectedMod);
-        await modState.save();
-    }
+    return res.json({ success: true });
 };
-
-exports.Logs = require("./dashboard/logs");
 
 exports.getIntegrationsPage = async (req, res, next) => {
     if (!ObjectId.isValid(req.session.user._id)) {

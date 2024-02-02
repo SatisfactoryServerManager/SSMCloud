@@ -520,7 +520,7 @@ function main() {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-modid");
+            const modId = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/installmod",
@@ -536,7 +536,7 @@ function main() {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-modid");
+            const modId = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/uninstallmod",

@@ -10,7 +10,6 @@
           <th>File Name</th>
           <th>Last Updated</th>
           <th>Size</th>
-          <th>Mods</th>
           <th width="80px">Options</th>
         </tr>
       </thead>
@@ -45,7 +44,7 @@
                     };
                        
                 
-                        const date = new Date(save.stats.mtime);
+                        const date = new Date(save.updatedAt);
                         const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
@@ -71,8 +70,7 @@
           <td><%=save.sessionName%></td>
           <td><%=save.fileName%></td>
           <td><%=dateStr%></td>
-          <td><%=formatBytes(save.stats.size)%></td>
-          <td><%=save.mods.length%></td>
+          <td><%=formatBytes(save.size)%></td>
           <td> <a target="_blank" href="/dashboard/saves/download/<%=agent._id%>/<%=save.fileName%>" class="btn btn-primary">
               <i class="fas fa-download"></i>
             </a></td>

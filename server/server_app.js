@@ -1,11 +1,9 @@
 const Config = require("./server_config");
 const Logger = require("./server_logger");
 
-const AccountManager = require("./server_account_manager");
 const AgentHandler = require("./server_agent_handler");
 const ModManager = require("./server_mod_manager");
 const NotificationSystem = require("./server_notification_system");
-const GamePlayerHandler = require("./server_game_player_handler");
 const EmailHandler = require("./server_email_handler");
 
 const UserRoleModel = require("../models/user_role");
@@ -20,9 +18,7 @@ class ServerApp {
         AgentHandler.init();
         await ModManager.init();
         await NotificationSystem.init();
-        GamePlayerHandler.init();
         EmailHandler.init();
-        AccountManager.init();
     };
 
     CheckDBPermissionsCollection = async () => {

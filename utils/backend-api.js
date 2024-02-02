@@ -14,6 +14,10 @@ class BackendAPI {
             },
         });
 
+        if (res.status != 200) {
+            throw new Error(`api returned non-ok status code: ${res.status}`);
+        }
+
         const resData = await res.json();
 
         if (resData.success == false) {
@@ -38,7 +42,14 @@ class BackendAPI {
             body: JSON.stringify(body),
         });
 
-        const resData = await res.json();
+        if (res.status != 200) {
+            throw new Error(`api returned non-ok status code: ${res.status}`);
+        }
+
+        let resData = await res.text();
+        console.log(resData);
+
+        resData = JSON.parse(resData);
 
         if (resData.success == false) {
             console.log(resData);
@@ -50,6 +61,135 @@ class BackendAPI {
 
     POST_APICall_NoToken = async (endpoint, body = {}) => {
         return await this.POST_APICall_Token(endpoint, "", body);
+    };
+
+    PUT_APICall_Token = async (endpoint, token = "", body = {}) => {
+        const res = await fetch(`${this.url}${endpoint}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "x-ssm-jwt": token,
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (res.status != 200) {
+            throw new Error(`api returned non-ok status code: ${res.status}`);
+        }
+
+        let resData = await res.text();
+        console.log(resData);
+
+        resData = JSON.parse(resData);
+
+        if (resData.success == false) {
+            console.log(resData);
+            throw new Error(`api returned error ${resData.error}`);
+        }
+
+        return resData;
+    };
+
+    DELETE_APICall_Token = async (endpoint, token = "") => {
+        const res = await fetch(`${this.url}${endpoint}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "x-ssm-jwt": token,
+            },
+        });
+
+        if (res.status != 200) {
+            throw new Error(`api returned non-ok status code: ${res.status}`);
+        }
+
+        let resData = await res.text();
+
+        resData = JSON.parse(resData);
+
+        if (resData.success == false) {
+            console.log(resData);
+            throw new Error(`api returned error ${resData.error}`);
+        }
+
+        return resData;
+    };
+
+    GetAccount = async (token) => {
+        let apiData = await this.GET_APICall_Token("/api/v1/account", token);
+
+        return apiData.account;
+    };
+
+    GetUsers = async (token) => {
+        let apiData = await this.GET_APICall_Token(
+            "/api/v1/account/users",
+            token
+        );
+
+        return apiData.users;
+    };
+
+    GetAgents = async (token) => {
+        let apiData = await this.GET_APICall_Token(
+            "/api/v1/account/agents",
+            token
+        );
+
+        return apiData.agents;
+    };
+
+    GetAgentById = async (token, agentId) => {
+        let apiData = await this.GET_APICall_Token(
+            `/api/v1/account/agents/${agentId}`,
+            token
+        );
+
+        return apiData.agent;
+    };
+
+    CreateAgentTask = async (token, agentId, taskData) => {
+        await this.POST_APICall_Token(
+            `/api/v1/account/agents/${agentId}/tasks`,
+            token,
+            taskData
+        );
+    };
+
+    UpdateAgentConfig = async (token, updatedAgent) => {
+        await this.PUT_APICall_Token(
+            `/api/v1/account/agents/${updatedAgent._id}/configs`,
+            token,
+            updatedAgent
+        );
+    };
+
+    DeleteAgent = async (token, agentId) => {
+        await this.DELETE_APICall_Token(
+            `/api/v1/account/agents/${agentId}`,
+            token
+        );
+    };
+
+    GetMods = async () => {
+        const apiData = await this.GET_APICall_NoToken(`/api/v1/mods`);
+        return apiData.mods;
+    };
+
+    InstallAgentMod = async (token, agentId, modReference) => {
+        await this.POST_APICall_Token(
+            `/api/v1/account/agents/${agentId}/mods/install`,
+            token,
+            { modReference }
+        );
+    };
+
+    UninstallAgentMod = async (token, agentId, modReference) => {
+        await this.POST_APICall_Token(
+            `/api/v1/account/agents/${agentId}/mods/uninstall`,
+            token,
+            { modReference }
+        );
     };
 }
 

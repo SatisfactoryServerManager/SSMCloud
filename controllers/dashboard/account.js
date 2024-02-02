@@ -14,57 +14,17 @@ const ApiKey = require("../../models/apikey");
 
 const EmailHandler = require("../../server/server_email_handler");
 
+const BackendAPI = require("../../utils/backend-api");
+
 const { validationResult } = require("express-validator");
 
 exports.getAccount = async (req, res, next) => {
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const error = new Error("Invalid User ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
+    const theAccount = await BackendAPI.GetAccount(req.session.token);
 
-    const theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("page.account");
-
-    if (!hasPermission) {
-        res.status(403).render("403", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            errorMessage: "You dont have permission to view this page.",
-        });
-        return;
-    }
-
-    const protocol = req.protocol;
-    const host = req.hostname;
-
-    const theAccount = await Account.findOne({ users: req.session.user._id });
     if (theAccount) {
-        await theAccount.populate("userRoles");
-        await theAccount.populate("users");
-        await theAccount.populate("userInvites");
-        await theAccount.populate("apiKeys");
-        await theAccount.populate("events");
+        const users = await BackendAPI.GetUsers(req.session.token);
 
-        const AllPermissions = await Permission.find();
-
-        for (let i = 0; i < theAccount.users.length; i++) {
-            const user = theAccount.users[i];
-            await user.populate("role");
-        }
-
-        for (let i = 0; i < theAccount.userInvites.length; i++) {
-            const userInvite = theAccount.userInvites[i];
-            await userInvite.populate("user");
-        }
-
-        for (let i = 0; i < theAccount.apiKeys.length; i++) {
-            const key = theAccount.apiKeys[i];
-            await key.populate("user");
-        }
+        const agents = await BackendAPI.GetAgents(req.session.token);
 
         let message = req.flash("success");
         message.length > 0 ? (message = message[0]) : (message = null);
@@ -78,13 +38,13 @@ exports.getAccount = async (req, res, next) => {
             path: "/account",
             pageTitle: "Account",
             accountName: theAccount.accountName,
-            agents: theAccount.agents,
-            users: theAccount.users,
-            userRoles: theAccount.userRoles,
-            userInvites: theAccount.userInvites,
-            apiKeys: theAccount.apiKeys,
-            events: theAccount.events,
-            permissions: AllPermissions,
+            agents: agents,
+            users: users,
+            userRoles: [],
+            userInvites: [],
+            apiKeys: [],
+            events: [],
+            permissions: [],
             inviteUrl: `${protocol}://${host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
