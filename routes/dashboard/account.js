@@ -2,8 +2,6 @@ const path = require("path");
 
 const express = require("express");
 const isAuth = require("../../middleware/is-auth");
-const User = require("../../models/user");
-const Account = require("../../models/account");
 const accountController = require("../../controllers/dashboard/account");
 
 const { check, body } = require("express-validator");

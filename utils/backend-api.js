@@ -130,6 +130,15 @@ class BackendAPI {
         return apiData.users;
     };
 
+    GetUser = async (token) => {
+        let apiData = await this.GET_APICall_Token(
+            "/api/v1/account/users/me",
+            token
+        );
+
+        return apiData.user;
+    };
+
     GetAgents = async (token) => {
         let apiData = await this.GET_APICall_Token(
             "/api/v1/account/agents",
@@ -160,7 +169,7 @@ class BackendAPI {
         await this.PUT_APICall_Token(
             `/api/v1/account/agents/${updatedAgent._id}/configs`,
             token,
-            updatedAgent
+            { updatedAgent }
         );
     };
 
@@ -190,6 +199,15 @@ class BackendAPI {
             token,
             { modReference }
         );
+    };
+
+    GetAgentLogs = async (token, agentId) => {
+        let apiData = await this.GET_APICall_Token(
+            `/api/v1/account/agents/${agentId}/logs`,
+            token
+        );
+
+        return apiData.logs;
     };
 }
 

@@ -19,11 +19,11 @@
                 let stopBtn = "disabled";
                 let killBtn = "disabled";
 
-                if(!agent.running){
+                if(!agent.status.running){
                     startBtn = "";
                 }
 
-                if(agent.running){
+                if(agent.status.running){
                     stopBtn = "";
                     killBtn = "";
                 }

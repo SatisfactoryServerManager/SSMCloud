@@ -239,6 +239,8 @@ module.exports = AgentMap;
 },{}],2:[function(require,module,exports){
 const AgentMap = require("./agentmap");
 
+const ModsPage = require("./mods-page");
+
 function main() {
     toastr.options.closeButton = true;
     toastr.options.closeMethod = "fadeOut";
@@ -502,19 +504,8 @@ function main() {
         })
         .on("keyup", ".mod-search", (e) => {
             const $this = $(e.currentTarget);
-            const searchText = $this.val().toLowerCase();
-            const $modList = $this.parent().parent().parent().find(".mod-list");
-
-            $modList.find(".mod-card").each((index, ele) => {
-                const $ele = $(ele);
-                if (
-                    !$ele.attr("data-modref").toLowerCase().includes(searchText)
-                ) {
-                    $ele.parent().addClass("hidden");
-                } else {
-                    $ele.parent().removeClass("hidden");
-                }
-            });
+            ModsPage.search = $this.val().toLowerCase();
+            SortMods();
         })
         .on("click", ".install-mod-btn, .update-mod-btn", (e) => {
             const $this = $(e.currentTarget);
@@ -647,232 +638,26 @@ function main() {
             $("#mods-pagination li").removeClass("active");
             const $this = $(e.currentTarget);
 
-            $this.parent().addClass("active");
-
-            window.modsPagination_start = parseInt(
-                $this.attr("data-page-start")
-            );
-            window.modsPagination_end = parseInt($this.attr("data-page-end"));
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            SortMods();
+            const page = parseInt($this.attr("data-page"));
+            ModsPage.GoToPage(page);
         })
         .on("click", "#mods-pagination .mod-page-prev", (e) => {
-            const start = window.modsPagination_start || 0;
-            const end = window.modsPagination_end || 30;
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            if (start <= 0) {
-                return;
-            }
-
-            window.modsPagination_start = start - 30;
-            window.modsPagination_end = end - 30;
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            $("#mods-pagination li").removeClass("active");
-
-            $(
-                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
-            )
-                .parent()
-                .addClass("active");
-
-            SortMods();
+            ModsPage.PreviousPage();
         })
         .on("click", "#mods-pagination .mod-page-next", (e) => {
-            const start = window.modsPagination_start || 0;
-            const end = window.modsPagination_end || 30;
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            window.modsPagination_start = start + 30;
-            window.modsPagination_end = end + 30;
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            $("#mods-pagination li").removeClass("active");
-
-            $(
-                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
-            )
-                .parent()
-                .addClass("active");
-
-            SortMods();
+            ModsPage.NextPage();
         });
 
     SortMods();
 
     function SortMods() {
         const sortBy = $("#mods-sortby").val();
-        const ascending = $("#mods-sortby-direction").val() == "asc";
+        const direction = $("#mods-sortby-direction").val();
 
-        let cards = [];
+        ModsPage.sort = sortBy;
+        ModsPage.direction = direction;
 
-        if (sortBy == "downloads") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-downloads",
-                ascending
-            );
-        } else if (sortBy == "updated") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-updated",
-                ascending
-            );
-        } else if (sortBy == "needsupdate") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-needs-update",
-                ascending
-            );
-        } else if (sortBy == "az") {
-            cards = getSorted(
-                ".mod-list .mod-card",
-                "data-mod-name",
-                ascending
-            );
-        } else if (sortBy == "installed") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-installed",
-                ascending
-            );
-        }
-
-        $(".mod-list .row").empty();
-
-        for (let i = 0; i < cards.length; i++) {
-            const card = cards[i];
-            const $col = $("<div/>").addClass(
-                "col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"
-            );
-            $col.append(card);
-            $(".mod-list .row").append($col);
-        }
-        const start = window.modsPagination_start || 0;
-        const end = window.modsPagination_end || 30;
-
-        const searchText = $(".mod-search").val();
-        cards.each((index, ele) => {
-            const $ele = $(ele);
-            const $col = $ele.parent();
-
-            let ShouldHide = false;
-
-            if (
-                !$ele.attr("data-mod-name").toLowerCase().includes(searchText)
-            ) {
-                ShouldHide = true;
-            }
-
-            if (index < start || index >= end) {
-                ShouldHide = true;
-            }
-
-            if (ShouldHide) {
-                $col.addClass("hidden");
-            } else {
-                $col.removeClass("hidden");
-            }
-        });
-    }
-
-    function getSorted(selector, attrName, ascending) {
-        return $(
-            $(selector)
-                .toArray()
-                .sort(function (a, b) {
-                    var aVal = a.getAttribute(attrName),
-                        bVal = b.getAttribute(attrName);
-                    if (ascending) {
-                        return aVal > bVal ? 1 : -1;
-                    } else {
-                        return bVal < aVal ? -1 : 1;
-                    }
-                })
-        );
-    }
-
-    function getSortedInt(selector, attrName, ascending) {
-        return $(
-            $(selector)
-                .toArray()
-                .sort(function (a, b) {
-                    var aVal = parseInt(a.getAttribute(attrName)),
-                        bVal = parseInt(b.getAttribute(attrName));
-                    if (ascending) {
-                        return aVal - bVal;
-                    } else {
-                        return bVal - aVal;
-                    }
-                })
-        );
+        ModsPage.UpdateView();
     }
 
     $("#inp_maxplayers").on("input change", () => {
@@ -1076,4 +861,200 @@ $(document).ready(() => {
     main();
 });
 
-},{"./agentmap":1}]},{},[2]);
+},{"./agentmap":1,"./mods-page":3}],3:[function(require,module,exports){
+class ModsPage {
+    constructor() {
+        this.page = 0;
+
+        this.sort = "az";
+        this.direction = "asc";
+
+        this.search = "";
+    }
+
+    GetMods = async () => {
+        this.agentId = window.location.href.substring(
+            window.location.href.lastIndexOf("/") + 1
+        );
+
+        const res = await $.get(
+            `/dashboard/mods?page=${this.page}&sort=${this.sort}&direction=${this.direction}&search=${this.search}&agentid=${this.agentId}`
+        );
+
+        this.mods = res.mods;
+        this.pages = res.pages;
+
+        this.totalMods = res.totalMods;
+        this.installedMods = res.installedMods;
+
+        console.log(res);
+    };
+
+    UpdateView = async () => {
+        if ($(".mod-list").length == 0) return;
+
+        await this.GetMods();
+        await this.BuildPagination();
+
+        const $wrapper = $(".mod-list .row");
+        $wrapper.empty();
+
+        for (let i = 0; i < this.mods.length; i++) {
+            const mod = this.mods[i];
+            const $modCard = this.BuildModCard(mod);
+            $wrapper.append($modCard);
+        }
+
+        $("#mod-count").text(`${this.installedMods} / ${this.totalMods}`);
+    };
+
+    BuildPagination = async () => {
+        const $pagination = $("#mods-pagination");
+        $pagination.empty();
+
+        const prevButtonDisabled = this.page == 0 ? "disabled" : "";
+        const nextButtonDisabled =
+            this.page == this.pages - 1 ? "disabled" : "";
+        const $prevButton =
+            $(`<li class="page-item ${prevButtonDisabled} flex-fill d-inline-block">
+        <a class="page-link mod-page-prev h-100">
+          <i class="fa-solid fa-chevron-left mt-1"></i>
+        </a>
+      </li>`);
+
+        const $nextButton =
+            $(`<li class="page-item ${nextButtonDisabled} flex-fill d-inline-block">
+      <a class="page-link mod-page-next h-100">
+        <i class="fa-solid fa-chevron-right mt-1"></i>
+      </a>
+    </li>`);
+
+        $pagination.append($prevButton);
+
+        for (let i = 1; i <= this.pages; i++) {
+            const activePage = this.page + 1 == i ? "active" : "";
+            $pagination.append(`
+            <li class="page-item ${activePage}">
+            <a class="page-link mod-page " data-page="${i - 1}" >${i}</a>
+          </li>
+            `);
+        }
+        $pagination.append($nextButton);
+    };
+
+    PreviousPage() {
+        if (this.page > 0) {
+            this.page--;
+        }
+
+        this.UpdateView();
+    }
+
+    NextPage() {
+        if (this.page < this.pages - 1) {
+            this.page++;
+        }
+
+        this.UpdateView();
+    }
+
+    GoToPage(page) {
+        if (page < 0) return;
+        if (page > this.pages - 1) return;
+
+        this.page = page;
+
+        this.UpdateView();
+    }
+
+    BuildModCard(mod) {
+        const $col = $(
+            `<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"></div>`
+        );
+
+        const $card = $(`<div class="mod-card d-flex"></div>`);
+
+        const $logo = $("<div/>").addClass("mod-image");
+        $logo.append(
+            `<img src="${
+                mod.logo == ""
+                    ? "https://ficsit.app/images/no_image.webp"
+                    : mod.logo
+            }" alt=""/>`
+        );
+        $card.append($logo);
+
+        const $modInfo = $(
+            `<div class="mod-info flex-shrink-1"><div class="d-flex flex-column"></div></div>`
+        );
+        const $innerInfo = $modInfo.find("div");
+
+        $innerInfo.append(`
+        <a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank">
+            <h4>${mod.name}</h4>
+        </a>`);
+
+        const $badgeWrapper = $(
+            `<div class="d-flex flex-column flex-xl-row"></div>`
+        );
+        $innerInfo.append($badgeWrapper);
+
+        $badgeWrapper.append(
+            `<span class="badge bg-light border-light text-black mb-1 mb-xl-0 p-2">Latest Version: ${mod.versions[0].version}</span>`
+        );
+
+        if (mod.installed) {
+            if (mod.pendingInstall) {
+                $badgeWrapper.append(
+                    `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`
+                );
+            } else {
+                $badgeWrapper.append(
+                    `<span class="badge bg-success border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Installed Version: ${mod.installedVersion}</span>`
+                );
+            }
+        } else if (mod.pendingInstall) {
+            $badgeWrapper.append(
+                `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`
+            );
+        }
+
+        const $ButtonsWrapper = $(
+            `<div class="mod-buttons ms-auto d-flex flex-column"></div>`
+        );
+
+        if (!mod.installed) {
+            $ButtonsWrapper.append(
+                `<button class="btn btn-primary flex-grow-1 install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
+                <i class="fas fa-download"></i>
+                </button>`
+            );
+        } else {
+            $ButtonsWrapper.append(`<button class="btn btn-light flex-grow-1 settings-mod-btn rounded-top rounded-bottom-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
+            <i class="fas fa-cog"></i>
+            </button>`);
+
+            if (mod.needsUpdate) {
+                $ButtonsWrapper.append(`<button class="btn btn-warning update-mod-btn flex-grow-1 rounded-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
+                <i class="fas fa-upload"></i>
+                </button>`);
+            }
+
+            $ButtonsWrapper.append(` <button class="btn btn-danger flex-grow-1 uninstall-mod-btn rounded-top-0 rounded-bottom" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
+            <i class="fas fa-trash"></i>
+            </button>`);
+        }
+
+        $card.append($modInfo);
+        $card.append($ButtonsWrapper);
+        $col.append($card);
+
+        return $col;
+    }
+}
+
+const modsPage = new ModsPage();
+
+module.exports = modsPage;
+
+},{}]},{},[2]);

@@ -4,10 +4,6 @@ const { check, body } = require("express-validator");
 const authController = require("../controllers/auth");
 const router = express.Router();
 
-const User = require("../models/user");
-const Account = require("../models/account");
-const UserInvite = require("../models/user_invite");
-
 router.get("/login", authController.getLogin);
 router.post(
     "/login",

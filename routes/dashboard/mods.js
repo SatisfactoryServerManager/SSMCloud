@@ -8,6 +8,8 @@ const { check, body } = require("express-validator");
 
 const router = express.Router();
 
+router.get("/", isAuth, dashboardController.getModsJS);
+
 router.post("/installmod", isAuth, dashboardController.postInstallMod);
 
 router.post("/uninstallmod", isAuth, dashboardController.postUninstallMod);

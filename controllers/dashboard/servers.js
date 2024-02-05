@@ -129,7 +129,7 @@ exports.getServer = async (req, res, next) => {
             agentid
         );
 
-        const mods = await BackendAPI.GetMods();
+        const logs = await BackendAPI.GetAgentLogs(req.session.token, agentid);
 
         if (theAgent) {
             let message = req.flash("success");
@@ -150,7 +150,8 @@ exports.getServer = async (req, res, next) => {
                 apiKey: encodeBase64(theAgent.apiKey),
                 errorMessage,
                 message,
-                mods: mods,
+                mods: [],
+                logs,
             });
         } else {
             res.render("dashboard/server", {
@@ -161,6 +162,7 @@ exports.getServer = async (req, res, next) => {
                 latestVersion: "",
                 agent: {},
                 mods: [],
+                logs: [],
                 apiKey: "",
                 errorMessage: JSON.stringify({
                     message:
@@ -179,6 +181,7 @@ exports.getServer = async (req, res, next) => {
                 config: { version: null },
             },
             mods: [],
+            logs: [],
             apiKey: "",
             errorMessage: JSON.stringify({
                 message: err.message,
@@ -315,6 +318,8 @@ exports.postServer = async (req, res, next) => {
                 agentTask
             );
         }
+
+        console.log(JSON.stringify(theAgent, null, 4));
 
         await BackendAPI.UpdateAgentConfig(req.session.token, theAgent);
 

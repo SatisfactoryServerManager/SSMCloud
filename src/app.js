@@ -1,5 +1,7 @@
 const AgentMap = require("./agentmap");
 
+const ModsPage = require("./mods-page");
+
 function main() {
     toastr.options.closeButton = true;
     toastr.options.closeMethod = "fadeOut";
@@ -263,19 +265,8 @@ function main() {
         })
         .on("keyup", ".mod-search", (e) => {
             const $this = $(e.currentTarget);
-            const searchText = $this.val().toLowerCase();
-            const $modList = $this.parent().parent().parent().find(".mod-list");
-
-            $modList.find(".mod-card").each((index, ele) => {
-                const $ele = $(ele);
-                if (
-                    !$ele.attr("data-modref").toLowerCase().includes(searchText)
-                ) {
-                    $ele.parent().addClass("hidden");
-                } else {
-                    $ele.parent().removeClass("hidden");
-                }
-            });
+            ModsPage.search = $this.val().toLowerCase();
+            SortMods();
         })
         .on("click", ".install-mod-btn, .update-mod-btn", (e) => {
             const $this = $(e.currentTarget);
@@ -408,232 +399,26 @@ function main() {
             $("#mods-pagination li").removeClass("active");
             const $this = $(e.currentTarget);
 
-            $this.parent().addClass("active");
-
-            window.modsPagination_start = parseInt(
-                $this.attr("data-page-start")
-            );
-            window.modsPagination_end = parseInt($this.attr("data-page-end"));
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            SortMods();
+            const page = parseInt($this.attr("data-page"));
+            ModsPage.GoToPage(page);
         })
         .on("click", "#mods-pagination .mod-page-prev", (e) => {
-            const start = window.modsPagination_start || 0;
-            const end = window.modsPagination_end || 30;
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            if (start <= 0) {
-                return;
-            }
-
-            window.modsPagination_start = start - 30;
-            window.modsPagination_end = end - 30;
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            $("#mods-pagination li").removeClass("active");
-
-            $(
-                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
-            )
-                .parent()
-                .addClass("active");
-
-            SortMods();
+            ModsPage.PreviousPage();
         })
         .on("click", "#mods-pagination .mod-page-next", (e) => {
-            const start = window.modsPagination_start || 0;
-            const end = window.modsPagination_end || 30;
-            const max = parseInt(
-                $("#mods-pagination .mod-page:last").attr("data-page-start")
-            );
-
-            window.modsPagination_start = start + 30;
-            window.modsPagination_end = end + 30;
-
-            if (window.modsPagination_start < max) {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-next")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            if (window.modsPagination_start > 0) {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .removeClass("disabled");
-            } else {
-                $("#mods-pagination .mod-page-prev")
-                    .parent()
-                    .addClass("disabled");
-            }
-
-            $("#mods-pagination li").removeClass("active");
-
-            $(
-                `#mods-pagination .mod-page[data-page-start=${window.modsPagination_start}]`
-            )
-                .parent()
-                .addClass("active");
-
-            SortMods();
+            ModsPage.NextPage();
         });
 
     SortMods();
 
     function SortMods() {
         const sortBy = $("#mods-sortby").val();
-        const ascending = $("#mods-sortby-direction").val() == "asc";
+        const direction = $("#mods-sortby-direction").val();
 
-        let cards = [];
+        ModsPage.sort = sortBy;
+        ModsPage.direction = direction;
 
-        if (sortBy == "downloads") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-downloads",
-                ascending
-            );
-        } else if (sortBy == "updated") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-updated",
-                ascending
-            );
-        } else if (sortBy == "needsupdate") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-needs-update",
-                ascending
-            );
-        } else if (sortBy == "az") {
-            cards = getSorted(
-                ".mod-list .mod-card",
-                "data-mod-name",
-                ascending
-            );
-        } else if (sortBy == "installed") {
-            cards = getSortedInt(
-                ".mod-list .mod-card",
-                "data-mod-installed",
-                ascending
-            );
-        }
-
-        $(".mod-list .row").empty();
-
-        for (let i = 0; i < cards.length; i++) {
-            const card = cards[i];
-            const $col = $("<div/>").addClass(
-                "col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"
-            );
-            $col.append(card);
-            $(".mod-list .row").append($col);
-        }
-        const start = window.modsPagination_start || 0;
-        const end = window.modsPagination_end || 30;
-
-        const searchText = $(".mod-search").val();
-        cards.each((index, ele) => {
-            const $ele = $(ele);
-            const $col = $ele.parent();
-
-            let ShouldHide = false;
-
-            if (
-                !$ele.attr("data-mod-name").toLowerCase().includes(searchText)
-            ) {
-                ShouldHide = true;
-            }
-
-            if (index < start || index >= end) {
-                ShouldHide = true;
-            }
-
-            if (ShouldHide) {
-                $col.addClass("hidden");
-            } else {
-                $col.removeClass("hidden");
-            }
-        });
-    }
-
-    function getSorted(selector, attrName, ascending) {
-        return $(
-            $(selector)
-                .toArray()
-                .sort(function (a, b) {
-                    var aVal = a.getAttribute(attrName),
-                        bVal = b.getAttribute(attrName);
-                    if (ascending) {
-                        return aVal > bVal ? 1 : -1;
-                    } else {
-                        return bVal < aVal ? -1 : 1;
-                    }
-                })
-        );
-    }
-
-    function getSortedInt(selector, attrName, ascending) {
-        return $(
-            $(selector)
-                .toArray()
-                .sort(function (a, b) {
-                    var aVal = parseInt(a.getAttribute(attrName)),
-                        bVal = parseInt(b.getAttribute(attrName));
-                    if (ascending) {
-                        return aVal - bVal;
-                    } else {
-                        return bVal - aVal;
-                    }
-                })
-        );
+        ModsPage.UpdateView();
     }
 
     $("#inp_maxplayers").on("input change", () => {

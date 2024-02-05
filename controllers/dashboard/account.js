@@ -6,12 +6,6 @@ const Tools = Mrhid6Utils.Tools;
 const fs = require("fs-extra");
 const path = require("path");
 
-const Account = require("../../models/account");
-const User = require("../../models/user");
-const UserInvite = require("../../models/user_invite");
-const Permission = require("../../models/permission");
-const ApiKey = require("../../models/apikey");
-
 const EmailHandler = require("../../server/server_email_handler");
 
 const BackendAPI = require("../../utils/backend-api");
@@ -45,7 +39,7 @@ exports.getAccount = async (req, res, next) => {
             apiKeys: [],
             events: [],
             permissions: [],
-            inviteUrl: `${protocol}://${host}/acceptinvite`,
+            inviteUrl: `${req.protocol}://${req.headers.host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
             errorMessage,
@@ -63,7 +57,7 @@ exports.getAccount = async (req, res, next) => {
             userInvites: [],
             apiKeys: [],
             events: [],
-            inviteUrl: `${protocol}://${host}/acceptinvite`,
+            inviteUrl: `${req.protocol}://${req.headers.host}/acceptinvite`,
             inviteErrorMessage: null,
             userErrorMessage: null,
             apikeyErrorMessage: null,

@@ -1,20 +1,9 @@
-const Agent = require("../models/agent");
-const MessageQueueItem = require("../models/messagequeueitem");
-const Account = require("../models/account");
-const AgentBackupModel = require("../models/agent_backup");
-
-const fs = require("fs-extra");
-
-const Logger = require("./server_logger");
-
 const { Octokit } = require("@octokit/rest");
 const semver = require("semver");
 
 class AgentHandler {
     init() {
         this.GetMostRecentGHAgentVersion();
-        this.CleanupAgentBackups();
-
         this.SetupTimers();
     }
 
@@ -22,87 +11,7 @@ class AgentHandler {
         setInterval(async () => {
             await this.GetMostRecentGHAgentVersion();
         }, 4 * 60 * 60 * 1000);
-
-        setInterval(async () => {
-            await this.CheckAllAgentsNeedUpdate();
-            await this.CleanupAgentBackups();
-        }, 30000);
     }
-
-    CleanupAgentBackups = async () => {
-        const Agents = await Agent.find();
-
-        for (let i = 0; i < Agents.length; i++) {
-            const Agent = Agents[i];
-
-            if (Agent.config == null || Agent.config.version == null) {
-                continue;
-            }
-
-            if (Agent.config.backup == null) {
-                continue;
-            }
-
-            await Agent.populate("backups");
-
-            if (Agent.backups.length <= Agent.config.backup.keep) {
-                continue;
-            }
-
-            const count = Agent.backups.length - Agent.config.backup.keep;
-
-            for (let j = 0; j < count; j++) {
-                const AgentBackup = Agent.backups[j];
-
-                if (AgentBackup != null && AgentBackup.fileName != null) {
-                    if (fs.existsSync(AgentBackup.fileName)) {
-                        fs.unlinkSync(AgentBackup.fileName);
-                        Logger.debug(
-                            `Removing Agent Backup: ${AgentBackup.fileName}`
-                        );
-                    }
-
-                    await AgentBackupModel.deleteOne({ _id: AgentBackup._id });
-                    Agent.backups.pull({ _id: AgentBackup._id });
-                }
-            }
-
-            await Agent.save();
-        }
-
-        const Backups = await AgentBackupModel.find();
-
-        for (let i = 0; i < Backups.length; i++) {
-            const Backup = Backups[i];
-
-            const FoundAgents = await Agent.find({
-                backups: { $in: [Backup._id] },
-            });
-
-            if (!fs.existsSync(Backup.fileName)) {
-                await AgentBackupModel.deleteOne({ _id: Backup._id });
-
-                for (let j = 0; j < FoundAgents.length; j++) {
-                    const Agent = FoundAgents[j];
-                    Agent.backups.pull({ _id: Backup._id });
-                    await Agent.save();
-                }
-
-                continue;
-            }
-
-            if (FoundAgents.length > 0) continue;
-
-            if (Backup != null && Backup.fileName != null) {
-                if (fs.existsSync(Backup.fileName)) {
-                    fs.unlinkSync(Backup.fileName);
-                    Logger.debug(`Removing Agent Backup: ${Backup.fileName}`);
-                }
-
-                await AgentBackupModel.deleteOne({ _id: Backup._id });
-            }
-        }
-    };
 
     GetMostRecentGHAgentVersion = async () => {
         try {
@@ -122,48 +31,6 @@ class AgentHandler {
             this._LatestAgentRelease = "0.0.0";
             //console.log(err);
         }
-    };
-
-    CheckAllAgentsNeedUpdate = async () => {
-        const agents = await Agent.find().select("+messageQueue");
-
-        for (let i = 0; i < agents.length; i++) {
-            const agent = agents[i];
-
-            if (agent.config == null || agent.config.version == null) {
-                continue;
-            }
-
-            const agentVersion = semver.clean(agent.config.version);
-            const prevNeedUpdate = agent.needsUpdate;
-
-            if (semver.lt(agentVersion, this._LatestAgentRelease)) {
-                agent.needsUpdate = true;
-            } else {
-                agent.needsUpdate = false;
-            }
-
-            if (prevNeedUpdate != agent.needsUpdate) {
-                const theAccount = await Account.findOne({ agents: agent });
-                if (theAccount) {
-                    await theAccount.CreateEvent(
-                        "AGENT",
-                        `Agent (${agent.agentName}) requires updating. Current Version: ${agentVersion}, Latest Version: ${this._LatestAgentRelease}`,
-                        5
-                    );
-                }
-                await agent.save();
-            }
-        }
-    };
-
-    UpdateAgentLastCommDate = async (Agent, updateOnlineState = true) => {
-        if (Agent.online == false && updateOnlineState == true) {
-            Agent.online = true;
-        }
-        Agent.lastCommDate = new Date();
-
-        await Agent.save();
     };
 }
 

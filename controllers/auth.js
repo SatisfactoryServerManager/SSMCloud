@@ -1,16 +1,11 @@
 const bcrypt = require("bcryptjs");
-const Account = require("../models/account");
-const User = require("../models/user");
-const UserInvite = require("../models/user_invite");
 
 const BackendAPI = require("../utils/backend-api");
 
 var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
-
 const QRCode = require("qrcode");
-
 const { authenticator } = require("otplib");
 
 const Config = require("../server/server_config");
@@ -18,21 +13,6 @@ const Config = require("../server/server_config");
 const verifyHcaptcha = require("hcaptcha").verify;
 
 exports.getLogout = async (req, res) => {
-    const ip =
-        req.headers["X-Real-IP"] ||
-        req.headers["X-Fowarded-For"] ||
-        req.socket.remoteAddress;
-
-    const theUser = await User.findOne({ _id: req.session.user._id });
-    const theAccount = await Account.findOne({ users: req.session.user._id });
-    if (theAccount) {
-        await theAccount.CreateEvent(
-            "AUTH",
-            `Log out Successful for user: [${theUser.email}] with ip: [${ip}]`,
-            0
-        );
-    }
-
     req.session.destroy((err) => {
         if (err) {
             console.log(err);

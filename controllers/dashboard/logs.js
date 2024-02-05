@@ -2,9 +2,6 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 const fs = require("fs-extra");
 
-const Account = require("../../models/account");
-const User = require("../../models/user");
-
 exports.DownloadLog = async (req, res, next) => {
     const agentId = req.params.agentId;
     const logFile = req.params.logfile;

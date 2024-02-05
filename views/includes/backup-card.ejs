@@ -53,7 +53,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-12">
-        <a target="_blank" href="/dashboard/backups/download/<%=backup._id%>" class="btn btn-primary float-end">
+        <a target="_blank" href="/dashboard/download/backup?agentid=<%=agent._id%>&uuid=<%=backup.uuid%>" class="btn btn-primary float-end">
           <i class="fas fa-download"></i>
         </a>
         <h6><%=backup.fileName%></h6>
