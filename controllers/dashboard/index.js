@@ -327,10 +327,6 @@ exports.getModsJS = async (req, res, next) => {
             agentid
         );
 
-        if (search != "") {
-            mods = mods.filter((m) => m.name.toLowerCase().includes(search));
-        }
-
         const selectedMods = theAgent.modConfig.selectedMods;
 
         for (let i = 0; i < mods.length; i++) {
@@ -356,6 +352,10 @@ exports.getModsJS = async (req, res, next) => {
         }
 
         const installedMods = mods.filter((m) => m.installed).length;
+
+        if (search != "") {
+            mods = mods.filter((m) => m.name.toLowerCase().includes(search));
+        }
 
         function compareAZ(a, b) {
             if (a.name < b.name) {

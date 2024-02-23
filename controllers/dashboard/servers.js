@@ -131,6 +131,8 @@ exports.getServer = async (req, res, next) => {
 
         const logs = await BackendAPI.GetAgentLogs(req.session.token, agentid);
 
+        const mods = await BackendAPI.GetMods();
+
         if (theAgent) {
             let message = req.flash("success");
             message.length > 0 ? (message = message[0]) : (message = null);
@@ -150,7 +152,7 @@ exports.getServer = async (req, res, next) => {
                 apiKey: encodeBase64(theAgent.apiKey),
                 errorMessage,
                 message,
-                mods: [],
+                mods,
                 logs,
             });
         } else {
@@ -276,7 +278,7 @@ exports.postServer = async (req, res, next) => {
             const modState = theAgent.modConfig;
 
             const selectedMod = modState.selectedMods.find(
-                (sm) => sm.mod.modReference == data.modReference
+                (sm) => sm.mod.mod_reference == data.modReference
             );
 
             if (selectedMod == null) {
@@ -292,8 +294,6 @@ exports.postServer = async (req, res, next) => {
 
             data.modConfig = JSON.parse(data.modConfig);
             data.modConfig = JSON.stringify(data.modConfig);
-
-            selectedMod.config = data.modConfig;
 
             const agentTask = {
                 action: "updateModConfig",
@@ -317,11 +317,9 @@ exports.postServer = async (req, res, next) => {
                 theAgent._id,
                 agentTask
             );
+
+            await BackendAPI.UpdateAgentConfig(req.session.token, theAgent);
         }
-
-        console.log(JSON.stringify(theAgent, null, 4));
-
-        await BackendAPI.UpdateAgentConfig(req.session.token, theAgent);
 
         req.flash("success", JSON.stringify(successMessageData));
         res.redirect(`/dashboard/servers/${agentid}`);

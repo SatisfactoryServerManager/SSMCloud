@@ -154,6 +154,10 @@
 </body>
 
 <script>
+  let mods = <%- JSON.stringify(mods) %>;
+  localStorage.setItem('mods', JSON.stringify({
+    'mods': mods
+  }));
   window.agentKey = "<%=apiKey%>"
   window.agent = <%-JSON.stringify(agent)%>
 </script>

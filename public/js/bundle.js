@@ -575,18 +575,19 @@ function main() {
         })
         .on("click", ".settings-mod-btn", (e) => {
             const $this = $(e.currentTarget);
-            const $card = $this.closest(".mod-card");
-            const modReference = $card.attr("data-modref");
+            const modReference = $this.attr("data-mod-reference");
 
             const mods = JSON.parse(localStorage.getItem("mods")).mods;
             const selectedMods = JSON.parse(
                 localStorage.getItem("selectedMods")
             ).selectedMods;
 
-            const mod = mods.find((m) => m.modReference == modReference);
+            const mod = mods.find((m) => m.mod_reference == modReference);
             const selectedMod = selectedMods.find(
-                (sm) => sm.mod.modReference == modReference
+                (sm) => sm.mod.mod_reference == modReference
             );
+
+            console.log(modReference, mod, selectedMod);
 
             if (mod == null || selectedMod == null) {
                 return;
@@ -600,11 +601,11 @@ function main() {
             }
 
             window.openModal("/public/modals", "mod-settings", (modal) => {
-                modal.find(".modal-title").text(`${mod.modName} Settings`);
+                modal.find(".modal-title").text(`${mod.name} Settings`);
                 modal
                     .find("#mod-settings-config")
                     .val(JSON.stringify(modConfig, null, 4));
-                modal.find("#inp_mod_ref").val(mod.modReference);
+                modal.find("#inp_mod_ref").val(mod.mod_reference);
                 modal.find("#mod-csrf").val($("#csrf").val());
             });
         })

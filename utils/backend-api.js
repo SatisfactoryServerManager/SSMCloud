@@ -14,11 +14,14 @@ class BackendAPI {
             },
         });
 
+        let resData = await res.text();
+
         if (res.status != 200) {
+            console.log(resData);
             throw new Error(`api returned non-ok status code: ${res.status}`);
         }
 
-        const resData = await res.json();
+        resData = JSON.parse(resData);
 
         if (resData.success == false) {
             console.log(resData);
@@ -42,12 +45,12 @@ class BackendAPI {
             body: JSON.stringify(body),
         });
 
+        let resData = await res.text();
+
         if (res.status != 200) {
+            console.log(resData);
             throw new Error(`api returned non-ok status code: ${res.status}`);
         }
-
-        let resData = await res.text();
-        console.log(resData);
 
         resData = JSON.parse(resData);
 
@@ -73,12 +76,12 @@ class BackendAPI {
             body: JSON.stringify(body),
         });
 
+        let resData = await res.text();
+
         if (res.status != 200) {
+            console.log(resData);
             throw new Error(`api returned non-ok status code: ${res.status}`);
         }
-
-        let resData = await res.text();
-        console.log(resData);
 
         resData = JSON.parse(resData);
 
@@ -99,11 +102,12 @@ class BackendAPI {
             },
         });
 
+        let resData = await res.text();
+
         if (res.status != 200) {
+            console.log(resData);
             throw new Error(`api returned non-ok status code: ${res.status}`);
         }
-
-        let resData = await res.text();
 
         resData = JSON.parse(resData);
 
