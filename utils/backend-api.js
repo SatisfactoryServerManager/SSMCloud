@@ -213,6 +213,40 @@ class BackendAPI {
 
         return apiData.logs;
     };
+
+    GetAccountAudit = async (token, type) => {
+        let apiData = await this.GET_APICall_Token(
+            `/api/v1/account/audit?type=${type}`,
+            token
+        );
+
+        return apiData.audit;
+    };
+
+    PostCreateAccountUser = async (token, email) => {
+        let apiData = await this.POST_APICall_Token(
+            `/api/v1/account/users`,
+            token,
+            { email }
+        );
+
+        return apiData;
+    };
+
+    GetUserByInviteCode = async (inviteCode) => {
+        let apiData = await this.GET_APICall_NoToken(
+            `/api/v1/account/users/byinvitecode/${inviteCode}`
+        );
+
+        return apiData.user;
+    };
+
+    PostAcceptInviteCode = async (invitecode, password) => {
+        await this.POST_APICall_NoToken(
+            `/api/v1/account/users/acceptinvite/${invitecode}`,
+            { password }
+        );
+    };
 }
 
 const backendAPI = new BackendAPI();

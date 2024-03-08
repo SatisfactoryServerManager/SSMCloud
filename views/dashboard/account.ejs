@@ -8,330 +8,38 @@
         <!-- BODY -->
         <div class="page-container" data-page="dashboard">
           <%- include('../includes/page-header.ejs') %>
+
+          <div class="row server-tabs-header">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#users" aria-selected="false" role="tab" tabindex="-1">Users</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#audit" aria-selected="true" role="tab">Audit</a>
+              </li>
+
+            </ul>
+          </div>
+
           <% if(locals.message){ const messageData = JSON.parse(message); %>
           <div class="alert alert-success">
             <%=messageData.message%>
           </div>
           <%}%>
-          <div class="row">
-            <div class="col-12">
-              <div class="card border-secondary mb-3 bg-glass">
-                <div class="card-header">
-                  <h5>Account Events</h5>
-                </div>
-                <div class="card-body">
-                  <table class="table table-bordered" id="account-events-table">
-                    <thead>
-                      <tr>
-                        <th width="150px">Event Date</th>
-                        <th width="100px">Event Type</th>
-                        <th>Event Message</th>
-                        <th width="80px">Options</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <%
-                    Number.prototype.pad = function (width, z) {
-                        let n = this;
-                        z = z || "0";
-                        n = n + "";
-                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-                    };
 
-                    Date.prototype.getMonthName = function () {
-                        const monthNames = [
-                            "Jan",
-                            "Feb",
-                            "Mar",
-                            "Apr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Aug",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dec",
-                        ];
-                        return monthNames[this.getMonth()];
-                    };%>
-
-          <%events.forEach(event=>{%>
-          <%
-                        const date = new Date(event.eventDate);
-                        const day = date.getDate()
-                        const month = date.getMonthName();
-                        const year = date.getFullYear();
-                
-                        const hour = date.getHours().pad(2)
-                        const min = date.getMinutes().pad(2)
-                        const sec = date.getSeconds().pad(2)
-                
-                        const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
-                        
-                        %>
-          <tr>
-            <td><%=dateStr%></td>
-            <td><%=event.eventType%></td>
-            <td><%=event.eventMessage%></td>
-            <td></td>
-          </tr>
-          <%})%>
-          </tbody>
-          </table>
+        <div id="myTabContent" class="tab-content">
+            
+        <div class="tab-pane fade active show" id="users" role="tabpanel">
+          <%- include('./account/users.ejs') %>
+        </div>
+        <div class="tab-pane fade" id="audit" role="tabpanel">
+          <%- include('./account/audit.ejs') %>
         </div>
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-12 col-lg-6">
-      <div class="card border-secondary mb-3 shadow bg-glass">
-        <div class="card-header">
-          <h5>API Keys</h5>
-        </div>
-        <div class="card-body">
-          <% if(locals.message){ const messageData = JSON.parse(message); 
-                    if(messageData.section == "api"){%>
-          <div class="alert alert-success">
-            <%=messageData.message%>
-          </div>
-          <%}}%>
 
-          <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
-                    if(errorMessageData.section == "api"){%>
-          <div class="alert alert-danger">
-            <%=errorMessageData.message%>
-          </div>
-          <%}}%>
-
-
-          <form action="/dashboard/account/apikey" method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
-              <select name="inp_user" id="" class="form-select" placeholder="User">
-                <% users.forEach(user => { %>
-                <option value="<%=user._id%>">
-                  <%=user.email%>
-                </option>
-                <%})%>
-              </select>
-              <button id="btn-addapikey" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add API Key
-              </button>
-            </div>
-
-          </form>
-
-
-          <table class="table table-bordered" id="apikeys-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th width="140px">API Key</th>
-                <th width="60px">Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% apiKeys.forEach(key => { %>
-              <tr>
-                <td><%=key.user.email%></td>
-
-                <%
-                                                        let apiKeyData = key.key.split("-")
-                                                        const keyPart = apiKeyData[1];
-                                                        const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
-                                                        const shortenedKey = `${apiKeyData[0]} - XXXX${shortenedKeyPart}`
-                                                    %>
-
-                <td><%=shortenedKey%></td>
-                <td>
-                  <a href="/dashboard/account/apikey/delete/<%=key._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              <%})%>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-lg-6">
-      <div class="card border-secondary mb-3 shadow bg-glass">
-        <div class="card-header">
-          <h5>User Invites</h5>
-        </div>
-        <div class="card-body">
-          <% if(locals.message){ const messageData = JSON.parse(message); 
-                        if(messageData.section == "userinvite"){%>
-          <div class="alert alert-success">
-            <%=messageData.message%>
-          </div>
-          <%}}%>
-
-          <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
-                        if(errorMessageData.section == "userinvite"){%>
-          <div class="alert alert-danger">
-            <%=errorMessageData.message%>
-          </div>
-          <%}}%>
-          <table class="table table-bordered" id="invites-table">
-            <thead>
-              <tr>
-                <th>Email address</th>
-                <th width="120px">Invite Link</th>
-                <th width="60px">Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if(userInvites.length > 0){ %>
-              <% userInvites.forEach(invite => { %>
-              <%if(invite.claimed) return;%>
-              <%if(invite.user == null) return;%>
-              <tr>
-                <td><%=invite.user.email%></td>
-                <td>
-                  <a class="btn btn-primary" href="<%=inviteUrl%>/<%=invite._id%>"> Invite Link</a>
-                </td>
-                <td>
-                  <a href="/dashboard/account/deleteinvite/<%=invite._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Invite Confirmation">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              <%})%>
-              <%}%>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="card border-secondary mb-3 shadow bg-glass">
-                                <div class="card-header">
-                                    <h5>Users</h5>
-                                </div>
-                                <div class="card-body">
-                                    <% if(locals.message){ const messageData = JSON.parse(message); 
-                                        if(messageData.section == "user"){%>
-              <div class="alert alert-success">
-                <%=messageData.message%>
-              </div>
-              <%}}%>
-
-              <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage); 
-                                        if(errorMessageData.section == "user"){%>
-              <div class="alert alert-danger">
-                <%=errorMessageData.message%>
-              </div>
-              <%}}%>
-              <form action="/dashboard/account/user" method="post">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-
-                <div class="row">
-                  <div class="col-12 col-md-6">
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
-                      <input type="text" class="form-control" name="inp_useremail" placeholder="Email Address" aria-label="Email Address" aria-describedby="basic-addon1" />
-                    </div>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-group"></i></span>
-                      <select name="inp_userrole" id="" class="form-select" placeholder="User Role">
-                        <% userRoles.forEach(role => { %>
-                        <option value="<%=role._id%>">
-                          <%=role.roleName%>
-                        </option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <button id="btn-adduser" class="btn btn-primary">
-                  <i class="fas fa-plus"></i> Add User
-                </button>
-              </form>
-
-              <hr />
-
-              <table class="table table-bordered" id="users-table">
-                <thead>
-                  <tr>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th width="60px">Options</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if(users.length > 0){
-                        users.forEach(user => { %>
-                  <tr>
-                    <td><%=user.email%></td>
-                    <td></td>
-                    <td>
-                      <%if(user.isAccountAdmin == false){%>
-                      <a href="/dashboard/account/deleteuser/<%=user._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
-                        <i class="fas fa-trash"></i>
-                      </a>
-                      <%}%>
-                    </td>
-                    </tr>
-                    <%})}%>
-                </tbody>
-              </table>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6">
-      <div class="card border-secondary mb-3 bg-glass">
-        <div class="card-header">
-          <button id="btn-addrole" class="btn btn-primary float-end">
-            <i class="fas fa-plus"></i> Add Role
-          </button>
-          <h5>Roles</h5>
-        </div>
-        <div class="card-body">
-          <table class="table table-bordered" id="roles-table">
-            <thead>
-              <tr>
-                <th>Role Name</th>
-                <th width="150px">
-                  Permissions
-                </th>
-                <th width="60px">Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if(userRoles.length > 0){ %> <%
-                                            userRoles.forEach(role => { %>
-              <tr>
-                <td><%=role.roleName%></td>
-                <td>
-                  <%=role.permissions.length%>
-                </td>
-                <td>
-                  <%if(role.canEdit){%>
-                  <a href="/dashboard/account/deleteuserrole/<%=role._id%>" class="btn btn-danger should-confirm-btn" data-confirm-title="Delete User Confirmation">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                  <%}%>
-                                                </td>
-                                            </tr>
-                                            <%})%> <%}%>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <%- include('../includes/footer-main.ejs') %>
-        </div>
-      </div>
+  <%- include('../includes/footer-main.ejs') %>
+  </div>
+  </div>
 </body>

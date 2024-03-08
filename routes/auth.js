@@ -49,26 +49,14 @@ router.post(
     authController.postSignUp
 );
 
-router.get("/acceptinvite/:inviteId", authController.getAcceptInvite);
+router.get("/acceptinvite/:invitecode", authController.getAcceptInvite);
 
 router.post(
-    "/acceptinvite/:inviteId",
+    "/acceptinvite/:invitecode",
     [
         check("email")
             .isEmail()
             .withMessage("Please enter a valid email.")
-            // Method found in validator.js docs. validator.js implicitly installed with express-validator
-            .custom((value, { req }) => {
-                return UserInvite.findOne({ _id: req.params.inviteId }).then(
-                    (invite) => {
-                        return invite.populate("user").then(() => {
-                            if (invite.user.email != value) {
-                                return Promise.reject("Email Not Valid!");
-                            }
-                        });
-                    }
-                );
-            })
             .normalizeEmail(),
         // Adding validation error message as second argument as alternative to using withMessage() after each validator since using message for both checks
         body(

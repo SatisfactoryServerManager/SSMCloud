@@ -213,47 +213,30 @@ exports.postSignUp = async (req, res, next) => {
 };
 
 exports.getAcceptInvite = async (req, res, next) => {
-    let message = req.flash("error");
-    message.length > 0 ? (message = message[0]) : (message = null);
-    if (!ObjectId.isValid(req.params.inviteId)) {
-        const error = new Error("Invalid Invite ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const userInvite = await UserInvite.findOne({
-        _id: req.params.inviteId,
-        claimed: false,
-    });
-
-    if (userInvite == null) {
-        res.redirect("/login");
+    try {
+        await BackendAPI.GetUserByInviteCode(req.params.invitecode);
+    } catch (err) {
+        res.render("auth/acceptinvite", {
+            path: "/acceptinvite",
+            pageTitle: "Accept Invite",
+            errorMessage: err.message,
+            oldInput: { email: "", password: "", confirmPassword: "" },
+            validationErrors: [],
+        });
         return;
     }
 
     res.render("auth/acceptinvite", {
         path: "/acceptinvite",
         pageTitle: "Accept Invite",
-        errorMessage: message,
+        errorMessage: "",
         oldInput: { email: "", password: "", confirmPassword: "" },
         validationErrors: [],
     });
 };
 
 exports.postAcceptInvite = async (req, res, next) => {
-    if (!ObjectId.isValid(req.params.inviteId)) {
-        const error = new Error("Invalid Invite ID!");
-        error.httpStatusCode = 500;
-        return next(error);
-    }
-
-    const userInvite = await UserInvite.findOne({ _id: req.params.inviteId });
-
-    if (userInvite == null) {
-        res.redirect("/login");
-        return;
-    }
-
+    const inviteCode = req.params.invitecode;
     const { email, password, confirmPassword } = req.body;
 
     const errors = validationResult(req);
@@ -267,25 +250,25 @@ exports.postAcceptInvite = async (req, res, next) => {
         });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     try {
-        await userInvite.populate("user");
-        console.log(userInvite);
-        const user = userInvite.user;
+        const user = await BackendAPI.GetUserByInviteCode(inviteCode);
 
-        user.password = hashedPassword;
-        user.active = true;
-        await user.save();
+        if (user.email != email) {
+            throw new Error("email doesn't match out records");
+        }
 
-        userInvite.claimed = true;
-        await userInvite.save();
+        await BackendAPI.PostAcceptInviteCode(inviteCode, password);
 
         res.redirect("/login");
     } catch (err) {
-        const error = err;
-        error.httpStatusCode = 500;
-        return next(error);
+        res.render("auth/acceptinvite", {
+            path: "/acceptinvite",
+            pageTitle: "Accept Invite",
+            errorMessage: err.message,
+            oldInput: { email: "", password: "", confirmPassword: "" },
+            validationErrors: [],
+        });
+        return;
     }
 };
 

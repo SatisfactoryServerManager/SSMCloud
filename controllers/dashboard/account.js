@@ -68,120 +68,63 @@ exports.getAccount = async (req, res, next) => {
     }
 };
 
+exports.getAccountUsers = async (req, res, next) => {
+    try {
+        const Users = await BackendAPI.GetUsers(req.session.token);
+
+        res.json({
+            success: true,
+            users: Users,
+        });
+    } catch (err) {
+        res.json({
+            success: false,
+            error: err.message,
+        });
+        return;
+    }
+};
+
 exports.postAccountUser = async (req, res, next) => {
     const data = req.body;
 
-    if (!ObjectId.isValid(req.session.user._id)) {
-        const errorMessageData = {
-            section: "user",
-            message: "Invalid Session User ID Format",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/account");
-    }
-
-    const theUser = await User.findOne({ _id: req.session.user._id });
-
-    const hasPermission = await theUser.HasPermission("user.create");
-
-    if (!hasPermission) {
-        const errorMessageData = {
-            section: "user",
-            message: "You dont have permission to perform this action!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/account");
-    }
-
-    const theAccount = await Account.findOne({
-        users: req.session.user._id,
-    });
-
-    if (theAccount == null) {
-        const errorMessageData = {
-            section: "user",
-            message: "Cant Find Session Account details!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/account");
-    }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorMessageData = {
-            section: "user",
-            message: errors.array()[0].msg,
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/account");
-    }
-
-    let inviteUser = await User.findOne({
-        email: data.inp_useremail,
-        active: false,
-    });
-
-    if (inviteUser == null) {
-        inviteUser = await User.create({
-            email: data.inp_useremail,
-            password: "TempPaSS!",
-            role: data.inp_userrole,
+    if (data.email == undefined || data.email.trim() == "") {
+        res.json({
+            success: false,
+            error: "Please provide a user email address",
         });
-        theAccount.users.push(inviteUser);
-    } else {
-        await theAccount.populate("users");
-        const accountUser = theAccount.users.find(
-            (u) => u.email == inviteUser.email
-        );
-
-        if (accountUser == null) {
-            theAccount.users.push(inviteUser);
-        }
-
-        const existingInvite = await UserInvite.findOne({ user: inviteUser });
-
-        if (existingInvite) {
-            const errorMessageData = {
-                section: "user",
-                message: "User has already been invited to join SSM Cloud.",
-            };
-
-            req.flash("error", JSON.stringify(errorMessageData));
-            return res.redirect("/dashboard/account");
-        }
+        return;
     }
 
-    const newInvite = await UserInvite.create({ user: inviteUser });
-    theAccount.userInvites.push(newInvite);
+    try {
+        const Users = await BackendAPI.GetUsers(req.session.token);
 
-    await theAccount.save();
-    const successMessageData = {
-        section: "user",
-        message: `User Invite Successfully Created!`,
-    };
-
-    const protocol = req.protocol;
-    const host = req.hostname;
-
-    const Email = EmailHandler.createEmail(
-        inviteUser.email,
-        "New SSM Invite",
-        "user_invite",
-        {
-            inviteURL: `${protocol}://${host}/acceptinvite`,
-            inviteId: newInvite._id,
-            accountName: theAccount.accountName,
+        for (let i = 0; i < Users.length; i++) {
+            const user = Users[i];
+            if (user.email == data.email) {
+                res.json({
+                    success: false,
+                    error: "User already exists!",
+                });
+                return;
+            }
         }
-    );
 
-    EmailHandler.sendEmail(Email);
+        const apiRes = await BackendAPI.PostCreateAccountUser(
+            req.session.token,
+            data.email
+        );
+    } catch (err) {
+        res.json({
+            success: false,
+            error: err.message,
+        });
+        return;
+    }
 
-    req.flash("success", JSON.stringify(successMessageData));
-    res.redirect("/dashboard/account");
+    res.json({
+        success: true,
+    });
 };
 
 exports.postAccountApiKey = async (req, res, next) => {
@@ -571,4 +514,23 @@ exports.getDeleteApiKey = async (req, res, next) => {
 
     req.flash("success", JSON.stringify(successMessageData));
     return res.redirect("/dashboard/account");
+};
+
+exports.getAccountAudit = async (req, res, next) => {
+    try {
+        const audit = await BackendAPI.GetAccountAudit(
+            req.session.token,
+            req.query.type
+        );
+
+        res.json({
+            success: true,
+            audit,
+        });
+    } catch (err) {
+        res.json({
+            success: false,
+            error: err.message,
+        });
+    }
 };

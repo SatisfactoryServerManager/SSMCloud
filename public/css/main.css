@@ -636,7 +636,7 @@ body {
 .log-viewer,
 .server-install-command,
 pre {
-    max-height: 200px;
+    max-height: 400px;
     overflow-x: auto;
     background: #1d1d1d;
     padding: 6px;

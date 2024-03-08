@@ -1,6 +1,7 @@
 const AgentMap = require("./agentmap");
 
 const ModsPage = require("./mods-page");
+const AccountPage = require("./account-page");
 
 function main() {
     toastr.options.closeButton = true;
@@ -26,6 +27,8 @@ function main() {
     };
 
     FontAwesome.library.add(faWebhook);
+
+    AccountPage.init();
 
     $(".circle").each((index, el) => {
         const $el = $(el);

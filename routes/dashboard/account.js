@@ -18,42 +18,9 @@ router.get(
     accountController.getDeleteUserInvite
 );
 
-router.post(
-    "/user",
-    isAuth,
-    [
-        check("inp_useremail")
-            .isEmail()
-            .withMessage("Please enter a valid email.")
-            // Method found in validator.js docs. validator.js implicitly installed with express-validator
-            .custom((value, { req }) => {
-                return User.findOne({ email: value, active: true }).then(
-                    (userDoc) => {
-                        if (userDoc) {
-                            return Promise.reject("Email already in use.");
-                        }
-                    }
-                );
-            })
-            .normalizeEmail(),
-        body("inp_userrole")
-            // Method found in validator.js docs. validator.js implicitly installed with express-validator
-            .custom((value, { req }) => {
-                return Account.findOne({
-                    users: req.session.user._id,
-                    userRoles: value,
-                }).then((accountDoc) => {
-                    if (accountDoc == null) {
-                        return Promise.reject(
-                            "User Role Not Attached To Account!"
-                        );
-                    }
-                });
-            }),
-        // Adding validation error message as second argument as alternative to using withMessage() after each validator since using message for both checks
-    ],
-    accountController.postAccountUser
-);
+router.get("/users", isAuth, accountController.getAccountUsers);
+
+router.post("/users", isAuth, accountController.postAccountUser);
 
 router.post(
     "/apikey",
@@ -79,5 +46,7 @@ router.get(
 router.get("/apikey", (req, res, next) => {
     res.redirect("/dashboard/account");
 });
+
+router.get("/audit", accountController.getAccountAudit);
 
 module.exports = router;
