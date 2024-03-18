@@ -1,3 +1,6 @@
+## 1.0.132 (March 18, 2024)
+
+
 ## 1.0.130 (January 29, 2024)
   - fix: Fixed mod dependency checks
 
