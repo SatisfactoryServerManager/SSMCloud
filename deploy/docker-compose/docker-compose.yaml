@@ -1,0 +1,28 @@
+version: "3"
+services:
+    ssmcloud:
+        ports:
+            - 3000:3000
+        volumes:
+            - /home/ssm:/home/ssm
+            - /SSM/Cloud/data:/SSM/Cloud/data
+        restart: unless-stopped
+        environment:
+            - SSM_BACKEND_URL=http://ssmcloud-backend:3001
+        container_name: ssmcloud
+        image: mrhid6/ssmcloud:latest
+    ssmcloud-backend:
+        ports:
+            - 3001:3001
+        volumes:
+            - /home/ssm:/home/ssm
+        restart: unless-stopped
+        environment:
+            - DB_HOST=<MONGO_HOST>
+            - DB_PORT=27017
+            - DB_DB=ssm
+            - DB_USER=ssm
+            - DB_PASS=SSMPass
+            - JWT_Key=<RANDOM_KEY>
+        container_name: ssmcloud-backend
+        image: mrhid6/ssmcloud-backend:latest
