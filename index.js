@@ -4,9 +4,7 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const helmet = require("helmet");
@@ -18,6 +16,8 @@ const fs = require("fs-extra");
 const morgan = require("morgan");
 const multer = require("multer");
 var cookieParser = require("cookie-parser");
+
+var FileStore = require("session-file-store")(session);
 
 const frameguard = require("frameguard");
 
@@ -64,19 +64,7 @@ class SSMCloud_App {
     };
 
     startExpress() {
-        this.MONGODB_URI = `mongodb://${Config.get(
-            "ssm.db.user"
-        )}:${encodeURIComponent(Config.get("ssm.db.pass"))}@${Config.get(
-            "ssm.db.server"
-        )}:${Config.get("ssm.db.port")}/${Config.get("ssm.db.database")}`;
-
-        console.log("Mongo URI: ", this.MONGODB_URI);
-
         const app = express();
-        const store = new MongoDBStore({
-            uri: this.MONGODB_URI,
-            collection: "sessions",
-        });
 
         app.use(bodyParser.json());
 
@@ -193,9 +181,6 @@ class SSMCloud_App {
 
         app.use(morgan("combined"));
 
-        const APIRoutes = require("./routes/api");
-        app.use("/api", APIRoutes);
-
         app.use(
             session({
                 secret: "SSMCloud",
@@ -203,7 +188,9 @@ class SSMCloud_App {
                 saveUninitialized: false,
                 rolling: true,
                 unset: "destroy",
-                store,
+                store: new FileStore({
+                    path: path.join(Config.get("ssm.tempdir"), "sessions"),
+                }),
                 cookie: {
                     maxAge: 24 * 60 * 60 * 1000,
                     httpOnly: false,
@@ -251,25 +238,11 @@ class SSMCloud_App {
             });
         });
 
-        mongoose.set("strictQuery", false);
-
-        mongoose
-            .connect(this.MONGODB_URI, {
-                useUnifiedTopology: true,
-                useNewUrlParser: true,
-            })
-            .then(async () => {
-                Logger.debug("[APP] - Connected to DB!");
-                Logger.info(
-                    `[APP] - Listening on port: ${Config.get("ssm.http_port")}`
-                );
-                app.listen(Config.get("ssm.http_port"));
-                ServerApp.init();
-            })
-            .catch((err) => {
-                Logger.error("[APP] - Failed to connect to DB!");
-                console.log(err);
-            });
+        Logger.info(
+            `[APP] - Listening on port: ${Config.get("ssm.http_port")}`
+        );
+        app.listen(Config.get("ssm.http_port"));
+        ServerApp.init();
     }
 }
 

@@ -14,16 +14,16 @@
           </div>
           <div class="col-12 col-md-6">
 
-            <%if(!agent.online){%>
+            <%if(!agent.status.online){%>
             <span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> <b>Offline</b></span>
             <%}else{%>
             <span class="badge bg-success"><b>Online</b></span>
-            <%if(agent.installed){%>
+            <%if(agent.status.installed){%>
             <span class="badge bg-success"><b>Installed</b></span>
             <%}else{%>
             <span class="badge bg-warning"><b>Not Installed</b></span>
             <%}%>
-              <%if(agent.running){%>
+              <%if(agent.status.running){%>
             <span class="badge bg-success"><b>Running</b></span>
             <%}else{%>
             <span class="badge bg-warning"><b>Not Running</b></span>
@@ -51,7 +51,7 @@
             </span>
           </div>
           <div class="col-12 col-md-6">
-            <b id="agent-connectionport"><%=agent.sfPortNum%></b>
+            <b id="agent-connectionport"><%=agent.config.port%></b>
           </div>
         </div>
         <div class="row settings-row">
@@ -74,8 +74,8 @@
             </span>
           </div>
           <div class="col-12 col-md-6">
-            <b id="sfserver-version"><%=agent.config.sfVersions.installed%></b> /
-            <b id="sfserver-version"><%=agent.config.sfVersions.available%></b>
+            <b id="sfserver-version"><%=agent.status.installedSFVersion%></b> /
+            <b id="sfserver-version"><%=agent.status.latestSFVersion%></b>
           </div>
         </div>
         <div class="row settings-row">
@@ -120,7 +120,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.config.checkForUpdatesOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                  <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.serverConfig.updateOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
                 <div class="row settings-row">
@@ -131,7 +131,7 @@
                       </span>
                     </div>
                     <div class="col-12 col-md-8">
-                      <input name="inp_autorestart" id="inp_autorestart" type="checkbox" <%if(agent.config.autoRestartServer){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                      <input name="inp_autorestart" id="inp_autorestart" type="checkbox" <%if(agent.serverConfig.autoRestartServer){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                     </div>
                 </div>
                 <div class="row settings-row">
@@ -142,7 +142,7 @@
                         </span>
                     </div>
                     <div class="col-12 col-md-8">
-                        <input name="inp_autoPause" id="inp_autoPause" type="checkbox" <%if(agent.config.autoPause){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                        <input name="inp_autoPause" id="inp_autoPause" type="checkbox" <%if(agent.serverConfig.autoPause){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                     </div>
                 </div>
                 <div class="row settings-row">
@@ -153,7 +153,7 @@
                         </span>
                     </div>
                     <div class="col-12 col-md-8">
-                        <input name="inp_autoSaveOnDisconnect" id="inp_autoSaveOnDisconnect" type="checkbox" <%if(agent.config.autoSaveOnDisconnect){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                        <input name="inp_autoSaveOnDisconnect" id="inp_autoSaveOnDisconnect" type="checkbox" <%if(agent.serverConfig.autoSaveOnDisconnect){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                     </div>
                 </div>
                 <div class="row settings-row">
@@ -165,12 +165,12 @@
                     </div>
                     <div class="col-12 col-md-8">
                         <select name="inp_autoSaveInterval" id="inp_autoSaveInterval" class="form-select">
-                            <option value="60" <%=(agent.config.autoSaveInterval==60)?"selected":""%>>1 Minute</option>
-                  <option value="300" <%=(agent.config.autoSaveInterval==300)?"selected":""%>>5 Minutes</option>
-                  <option value="600" <%=(agent.config.autoSaveInterval==600)?"selected":""%>>10 Minutes</option>
-                  <option value="900" <%=(agent.config.autoSaveInterval==900)?"selected":""%>>15 Minutes</option>
-                  <option value="1800" <%=(agent.config.autoSaveInterval==1800)?"selected":""%>>30 Minutes</option>
-                  <option value="3600" <%=(agent.config.autoSaveInterval==3600)?"selected":""%>>1 Hour</option>
+                            <option value="60" <%=(agent.serverConfig.autoSaveInterval==60)?"selected":""%>>1 Minute</option>
+                  <option value="300" <%=(agent.serverConfig.autoSaveInterval==300)?"selected":""%>>5 Minutes</option>
+                  <option value="600" <%=(agent.serverConfig.autoSaveInterval==600)?"selected":""%>>10 Minutes</option>
+                  <option value="900" <%=(agent.serverConfig.autoSaveInterval==900)?"selected":""%>>15 Minutes</option>
+                  <option value="1800" <%=(agent.serverConfig.autoSaveInterval==1800)?"selected":""%>>30 Minutes</option>
+                  <option value="3600" <%=(agent.serverConfig.autoSaveInterval==3600)?"selected":""%>>1 Hour</option>
                   </select>
                 </div>
               </div>
@@ -182,7 +182,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input name="inp_seasonalEvents" id="inp_seasonalEvents" type="checkbox" <%if(!agent.config.disableSeasonalEvents){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+                  <input name="inp_seasonalEvents" id="inp_seasonalEvents" type="checkbox" <%if(!agent.serverConfig.disableSeasonalEvents){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
               <div class="row settings-row">
@@ -193,7 +193,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-6">
-                  <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.config.maxPlayers%>">
+                  <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.serverConfig.maxPlayers%>">
                 </div>
 
                 <div class="col-12 col-md-2">
@@ -210,7 +210,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input type="number" value="<%=agent.config.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
+                  <input type="number" value="<%=agent.serverConfig.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
                 </div>
               </div>
               <div class="row settings-row">
@@ -221,7 +221,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.config.sfBranch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
+                  <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.serverConfig.branch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
             <div class="row">
@@ -289,7 +289,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backup.interval%>">
+                  <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backupInterval%>">
                 </div>
               </div>
               <div class="row settings-row">
@@ -300,7 +300,7 @@
                   </span>
                 </div>
                 <div class="col-12 col-md-8">
-                  <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backup.keep%>">
+                  <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backupKeepAmount%>">
                 </div>
               </div>
               <div class="row">

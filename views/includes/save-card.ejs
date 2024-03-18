@@ -1,24 +1,4 @@
-<div class="card border-secondary mb-3 shadow bg-glass">
-  <div class="card-header">
-    <h5>Active Save Files</h5>
-  </div>
-  <div class="card-body">
-    <table class="table table-bordered saves-table">
-      <thead>
-        <tr>
-          <th>Session</th>
-          <th>File Name</th>
-          <th>Last Updated</th>
-          <th>Size</th>
-          <th>Mods</th>
-          <th width="80px">Options</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%agent.saves.forEach(save=>{%>
-
-
-        <%
+<%
                     Number.prototype.pad = function (width, z) {
                         let n = this;
                         z = z || "0";
@@ -43,9 +23,7 @@
                         ];
                         return monthNames[this.getMonth()];
                     };
-                       
-                
-                        const date = new Date(save.stats.mtime);
+                        const date = new Date(save.createdAt);
                         const day = date.getDate().pad(2)
                         const month = date.getMonthName();
                         const year = date.getFullYear();
@@ -55,7 +33,8 @@
                         const sec = date.getSeconds().pad(2)
                 
                         const dateStr = `${day}/${month}/${year} ${hour}:${min}:${sec}`;
-                        function formatBytes(bytes, decimals = 2) {
+                        
+                       function formatBytes(bytes, decimals = 2) {
                             if (!+bytes) return '0 Bytes'
 
                             const k = 1024
@@ -66,19 +45,24 @@
 
                             return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
                         }
+
                         %>
-        <tr>
-          <td><%=save.sessionName%></td>
-          <td><%=save.fileName%></td>
-          <td><%=dateStr%></td>
-          <td><%=formatBytes(save.stats.size)%></td>
-          <td><%=save.mods.length%></td>
-          <td> <a target="_blank" href="/dashboard/saves/download/<%=agent._id%>/<%=save.fileName%>" class="btn btn-primary">
-              <i class="fas fa-download"></i>
-            </a></td>
-        </tr>
-        <%})%>
-      </tbody>
-    </table>
+
+
+<div class="card bg-glass bg-glass-blue save-card" data-savename="<%=save.fileName%>">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <a target="_blank" href="/dashboard/download/save?agentid=<%=agent._id%>&uuid=<%=save.uuid%>" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i>
+        </a>
+        <h6><%=save.fileName%></h6>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <small><%=formatBytes(save.size)%> - <%=dateStr%></small>
+      </div>
+    </div>
   </div>
 </div>

@@ -10,6 +10,11 @@
           </div>
           <div class="card-body">
             <h4 class="card-title">Setup 2FA with your authenticator app.</h4>
+            <% if(locals.errorMessage){ const errorMessageData = JSON.parse(errorMessage);%>
+            <div class="alert alert-danger text-center fw-bold fs-6">
+              <%=errorMessageData.message%>
+            </div>
+            <%}%>
             <img style="display: block; margin: auto" src="<%=QRCODE%>" />
 
             <form action="/2fa/setup" method="post" class="form-horizontal">

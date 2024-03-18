@@ -36,12 +36,8 @@ class ServerConfig extends iConfig {
 
         this.GetConfigDefaultValue("ssm.http_port", 3000, true);
 
-        // Mongo DB Config
-        this.GetConfigDefaultValue("ssm.db.user", "ssm");
-        this.GetConfigDefaultValue("ssm.db.pass", "#SSMP@$£");
-        this.GetConfigDefaultValue("ssm.db.database", "ssm");
-        this.GetConfigDefaultValue("ssm.db.server", "127.0.0.1");
-        this.GetConfigDefaultValue("ssm.db.port", 27017, true);
+        // Backend Config
+        this.GetConfigDefaultValue("ssm.backend.url", "http://127.0.0.1:3000");
 
         // hCaptcha Config
         this.GetConfigDefaultValue("ssm.hcaptcha.enabled", false, false, true);
@@ -75,16 +71,6 @@ class ServerConfig extends iConfig {
         );
         this.GetConfigDefaultValue("ssm.mail.transport.auth.user", "EMAIL");
         this.GetConfigDefaultValue("ssm.mail.transport.auth.pass", "PASSWORD");
-
-        // Mods
-
-        this.GetConfigDefaultValue("ssm.mods.usedev", false, false, true);
-
-        if (super.get("ssm.mods.usedev")) {
-            super.set("ssm.mods.api", "https://api.ficsit.dev");
-        } else {
-            super.set("ssm.mods.api", "https://api.ficsit.app");
-        }
 
         // Flags
 
