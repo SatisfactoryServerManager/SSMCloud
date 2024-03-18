@@ -14,7 +14,6 @@ router.get(
     dashboardController.getServerAction
 );
 router.use("/account", require("./account"));
-router.use("/logs", require("./logs"));
 router.use("/mods", require("./mods"));
 router.use("/integrations", require("./integrations"));
 router.use("/servers", require("./servers"));

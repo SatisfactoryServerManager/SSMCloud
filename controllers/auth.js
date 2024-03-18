@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 
 const BackendAPI = require("../utils/backend-api");
 
-var ObjectId = require("mongoose").Types.ObjectId;
 
 const { validationResult } = require("express-validator");
 const QRCode = require("qrcode");

@@ -1,5 +1,3 @@
-var ObjectId = require("mongoose").Types.ObjectId;
-
 const fs = require("fs-extra");
 const path = require("path");
 
@@ -9,7 +7,6 @@ const BackendAPI = require("../../utils/backend-api");
 
 exports.Servers = require("./servers");
 exports.Account = require("./account");
-exports.Logs = require("./logs");
 exports.Download = require("./download");
 
 exports.getDashboard = async (req, res, next) => {
