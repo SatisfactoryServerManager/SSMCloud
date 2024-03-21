@@ -1,3 +1,7 @@
+## 1.0.134 (March 21, 2024)
+  - fix: Fixed agent map
+  - feat: Deploy scripts
+
 ## 1.0.133 (March 18, 2024)
   - ci: Fix workflow
 
