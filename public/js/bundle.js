@@ -325,7 +325,7 @@ class AgentMap {
                 }
             );
             playerMarker.bindPopup(
-                `<b>${player.playerName}</b><br><b>Online:</b>${
+                `<b>${player.username}</b><br><b>Online:</b>${
                     player.online ? "true" : "false"
                 }`
             );

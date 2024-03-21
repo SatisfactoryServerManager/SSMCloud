@@ -247,6 +247,14 @@ class BackendAPI {
             { password }
         );
     };
+
+    GetAgentMapData = async (agentId) => {
+        let apiData = await this.GET_APICall_NoToken(
+            `/api/v1/account/agents/${agentId}/mapdata`
+        );
+
+        return apiData.data;
+    };
 }
 
 const backendAPI = new BackendAPI();
