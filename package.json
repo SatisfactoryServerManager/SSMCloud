@@ -28,7 +28,7 @@
         "discord-webhook-node": "^1.1.8",
         "ejs": "^3.1.9",
         "event-stream": "^4.0.1",
-        "express": "^4.18.1",
+        "express": "^4.19.2",
         "express-handlebars": "^7.1.2",
         "express-rate-limit": "^7.1.5",
         "express-session": "^1.17.3",
