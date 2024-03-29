@@ -95,7 +95,7 @@ class BackendAPI {
 
     DELETE_APICall_Token = async (endpoint, token = "") => {
         const res = await fetch(`${this.url}${endpoint}`, {
-            method: "PUT",
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "x-ssm-jwt": token,
@@ -105,7 +105,7 @@ class BackendAPI {
         let resData = await res.text();
 
         if (res.status != 200) {
-            console.log(resData);
+            console.log(endpoint, resData);
             throw new Error(`api returned non-ok status code: ${res.status}`);
         }
 
