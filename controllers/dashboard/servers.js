@@ -340,7 +340,7 @@ exports.getServerDelete = async (req, res, next) => {
     };
 
     const errorMessageData = {
-        section: serverlist,
+        section: "serverlist",
         message: `Something Went Wrong!`,
     };
 
