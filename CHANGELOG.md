@@ -1,3 +1,7 @@
+## 1.0.135 (March 29, 2024)
+  - fix: Fixed server delete api call
+  - fix: Fixed server delete crash
+
 ## 1.0.134 (March 21, 2024)
   - fix: Fixed agent map
   - feat: Deploy scripts
