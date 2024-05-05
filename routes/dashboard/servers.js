@@ -7,6 +7,20 @@ const dashboardServersController = require("../../controllers/dashboard/servers"
 
 const { check, body } = require("express-validator");
 
+const Config = require("../../server/server_config");
+
+// SET STORAGE
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, Config.get("ssm.tempdir"));
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage: storage });
+
 const router = express.Router();
 
 router.get("/", isAuth, dashboardServersController.getServers);
@@ -35,7 +49,7 @@ router.post("/:agentid", isAuth, dashboardServersController.postServer);
 
 router.get("/:agentid/js", isAuth, dashboardServersController.getServerJS);
 
-router.post("/:agentid/saves", isAuth, dashboardController.postSaves);
+router.post("/:agentid/saves", isAuth, upload.single("file"), dashboardController.postSaves);
 
 router.get(
     "/delete/:agentid",

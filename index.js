@@ -74,20 +74,6 @@ class SSMCloud_App {
             })
         );
 
-        // SET STORAGE
-        var storage = multer.diskStorage({
-            destination: function (req, file, cb) {
-                cb(null, Config.get("ssm.tempdir"));
-            },
-            filename: function (req, file, cb) {
-                cb(null, `${file.originalname}`);
-            },
-        });
-
-        const upload = multer({ storage: storage });
-
-        app.use(upload.single("file"));
-
         app.set("trust proxy", true);
 
         // Secret used for signing/hashing token is stored in session by default
