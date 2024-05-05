@@ -14,7 +14,6 @@ const cors = require("cors");
 const methodOverride = require("method-override");
 const fs = require("fs-extra");
 const morgan = require("morgan");
-const multer = require("multer");
 var cookieParser = require("cookie-parser");
 
 var FileStore = require("session-file-store")(session);

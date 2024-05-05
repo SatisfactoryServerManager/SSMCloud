@@ -6,6 +6,7 @@ const dashboardController = require("../../controllers/dashboard");
 const dashboardServersController = require("../../controllers/dashboard/servers");
 
 const { check, body } = require("express-validator");
+const multer = require("multer");
 
 const Config = require("../../server/server_config");
 
@@ -49,7 +50,12 @@ router.post("/:agentid", isAuth, dashboardServersController.postServer);
 
 router.get("/:agentid/js", isAuth, dashboardServersController.getServerJS);
 
-router.post("/:agentid/saves", isAuth, upload.single("file"), dashboardController.postSaves);
+router.post(
+    "/:agentid/saves",
+    isAuth,
+    upload.single("file"),
+    dashboardController.postSaves
+);
 
 router.get(
     "/delete/:agentid",
