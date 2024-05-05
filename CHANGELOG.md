@@ -1,3 +1,7 @@
+## 1.0.136 (May 05, 2024)
+  - feat: Bump packages
+  - fix: Fixed unused upload functions
+
 ## 1.0.135 (March 29, 2024)
   - fix: Fixed server delete api call
   - fix: Fixed server delete crash
