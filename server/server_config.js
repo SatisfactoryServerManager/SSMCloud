@@ -25,6 +25,7 @@ class ServerConfig extends iConfig {
 
         super.set("ssm.tempdir", path.join(VarCache.get("homedir"), "temp"));
         fs.ensureDirSync(super.get("ssm.tempdir"));
+        fs.ensureDirSync(path.join(super.get("ssm.tempdir"), "sessions"));
 
         super.set(
             "ssm.uploadsdir",
