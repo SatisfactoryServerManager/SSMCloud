@@ -1,3 +1,6 @@
+## 1.0.137 (May 07, 2024)
+  - fix: CSRF check, mongodb docker compose
+
 ## 1.0.136 (May 05, 2024)
   - feat: Bump packages
   - fix: Fixed unused upload functions
