@@ -1,3 +1,6 @@
+## 1.0.138 (May 07, 2024)
+  - fix: Fixed session directory creation
+
 ## 1.0.137 (May 07, 2024)
   - fix: CSRF check, mongodb docker compose
 
