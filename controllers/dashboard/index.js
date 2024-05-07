@@ -107,6 +107,8 @@ exports.postSaves = async (req, res, next) => {
     const file = req.file;
 
     try {
+        console.log(file);
+
         const theAccount = await BackendAPI.GetAccount(req.session.token);
         const theAgent = await BackendAPI.GetAgentById(
             req.session.token,
@@ -124,19 +126,22 @@ exports.postSaves = async (req, res, next) => {
         if (file == null) {
             throw new Error("No save file was selected");
         }
-
-        const newFilePath = path.join(
+        const newFileDir = path.join(
             Config.get("ssm.uploadsdir"),
             theAccount._id,
             theAgent._id,
-            "saves",
-            file.originalname
+            "saves"
         );
+
+        fs.ensureDirSync(newFileDir);
+
+        const newFilePath = path.join(newFileDir, file.originalname);
+
         if (fs.existsSync(newFilePath)) {
             fs.unlinkSync(newFilePath);
         }
 
-        fs.moveSync(file.path, newFilePath);
+        fs.writeFileSync(newFilePath, file.buffer, "binary");
 
         await BackendAPI.CreateAgentTask(req.session.token, agentid, {
             action: "downloadSave",

@@ -53,7 +53,7 @@ router.get("/:agentid/js", isAuth, dashboardServersController.getServerJS);
 router.post(
     "/:agentid/saves",
     isAuth,
-    upload.single("file"),
+    //upload.single("file"),
     dashboardController.postSaves
 );
 

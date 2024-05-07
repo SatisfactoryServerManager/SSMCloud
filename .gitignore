@@ -11,3 +11,5 @@ tools/app_config.txt
 
 tools/app_config.txt
 log.txt
+
+deploy/docker-compose/mongodb-data

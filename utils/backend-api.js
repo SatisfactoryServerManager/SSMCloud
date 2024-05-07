@@ -18,7 +18,15 @@ class BackendAPI {
 
         if (res.status != 200) {
             console.log(resData);
-            throw new Error(`api returned non-ok status code: ${res.status}`);
+            let resJson = { error: "unknown error" };
+
+            try {
+                resJson = JSON.parse(resData);
+            } catch (err) {}
+
+            throw new Error(
+                `api returned non-ok status code: ${res.status} - ${resJson.error}`
+            );
         }
 
         resData = JSON.parse(resData);
@@ -49,7 +57,16 @@ class BackendAPI {
 
         if (res.status != 200) {
             console.log(resData);
-            throw new Error(`api returned non-ok status code: ${res.status}`);
+
+            let resJson = { error: "unknown error" };
+
+            try {
+                resJson = JSON.parse(resData);
+            } catch (err) {}
+
+            throw new Error(
+                `api returned non-ok status code: ${res.status} - ${resJson.error}`
+            );
         }
 
         resData = JSON.parse(resData);
@@ -80,7 +97,15 @@ class BackendAPI {
 
         if (res.status != 200) {
             console.log(resData);
-            throw new Error(`api returned non-ok status code: ${res.status}`);
+            let resJson = { error: "unknown error" };
+
+            try {
+                resJson = JSON.parse(resData);
+            } catch (err) {}
+
+            throw new Error(
+                `api returned non-ok status code: ${res.status} - ${resJson.error}`
+            );
         }
 
         resData = JSON.parse(resData);
@@ -106,7 +131,15 @@ class BackendAPI {
 
         if (res.status != 200) {
             console.log(endpoint, resData);
-            throw new Error(`api returned non-ok status code: ${res.status}`);
+            let resJson = { error: "unknown error" };
+
+            try {
+                resJson = JSON.parse(resData);
+            } catch (err) {}
+
+            throw new Error(
+                `api returned non-ok status code: ${res.status} - ${resJson.error}`
+            );
         }
 
         resData = JSON.parse(resData);

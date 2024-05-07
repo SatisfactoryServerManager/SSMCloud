@@ -8,17 +8,19 @@ services:
             - /SSM/Cloud/data:/SSM/Cloud/data
         restart: unless-stopped
         environment:
-            - SSM_BACKEND_URL=http://ssmcloud-backend:3001
+            - SSM_BACKEND_URL=http://ssmcloud-backend:3000
         container_name: ssmcloud
         image: mrhid6/ssmcloud:latest
+        depends_on:
+            - ssmcloud-backend
     ssmcloud-backend:
         ports:
-            - 3001:3001
+            - 3001:3000
         volumes:
             - /home/ssm:/home/ssm
         restart: unless-stopped
         environment:
-            - DB_HOST=<MONGO_HOST>
+            - DB_HOST=mongodb
             - DB_PORT=27017
             - DB_DB=ssm
             - DB_USER=ssm
@@ -26,3 +28,23 @@ services:
             - JWT_Key=<RANDOM_KEY>
         container_name: ssmcloud-backend
         image: mrhid6/ssmcloud-backend:latest
+        depends_on:
+            - mongodb
+    mongodb:
+        container_name: mongodb
+        image: mongo:latest
+        restart: always
+        command:
+            - --storageEngine
+            - wiredTiger
+            - --auth
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+            - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./mongodb-data:/data/db
+            - ./db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+        env_file: .env

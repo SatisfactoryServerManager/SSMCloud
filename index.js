@@ -5,7 +5,24 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const csrf = require("csurf");
+const { doubleCsrf } = require("csrf-csrf");
+const {
+    doubleCsrfProtection, // This is the default CSRF protection middleware.
+} = doubleCsrf({
+    getSecret: () => "Secret",
+    cookieName: "x-csrf-test", // Prefer "__Host-" prefixed names if possible
+    cookieOptions: { sameSite: false, secure: false },
+    size: 64, // The size of the generated tokens in bits
+    getTokenFromRequest: (req) => {
+        if (req.headers["x-csrf-token"] != null) {
+            return req.headers["x-csrf-token"];
+        } else {
+            console.log(req.body);
+            return req.body["_csrf"];
+        }
+    },
+});
+
 const flash = require("connect-flash");
 const helmet = require("helmet");
 const compression = require("compression");
@@ -31,6 +48,8 @@ const ServerApp = require("./server/server_app");
 /* Controllers */
 
 const errorController = require("./controllers/error");
+const multer = require("multer");
+const forms = multer();
 
 process.on("uncaughtException", function (err) {
     console.log(err);
@@ -65,18 +84,15 @@ class SSMCloud_App {
     startExpress() {
         const app = express();
 
-        app.use(bodyParser.json());
+        app.use(express.json());
 
         app.use(
-            bodyParser.urlencoded({
+            express.urlencoded({
                 extended: true,
             })
         );
 
         app.set("trust proxy", true);
-
-        // Secret used for signing/hashing token is stored in session by default
-        const csrfProtection = csrf();
 
         Logger.info("[APP] [EXPRESS] - Starting Express..");
         app.set("view engine", "ejs");
@@ -105,8 +121,6 @@ class SSMCloud_App {
 
         // methodOverride
         app.use(methodOverride("_method"));
-
-        app.use(cookieParser());
 
         app.use(
             helmet({
@@ -183,7 +197,15 @@ class SSMCloud_App {
             })
         );
 
-        app.use(csrfProtection);
+        app.use(cookieParser());
+        app.use(multer().single("file"));
+        app.use(doubleCsrfProtection);
+
+        // Make the token available to all views
+        app.use(function (req, res, next) {
+            res.locals.csrfToken = req.csrfToken();
+            next();
+        });
         app.use(flash());
 
         app.use(
@@ -199,9 +221,7 @@ class SSMCloud_App {
         );
 
         app.use((req, res, next) => {
-            // Locals field: Express feature for setting local variables that are passed into views. For every request that is executed, these fields are set for view that is rendered
             res.locals.isAuthenticated = req.session.isLoggedIn;
-            res.locals.csrfToken = req.csrfToken();
             next();
         });
         app.use("/docs", express.static(__basedir + "/docs"));
