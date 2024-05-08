@@ -1,3 +1,8 @@
+## 1.0.139 (May 08, 2024)
+  - fix: Upload save file to backend api
+  - feat: Updated install script
+  - fix: Fixed docker compose volume binds
+
 ## 1.0.138 (May 07, 2024)
   - fix: Fixed session directory creation
 
