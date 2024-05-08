@@ -1,11 +1,10 @@
-version: "3"
 services:
     ssmcloud:
         ports:
             - 3000:3000
         volumes:
             - /home/ssm/frontend:/home/ssm
-            - /SSM/Cloud/data:/SSM/Cloud/data
+            - /home/ssm/frontend-data:/SSM/Cloud/data
         restart: unless-stopped
         environment:
             - SSM_BACKEND_URL=http://ssmcloud-backend:3000

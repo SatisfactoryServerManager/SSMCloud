@@ -162,7 +162,6 @@ if id "ssm" &>/dev/null; then
     groupmod -g 9999 ssm >/dev/null 2>&1
 
     chown -R ssm:ssm /home/ssm >/dev/null 2>&1
-    chown -R ssm:ssm /opt/SSM >/dev/null 2>&1
 else
     useradd -m ssm -u 9999 -s /bin/bash >/dev/null 2>&1
 fi
@@ -174,6 +173,14 @@ git clone https://github.com/SatisfactoryServerManager/SSMCloud.git /tmp/ssmclou
 cp -r /tmp/ssmcloud-repo/deploy/docker-compose /home/ssm/. >/dev/null 2>&1
 rm -r /tmp/ssmcloud-repo >/dev/null 2>&1
 
+mkdir -p /home/ssm/frontend >/dev/null 2>&1
+mkdir -p /home/ssm/frontend-data >/dev/null 2>&1
+mkdir -p /home/ssm/backend >/dev/null 2>&1
+mkdir -p /home/ssm/db >/dev/null 2>&1
+
+chown -R ssm:ssm /home/ssm >/dev/null 2>&1
+chmod -R 755 /home/ssm >/dev/null 2>&1
+
 cd /home/ssm/docker-compose
 docker compose pull -q
 cd ~/.
@@ -182,7 +189,7 @@ stop_spinner $?
 
 start_spinner "${YELLOW}Starting SSM Cloud containers${NC}"
 cd /home/ssm/docker-compose
-docker compose up -d -q
+docker compose up -d
 stop_spinner $?
 
 exit 0
