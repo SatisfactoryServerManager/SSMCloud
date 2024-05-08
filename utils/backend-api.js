@@ -1,4 +1,6 @@
 const Config = require("../server/server_config");
+const fs = require("fs-extra");
+const path = require("path");
 
 class BackendAPI {
     init() {
@@ -125,6 +127,44 @@ class BackendAPI {
                 "Content-Type": "application/json",
                 "x-ssm-jwt": token,
             },
+        });
+
+        let resData = await res.text();
+
+        if (res.status != 200) {
+            console.log(endpoint, resData);
+            let resJson = { error: "unknown error" };
+
+            try {
+                resJson = JSON.parse(resData);
+            } catch (err) {}
+
+            throw new Error(
+                `api returned non-ok status code: ${res.status} - ${resJson.error}`
+            );
+        }
+
+        resData = JSON.parse(resData);
+
+        if (resData.success == false) {
+            console.log(resData);
+            throw new Error(`api returned error ${resData.error}`);
+        }
+
+        return resData;
+    };
+
+    FILE_APICall_Token = async (endpoint, filepath, token) => {
+        const formData = new FormData();
+        const blob = new Blob([await fs.readFileSync(filepath)]);
+        formData.set("file", blob, path.basename(filepath));
+
+        const res = await fetch(`${this.url}${endpoint}`, {
+            method: "POST",
+            headers: {
+                "x-ssm-jwt": token,
+            },
+            body: formData,
         });
 
         let resData = await res.text();

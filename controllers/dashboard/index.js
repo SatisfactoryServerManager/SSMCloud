@@ -107,7 +107,6 @@ exports.postSaves = async (req, res, next) => {
     const file = req.file;
 
     try {
-        console.log(file);
 
         const theAccount = await BackendAPI.GetAccount(req.session.token);
         const theAgent = await BackendAPI.GetAgentById(
@@ -143,6 +142,12 @@ exports.postSaves = async (req, res, next) => {
 
         fs.writeFileSync(newFilePath, file.buffer, "binary");
 
+        await BackendAPI.FILE_APICall_Token(
+            `/api/v1/account/agents/upload/${agentid}/save`,
+            newFilePath,
+            req.session.token
+        );
+
         await BackendAPI.CreateAgentTask(req.session.token, agentid, {
             action: "downloadSave",
             data: {
@@ -163,6 +168,7 @@ exports.postSaves = async (req, res, next) => {
         };
 
         req.flash("error", JSON.stringify(errorMessageData));
+        console.log(err);
     }
 
     return res.redirect(`/dashboard/servers/${agentid}`);
