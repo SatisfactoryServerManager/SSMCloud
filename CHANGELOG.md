@@ -1,3 +1,7 @@
+## 1.0.140 (June 14, 2024)
+  - feat: Agent stats
+  - fix: fixed install script
+
 ## 1.0.139 (May 08, 2024)
   - fix: Upload save file to backend api
   - feat: Updated install script
