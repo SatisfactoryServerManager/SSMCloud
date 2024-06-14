@@ -2,6 +2,7 @@ const AgentMap = require("./agentmap");
 
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
+const { plugins, Legend } = require("chart.js");
 
 function main() {
     toastr.options.closeButton = true;
@@ -453,6 +454,10 @@ function main() {
         if (target == "#map") {
             window.agentMap.SetUpMap();
         }
+
+        if (target == "#stats") {
+            BuildAgentStats();
+        }
     });
 }
 
@@ -620,6 +625,249 @@ function BuildAgentInstallCommands() {
     $("#linux-install-agent .standalone span").text(
         LinuxStandaloneInstallCommand
     );
+}
+
+Number.prototype.pad = function (width, z) {
+    let n = this;
+    z = z || "0";
+    n = n + "";
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+};
+
+function BuildAgentStats() {
+    if (window.builtAgentStats != null && window.builtAgentStats) return;
+    BuildAgentCPUStats();
+    BuildAgentRAMStats();
+    BuildAgentRunningStats();
+
+    window.builtAgentStats = true;
+}
+
+function BuildAgentCPUStats() {
+    if ($("#cpuChart").length == 0) return;
+
+    const agent = window.agent;
+
+    let data = [];
+    if (agent.stats != null) {
+        const cpuStats = agent.stats.filter((s) => s.type == "CPU");
+
+        let count = 0;
+
+        for (let i = cpuStats.length - 1; i >= 0; i--) {
+            if (count >= 50) {
+                break;
+            }
+            const stat = cpuStats[i];
+
+            const date = new Date(stat.createdAt);
+
+            data.push({
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
+                value: parseFloat(stat.value),
+            });
+
+            count++;
+        }
+    }
+
+    data.reverse();
+
+    new Chart(document.getElementById("cpuChart"), {
+        type: "line",
+        data: {
+            labels: data.map((row) => row.date),
+            datasets: [
+                {
+                    label: "Percent",
+                    data: data.map((row) => row.value),
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white",
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: "white",
+                    },
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: "white",
+                    },
+                },
+            },
+        },
+    });
+}
+
+function BuildAgentRAMStats() {
+    if ($("#ramChart").length == 0) return;
+
+    const agent = window.agent;
+    let data = [];
+    if (agent.stats != null) {
+        const cpuStats = agent.stats.filter((s) => s.type == "RAM");
+
+        let count = 0;
+
+        for (let i = cpuStats.length - 1; i >= 0; i--) {
+            if (count >= 50) {
+                break;
+            }
+            const stat = cpuStats[i];
+
+            const date = new Date(stat.createdAt);
+
+            data.push({
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
+                value: parseFloat(stat.value),
+            });
+
+            count++;
+        }
+    }
+
+    data.reverse();
+
+    new Chart(document.getElementById("ramChart"), {
+        type: "line",
+        data: {
+            labels: data.map((row) => row.date),
+            datasets: [
+                {
+                    label: "Percent",
+                    data: data.map((row) => row.value),
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white",
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: "white",
+                    },
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: "white",
+                    },
+                },
+            },
+        },
+    });
+}
+
+function BuildAgentRunningStats() {
+    if ($("#uptimeChart").length == 0) return;
+
+    const agent = window.agent;
+    let data = [];
+    let backgroundColor = [];
+    if (agent.stats != null) {
+        const cpuStats = agent.stats.filter((s) => s.type == "Running");
+
+        let count = 0;
+
+        for (let i = cpuStats.length - 1; i >= 0; i--) {
+            if (count >= 50) {
+                break;
+            }
+            const stat = cpuStats[i];
+
+            const date = new Date(stat.createdAt);
+
+            const val = parseInt(stat.value);
+
+            if (val == -1) {
+                backgroundColor.push("rgba(255, 99, 132, 0.7)");
+            } else {
+                backgroundColor.push("rgba(75, 192, 192, 0.7)");
+            }
+
+            data.push({
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
+                value: parseInt(stat.value),
+            });
+
+            count++;
+        }
+    }
+
+    data.reverse();
+
+    new Chart(document.getElementById("uptimeChart"), {
+        type: "bar",
+        data: {
+            labels: data.map((row) => row.date),
+            datasets: [
+                {
+                    label: "Running",
+                    data: data.map((row) => row.value),
+                    backgroundColor,
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white",
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    min: -1,
+                    max: 1,
+                    ticks: {
+                        color: "white",
+                        stepSize: 1,
+                    },
+                },
+                x: {
+                    ticks: {
+                        color: "white",
+                    },
+                },
+            },
+        },
+    });
 }
 
 $(document).ready(() => {

@@ -178,6 +178,11 @@ class SSMCloud_App {
             express.static(__dirname + "/node_modules/bootstrap-select")
         );
 
+        app.use(
+            "/libraries/chart.js",
+            express.static(__dirname + "/node_modules/chart.js")
+        );
+
         app.use(morgan("combined"));
 
         app.use(

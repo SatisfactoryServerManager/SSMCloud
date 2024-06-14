@@ -94,6 +94,9 @@
         <a class="nav-link active" data-bs-toggle="tab" href="#settings" aria-selected="true" role="tab">Settings</a>
       </li>
       <li class="nav-item" role="presentation">
+        <a class="nav-link" data-bs-toggle="tab" href="#stats" aria-selected="false" role="tab">Stats</a>
+      </li>
+      <li class="nav-item" role="presentation">
         <a class="nav-link" data-bs-toggle="tab" href="#map" aria-selected="false" role="tab" tabindex="-1">Map</a>
       </li>
       <li class="nav-item" role="presentation">
@@ -122,9 +125,12 @@
   </div>
   <%}%>
             
-          <div id="myTabContent" class="tab-content">
-            <div class="tab-pane fade active show" id="settings" role="tabpanel">
-              <%- include('./server/settings.ejs') %>
+  <div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade active show" id="settings" role="tabpanel">
+        <%- include('./server/settings.ejs') %>
+  </div>
+  <div class="tab-pane fade" id="stats" role="tabpanel">
+    <%- include('./server/stats.ejs') %>
   </div>
   <div class="tab-pane fade" id="map" role="tabpanel">
     <%- include('./server/map.ejs') %>
