@@ -227,7 +227,7 @@ class BackendAPI {
 
     GetAgentById = async (token, agentId) => {
         let apiData = await this.GET_APICall_Token(
-            `/api/v1/account/agents/${agentId}`,
+            `/api/v1/account/agents/${agentId}?populate=stats`,
             token
         );
 

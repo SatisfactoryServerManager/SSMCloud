@@ -650,7 +650,7 @@ function BuildAgentCPUStats() {
 
     let data = [];
     if (agent.stats != null) {
-        const cpuStats = agent.stats.filter((s) => s.type == "CPU");
+        const cpuStats = agent.stats;
 
         let count = 0;
 
@@ -669,7 +669,7 @@ function BuildAgentCPUStats() {
                     date.getMinutes().pad(2) +
                     ":" +
                     date.getSeconds().pad(2),
-                value: parseFloat(stat.value),
+                value: parseFloat(stat.cpu),
             });
 
             count++;
@@ -722,7 +722,7 @@ function BuildAgentRAMStats() {
     const agent = window.agent;
     let data = [];
     if (agent.stats != null) {
-        const cpuStats = agent.stats.filter((s) => s.type == "RAM");
+        const cpuStats = agent.stats;
 
         let count = 0;
 
@@ -741,7 +741,7 @@ function BuildAgentRAMStats() {
                     date.getMinutes().pad(2) +
                     ":" +
                     date.getSeconds().pad(2),
-                value: parseFloat(stat.value),
+                value: parseFloat(stat.mem),
             });
 
             count++;
@@ -795,7 +795,7 @@ function BuildAgentRunningStats() {
     let data = [];
     let backgroundColor = [];
     if (agent.stats != null) {
-        const cpuStats = agent.stats.filter((s) => s.type == "Running");
+        const cpuStats = agent.stats;
 
         let count = 0;
 
@@ -822,7 +822,7 @@ function BuildAgentRunningStats() {
                     date.getMinutes().pad(2) +
                     ":" +
                     date.getSeconds().pad(2),
-                value: parseInt(stat.value),
+                value: stat.running == true ? 1 : -1,
             });
 
             count++;
