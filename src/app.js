@@ -807,9 +807,7 @@ function BuildAgentRunningStats() {
 
             const date = new Date(stat.createdAt);
 
-            const val = parseInt(stat.value);
-
-            if (val == -1) {
+            if (stat.running) {
                 backgroundColor.push("rgba(255, 99, 132, 0.7)");
             } else {
                 backgroundColor.push("rgba(75, 192, 192, 0.7)");

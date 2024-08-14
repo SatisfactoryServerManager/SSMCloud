@@ -1,3 +1,6 @@
+## 1.0.142 (August 14, 2024)
+
+
 ## 1.0.141 (August 14, 2024)
   - fix: stats page
 
