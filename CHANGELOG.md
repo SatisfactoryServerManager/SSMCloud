@@ -1,3 +1,6 @@
+## 1.0.141 (August 14, 2024)
+  - fix: stats page
+
 ## 1.0.140 (June 14, 2024)
   - feat: Agent stats
   - fix: fixed install script
