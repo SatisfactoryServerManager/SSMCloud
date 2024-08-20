@@ -1,9 +1,3 @@
-const Mrhid6Utils = require("mrhid6utils");
-const Tools = Mrhid6Utils.Tools;
-
-const fs = require("fs-extra");
-const path = require("path");
-
 const EmailHandler = require("../../server/server_email_handler");
 
 const BackendAPI = require("../../utils/backend-api");
