@@ -1,3 +1,6 @@
+## 1.0.144 (August 20, 2024)
+  - chore: update deps
+
 ## 1.0.143 (August 14, 2024)
 
 
