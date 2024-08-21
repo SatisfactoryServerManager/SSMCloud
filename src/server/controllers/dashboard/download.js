@@ -1,4 +1,4 @@
-import request from "request";
+import axios from "axios";
 
 import Config from "../../server_config.js";
 import BackendAPI from "../../utils/backend-api.js";
@@ -31,11 +31,12 @@ export async function getDownloadBackup(req, res, next) {
             theAgent._id
         }/download/backup/${uuid}`;
 
-        request
-            .get(url, {
-                headers: { "x-ssm-jwt": req.session.token },
-            })
-            .pipe(res);
+        const { data } = await axios.get(url, {
+            responseType: "stream",
+            headers: { "x-ssm-jwt": req.session.token },
+        });
+
+        data.pipe(res);
     } catch (err) {
         next(err);
     }
@@ -69,11 +70,12 @@ export async function getDownloadSave(req, res, next) {
             theAgent._id
         }/download/save/${uuid}`;
 
-        request
-            .get(url, {
-                headers: { "x-ssm-jwt": req.session.token },
-            })
-            .pipe(res);
+        const { data } = await axios.get(url, {
+            responseType: "stream",
+            headers: { "x-ssm-jwt": req.session.token },
+        });
+
+        data.pipe(res);
     } catch (err) {
         next(err);
     }
@@ -109,11 +111,12 @@ export async function getDownloadLog(req, res, next) {
             theAgent._id
         }/download/log/${type}`;
 
-        request
-            .get(url, {
-                headers: { "x-ssm-jwt": req.session.token },
-            })
-            .pipe(res);
+        const { data } = await axios.get(url, {
+            responseType: "stream",
+            headers: { "x-ssm-jwt": req.session.token },
+        });
+
+        data.pipe(res);
     } catch (err) {
         next(err);
     }
