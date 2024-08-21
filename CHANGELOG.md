@@ -1,3 +1,6 @@
+## 1.0.148 (August 21, 2024)
+  - fix: Fixes to outdated dep
+
 ## 1.0.147 (August 21, 2024)
   - feat: cleanup old deps
 

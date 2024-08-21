@@ -1,6 +1,6 @@
 {
     "name": "SSMCloud",
-    "version": "1.0.147",
+    "version": "1.0.148",
     "exports": "./src/index.js",
     "repository": "git@github.com:SatisfactoryServerManager/SSMCloud.git",
     "author": "Mrhid6 <mrhid6@gmail.com>",
