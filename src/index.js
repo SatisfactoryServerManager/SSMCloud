@@ -163,7 +163,6 @@ class SSMCloud_App {
             express.static(modulesPath + "/bootstrap4-toggle")
         );
         app.use("/libraries/toastr", express.static(modulesPath + "/toastr"));
-        app.use("/libraries/moment", express.static(modulesPath + "/moment"));
         app.use(
             "/libraries/datatables.net",
             express.static(modulesPath + "/datatables.net")
@@ -172,16 +171,6 @@ class SSMCloud_App {
         app.use(
             "/libraries/datatables.net-bs5",
             express.static(modulesPath + "/datatables.net-bs5")
-        );
-
-        app.use(
-            "/libraries/jquery-circle-progress",
-            express.static(modulesPath + "/jquery-circle-progress")
-        );
-
-        app.use(
-            "/libraries/bootstrap-select",
-            express.static(modulesPath + "/bootstrap-select")
         );
 
         app.use(
