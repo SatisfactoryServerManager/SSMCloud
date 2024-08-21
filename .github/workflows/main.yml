@@ -1,5 +1,5 @@
 ---
-name: Build SSM Cloud
+name: Build SSM Cloud Frontend
 on:
     push:
         tags:
@@ -9,24 +9,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - name: Use NodeJS 19.8.1
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 19.8.1
-            - run: npm i -g yarn pkg
-            - run: yarn
-            - run: mkdir -p ./release/linux
-            - run: pkg index.js -c package.json -t node18-linux-x64 --out-path ./release/linux -d > ./release/linux/build.log
-            - run: if [ ! -f release/linux/SSMCloud ]; then exit 1; fi
-            - uses: vimtor/action-zip@v1
-              with:
-                  files: release/linux/SSMCloud release/linux/build.log
-                  recursive: false
-                  dest: SSMCloud-Linux-amd64.zip
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: ssm-build
-                  path: ${{ github.workspace }}/SSMCloud-Linux-amd64.zip
             - name: Get version
               id: versionnum
               run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -45,74 +27,6 @@ jobs:
                   context: .
                   push: true
                   tags: mrhid6/ssmcloud:latest , mrhid6/ssmcloud:v${{ steps.versionnum.outputs.version }}
-    build-windows:
-        runs-on: self-hosted
-        steps:
-            - uses: actions/checkout@v3
-            - name: Use NodeJS 19.8.1
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 19.8.1
-            - run: npm i -g yarn pkg
-            - run: yarn
-            - run: mkdir -p ./release/windows
-            - run:
-                  pkg index.js -c package.json -t node18-win-x64 --out-path ./release/windows
-                  -d > ./release/windows/build.log
-            - uses: vimtor/action-zip@v1
-              with:
-                  files: release/windows/SSMCloud.exe release/windows/build.log
-                  recursive: false
-                  dest: SSMCloud-Windows-x64.zip
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: ssm-build
-                  path: ${{ github.workspace }}/SSMCloud-Windows-x64.zip
-    release:
-        needs:
-            - build-linux
-            - build-windows
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - name: Download a artifact
-              uses: actions/download-artifact@v3
-              with:
-                  name: ssm-build
-            - run: ls -l
-            - name: Get version
-              id: versionnum
-              run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-            - name: Create Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: v${{ steps.versionnum.outputs.version }}
-                  release_name: Release v${{ steps.versionnum.outputs.version }}
-                  draft: false
-                  prerelease: true
-            - name: Upload Linux Release Asset
-              id: upload-linux-release-asset
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./SSMCloud-Linux-amd64.zip
-                  asset_name: SSMCloud-Linux-amd64.zip
-                  asset_content_type: application/zip
-            - name: Upload Windows Release Asset
-              id: upload-win-release-asset
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./SSMCloud-Windows-x64.zip
-                  asset_name: SSMCloud-Windows-x64.zip
-                  asset_content_type: application/zip
     deploy:
         needs:
             - build-linux
@@ -122,12 +36,8 @@ jobs:
             - name: Get version
               id: versionnum
               run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-            - name: Install Octopus CLI
-              uses: OctopusDeploy/install-octopus-cli-action@v1
-              with:
-                  version: latest
             - name: Create and deploy release
-              uses: OctopusDeploy/create-release-action@v1
+              uses: OctopusDeploy/create-release-action@v3
               with:
                   api_key: ${{ secrets.OCTOPUSSERVERAPIKEY }}
                   server: ${{ secrets.OCTOPUSSERVERURL }}

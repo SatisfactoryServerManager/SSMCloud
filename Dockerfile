@@ -1,29 +1,29 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:latest
+FROM node:22
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update -y && apt-get -qq upgrade -y
-
 RUN apt-get -qq install binutils apt-utils wget curl htop iputils-ping dnsutils -y
-
-RUN apt-get -qq install lib32gcc-s1 -y 
 RUN apt-get -qq update -y
 
 RUN useradd -m -u 9999 -s /bin/bash ssm 
 
-RUN mkdir -p /opt/SSM/Cloud
-VOLUME /opt/SSM/Cloud
-COPY release/linux/* /opt/SSM/Cloud
-RUN chown -R ssm:ssm /opt/SSM/Cloud
+RUN mkdir -p /home/ssm/app/node_modules && chown -R ssm:ssm /home/ssm/app
+RUN mkdir -p /SSM/Cloud/Data && chown -R ssm:ssm /SSM
 
-RUN mkdir -p /SSM/Cloud/data
-RUN chown -R ssm:ssm /home/ssm
-RUN chown -R ssm:ssm /SSM/Cloud/data
+WORKDIR /home/ssm/app
 
-COPY entry.sh /entry.sh
-RUN chmod 755 /entry.sh
+COPY package*.json ./
 
-RUN ls -l /
+USER ssm
 
-ENTRYPOINT [ "/entry.sh" ]
+RUN yarn install
+
+COPY --chown=ssm:ssm . .
+
+RUN ls -l ./
+
+EXPOSE 3000
+
+CMD [ "yarn", "start" ]

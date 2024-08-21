@@ -1,9 +1,10 @@
 {
     "name": "SSMCloud",
     "version": "1.0.144",
-    "main": "index.js",
+    "exports": "./src/index.js",
     "repository": "git@github.com:SatisfactoryServerManager/SSMCloud.git",
     "author": "Mrhid6 <mrhid6@gmail.com>",
+    "type": "module",
     "license": "MIT",
     "dependencies": {
         "@commitlint/cli": "^19.4.0",
@@ -65,40 +66,23 @@
         "toastr": "^2.1.4"
     },
     "scripts": {
-        "start": "node index.js",
-        "watch": "watchify src/app.js -o public/js/bundle.js",
-        "watch:map": "watchify src/map.js -o public/js/map.bundle.js",
-        "bundle": "browserify --plugin tinyify src/app.js -o public/js/bundle.js",
-        "clean-css": "bash scripts/clean-css.sh"
+        "start": "node ./src/index.js",
+        "watch": "watchify src/client/app.js -o src/client/public/js/bundle.js",
+        "watch:map": "watchify src/client/map.js -o src/client/public/js/map.bundle.js",
+        "bundle": "browserify --plugin tinyify src/client/app.js -o src/client/public/js/bundle.js",
+        "clean-css": "bash scripts/clean-css.sh",
+        "build": "npx webpack build"
     },
     "resolutions": {
         "graceful-fs": "^4.2.10"
     },
-    "pkg": {
-        "assets": [
-            "views/**/*",
-            "public/**/*",
-            "scripts/**/*.sh",
-            "docs/**/*",
-            "node_modules/**/*.node",
-            "node_modules/jquery/dist/**/*",
-            "node_modules/jquery-steps/build/**/*",
-            "node_modules/@fortawesome/fontawesome-free/**/*",
-            "node_modules/bootstrap-select/**/*",
-            "node_modules/moment/min/**/*",
-            "node_modules/toastr/build/**/*",
-            "node_modules/ts-invariant/**/*",
-            "node_modules/exiftool-vendored.exe/**/*",
-            "node_modules/exiftool-vendored/**/*",
-            "node_modules/exiftool-vendored.pl/**/*",
-            "node_modules/jquery-circle-progress/**/*",
-            "src/**/*"
-        ],
-        "targets": [
-            "node18"
-        ]
-    },
     "devDependencies": {
-        "tinyify": "^4.0.0"
+        "@webpack-cli/generators": "^3.0.7",
+        "css-loader": "^7.1.2",
+        "mini-css-extract-plugin": "^2.9.1",
+        "style-loader": "^4.0.0",
+        "tinyify": "^4.0.0",
+        "webpack": "^5.93.0",
+        "webpack-cli": "^5.1.4"
     }
 }

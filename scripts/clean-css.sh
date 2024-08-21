@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-BASEDIR="${DIR}/.."
+BASEDIR="${DIR}/../src/client"
 
 CSS_DIR="${BASEDIR}/public/css"
 
