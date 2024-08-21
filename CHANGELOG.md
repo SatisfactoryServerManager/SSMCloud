@@ -1,3 +1,6 @@
+## 1.0.147 (August 21, 2024)
+  - feat: cleanup old deps
+
 ## 1.0.146 (August 21, 2024)
 
 
