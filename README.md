@@ -1,15 +1,3 @@
-# 🚀 Welcome to your new awesome project!
+# SSM Cloud Frontend
 
-This project has been created using **webpack-cli**, you can now run
-
-```
-npm run build
-```
-
-or
-
-```
-yarn build
-```
-
-to bundle your application
+A nodejs frontend web ui for Satisfactory Server Manager.
