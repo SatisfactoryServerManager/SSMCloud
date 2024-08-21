@@ -1,3 +1,6 @@
+## 1.0.145 (August 21, 2024)
+  - feat: Restructure of code
+
 ## 1.0.144 (August 20, 2024)
   - chore: update deps
 
