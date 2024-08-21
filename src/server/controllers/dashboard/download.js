@@ -32,6 +32,7 @@ export async function getDownloadBackup(req, res, next) {
         }/download/backup/${uuid}`;
 
         const { data } = await axios.get(url, {
+            validateStatus: false,
             responseType: "stream",
             headers: { "x-ssm-jwt": req.session.token },
         });
@@ -71,6 +72,7 @@ export async function getDownloadSave(req, res, next) {
         }/download/save/${uuid}`;
 
         const { data } = await axios.get(url, {
+            validateStatus: false,
             responseType: "stream",
             headers: { "x-ssm-jwt": req.session.token },
         });
@@ -112,6 +114,7 @@ export async function getDownloadLog(req, res, next) {
         }/download/log/${type}`;
 
         const { data } = await axios.get(url, {
+            validateStatus: false,
             responseType: "stream",
             headers: { "x-ssm-jwt": req.session.token },
         });
