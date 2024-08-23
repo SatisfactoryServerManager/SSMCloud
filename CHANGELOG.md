@@ -1,3 +1,6 @@
+## 1.0.150 (August 23, 2024)
+  - feat: UI Updates
+
 ## 1.0.149 (August 21, 2024)
 
 
