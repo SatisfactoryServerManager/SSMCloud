@@ -1,3 +1,6 @@
+## 1.0.151 (August 24, 2024)
+  - fix: Fixed select box dropdown icon colour
+
 ## 1.0.150 (August 23, 2024)
   - feat: UI Updates
 
