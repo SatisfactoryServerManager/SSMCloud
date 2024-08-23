@@ -1,83 +1,72 @@
 <%- include('../includes/head.ejs') %>
 
 <body>
-  <div class="container-fluid main-container">
+  <div class="container main-container">
 
     <div class="row">
       <div class="col-12">
-        <div class="card border-dark login-card shadow bg-glass">
-          <div class="card-header">
-            <div class="logo"><img src="/public/images/ssm_logo_new_256.svg" /></div>
-          </div>
-          <div class="card-body">
-            <h4 class="card-title">Login to Dashboard</h4>
-            <%if(errorMessage != "" && errorMessage != null){%>
-            <div class="alert alert-danger"><%=errorMessage%></div>
-            <%}%>
+        <div class="logo"><img src="/public/images/ssm_logo_new_256.svg" /></div>
+        <div class="login-card-wrapper">
+          <div class="card border-dark login-card shadow">
+            <div class="card-body">
+              <h4 class="card-title">Sign in to your account</h4>
+              <%if(errorMessage != "" && errorMessage != null){%>
+              <div class="alert alert-danger"><%=errorMessage%></div>
+              <%}%>
                   <form class="form-horizontal signup-form" method="post" action="">
                       <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <fieldset>
-              <div class="row form-group required">
-                <label class="col-12 control-label" for="email">Email Address:</label>
-                <div class="col-12">
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-at"></i>
-                    </span>
-                    <input id="email" name="email" placeholder="" class="form-control input-md" type="email" autofocus />
-                  </div>
+              <fieldset>
+                <div class="form-group required mb-3">
+                  <label class="col-12 control-label" for="email">Email Address:</label>
+                  <input id="email" name="email" placeholder="" class="form-control" type="email" autofocus />
                 </div>
-              </div>
 
-              <div class="row form-group required">
-                <label class="col-12 control-label" for="password">Password:</label>
-                <div class="col-12">
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-key"></i>
-                    </span>
-                    <input id="password" name="password" placeholder="" class="form-control input-md" type="password" />
+                <div class="form-group required mb-3">
+                  <label class="col-12 control-label" for="password">Password:</label>
+                  <input id="password" name="password" placeholder="" class="form-control" type="password" />
+                </div>
+                <%if(locals.enableHcaptcha){%>
+                <div class="row">
+                  <div class="col-12 mt-2 text-center">
+                    <div class="h-captcha" data-sitekey="<%=locals.hcaptchaSiteKey%>"></div>
                   </div>
                 </div>
-              </div>
-              <%if(locals.enableHcaptcha){%>
-              <div class="row">
-                <div class="col-12 mt-2 text-center">
-                  <div class="h-captcha" data-sitekey="<%=locals.hcaptchaSiteKey%>"></div>
-                </div>
-              </div>
-              <%}%>
-                <div class="row">
-                  <div class="col-12 text-center">
-                    <button class="btn btn-primary login-btn">
+                <%}%>
+                    <button class="btn btn-primary">
                       Login To Dashboard
                     </button>
-                  </div>
-                </div>
               </fieldset>
               </form>
-          
-              <div class="row mt-3 text-center">
-                <div class="col-12">
-                  <p>
-                    Not got an account setup up yet?<br />
-                    Create a new account to get started for <b>free!</b>
-                  </p>
-                </div>
-              </div>
-                  <div class="row">
-                      <div class="col-12 text-center">
-                          <a href="/signup">
-                              <button class="btn btn-primary login-btn">
-                                  Sign Up for free!
-                              </button></a
-                          >
-                      </div>
-                  </div>
+              <div class="pt-3">
+                    Dont have an account yet? 
+                    <a href="/signup">Sign Up for free!</a>
               </div>
           </div>
+        </div>
     </div>
 </div>
 <%- include('../includes/footer.ejs') %>
-          </div>
+            </div>
 </body>
+
+
+<script defer>
+  function detectColorScheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      // Dark mode
+      console.log('Dark mode is enabled');
+      return 'dark';
+    } else {
+      // Light mode
+      console.log('Light mode is enabled');
+      return 'light';
+    }
+  }
+
+
+
+  $(document).ready(() => {
+    const currentScheme = detectColorScheme();
+    $("body").addClass(currentScheme);
+  });
+</script>

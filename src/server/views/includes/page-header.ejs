@@ -4,8 +4,8 @@
   </div>
 
   <div class="col-3 col-md-2 col-lg-3 col-xl-2">
-    <div class="status-info-card">
-      <div class="status-info-card-icon">
+    <div class="status-info-card bg-primary border-primary text-default">
+      <div class="status-info-card-icon text-default">
         <i class="fas fa-server mt-1"></i>
       </div>
       <div class="status-info-card-secondary"><span id="server-count"><%= agents.length %></span></div>
@@ -14,9 +14,9 @@
   </div>
   <div class="col-9 col-md-2 col-lg-2 col-xl-1">
     <div class="btn-group w-100 profile-btn-group" role="group" aria-label="Button group with nested dropdown">
-      <a href="/dashboard/profile" class="btn btn-light w-100">Profile</a>
+      <a href="/dashboard/profile" class="btn w-100">Profile</a>
       <div class="btn-group" role="group">
-        <button id="btnGroupDrop1" type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        <button id="btnGroupDrop1" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
           <a class="dropdown-item" href="/logout">Logout</a>
         </div>

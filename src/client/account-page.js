@@ -66,7 +66,9 @@ class AccountPage {
 
     BuildAuditUI(audit) {
         const $col = $("<div/>").addClass("col-12 col-md-6 col-lg-4 col-xl-3");
-        const $div = $("<div/>").addClass("rounded bg-primary shadow mb-3 p-3");
+        const $div = $("<div/>").addClass(
+            "rounded account-audit-item mb-3 p-3"
+        );
 
         let auditTypeString = "";
         switch (audit.type) {
@@ -167,7 +169,7 @@ class AccountPage {
 
     BuildUserUI(User) {
         const $div = $("<div/>").addClass(
-            "bg-primary rounded shadow mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
+            "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
         );
 
         const $title = $(`<div class="mb-2 m-md-0"></div>`);

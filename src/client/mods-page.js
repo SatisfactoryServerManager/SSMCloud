@@ -108,7 +108,7 @@ class ModsPage {
             `<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"></div>`
         );
 
-        const $card = $(`<div class="mod-card d-flex"></div>`);
+        const $card = $(`<div class="card card-inner mod-card"></div>`);
 
         const $logo = $("<div/>").addClass("mod-image");
         $logo.append(

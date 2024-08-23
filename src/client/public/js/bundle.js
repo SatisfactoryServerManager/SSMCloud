@@ -626,7 +626,7 @@ return index;
 
 },{}],2:[function(require,module,exports){
 /*!
- * Chart.js v4.4.3
+ * Chart.js v4.4.4
  * https://www.chartjs.org
  * (c) 2024 Chart.js Contributors
  * Released under the MIT License
@@ -2116,8 +2116,10 @@ class BarController extends DatasetController {
         const metasets = iScale.getMatchingVisibleMetas(this._type).filter((meta)=>meta.controller.options.grouped);
         const stacked = iScale.options.stacked;
         const stacks = [];
+        const currentParsed = this._cachedMeta.controller.getParsed(dataIndex);
+        const iScaleValue = currentParsed && currentParsed[iScale.axis];
         const skipNull = (meta)=>{
-            const parsed = meta.controller.getParsed(dataIndex);
+            const parsed = meta._parsed.find((item)=>item[iScale.axis] === iScaleValue);
             const val = parsed && parsed[meta.vScale.axis];
             if (helpers_segment.isNullOrUndef(val) || isNaN(val)) {
                 return true;
@@ -3385,7 +3387,7 @@ function binarySearch(metaset, axis, value, intersect) {
     const rangeMethod = axis === 'x' ? 'inXRange' : 'inYRange';
     let intersectsItem = false;
     evaluateInteractionItems(chart, axis, position, (element, datasetIndex, index)=>{
-        if (element[rangeMethod](position[axis], useFinalPosition)) {
+        if (element[rangeMethod] && element[rangeMethod](position[axis], useFinalPosition)) {
             items.push({
                 element,
                 datasetIndex,
@@ -6143,7 +6145,7 @@ function needContext(proxy, names) {
     return false;
 }
 
-var version = "4.4.3";
+var version = "4.4.4";
 
 const KNOWN_POSITIONS = [
     'top',
@@ -6675,8 +6677,8 @@ class Chart {
         let i;
         if (this._resizeBeforeDraw) {
             const { width , height  } = this._resizeBeforeDraw;
-            this._resize(width, height);
             this._resizeBeforeDraw = null;
+            this._resize(width, height);
         }
         this.clear();
         if (this.width <= 0 || this.height <= 0) {
@@ -7315,7 +7317,8 @@ class ArcElement extends Element {
         ], useFinalPosition);
         const rAdjust = (this.options.spacing + this.options.borderWidth) / 2;
         const _circumference = helpers_segment.valueOrDefault(circumference, endAngle - startAngle);
-        const betweenAngles = _circumference >= helpers_segment.TAU || helpers_segment._angleBetween(angle, startAngle, endAngle);
+        const nonZeroBetween = helpers_segment._angleBetween(angle, startAngle, endAngle) && startAngle !== endAngle;
+        const betweenAngles = _circumference >= helpers_segment.TAU || nonZeroBetween;
         const withinRadius = helpers_segment._isBetween(distance, innerRadius + rAdjust, outerRadius + rAdjust);
         return betweenAngles && withinRadius;
     }
@@ -9536,6 +9539,9 @@ const positioners = {
                 ++count;
             }
         }
+        if (count === 0 || xSet.size === 0) {
+            return false;
+        }
         const xAverage = [
             ...xSet
         ].reduce((a, b)=>a + b) / xSet.size;
@@ -11492,7 +11498,7 @@ class RadialLinearScale extends LinearScaleBase {
                 ctx.strokeStyle = color;
                 ctx.setLineDash(optsAtIndex.borderDash);
                 ctx.lineDashOffset = optsAtIndex.borderDashOffset;
-                offset = this.getDistanceFromCenterForValue(opts.ticks.reverse ? this.min : this.max);
+                offset = this.getDistanceFromCenterForValue(opts.reverse ? this.min : this.max);
                 position = this.getPointPosition(i, offset);
                 ctx.beginPath();
                 ctx.moveTo(this.xCenter, this.yCenter);
@@ -12142,7 +12148,7 @@ exports.scales = scales;
 
 },{"./chunks/helpers.segment.cjs":3,"@kurkle/color":1}],3:[function(require,module,exports){
 /*!
- * Chart.js v4.4.3
+ * Chart.js v4.4.4
  * https://www.chartjs.org
  * (c) 2024 Chart.js Contributors
  * Released under the MIT License
@@ -15086,7 +15092,9 @@ class AccountPage {
 
     BuildAuditUI(audit) {
         const $col = $("<div/>").addClass("col-12 col-md-6 col-lg-4 col-xl-3");
-        const $div = $("<div/>").addClass("rounded bg-primary shadow mb-3 p-3");
+        const $div = $("<div/>").addClass(
+            "rounded account-audit-item mb-3 p-3"
+        );
 
         let auditTypeString = "";
         switch (audit.type) {
@@ -15187,7 +15195,7 @@ class AccountPage {
 
     BuildUserUI(User) {
         const $div = $("<div/>").addClass(
-            "bg-primary rounded shadow mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
+            "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
         );
 
         const $title = $(`<div class="mb-2 m-md-0"></div>`);
@@ -15479,6 +15487,10 @@ const AccountPage = require("./account-page");
 const { plugins, Legend } = require("chart.js");
 
 function main() {
+    const currentScheme = detectColorScheme();
+
+    $("body").addClass(currentScheme);
+
     toastr.options.closeButton = true;
     toastr.options.closeMethod = "fadeOut";
     toastr.options.closeDuration = 300;
@@ -16120,6 +16132,9 @@ function BuildAgentStats() {
 function BuildAgentCPUStats() {
     if ($("#cpuChart").length == 0) return;
 
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
+    const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
+
     const agent = window.agent;
 
     let data = [];
@@ -16167,7 +16182,7 @@ function BuildAgentCPUStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -16176,13 +16191,19 @@ function BuildAgentCPUStats() {
                     beginAtZero: true,
                     max: 100,
                     ticks: {
-                        color: "white",
+                        color: textColour,
+                    },
+                    grid: {
+                        color: gridColour,
                     },
                 },
                 x: {
                     beginAtZero: true,
                     ticks: {
-                        color: "white",
+                        color: textColour,
+                    },
+                    grid: {
+                        color: gridColour,
                     },
                 },
             },
@@ -16192,6 +16213,8 @@ function BuildAgentCPUStats() {
 
 function BuildAgentRAMStats() {
     if ($("#ramChart").length == 0) return;
+
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
 
     const agent = window.agent;
     let data = [];
@@ -16239,7 +16262,7 @@ function BuildAgentRAMStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -16248,13 +16271,13 @@ function BuildAgentRAMStats() {
                     beginAtZero: true,
                     max: 100,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
                 x: {
                     beginAtZero: true,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -16264,6 +16287,8 @@ function BuildAgentRAMStats() {
 
 function BuildAgentRunningStats() {
     if ($("#uptimeChart").length == 0) return;
+
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
 
     const agent = window.agent;
     let data = [];
@@ -16319,7 +16344,7 @@ function BuildAgentRunningStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -16328,18 +16353,29 @@ function BuildAgentRunningStats() {
                     min: -1,
                     max: 1,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                         stepSize: 1,
                     },
                 },
                 x: {
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
         },
     });
+}
+
+function detectColorScheme() {
+    if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+        return "dark";
+    } else {
+        return "light";
+    }
 }
 
 $(document).ready(() => {
@@ -16457,7 +16493,7 @@ class ModsPage {
             `<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"></div>`
         );
 
-        const $card = $(`<div class="mod-card d-flex"></div>`);
+        const $card = $(`<div class="card card-inner mod-card"></div>`);
 
         const $logo = $("<div/>").addClass("mod-image");
         $logo.append(

@@ -5,6 +5,10 @@ const AccountPage = require("./account-page");
 const { plugins, Legend } = require("chart.js");
 
 function main() {
+    const currentScheme = detectColorScheme();
+
+    $("body").addClass(currentScheme);
+
     toastr.options.closeButton = true;
     toastr.options.closeMethod = "fadeOut";
     toastr.options.closeDuration = 300;
@@ -646,6 +650,9 @@ function BuildAgentStats() {
 function BuildAgentCPUStats() {
     if ($("#cpuChart").length == 0) return;
 
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
+    const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
+
     const agent = window.agent;
 
     let data = [];
@@ -693,7 +700,7 @@ function BuildAgentCPUStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -702,13 +709,19 @@ function BuildAgentCPUStats() {
                     beginAtZero: true,
                     max: 100,
                     ticks: {
-                        color: "white",
+                        color: textColour,
+                    },
+                    grid: {
+                        color: gridColour,
                     },
                 },
                 x: {
                     beginAtZero: true,
                     ticks: {
-                        color: "white",
+                        color: textColour,
+                    },
+                    grid: {
+                        color: gridColour,
                     },
                 },
             },
@@ -718,6 +731,8 @@ function BuildAgentCPUStats() {
 
 function BuildAgentRAMStats() {
     if ($("#ramChart").length == 0) return;
+
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
 
     const agent = window.agent;
     let data = [];
@@ -765,7 +780,7 @@ function BuildAgentRAMStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -774,13 +789,13 @@ function BuildAgentRAMStats() {
                     beginAtZero: true,
                     max: 100,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
                 x: {
                     beginAtZero: true,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -790,6 +805,8 @@ function BuildAgentRAMStats() {
 
 function BuildAgentRunningStats() {
     if ($("#uptimeChart").length == 0) return;
+
+    const textColour = $("body").hasClass("dark") ? "white" : "black";
 
     const agent = window.agent;
     let data = [];
@@ -845,7 +862,7 @@ function BuildAgentRunningStats() {
             plugins: {
                 legend: {
                     labels: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
@@ -854,18 +871,29 @@ function BuildAgentRunningStats() {
                     min: -1,
                     max: 1,
                     ticks: {
-                        color: "white",
+                        color: textColour,
                         stepSize: 1,
                     },
                 },
                 x: {
                     ticks: {
-                        color: "white",
+                        color: textColour,
                     },
                 },
             },
         },
     });
+}
+
+function detectColorScheme() {
+    if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+        return "dark";
+    } else {
+        return "light";
+    }
 }
 
 $(document).ready(() => {

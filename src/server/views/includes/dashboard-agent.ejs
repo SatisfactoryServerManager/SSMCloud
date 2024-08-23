@@ -1,5 +1,5 @@
 <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-  <div class="card shadow bg-glass mb-2" id="server-card-<%=agent._id%>">
+  <div class="card mb-2" id="server-card-<%=agent._id%>">
     <div class="card-header">
       <a class="float-end" href="/dashboard/servers/<%=agent._id%>"><button class="btn btn-primary">
           <i class="fas fa-cog"></i></button></a>
@@ -27,24 +27,20 @@
                     stopBtn = "";
                     killBtn = "";
                 }
+
+            const mods = agent.modConfig.selectedMods.length;
             %>
 
-      <div class="row">
-        <div class="col-12 col-md-6 col-xl-4">
-          <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
-            ClassID:"status", Title:"", Data:statusText, Icon:"fa-server"})
-            %>
-        </div>
-        <div class="col-12 col-md-6 col-xl-4">
-          <%- include('../includes/status-info-card.ejs',
-            {ClassColour:"orange", ClassID:"users", Title:"Players",
-            Data:agent.mapData.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
-        </div>
-        <div class="col-12 col-md-6 col-xl-4">
-          <%- include('../includes/status-info-card.ejs',
-            {ClassColour:"green", ClassID:"mods", Title:"Mods",
-            Data:0,Icon:"fa-pencil-ruler"}) %>
-        </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-strech">
+        <%- include('../includes/status-info-card.ejs', {ClassColour:"blue",
+    ClassID:"status", Title:"", Data:statusText, Icon:"fa-server"})
+    %>
+        <%- include('../includes/status-info-card.ejs',
+     {ClassColour:"orange", ClassID:"users", Title:"Players",
+     Data:agent.mapData.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
+        <%- include('../includes/status-info-card.ejs',
+      {ClassColour:"green", ClassID:"mods", Title:"Mods",
+      Data:mods,Icon:"fa-pencil-ruler"}) %>
       </div>
 
       <hr />
