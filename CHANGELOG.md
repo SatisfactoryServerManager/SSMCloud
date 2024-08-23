@@ -1,3 +1,6 @@
+## 1.0.152 (August 24, 2024)
+  - fix: Fixed navbar & footer on mobile
+
 ## 1.0.151 (August 24, 2024)
   - fix: Fixed select box dropdown icon colour
 
