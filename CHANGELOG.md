@@ -1,3 +1,6 @@
+## 1.0.154 (August 25, 2024)
+  - feat: User API Key frontend
+
 ## 1.0.153 (August 25, 2024)
   - feat: Integrations page
 
