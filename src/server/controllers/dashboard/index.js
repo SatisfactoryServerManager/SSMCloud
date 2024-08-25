@@ -223,31 +223,110 @@ export async function postUninstallMod(req, res, next) {
 }
 
 export async function getIntegrationsPage(req, res, next) {
-    res.render("dashboard/integrations", {
-        path: "/integrations",
-        pageTitle: "Integrations",
-        accountName: "",
-        agents: [],
-        intergrations: [],
-        notifications: [],
-        eventTypes: [],
-        message: "",
-        errorMessage: "",
-    });
+    try {
+        const theAccount = await BackendAPI.GetAccount(req.session.token);
+        const agents = await BackendAPI.GetAgents(req.session.token);
+        const integrations = await BackendAPI.GetAccountIntegrations(
+            req.session.token
+        );
+
+        res.render("dashboard/integrations", {
+            path: "/integrations",
+            pageTitle: "Integrations",
+            accountName: theAccount.accountName,
+            agents: agents,
+            integrations: integrations,
+            notifications: [],
+            eventTypes: [],
+            message: "",
+            errorMessage: "",
+        });
+    } catch (err) {
+        res.render("dashboard/integrations", {
+            path: "/integrations",
+            pageTitle: "Integrations",
+            accountName: "",
+            agents: [],
+            integrations: [],
+            message,
+            errorMessage: err.message,
+        });
+    }
 }
 
-export async function postUpdateNotificationSettings(req, res, next) {
-    req.flash("success", JSON.stringify(successMessageData));
-    return res.json({});
+export async function postUpdateIntegration(req, res, next) {
+    try {
+        const data = req.body;
+
+        const { integrationId } = req.params;
+        const eventTypes = [];
+        for (let i = 0; i < data.eventTypes.length; i++) {
+            eventTypes.push(Number(data.eventTypes[i]));
+        }
+
+        const postData = {
+            _id: integrationId,
+            type: parseInt(data.sel_type),
+            eventTypes,
+            url: data.inp_url,
+        };
+
+        console.log(postData);
+
+        await BackendAPI.PutAccountIntegration(req.session.token, postData);
+
+        return res.json({
+            success: true,
+        });
+    } catch (err) {
+        return res.json({
+            success: false,
+            error: err.message,
+        });
+    }
 }
 
-export async function postNewNotitifcationSettings(req, res, next) {
-    req.flash("success", JSON.stringify(successMessageData));
-    return res.json({});
+export async function postNewIntegration(req, res, next) {
+    try {
+        const data = req.body;
+
+        const eventTypes = [];
+        for (let i = 0; i < data.eventTypes.length; i++) {
+            eventTypes.push(Number(data.eventTypes[i]));
+        }
+
+        const postData = {
+            type: parseInt(data.sel_type),
+            eventTypes,
+            url: data.inp_url,
+        };
+
+        await BackendAPI.PostAccountIntegration(req.session.token, postData);
+
+        return res.json({
+            success: true,
+        });
+    } catch (err) {
+        return res.json({
+            success: false,
+            error: err.message,
+        });
+    }
 }
 
-export async function getDeleteNotificationSettings(req, res, next) {
-    res.redirect("/dashboard/intergrations");
+export async function getDeleteIntegration(req, res, next) {
+    try {
+        const { integrationId } = req.params;
+
+        await BackendAPI.DeleteAccountIntegration(
+            req.session.token,
+            integrationId
+        );
+    } catch (err) {
+        console.log(err);
+    }
+
+    return res.redirect("/dashboard/integrations");
 }
 
 export async function getProfile(req, res, next) {

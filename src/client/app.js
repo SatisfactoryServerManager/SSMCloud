@@ -200,15 +200,16 @@ function main() {
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push($el.attr("data-event-type-id"));
+                data.eventTypes.push(parseInt($el.attr("data-event-type-id")));
             });
+
             $.ajax({
                 method: "post",
                 url: action,
                 enctype: "multipart/form-data",
                 data: data,
             }).then(() => {
-                window.location = "/dashboard/intergrations";
+                window.location = "/dashboard/integrations";
             });
 
             return true;
@@ -237,7 +238,7 @@ function main() {
                 enctype: "multipart/form-data",
                 data: data,
             }).then(() => {
-                window.location = "/dashboard/intergrations";
+                window.location = "/dashboard/integrations";
             });
 
             return true;

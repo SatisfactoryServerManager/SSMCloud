@@ -4,16 +4,16 @@ import { IsAuth } from "../../middleware/is-auth.js";
 
 import {
     getIntegrationsPage,
-    postNewNotitifcationSettings,
-    postUpdateNotificationSettings,
-    getDeleteNotificationSettings,
+    postNewIntegration,
+    postUpdateIntegration,
+    getDeleteIntegration,
 } from "../../controllers/dashboard/index.js";
 
 const router = express.Router();
 
 router.get("/", IsAuth, getIntegrationsPage);
-router.post("/update/:settingsId", IsAuth, postUpdateNotificationSettings);
-router.post("/add", IsAuth, postNewNotitifcationSettings);
-router.get("/delete/:settingsId", IsAuth, getDeleteNotificationSettings);
+router.post("/update/:integrationId", IsAuth, postUpdateIntegration);
+router.post("/add", IsAuth, postNewIntegration);
+router.get("/delete/:integrationId", IsAuth, getDeleteIntegration);
 
 export default router;

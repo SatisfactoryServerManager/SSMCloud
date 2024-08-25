@@ -27,8 +27,6 @@ export async function getLogin(req, res) {
     let message = req.flash("error");
     message.length > 0 ? (message = message[0]) : (message = null);
 
-    console.log(message);
-
     res.render("auth/login", {
         path: "/login",
         pageTitle: "Log In",

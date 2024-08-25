@@ -199,6 +199,15 @@ class BackendAPI {
         return apiData.account;
     };
 
+    GetAccountIntegrations = async (token) => {
+        let apiData = await this.GET_APICall_Token(
+            "/api/v1/account?populate=integrations",
+            token
+        );
+
+        return apiData.account.integrations;
+    };
+
     GetUsers = async (token) => {
         let apiData = await this.GET_APICall_Token(
             "/api/v1/account/users",
@@ -328,6 +337,29 @@ class BackendAPI {
         );
 
         return apiData.data;
+    };
+
+    PostAccountIntegration = async (token, data) => {
+        await this.POST_APICall_Token(
+            `/api/v1/account/integrations`,
+            token,
+            data
+        );
+    };
+
+    PutAccountIntegration = async (token, data) => {
+        await this.PUT_APICall_Token(
+            `/api/v1/account/integrations`,
+            token,
+            data
+        );
+    };
+
+    DeleteAccountIntegration = async (token, integrationId) => {
+        await this.DELETE_APICall_Token(
+            `/api/v1/account/integrations/${integrationId}`,
+            token
+        );
     };
 }
 

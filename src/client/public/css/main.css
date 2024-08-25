@@ -100,6 +100,10 @@ body {
     background-repeat: no-repeat;
 }
 
+h5 {
+    margin: 4px 0;
+}
+
 .btn-primary {
     background-color: var(--ssm-btn-bg-colour);
     border-color: var(--ssm-btn-border-colour);
