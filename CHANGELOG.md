@@ -1,3 +1,6 @@
+## 1.0.153 (August 25, 2024)
+  - feat: Integrations page
+
 ## 1.0.152 (August 24, 2024)
   - fix: Fixed navbar & footer on mobile
 
