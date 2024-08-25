@@ -15,7 +15,7 @@
             <b>This page is still under construction.</b>
           </div>
           <div class="row">
-            <div class="col-12 col-md-4 col-lg-3">
+            <div class="col-12 col-md-4 col-lg-3 mb-2">
               <div class="card bg-glass">
                 <div class="card-body">
                   <div class="text-center">
@@ -25,6 +25,7 @@
                   </div>
                   <hr>
                   <form action="/profile/update" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="input-group">
                       <span class="input-group-text">Email:</span>
                       <input type="text" class="form-control" value="<%=user.email%>" name="inp_email">
@@ -54,8 +55,78 @@
                 </div>
               </div>
             </div>
-            <div class="col-12 col-md-8 col-lg-9">
-              <div class="card"></div>
+            <div class="col-12 col-md-8 col-lg-9 mb-2">
+              <div class="card">
+                <div class="card-header">
+                  <h5>API Keys</h5>
+                </div>
+                <div class="card-body">
+                  <h6>Add Api Key</h6>
+
+                  <%
+                    function makeapikey(length) {
+                        let result = "";
+                        const characters =
+                            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                        const charactersLength = characters.length;
+                        let counter = 0;
+                        while (counter < length) {
+                            result += characters.charAt(
+                                Math.floor(Math.random() * charactersLength)
+                            );
+                            counter += 1;
+                        }
+                        return result;
+                    }
+                    %>
+
+                  <form action="/dashboard/profile/apikey" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="input-group">
+                      <div class="input-group-text">
+                        <i class="fas fa-key"></i>
+                      </div>
+                      <input type="text" class="form-control" name="inp_new_apikey" id="inp_new_apikey" value="API-<%=makeapikey(32)%>">
+                      <a class="btn btn-primary ">
+                        <i class="fas fa-refresh mt-1" id="refresh-new-api-key"></i>
+                      </a>
+                      <button class="btn btn-success" type="submit">
+                        <i class="fas fa-plus"></i>
+                        Add Key
+                      </button>
+                    </div>
+                  </form>
+
+                  <p>
+                    If you are happy with the current api key, please copy the key <b>BEFORE</b> clicking the Add Key button.
+                  </p>
+
+                  <hr />
+
+                  <%if(user.apiKeys.length ==0 ){%>
+                  <div class="alert alert-info">
+                    There are currently no api keys setup on your account.
+                  </div>
+                  <%}%>
+
+                  <%user.apiKeys.forEach(key=>{%>
+                  <div class="card card-inner mb-2">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-key me-2"></i>
+                        <span class="flex-grow-1">API-XXXX<%=key.shortKey%></span>
+                        <a href="/dashboard/profile/deletekey/<%=key.shortKey%>">
+                          <button class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </a>
+                      </div>
+
+                    </div>
+                  </div>
+                  <%})%>
+                </div>
+              </div>
             </div>
           </div>
         </div>

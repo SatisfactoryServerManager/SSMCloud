@@ -370,7 +370,7 @@ export async function getProfileImage(req, res, next) {
         if (theUser.profileImageUrl == "") {
             const imagePath = path.join(
                 __basedir,
-                "/public/images/blank-profile-image.png"
+                "/src/client/public/images/blank-profile-image.png"
             );
             res.sendFile(imagePath);
             return;
@@ -393,6 +393,28 @@ export async function getProfileImage(req, res, next) {
         );
         res.sendFile(imagePath);
     }
+}
+
+export async function postProfileApiKey(req, res, next) {
+    try {
+        const { inp_new_apikey } = req.body;
+        await BackendAPI.PostUserApiKey(req.session.token, inp_new_apikey);
+    } catch (err) {
+        console.log(err);
+    }
+
+    return res.redirect("/dashboard/profile");
+}
+
+export async function deleteProfileApiKey(req, res, next) {
+    try {
+        const { shortkey } = req.params;
+        await BackendAPI.DeleteUserApiKey(req.session.token, shortkey);
+    } catch (err) {
+        console.log(err);
+    }
+
+    return res.redirect("/dashboard/profile");
 }
 
 export async function getModsJS(req, res, next) {

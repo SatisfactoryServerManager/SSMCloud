@@ -361,6 +361,21 @@ class BackendAPI {
             token
         );
     };
+
+    PostUserApiKey = async (token, apikey) => {
+        await this.POST_APICall_Token(
+            `/api/v1/account/users/me/apikey`,
+            token,
+            { apikey }
+        );
+    };
+
+    DeleteUserApiKey = async (token, shortKey) => {
+        await this.DELETE_APICall_Token(
+            `/api/v1/account/users/me/apikey/${shortKey}`,
+            token
+        );
+    };
 }
 
 const backendAPI = new BackendAPI();
