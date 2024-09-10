@@ -1,3 +1,6 @@
+## 1.0.155 (September 10, 2024)
+  - feat: 1.0 mod warning
+
 ## 1.0.154 (August 25, 2024)
   - feat: User API Key frontend
 
