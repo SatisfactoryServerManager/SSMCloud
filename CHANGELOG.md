@@ -1,3 +1,6 @@
+## 1.0.156 (September 11, 2024)
+  - feat: Split master css & image update
+
 ## 1.0.155 (September 10, 2024)
   - feat: 1.0 mod warning
 
