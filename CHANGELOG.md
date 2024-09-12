@@ -1,3 +1,6 @@
+## 1.0.157 (September 12, 2024)
+  - feat: New create server wizard
+
 ## 1.0.156 (September 11, 2024)
   - feat: Split master css & image update
 
