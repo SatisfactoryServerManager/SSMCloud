@@ -164,13 +164,8 @@ class SSMCloud_App {
         );
         app.use("/libraries/toastr", express.static(modulesPath + "/toastr"));
         app.use(
-            "/libraries/datatables.net",
-            express.static(modulesPath + "/datatables.net")
-        );
-
-        app.use(
-            "/libraries/datatables.net-bs5",
-            express.static(modulesPath + "/datatables.net-bs5")
+            "/libraries/jquery-steps",
+            express.static(modulesPath + "/jquery-steps/build")
         );
 
         app.use(

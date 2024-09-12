@@ -252,6 +252,15 @@ class BackendAPI {
         );
     };
 
+    GetWorkflow = async (token, workflowId) => {
+        let apiData = await this.GET_APICall_Token(
+            `/api/v1/workflows/${workflowId}`,
+            token
+        );
+
+        return apiData;
+    };
+
     UpdateAgentConfig = async (token, updatedAgent) => {
         await this.PUT_APICall_Token(
             `/api/v1/account/agents/${updatedAgent._id}/configs`,

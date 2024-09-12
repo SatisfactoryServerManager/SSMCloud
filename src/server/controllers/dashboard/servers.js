@@ -53,24 +53,10 @@ export async function postServers(req, res, next) {
     const theAccount = await BackendAPI.GetAccount(req.session.token);
 
     if (theAccount == null) {
-        const errorMessageData = {
-            section: "servers",
-            message: "Cant Find Session Account details!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/servers");
-    }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorMessageData = {
-            section: "servers",
-            message: errors.array()[0].msg,
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/servers");
+        return res.json({
+            sucess: false,
+            error: "Cant Find Session Account details!",
+        });
     }
 
     const agents = await BackendAPI.GetAgents(req.session.token);
@@ -80,42 +66,32 @@ export async function postServers(req, res, next) {
     );
 
     if (existingAgentWithName) {
-        const errorMessageData = {
-            section: "servers",
-            message:
-                "Server with the same name already exists on this Account!",
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/servers");
+        return res.json({
+            sucess: false,
+            error: "Server with the same name already exists on this Account!",
+        });
     }
+
+    req.body.serverPort = parseInt(req.body.serverPort);
+    req.body.serverMemory = parseInt(req.body.serverMemory);
+    delete req.body._csrf;
+
+    let apiRes = {};
+
     try {
-        await BackendAPI.POST_APICall_Token(
+        apiRes = await BackendAPI.POST_APICall_Token(
             "/api/v1/account/agents",
             req.session.token,
-            {
-                agentName: req.body.inp_servername,
-                port: parseInt(req.body.inp_serverport),
-                memory: req.body.inp_servermemory * 1024 * 1024 * 1024,
-            }
+            req.body
         );
     } catch (err) {
-        const errorMessageData = {
-            section: "servers",
-            message: err.message,
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-        return res.redirect("/dashboard/servers");
+        return res.json({
+            sucess: false,
+            error: err.message,
+        });
     }
 
-    const successMessageData = {
-        section: "servers",
-        message: `New server has been created successfully`,
-    };
-
-    req.flash("success", JSON.stringify(successMessageData));
-    return res.redirect("/dashboard/servers");
+    return res.json(apiRes);
 }
 
 export async function getServer(req, res, next) {
@@ -368,6 +344,23 @@ export async function getServerDelete(req, res, next) {
 
         req.flash("error", JSON.stringify(errorMessageData));
         res.redirect(`/dashboard/servers`);
+    }
+}
+
+export async function getWorkflow(req, res, next) {
+    try {
+        const { workflowid } = req.params;
+        const data = await BackendAPI.GetWorkflow(
+            req.session.token,
+            workflowid
+        );
+
+        return res.json(data);
+    } catch (err) {
+        return res.json({
+            success: false,
+            error: err.message,
+        });
     }
 }
 

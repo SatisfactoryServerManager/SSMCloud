@@ -1638,6 +1638,11 @@ jake@^10.8.5:
     filelist "^1.0.4"
     minimatch "^3.1.2"
 
+jquery-steps@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/jquery-steps/-/jquery-steps-1.1.0.tgz#0ceee0b0d2e49143981ad120d458ed56ea8e1924"
+  integrity sha512-2ZODN30XpbdNgDiqydOCroTRVUeCBPx927l3p8SG7tsL1kmOkntg/jeiY9fjPqIff0cyelcwL/SZ+5hMaQyVmA==
+
 jquery@>=1.12.0, jquery@>=1.7, jquery@^3.7.1:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.7.1.tgz#083ef98927c9a6a74d05a6af02806566d16274de"

@@ -19,7 +19,8 @@
     --ssm-card-border-colour: #0caaed;
     --ssm-card-inner-bg-colour: #fafafa;
 
-    --ssm-input-bg-colour: #fafafa;
+    --ssm-input-bg-colour: var(--ssm-card-header-bg);
+    --ssm-input-alt-bg-colour: var(--ssm-card-bg-colour);
     --ssm-input-border-colour: #d4d4d8;
 
     --ssm-tabs-bg-colour: #eee;
@@ -57,7 +58,8 @@
         --ssm-card-border-colour: #0b7eb0;
         --ssm-card-inner-bg-colour: #1f303f;
 
-        --ssm-input-bg-colour: #1f303f;
+        --ssm-input-bg-colour: var(--ssm-card-header-bg);
+        --ssm-input-alt-bg-colour: var(--ssm-card-bg-colour);
         --ssm-input-border-colour: #0f4778;
 
         --ssm-tabs-bg-colour: #0f4778;

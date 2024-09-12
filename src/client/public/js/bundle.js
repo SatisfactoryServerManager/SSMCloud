@@ -15903,22 +15903,160 @@ function main() {
         .on("click", "#refresh-new-api-key", (e) => {
             e.preventDefault();
 
-            function makeapikey(length) {
-                let result = "";
-                const characters =
-                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                const charactersLength = characters.length;
-                let counter = 0;
-                while (counter < length) {
-                    result += characters.charAt(
-                        Math.floor(Math.random() * charactersLength)
-                    );
-                    counter += 1;
-                }
-                return result;
-            }
-
             $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
+        })
+        .on("click", "#add-server-btn", (e) => {
+            e.preventDefault();
+            window.openModal(
+                "/public/modals",
+                "create-server-modal",
+                (modal) => {
+                    let ServerName,
+                        ServerPort,
+                        ServerMemory,
+                        ServerAdminPass,
+                        ServerClientPass,
+                        ServerAPIKey;
+
+                    let workflowFinished = false;
+
+                    const wizard = modal.find("#wizard");
+
+                    wizard.on("change", "#inp_servermemory", (e) => {
+                        const $this = $(e.currentTarget);
+
+                        wizard
+                            .find("#inp_servermemory_value")
+                            .text(`${parseFloat($this.val()).toFixed(1)}G`);
+                    });
+
+                    wizard.steps({
+                        onStepChanging: (event, currentIndex, newIndex) => {
+                            // if current index is on configuration page
+
+                            if (currentIndex > newIndex) {
+                                return false;
+                            }
+
+                            if (currentIndex == 0) {
+                                ServerName = wizard
+                                    .find("#inp_servername")
+                                    .val();
+                                ServerPort = wizard
+                                    .find("#inp_serverport")
+                                    .val();
+                                ServerMemory = wizard
+                                    .find("#inp_servermemory")
+                                    .val();
+                                ServerAdminPass = wizard
+                                    .find("#inp_serveradminpass")
+                                    .val();
+                                ServerClientPass = wizard
+                                    .find("#inp_serverclientpass")
+                                    .val();
+
+                                console.log(
+                                    ServerName,
+                                    ServerPort,
+                                    ServerMemory,
+                                    ServerAdminPass,
+                                    ServerClientPass
+                                );
+
+                                if (
+                                    ServerName == "" ||
+                                    ServerMemory < 3 ||
+                                    ServerAdminPass == ""
+                                ) {
+                                    const errorBox = $(
+                                        "#create-server-modal-config-error"
+                                    );
+                                    errorBox.removeClass("hidden");
+
+                                    if (ServerName == "") {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Please provide a server name!</ol>"
+                                            );
+                                    }
+
+                                    if (ServerPort < 7000) {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Server port must be greater or equal than 7000</ol>"
+                                            );
+                                    }
+
+                                    if (ServerMemory < 3) {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Server must have more than 3GB of memory</ol>"
+                                            );
+                                    }
+                                    if (ServerAdminPass == "") {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Please provide a server admin password!</ol>"
+                                            );
+                                    }
+                                    return false;
+                                }
+
+                                ServerAPIKey =
+                                    "AGT-API-" + makeapikey(32).toUpperCase();
+
+                                BuildAgentInstallCommands(
+                                    ServerName,
+                                    ServerMemory,
+                                    ServerPort,
+                                    ServerAPIKey
+                                );
+                            }
+
+                            // Submit Create Task
+                            if (currentIndex == 1) {
+                                const postData = {
+                                    _csrf: $("#_csrf").val(),
+                                    serverName: ServerName,
+                                    serverPort: parseInt(ServerPort),
+                                    serverMemory:
+                                        parseFloat(ServerMemory) *
+                                        1024 *
+                                        1024 *
+                                        1024,
+                                    serverAdminPass: ServerAdminPass,
+                                    serverClientPass: ServerClientPass,
+                                    serverApiKey: ServerAPIKey,
+                                };
+
+                                $.post(`/dashboard/servers`, postData)
+                                    .promise()
+                                    .then((res) => {
+                                        const workflowId = res.workflow_id;
+
+                                        workflowFinished =
+                                            BuildWorkflowActions(workflowId);
+                                        setInterval(async () => {
+                                            workflowFinished =
+                                                BuildWorkflowActions(
+                                                    workflowId
+                                                );
+                                        }, 2000);
+                                    });
+                            }
+
+                            if (currentIndex == 2) {
+                                return workflowFinished;
+                            }
+                            return true;
+                        },
+                    });
+                }
+            );
         });
 
     SortMods();
@@ -15933,6 +16071,104 @@ function main() {
         ModsPage.UpdateView();
     }
 
+    function makeapikey(length) {
+        let result = "";
+        const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength)
+            );
+            counter += 1;
+        }
+        return result;
+    }
+
+    async function BuildWorkflowActions(workflowId) {
+        const workflowRes = await $.get(
+            `/dashboard/servers/workflows/${workflowId}`
+        ).promise();
+
+        const workflowData = workflowRes.workflow;
+
+        const $wrapper = $("#create-agent-workflow-wrapper");
+
+        if ($wrapper.length == 0) {
+            return;
+        }
+
+        $wrapper.empty();
+        let hasReachedRunning = false;
+
+        for (let i = 0; i < workflowData.actions.length; i++) {
+            const action = workflowData.actions[i];
+            console.log(action);
+
+            const $card = $("<div/>").addClass("card card-inner mb-2");
+            $wrapper.append($card);
+            const $cardBody = $("<div/>").addClass("card-body");
+            $card.append($cardBody);
+
+            let iconClass = "fa-regular fa-circle";
+
+            if (action.status == "") {
+                if (!hasReachedRunning) {
+                    iconClass = "fas fa-spinner fa-spin";
+                    hasReachedRunning = true;
+                }
+            } else if (action.status == "completed") {
+                iconClass = "fa-regular fa-circle-check text-success";
+            } else if (action.status == "failed") {
+                iconClass = "fa-solid fa-triangle-exclamation text-danger";
+            }
+
+            let actionTypeString;
+            switch (action.type) {
+                case "create-agent":
+                    actionTypeString = "Create new SSM server";
+                    break;
+                case "wait-for-online":
+                    actionTypeString = "Waiting for new server to come online";
+                    break;
+                case "install-server":
+                    actionTypeString = "Sending install SF server task";
+                    break;
+                case "wait-for-installed":
+                    actionTypeString = "Waiting for SF server to install";
+                    break;
+                case "start-server":
+                    actionTypeString = "Sending start SF server task";
+                    break;
+                case "wait-for-running":
+                    actionTypeString = "Waiting for SF server to start";
+                    break;
+                case "claim-server":
+                    actionTypeString = "Sending claim server Task";
+                    break;
+                default:
+                    actionTypeString = action.type;
+            }
+
+            $cardBody.append(
+                `<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`
+            );
+        }
+
+        let workflowFinished = true;
+
+        for (let i = 0; i < workflowData.actions.length; i++) {
+            const action = workflowData.actions[i];
+            if (action.status == "") {
+                workflowFinished = false;
+                break;
+            }
+        }
+
+        return workflowFinished;
+    }
+
     $("#inp_maxplayers").on("input change", () => {
         const val = $("#inp_maxplayers").val();
         $("#max-players-value").text(`${val} / 500`);
@@ -15941,10 +16177,6 @@ function main() {
     if ($("#inp_maxplayers").length > 0) {
         const val = $("#inp_maxplayers").val();
         $("#max-players-value").text(`${val} / 500`);
-    }
-
-    if ($("#inp_servername").length > 0) {
-        BuildAgentInstallCommands();
     }
 
     var tooltipTriggerList = [].slice.call(
@@ -16068,15 +16300,15 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
             var modalEl = $("#" + modal_name);
 
-            modalEl.find("button.close").on("click", (e) => {
+            modalEl.find("button.btn-close").on("click", (e) => {
                 e.preventDefault();
                 const $this = $(e.currentTarget)
                     .parent()
                     .parent()
                     .parent()
                     .parent();
-                $this.remove();
                 $this.trigger("hidden.bs.modal");
+                $this.remove();
                 $this.modal("hide");
                 $("body").removeClass("modal-open").attr("style", null);
                 $(".modal-backdrop").remove();
@@ -16095,26 +16327,23 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
     });
 };
 
-function BuildAgentInstallCommands() {
-    const agentName = $("#inp_servername").val();
-
+function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     if (agentName == "") {
         $("#windows-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
         $("#linux-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
         return;
     }
 
-    const memory =
-        parseFloat($("#inp_servermemory").val()) * 1024 * 1024 * 1024;
+    const memory = parseFloat(smallmemory) * 1024 * 1024 * 1024;
 
-    const portString = parseFloat($("#inp_serverport").val());
-    const portOffset = portString - 15777;
+    const portString = parseFloat(serverport);
+    const portOffset = portString - 7777;
 
-    let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory}`;
-    let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}"`;
+    let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory} -SSMAPIKEY "${apikey}"`;
+    let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}" -SSMAPIKEY "${apikey}"`;
 
-    let LinuxInstallCommand = `bash install-agent.sh --name "SSMAgent_${agentName}" --memory ${memory}`;
-    let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}"`;
+    let LinuxInstallCommand = `bash install-agent.sh --name "SSMAgent_${agentName}" --memory ${memory} --apikey "${apikey}"`;
+    let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}" --apikey "${apikey}`;
 
     if (portOffset > 0) {
         WindowsInstallCommand += ` -PORTOFFSET ${portOffset}`;

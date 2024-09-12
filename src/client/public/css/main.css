@@ -48,10 +48,17 @@ h5 {
     background: var(--ssm-card-header-bg) !important;
 }
 
+.card .card-header .form-control,
+.card.card-inner .form-control,
+.ssm-modal .wizard .form-control {
+    background-color: var(--ssm-input-alt-bg-colour);
+}
+
 .card.card-inner,
 .account-invite-user,
 .account-user,
-.account-audit-item {
+.account-audit-item,
+.ssm-modal .modal-content {
     border: 1px solid var(--ssm-card-border-colour) !important;
     border-bottom: 5px solid var(--ssm-card-border-colour) !important;
     background: var(--ssm-card-inner-bg-colour) !important;
@@ -801,6 +808,45 @@ pre {
     font-size: unset;
 }
 
+.ssm-modal .modal-header {
+    background-color: var(--ssm-card-header-bg);
+}
+
+.ssm-modal .modal-body {
+    background-color: var(--ssm-card-bg-colour);
+}
+
+.ssm-modal .wizard .body input {
+    border: 1px solid var(--ssm-input-border-colour);
+}
+
+.ssm-modal .wizard .body {
+    width: 100%;
+}
+
+.ssm-modal .wizard .number {
+    font-size: unset;
+}
+
+.ssm-modal .wizard .steps a {
+    padding: 8px 12px;
+}
+
+.ssm-modal .wizard .steps .current a,
+.ssm-modal .wizard .steps .current a:hover {
+    background: var(--ssm-btn-bg-colour);
+}
+
+.ssm-modal .wizard .content {
+    background-color: var(--ssm-log-viewer-bg-colour);
+}
+.ssm-modal .error-box ul {
+    padding: 0;
+}
+.ssm-modal .error-box ul ol {
+    padding: 0 0 0 12px;
+}
+
 /* Toasts */
 
 #toast-container > .toast {
@@ -869,10 +915,6 @@ pre {
 
 #toast-container .toast-message {
     font-size: 12px;
-}
-
-.wizard > .steps > ul > li {
-    width: 20%;
 }
 
 #permissions-accordion h4 {
