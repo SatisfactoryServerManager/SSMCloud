@@ -15405,6 +15405,33 @@ class AgentMap {
     };
 
     AddBuildingMarkers = () => {
+        console.log("TEST!");
+        this.buildingGroup.clearLayers();
+
+        for (let i = 0; i < this.buildings.length; i++) {
+            const building = this.buildings[i];
+            console.log(building);
+
+            const buildingLocation = this.GamelocationToMapLocation(
+                building.location.x,
+                building.location.y
+            );
+
+            const bounds = building.boundingBox;
+            const width = Math.abs(bounds.min.x) + Math.abs(bounds.max.x);
+            const height = Math.abs(bounds.min.y) + Math.abs(bounds.max.y);
+
+            const buildingPoly = this.CalcBuildingPolygon(
+                buildingLocation[0],
+                buildingLocation[1],
+                width,
+                height,
+                0
+            );
+
+            this.buildingGroup.addLayer(buildingPoly);
+        }
+
         return;
         this.buildingGroup.clearLayers();
         const buildingLocation = this.GamelocationToMapLocation(
@@ -15456,6 +15483,8 @@ class AgentMap {
 
         this.AddMapPlayers();
         this.AddBuildingMarkers();
+
+        console.log(this.buildings);
     }
 
     GamelocationToMapLocation = (x, y) => {
@@ -15470,7 +15499,6 @@ class AgentMap {
             const res = await $.get("/map/" + agentId + "/data");
 
             this.Update(res.players, []);
-            console.log(res);
         } catch (err) {
             console.log(err);
         }

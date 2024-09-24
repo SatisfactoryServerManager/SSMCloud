@@ -141,11 +141,14 @@ class AgentMap {
         w = w * 100;
         l = l * 100;
 
+        const hw = w / 2;
+        const hl = l / 2;
+
         const points = [
-            [x, y],
-            [x + l, y],
-            [x + l, y + w],
-            [x, y + w],
+            [x - hl, y - hw],
+            [x + hl, y - hw],
+            [x + hl, y + hw],
+            [x - hl, y + hw],
         ];
 
         var polygon = L.polygon(points, {
@@ -161,48 +164,45 @@ class AgentMap {
     };
 
     AddBuildingMarkers = () => {
-        return;
         this.buildingGroup.clearLayers();
-        const buildingLocation = this.GamelocationToMapLocation(
-            -50938.7109375,
-            274269.9375
-        );
-        const buildingPoly = this.CalcBuildingPolygon(
-            buildingLocation[0],
-            buildingLocation[1],
-            54,
-            54,
-            0
-        );
 
-        this.buildingGroup.addLayer(buildingPoly);
-
-        const buildingLocation2 = this.GamelocationToMapLocation(
-            -45500,
-            277800
-        );
-        const buildingPoly2 = this.CalcBuildingPolygon(
-            buildingLocation2[0],
-            buildingLocation2[1],
-            14,
-            26,
-            0
-        );
-
-        this.buildingGroup.addLayer(buildingPoly2);
-
-        // WIP
-        this.buildingGroup.clearLayers();
         for (let i = 0; i < this.buildings.length; i++) {
             const building = this.buildings[i];
-            var buildingMarker = L.marker(
-                this.GamelocationToMapLocation(0, 0),
-                {
-                    icon: this.MarkerIcons.Home,
-                }
+
+            const buildingLocation = this.GamelocationToMapLocation(
+                building.location.x,
+                building.location.y
             );
 
-            this.buildingGroup.addLayer(buildingMarker);
+            // const bounds = building.boundingBox;
+            // const width =
+            //     Math.abs(bounds.min.x / 100) + Math.abs(bounds.max.x / 100);
+            // const height =
+            //     Math.abs(bounds.min.y / 100) + Math.abs(bounds.max.y / 100);
+
+            // const buildingPoly = this.CalcBuildingPolygon(
+            //     buildingLocation[0],
+            //     buildingLocation[1],
+            //     width,
+            //     height,
+            //     building.rotation
+            // );
+
+            // this.buildingGroup.addLayer(buildingPoly);
+
+            if (building.class == "Build_TradingPost_C") {
+                var buildingMarker = L.marker(buildingLocation, {
+                    icon: this.MarkerIcons.Home,
+                });
+
+                this.buildingGroup.addLayer(buildingMarker);
+            } else if (building.class == "Build_SpaceElevator_C") {
+                var buildingMarker = L.marker(buildingLocation, {
+                    icon: this.MarkerIcons.SpaceElevator,
+                });
+
+                this.buildingGroup.addLayer(buildingMarker);
+            }
         }
     };
 
@@ -225,8 +225,7 @@ class AgentMap {
         try {
             const res = await $.get("/map/" + agentId + "/data");
 
-            this.Update(res.players, []);
-            console.log(res);
+            this.Update(res.players, res.buildings);
         } catch (err) {
             console.log(err);
         }
