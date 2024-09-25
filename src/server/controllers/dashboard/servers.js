@@ -238,7 +238,7 @@ export async function postServer(req, res, next) {
             theAgent.serverConfig.branch =
                 data.inp_sfbranch == "on" ? "experimental" : "public";
 
-            theAgent.serverConfig.autoRestartServer =
+            theAgent.serverConfig.autoRestart =
                 data.inp_autorestart == "on" ? true : false;
 
             theAgent.serverConfig.autoSaveInterval = parseFloat(

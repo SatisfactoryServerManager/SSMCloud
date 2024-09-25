@@ -262,6 +262,7 @@ class BackendAPI {
     };
 
     UpdateAgentConfig = async (token, updatedAgent) => {
+        console.log(updatedAgent.serverConfig);
         await this.PUT_APICall_Token(
             `/api/v1/account/agents/${updatedAgent._id}/configs`,
             token,
