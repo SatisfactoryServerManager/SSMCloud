@@ -1,3 +1,7 @@
+## 1.0.158 (September 25, 2024)
+  - fix: fixed updating server config auto restart
+  - feat: Map buildings
+
 ## 1.0.157 (September 12, 2024)
   - feat: New create server wizard
 
