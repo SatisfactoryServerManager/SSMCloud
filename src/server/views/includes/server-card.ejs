@@ -31,7 +31,7 @@
         </span>
         <%if(agent.config.version){%>
           <span class="badge bg-dark border-dark p-2">
-            v<%=agent.config.version.replace("v","")%> / v<%=latestVersion%>
+            <%=agent.config.version%> / <%=agent.latestAgentVersion%>
           </span>
           <span class="badge bg-dark border-dark p-2">
             <%=agent.serverConfig.branch%>

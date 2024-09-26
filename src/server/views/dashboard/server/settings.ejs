@@ -1,3 +1,13 @@
+<%if(agent.config.version != agent.latestAgentVersion){%>
+<div class="row">
+  <div class="col-12">
+    <div class="alert alert-warning">
+      <i class="fas fa-triangle-exclamation me-2"></i>
+      Server needs to be updated, Installed Version: <b><%=agent.config.version%></b>, Available Version: <b><%=agent.latestAgentVersion%></b>
+    </div>
+  </div>
+</div>
+<%}%>
 <div class="row">
   <div class="col-12 col-xl-3 mb-3">
     <div class="card border-secondary h-100 bg-glass">
@@ -15,112 +25,112 @@
           <div class="col-12 col-md-6">
 
             <%if(!agent.status.online){%>
-            <span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> <b>Offline</b></span>
-            <%}else{%>
-            <span class="badge bg-success"><b>Online</b></span>
-            <%if(agent.status.installed){%>
-            <span class="badge bg-success"><b>Installed</b></span>
-            <%}else{%>
-            <span class="badge bg-warning"><b>Not Installed</b></span>
-            <%}%>
+<span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> <b>Offline</b></span>
+<%}else{%>
+<span class="badge bg-success"><b>Online</b></span>
+<%if(agent.status.installed){%>
+<span class="badge bg-success"><b>Installed</b></span>
+<%}else{%>
+<span class="badge bg-warning"><b>Not Installed</b></span>
+<%}%>
               <%if(agent.status.running){%>
-            <span class="badge bg-success"><b>Running</b></span>
-            <%}else{%>
-            <span class="badge bg-warning"><b>Not Running</b></span>
-            <%}%>
+<span class="badge bg-success"><b>Running</b></span>
+<%}else{%>
+<span class="badge bg-warning"><b>Not Running</b></span>
+<%}%>
               <%}%>
-            <b id="agent-publicip"></b>
-          </div>
-        </div>
-        <div class="row settings-row">
-          <div class="col-12 col-md-6">
-            <b class="settings-prop">Server Host:</b>
-            <span class="settings-info">
-              This is your Hostname to connect to the Server in game.</b>
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <b id="agent-publicip"><%=agent.config.ip%></b>
-          </div>
-        </div>
-        <div class="row settings-row">
-          <div class="col-12 col-md-6">
-            <b class="settings-prop">Connection Port:</b>
-            <span class="settings-info">
-              This is the port number of the SF server.</b>
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <b id="agent-connectionport"><%=agent.config.port%></b>
-          </div>
-        </div>
-        <div class="row settings-row">
-          <div class="col-12 col-md-6">
-            <b class="settings-prop">Server Version:</b>
-            <span class="settings-info">
-              This is the agent/server version.</b>
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <b id="sfserver-version"><%=agent.config.version%></b> /
-            <b id="sfserver-version">v<%=latestVersion%></b>
-          </div>
-        </div>
-        <div class="row settings-row">
-          <div class="col-12 col-md-6">
-            <b class="settings-prop">SF Server Version:</b>
-            <span class="settings-info">
-              This is the SF server version.</b>
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <b id="sfserver-version"><%=agent.status.installedSFVersion%></b> /
-            <b id="sfserver-version"><%=agent.status.latestSFVersion%></b>
-          </div>
-        </div>
-        <div class="row settings-row">
-          <div class="col-12 col-md-6">
-            <b class="settings-prop">Server API Key:</b>
-            <span class="settings-info">
-              This is the Servers API Key</b>
-            </span>
-          </div>
-          <div class="col-12 col-md-6">
-            <div class="d-flex align-items-center">
-              <%
+<b id="agent-publicip"></b>
+</div>
+</div>
+<div class="row settings-row">
+  <div class="col-12 col-md-6">
+    <b class="settings-prop">Server Host:</b>
+    <span class="settings-info">
+      This is your Hostname to connect to the Server in game.</b>
+    </span>
+  </div>
+  <div class="col-12 col-md-6">
+    <b id="agent-publicip"><%=agent.config.ip%></b>
+  </div>
+</div>
+<div class="row settings-row">
+  <div class="col-12 col-md-6">
+    <b class="settings-prop">Connection Port:</b>
+    <span class="settings-info">
+      This is the port number of the SF server.</b>
+    </span>
+  </div>
+  <div class="col-12 col-md-6">
+    <b id="agent-connectionport"><%=agent.config.port%></b>
+  </div>
+</div>
+<div class="row settings-row">
+  <div class="col-12 col-md-6">
+    <b class="settings-prop">Server Version:</b>
+    <span class="settings-info">
+      This is the agent/server version.</b>
+    </span>
+  </div>
+  <div class="col-12 col-md-6">
+    <b id="sfserver-version"><%=agent.config.version%></b> /
+    <b id="sfserver-version"><%=agent.latestAgentVersion%></b>
+  </div>
+</div>
+<div class="row settings-row">
+  <div class="col-12 col-md-6">
+    <b class="settings-prop">SF Server Version:</b>
+    <span class="settings-info">
+      This is the SF server version.</b>
+    </span>
+  </div>
+  <div class="col-12 col-md-6">
+    <b id="sfserver-version"><%=agent.status.installedSFVersion%></b> /
+    <b id="sfserver-version"><%=agent.status.latestSFVersion%></b>
+  </div>
+</div>
+<div class="row settings-row">
+  <div class="col-12 col-md-6">
+    <b class="settings-prop">Server API Key:</b>
+    <span class="settings-info">
+      This is the Servers API Key</b>
+    </span>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="d-flex align-items-center">
+      <%
                     let apiKeyData = agent.apiKey.split("-")
                     const keyPart = apiKeyData[2];
                     const shortenedKeyPart = keyPart.substr(keyPart.length - 4);
                     const shortenedKey = `${apiKeyData[0]}-${apiKeyData[1]} - XXXX${shortenedKeyPart}`
                 %>
-              <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="<%=agent.apiKey%>"><%=shortenedKey%></b>
-              <button class="btn btn-primary ms-2" id="ssmagent-copykey" data-key="<%=agent.apiKey%>"><i class="fas fa-copy"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="<%=agent.apiKey%>"><%=shortenedKey%></b>
+      <button class="btn btn-primary ms-2" id="ssmagent-copykey" data-key="<%=agent.apiKey%>"><i class="fas fa-copy"></i></button>
     </div>
   </div>
-  <div class="col-12 col-xl-9">
-    <div class="row">
-      <div class="col-12 col-md-6">
-        <div class="card border-secondary mb-3 bg-glass">
-          <div class="card-header">
-            <h5>Satisfactory Server Settings</h5>
-          </div>
-          <div class="card-body">
-            <form action="" method="post" class="form-horizontal">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-              <input type="hidden" name="_ConfigSetting" value="sfsettings" />
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Update Server On Start:</b>
-                  <span class="settings-info">
-                    Update Satisfactory server on start of SSM.
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.serverConfig.updateOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+</div>
+</div>
+</div>
+</div>
+<div class="col-12 col-xl-9">
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <div class="card border-secondary mb-3 bg-glass">
+        <div class="card-header">
+          <h5>Satisfactory Server Settings</h5>
+        </div>
+        <div class="card-body">
+          <form action="" method="post" class="form-horizontal">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="_ConfigSetting" value="sfsettings" />
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Update Server On Start:</b>
+                <span class="settings-info">
+                  Update Satisfactory server on start of SSM.
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <input name="inp_updatesfonstart" id="inp_updatesfonstart" type="checkbox" <%if(agent.serverConfig.updateOnStart){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
                 <div class="row settings-row">
@@ -166,23 +176,23 @@
                     <div class="col-12 col-md-8">
                         <select name="inp_autoSaveInterval" id="inp_autoSaveInterval" class="form-select">
                             <option value="60" <%=(agent.serverConfig.autoSaveInterval==60)?"selected":""%>>1 Minute</option>
-                  <option value="300" <%=(agent.serverConfig.autoSaveInterval==300)?"selected":""%>>5 Minutes</option>
-                  <option value="600" <%=(agent.serverConfig.autoSaveInterval==600)?"selected":""%>>10 Minutes</option>
-                  <option value="900" <%=(agent.serverConfig.autoSaveInterval==900)?"selected":""%>>15 Minutes</option>
-                  <option value="1800" <%=(agent.serverConfig.autoSaveInterval==1800)?"selected":""%>>30 Minutes</option>
-                  <option value="3600" <%=(agent.serverConfig.autoSaveInterval==3600)?"selected":""%>>1 Hour</option>
-                  </select>
-                </div>
+                <option value="300" <%=(agent.serverConfig.autoSaveInterval==300)?"selected":""%>>5 Minutes</option>
+                <option value="600" <%=(agent.serverConfig.autoSaveInterval==600)?"selected":""%>>10 Minutes</option>
+                <option value="900" <%=(agent.serverConfig.autoSaveInterval==900)?"selected":""%>>15 Minutes</option>
+                <option value="1800" <%=(agent.serverConfig.autoSaveInterval==1800)?"selected":""%>>30 Minutes</option>
+                <option value="3600" <%=(agent.serverConfig.autoSaveInterval==3600)?"selected":""%>>1 Hour</option>
+                </select>
               </div>
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Seasonal Events:</b>
-                  <span class="settings-info">
-                    Enable Or Disable Seasonal Events
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input name="inp_seasonalEvents" id="inp_seasonalEvents" type="checkbox" <%if(!agent.serverConfig.disableSeasonalEvents){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
+            </div>
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Seasonal Events:</b>
+                <span class="settings-info">
+                  Enable Or Disable Seasonal Events
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <input name="inp_seasonalEvents" id="inp_seasonalEvents" type="checkbox" <%if(!agent.serverConfig.disableSeasonalEvents){%>checked<%}%> data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
               <div class="row settings-row">
@@ -194,34 +204,34 @@
                 </div>
                 <div class="col-12 col-md-6">
                   <input type="range" class="form-range" id="inp_maxplayers" name="inp_maxplayers" min="4" max="500" value="<%=agent.serverConfig.maxPlayers%>">
-                </div>
-
-                <div class="col-12 col-md-2">
-                  <span id="max-players-value">0 / 500</span>
-                </div>
               </div>
 
-
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Worker Threads:</b>
-                  <span class="settings-info">
-                    Number of worker threads to allocate to the server.
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input type="number" value="<%=agent.serverConfig.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
-                </div>
+              <div class="col-12 col-md-2">
+                <span id="max-players-value">0 / 500</span>
               </div>
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Version Branch</b>
-                  <span class="settings-info">
-                    Choose whether to use the Public Branch or Experimental.
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.serverConfig.branch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
+            </div>
+
+
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Worker Threads:</b>
+                <span class="settings-info">
+                  Number of worker threads to allocate to the server.
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <input type="number" value="<%=agent.serverConfig.workerThreads%>" id="inp_workerthreads" name="inp_workerthreads" class="form-control">
+              </div>
+            </div>
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Version Branch</b>
+                <span class="settings-info">
+                  Choose whether to use the Public Branch or Experimental.
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" <%if(agent.serverConfig.branch == "experimental"){%>checked<%}%> data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small">
                 </div>
             </div>
             <div class="row">
@@ -252,69 +262,69 @@
                 </div>
                 <div class="col-12 col-md-8">
                   <a href="/dashboard/serveraction/<%=agent._id%>/install">
-                  <button class="btn btn-danger" id="settings-dangerarea-installsf"><i class="fas fa-download"></i> Install / Reinstall</button>
-                  </a>
+                <button class="btn btn-danger" id="settings-dangerarea-installsf"><i class="fas fa-download"></i> Install / Reinstall</button>
+                </a>
 
-                </div>
               </div>
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Update Server:</b>
-                  <span class="settings-info">
-                    Update Satisfactory Server
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <a href="/dashboard/serveraction/<%=agent._id%>/update">
-                    <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
-                      Update Server</button>
-                  </a>
-                </div>
+            </div>
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Update Server:</b>
+                <span class="settings-info">
+                  Update Satisfactory Server
+                </span>
               </div>
-          </div>
+              <div class="col-12 col-md-8">
+                <a href="/dashboard/serveraction/<%=agent._id%>/update">
+                  <button class="btn btn-warning"><i class="fa-solid fa-circle-arrow-up"></i>
+                    Update Server</button>
+                </a>
+              </div>
+            </div>
         </div>
-        <div class="card border-secondary mb-3 bg-glass">
-          <div class="card-header">
-            <h5>Backup Settings</h5>
-          </div>
-          <div class="card-body">
-            <form action="" method="post">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-              <input type="hidden" name="_ConfigSetting" value="backupsettings" />
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Backup Interval:</b>
-                  <span class="settings-info">
-                    This is the interval between backups <b>(Hours)</b>
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backupInterval%>">
-                </div>
+      </div>
+      <div class="card border-secondary mb-3 bg-glass">
+        <div class="card-header">
+          <h5>Backup Settings</h5>
+        </div>
+        <div class="card-body">
+          <form action="" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="_ConfigSetting" value="backupsettings" />
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Backup Interval:</b>
+                <span class="settings-info">
+                  This is the interval between backups <b>(Hours)</b>
+                </span>
               </div>
-              <div class="row settings-row">
-                <div class="col-12 col-md-4">
-                  <b class="settings-prop">Backups To Keep:</b>
-                  <span class="settings-info">
-                    This is the number of backup to keep
-                  </span>
-                </div>
-                <div class="col-12 col-md-8">
-                  <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backupKeepAmount%>">
-                </div>
+              <div class="col-12 col-md-8">
+                <input type="number" name="inp_backupinterval" class="form-control" id="inp_backupinterval" value="<%=agent.config.backupInterval%>">
               </div>
-              <div class="row">
-                <div class="col-12">
-                  <button class="btn btn-success float-end" id="save-backup-settings"><i class="fas fa-save"></i>
-                    Update Settings</button>
-                </div>
+            </div>
+            <div class="row settings-row">
+              <div class="col-12 col-md-4">
+                <b class="settings-prop">Backups To Keep:</b>
+                <span class="settings-info">
+                  This is the number of backup to keep
+                </span>
               </div>
-            </form>
-
-          </div>
+              <div class="col-12 col-md-8">
+                <input type="number" name="inp_backupkeep" class="form-control" id="inp_backupkeep" value="<%=agent.config.backupKeepAmount%>">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <button class="btn btn-success float-end" id="save-backup-settings"><i class="fas fa-save"></i>
+                  Update Settings</button>
+              </div>
+            </div>
+          </form>
 
         </div>
+
       </div>
     </div>
   </div>
+</div>
 </div>

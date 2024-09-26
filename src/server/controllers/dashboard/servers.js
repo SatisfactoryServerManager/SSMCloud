@@ -1,6 +1,3 @@
-import { validationResult } from "express-validator";
-
-import AgentHandler from "../../server_agent_handler.js";
 import BackendAPI from "../../utils/backend-api.js";
 
 export async function getServers(req, res, next) {
@@ -22,7 +19,6 @@ export async function getServers(req, res, next) {
             pageTitle: "Servers",
             accountName: theAccount.accountName,
             agents,
-            latestVersion: AgentHandler._LatestAgentRelease,
             errorMessage,
             message,
             oldInput: {
@@ -123,7 +119,6 @@ export async function getServer(req, res, next) {
                 pageTitle: `Server - ${theAgent.agentName}`,
                 accountName: theAccount.accountName,
                 agents: agents,
-                latestVersion: AgentHandler._LatestAgentRelease,
                 agent: theAgent,
                 apiKey: encodeBase64(theAgent.apiKey),
                 errorMessage,
@@ -137,7 +132,6 @@ export async function getServer(req, res, next) {
                 pageTitle: "Server",
                 accountName: "",
                 agents: [],
-                latestVersion: "",
                 agent: {},
                 mods: [],
                 logs: [],
@@ -154,7 +148,6 @@ export async function getServer(req, res, next) {
             pageTitle: "Server",
             accountName: "",
             agents: [],
-            latestVersion: "",
             agent: {
                 config: { version: null },
             },
