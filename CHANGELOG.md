@@ -1,3 +1,6 @@
+## 1.0.159 (September 26, 2024)
+  - feat: Updated agent latest version property
+
 ## 1.0.158 (September 25, 2024)
   - fix: fixed updating server config auto restart
   - feat: Map buildings
