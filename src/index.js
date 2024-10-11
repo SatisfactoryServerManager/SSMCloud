@@ -23,7 +23,6 @@ const {
         if (req.headers["x-csrf-token"] != null) {
             return req.headers["x-csrf-token"];
         } else {
-            console.log(req.body);
             return req.body["_csrf"];
         }
     },

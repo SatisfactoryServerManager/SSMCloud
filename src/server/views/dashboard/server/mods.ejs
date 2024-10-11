@@ -8,20 +8,6 @@
       %>
 
 <div class="row">
-  <div class="col-12">
-    <div class="alert alert-danger">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      Mods will not work with Satisfactory 1.0! <br /><b>Please uninstall all mods before updating and running a Satisfactory 1.0 server.</b>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-12 col-lg-3">
-    <%-include('../../includes/status-info-card.ejs',{ClassColour:"blue",
-            ClassID:"status",Title:"SML Version",
-            Data:"v"+modState.installedSMLVersion,Icon:"fa-wrench"}) %>
-  </div>
-  <div class="col-0 col-lg-6"></div>
   <div class="col-12 col-lg-3">
     <%-include('../../includes/status-info-card.ejs',{ClassColour:"green",
             ClassID:"status",Title:"Installed Mods",
