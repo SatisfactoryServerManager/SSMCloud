@@ -1,3 +1,6 @@
+## 1.0.161 (October 11, 2024)
+  - feat: Improvements to mods search
+
 ## 1.0.160 (October 11, 2024)
   - feat: mod updates
   - feat: update deps
