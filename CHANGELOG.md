@@ -1,3 +1,7 @@
+## 1.0.160 (October 11, 2024)
+  - feat: mod updates
+  - feat: update deps
+
 ## 1.0.159 (September 26, 2024)
   - feat: Updated agent latest version property
 
