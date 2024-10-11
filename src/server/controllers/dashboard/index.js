@@ -440,24 +440,26 @@ export async function getModsJS(req, res, next) {
             mod.desiredVersion = "0.0.0";
             mod.pendingInstall = false;
 
-            for (let j = 0; j < selectedMods.length; j++) {
-                const selectedMod = selectedMods[j];
-                if (mod.mod_reference == selectedMod.mod.mod_reference) {
-                    mod.installed = selectedMod.installed;
-                    mod.needsUpdate = selectedMod.needsUpdate;
-                    mod.installedVersion = selectedMod.installedVersion;
-                    mod.desiredVersion = selectedMod.desiredVersion;
-                    mod.pendingInstall =
-                        selectedMod.desiredVersion !=
-                        selectedMod.installedVersion;
-                }
-            }
+            const selectedMod = selectedMods.find(
+                (sm) => sm.mod.mod_reference == mod.mod_reference
+            );
+
+            if (selectedMod == null) continue;
+
+            mod.installed = selectedMod.installed;
+            mod.needsUpdate = selectedMod.needsUpdate;
+            mod.installedVersion = selectedMod.installedVersion;
+            mod.desiredVersion = selectedMod.desiredVersion;
+            mod.pendingInstall =
+                selectedMod.desiredVersion != selectedMod.installedVersion;
         }
 
         const installedMods = mods.filter((m) => m.installed).length;
 
         if (search != "") {
-            mods = mods.filter((m) => m.name.toLowerCase().includes(search));
+            mods = mods.filter((m) =>
+                m.name.toLowerCase().includes(search.toLowerCase())
+            );
         }
 
         function compareAZ(a, b) {
@@ -516,28 +518,31 @@ export async function getModsJS(req, res, next) {
             return 0;
         }
 
-        if (sort == "az") {
-            mods.sort(compareAZ);
-        }
+        // No need to sort if there is only one result.
+        if (mods.length > 1) {
+            if (sort == "az") {
+                mods.sort(compareAZ);
+            }
 
-        if (sort == "installed") {
-            mods.sort(compareInstalled);
-        }
+            if (sort == "installed") {
+                mods.sort(compareInstalled);
+            }
 
-        if (sort == "downloads") {
-            mods.sort(compareDownloads);
-        }
+            if (sort == "downloads") {
+                mods.sort(compareDownloads);
+            }
 
-        if (sort == "updated") {
-            mods.sort(compareUpdated);
-        }
+            if (sort == "updated") {
+                mods.sort(compareUpdated);
+            }
 
-        if (sort == "needsupdate") {
-            mods.sort(compareNeedsUpdate);
-        }
+            if (sort == "needsupdate") {
+                mods.sort(compareNeedsUpdate);
+            }
 
-        if (direction == "desc") {
-            mods.reverse();
+            if (direction == "desc") {
+                mods.reverse();
+            }
         }
 
         const pageLimit = 30;
@@ -550,7 +555,7 @@ export async function getModsJS(req, res, next) {
         }
 
         if (mods.length < end) {
-            end = mods.length - 1;
+            end = mods.length;
         }
 
         const pages = Math.ceil(mods.length / pageLimit);
