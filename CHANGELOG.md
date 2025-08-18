@@ -1,3 +1,6 @@
+## 1.0.162 (August 18, 2025)
+  - fix: fixed mods pagination
+
 ## 1.0.161 (October 11, 2024)
   - feat: Improvements to mods search
 
