@@ -26,6 +26,7 @@ const {
             return req.body["_csrf"];
         }
     },
+    getSessionIdentifier: (req) => req.session.id,
 });
 
 import flash from "connect-flash";

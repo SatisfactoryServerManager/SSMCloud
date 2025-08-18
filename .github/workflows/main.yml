@@ -8,7 +8,7 @@ jobs:
     build-linux:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Get version
               id: versionnum
               run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -32,7 +32,7 @@ jobs:
             - build-linux
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Get version
               id: versionnum
               run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -44,8 +44,6 @@ jobs:
                   space: ${{ secrets.OCTOPUSSERVER_SPACE }}
                   project: ssmcloud-frontend
                   release_number: ${{ steps.versionnum.outputs.version }}
-                  deploy_to: Dev
-                  progress: false
                   ignore_existing: true
             - name: Deploy Release
               uses: OctopusDeploy/deploy-release-action@v3

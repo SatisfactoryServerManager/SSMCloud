@@ -48,33 +48,70 @@ class ModsPage {
         const $pagination = $("#mods-pagination");
         $pagination.empty();
 
-        const prevButtonDisabled = this.page == 0 ? "disabled" : "";
+        const prevButtonDisabled = this.page === 0 ? "disabled" : "";
         const nextButtonDisabled =
-            this.page == this.pages - 1 ? "disabled" : "";
-        const $prevButton =
-            $(`<li class="page-item ${prevButtonDisabled} flex-fill d-inline-block">
-        <a class="page-link mod-page-prev h-100">
-          <i class="fa-solid fa-chevron-left mt-1"></i>
-        </a>
-      </li>`);
+            this.page === this.pages - 1 ? "disabled" : "";
 
-        const $nextButton =
-            $(`<li class="page-item ${nextButtonDisabled} flex-fill d-inline-block">
-      <a class="page-link mod-page-next h-100">
-        <i class="fa-solid fa-chevron-right mt-1"></i>
-      </a>
-    </li>`);
+        const $prevButton = $(`
+        <li class="page-item ${prevButtonDisabled}">
+            <a class="page-link mod-page-prev h-100"><i class="fa-solid fa-chevron-left mt-1"></i></a>
+        </li>
+    `);
+
+        const $nextButton = $(`
+        <li class="page-item ${nextButtonDisabled}">
+            <a class="page-link mod-page-next h-100"><i class="fa-solid fa-chevron-right mt-1"></i></a>
+        </li>
+    `);
 
         $pagination.append($prevButton);
 
-        for (let i = 1; i <= this.pages; i++) {
-            const activePage = this.page + 1 == i ? "active" : "";
-            $pagination.append(`
-            <li class="page-item ${activePage}">
-            <a class="page-link mod-page " data-page="${i - 1}" >${i}</a>
-          </li>
-            `);
+        const totalPages = this.pages;
+        const currentPage = this.page + 1; // convert to 1-based
+        const delta = 2; // how many pages to show around the current one
+        const range = [];
+        const rangeWithDots = [];
+        let l;
+
+        // Build range of page numbers to show
+        for (let i = 1; i <= totalPages; i++) {
+            if (
+                i === 1 ||
+                i === totalPages ||
+                (i >= currentPage - delta && i <= currentPage + delta)
+            ) {
+                range.push(i);
+            }
         }
+
+        for (let i of range) {
+            if (l) {
+                if (i - l === 2) {
+                    rangeWithDots.push(l + 1);
+                } else if (i - l > 2) {
+                    rangeWithDots.push("...");
+                }
+            }
+            rangeWithDots.push(i);
+            l = i;
+        }
+
+        // Render pagination items
+        rangeWithDots.forEach((i) => {
+            if (i === "...") {
+                $pagination.append(`
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            `);
+            } else {
+                const active = i === currentPage ? "active" : "";
+                $pagination.append(`
+                <li class="page-item ${active}">
+                    <a class="page-link mod-page" data-page="${i - 1}">${i}</a>
+                </li>
+            `);
+            }
+        });
+
         $pagination.append($nextButton);
     };
 
