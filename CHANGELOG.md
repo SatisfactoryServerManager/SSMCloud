@@ -1,3 +1,6 @@
+## 1.0.163 (September 26, 2025)
+  - fix: Fixed csrf error
+
 ## 1.0.162 (August 18, 2025)
   - fix: fixed mods pagination
 
