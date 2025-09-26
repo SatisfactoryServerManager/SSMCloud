@@ -15,18 +15,25 @@ if (__basedir == null) {
 const {
     doubleCsrfProtection, // This is the default CSRF protection middleware.
 } = doubleCsrf({
-    getSecret: () => "Secret",
-    cookieName: "x-csrf-test", // Prefer "__Host-" prefixed names if possible
-    cookieOptions: { sameSite: false, secure: false },
-    size: 64, // The size of the generated tokens in bits
-    getTokenFromRequest: (req) => {
+    getSecret: () => "Secret", // A function that optionally takes the request and returns a secret
+    getSessionIdentifier: (req) => req.session.id, // A function that returns the unique identifier for the request
+    cookieName: "__Host-psifi.x-csrf-token", // The name of the cookie to be used, recommend using Host prefix.
+    cookieOptions: {
+        sameSite: "strict",
+        path: "/",
+        secure: true,
+        httpOnly: true,
+    },
+    size: 32, // The size of the random value used to construct the message used for hmac generation
+    ignoredMethods: ["GET", "HEAD", "OPTIONS"], // A list of request methods that will not be protected.
+    getCsrfTokenFromRequest: (req) => {
         if (req.headers["x-csrf-token"] != null) {
             return req.headers["x-csrf-token"];
         } else {
             return req.body["_csrf"];
         }
     },
-    getSessionIdentifier: (req) => req.session.id,
+    skipCsrfProtection: undefined,
 });
 
 import flash from "connect-flash";
@@ -202,23 +209,6 @@ class SSMCloud_App {
             next();
         });
         app.use(flash());
-
-        // if (!isSea()) {
-        //     app.use(
-        //         favicon(
-        //             path.join(
-        //                 __basedir,
-        //                 "client",
-        //                 "public",
-        //                 "images",
-        //                 "favicons",
-        //                 "favicon.ico"
-        //             )
-        //         )
-        //     );
-        // } else {
-        //     app.use(favicon(getAsset("favicon.ico")));
-        // }
 
         app.use((req, res, next) => {
             res.locals.isAuthenticated = req.session.isLoggedIn;
