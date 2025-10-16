@@ -38,6 +38,7 @@
         <%- include('../includes/status-info-card.ejs',
      {ClassColour:"orange", ClassID:"users", Title:"Players",
      Data:agent.mapData.players.filter(p=>p.online).length, Icon:"fa-user"}) %>
+     
         <%- include('../includes/status-info-card.ejs',
       {ClassColour:"green", ClassID:"mods", Title:"Mods",
       Data:mods,Icon:"fa-pencil-ruler"}) %>

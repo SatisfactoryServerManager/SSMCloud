@@ -1,0 +1,57 @@
+{{define "includes/dashboard/server-card"}}
+<div class="col">
+  <div class="card mb-2" id="server-card-{{OIDtoString .ID}}">
+    <div class="card-header d-flex align-items-center">
+      <h5 class="flex-grow-1">{{.AgentName}}</h5>
+      <a class="m-0" href="/dashboard/servers/{{OIDtoString .ID}}">
+        <button class="btn btn-primary">
+          <i class="fas fa-cog"></i>
+        </button>
+      </a>
+    </div>
+    <div class="card-body">
+
+    {{$statusText := "Offline"}}
+    {{if .Status.Online}} {{$statusText = "Online"}} {{end}}
+    {{if .Status.Running}} {{$statusText = "Running"}} {{end}}
+    {{if not .Status.Installed}} {{$statusText = "Not Installed"}} {{end}}
+
+        <div class="d-flex flex-column">
+            {{template "includes/dashboard/status-card" (dict "ClassColour" "blue" "ClassID" "status" "Data" $statusText "Icon" "fa-server")}}
+            {{template "includes/dashboard/status-card" (dict "ClassColour" "orange" "ClassID" "users" "Title" "Players" "Data" 0 "Icon" "fa-user")}}
+            {{template "includes/dashboard/status-card" (dict "ClassColour" "green" "ClassID" "mods" "Title" "Mods" "Data" 0 "Icon" "fa-pencil-ruler")}}
+        </div>
+
+      <hr />
+      <label class="mb-1">CPU: </label>
+      <div class="position-relative">
+        <div class="progress" style="height: 30px" aria-valuenow="{{.Status.CPU}}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Status.CPU}}%;"></div>
+        </div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle">{{.Status.CPU}} %</div>
+      </div>
+
+      <label class="mb-1 mt-3">RAM: </label>
+      <div class="position-relative">
+        <div class="progress" style="height: 30px" aria-valuenow="{{.Status.RAM}}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Status.RAM}}%;"></div>
+        </div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle">{{.Status.RAM}} %</div>
+      </div>
+      <hr />
+
+      <div class="d-flex flex-column flex-md-row">
+        <a href="/dashboard/serveraction/start?id={{OIDtoString .ID}}" class="flex-fill mt-2 mt-md-0 me-md-2 {{if .Status.Running}}disabled{{end}}">
+            <button class='btn btn-success server-action-btn w-100' {{if .Status.Running}}disabled{{end}}><i class="fas fa-play me-1"></i>Start</button>
+        </a>
+        <a href="/dashboard/serveraction/stop?id={{OIDtoString .ID}}" class="flex-fill mt-2  mt-md-0 {{if not .Status.Running}}disabled{{end}}">
+            <button class='btn btn-warning server-action-btn w-100' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-stop me-1"></i>Stop</button>
+        </a>
+        <a href="/dashboard/serveraction/kill?id={{OIDtoString .ID}}" class="flex-fill mt-2  mt-md-0 ms-md-2 {{if not .Status.Running}}disabled{{end}}">
+            <button class='btn btn-danger server-action-btn w-100' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-skull-crossbones me-1"></i>Kill</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

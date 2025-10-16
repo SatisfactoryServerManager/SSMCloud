@@ -1,0 +1,12 @@
+{{define "includes/dashboard/status-card"}}
+
+<div class="status-info-card {{.ClassColour}} info-card-{{.ClassID}} shadow">
+    {{ if .Title }}
+        <div class="status-info-card-main">{{.Title}}:</div>
+    {{end}}
+    <div class="status-info-card-secondary">{{.Data}}</div>
+    <div class="status-info-card-icon mt-1">
+        <i class="fas {{.Icon}}"></i>
+    </div>
+</div>
+{{end}}

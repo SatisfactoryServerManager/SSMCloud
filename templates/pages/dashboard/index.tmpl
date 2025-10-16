@@ -1,0 +1,34 @@
+{{define "pages/dashboard/index"}}
+{{template "includes/dashboard/head" .}}
+
+
+<body>
+    <div id="viewport" class="minimal">
+        {{template "includes/dashboard/nav" .}}
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    {{template "includes/dashboard/page-header" .}}
+
+                    {{if not .agents}}
+                        <div class="alert alert-info">
+                            It looks there is no servers set up yet! Go to the <strong>Servers</strong> page to set up your first server.
+                        </div>
+                    {{end}}
+                    <div id="agents-wrapper" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+                    {{if .agents}}
+                        {{range .agents}}  
+                            {{template "includes/dashboard/server-card" .}}
+                        {{end}}                        
+                    {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+{{template "includes/dashboard/footer" .}}
+{{end}}

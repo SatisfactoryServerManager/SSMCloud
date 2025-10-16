@@ -1,0 +1,35 @@
+{{define "pages/dashboard/account-join"}}
+{{template "includes/dashboard/head" .}}
+
+<body>
+     <div class="container py-lg-5 py-3 h-100">
+        <!-- BODY -->
+        <div class="card mx-auto my-auto " style="max-width:650px;">
+            <div class="card-header">
+                <h5>Join Existing Account</h5>
+            </div>
+            <div class="card-body">
+                <p>Ready to join an account. If not you can create new account by going here: <a href="/dashboard/account/create">Create Account</a></p>
+                <p>To join an account please provide the join code in the form below.</p>
+                {{if .errorMessage}}
+                    <div class="alert alert-danger">
+                        {{.errorMessage}}
+                    </div>
+                {{end}}
+                <form method="post" action="/dashboard/account/join">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control {{if .errorMessage}}is-invalid{{end}}" name="inp_joincode" id="inp_joincode" placeholder="Join Code">
+                        <label for="inp_joincode">Join Code</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-link"></i> Join Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+{{template "includes/dashboard/footer" .}}
+{{end}}

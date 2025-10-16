@@ -2,7 +2,6 @@ const AgentMap = require("./agentmap");
 
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
-const { plugins, Legend } = require("chart.js");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -564,6 +563,9 @@ function main() {
                                                     workflowId
                                                 );
                                         }, 2000);
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
                                     });
                             }
 

@@ -45,9 +45,9 @@
     },
     "scripts": {
         "start": "node ./src/index.js",
-        "watch": "watchify src/client/app.js -o src/client/public/js/bundle.js",
-        "watch:map": "watchify src/client/map.js -o src/client/public/js/map.bundle.js",
-        "bundle": "browserify --plugin tinyify src/client/app.js -o src/client/public/js/bundle.js",
+        "watch": "watchify src/client/app.js -o static/js/bundle.js",
+        "watch:map": "watchify src/client/map.js -o static/js/map.bundle.js",
+        "bundle": "browserify --plugin tinyify src/client/app.js -o static/js/bundle.js",
         "clean-css": "bash scripts/clean-css.sh"
     },
     "resolutions": {

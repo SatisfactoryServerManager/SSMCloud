@@ -1,0 +1,49 @@
+{{define "includes/server/logs"}}
+
+<div class="row">
+  <div class="col-12 col-lg-6">
+    <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
+      <div class="card-header">
+        <a href="/dashboard/download/log?agentid={{OIDtoString .agent.ID}}&logtype=Agent" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i> SSM Log File
+        </a>
+        <h5>SSM Log</h5>
+      </div>
+      <div class="card-body">
+        <div class="log-viewer">
+
+        {{if eq .agentLog.Type ""}}
+            <p>No log entries for this log type.</p>
+        {{else}}
+             {{range displayLogSnippet .agentLog.Snippet}}
+                <p>{{.}}</p>
+             {{end}}
+        {{end}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
+      <div class="card-header">
+        <a href="/dashboard/download/log?agentid={{OIDtoString .agent.ID}}&logtype=FactoryGame" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i> Satisfactory Log File
+        </a>
+        <h5>Satisfactory Log</h5>
+      </div>
+      <div class="card-body">
+        <div class="log-viewer">
+          {{if eq .gameLog.Type ""}}
+            <p>No log entries for this log type.</p>
+        {{else}}
+             {{range displayLogSnippet .gameLog.Snippet}}
+                <p>{{.}}</p>
+             {{end}}
+        {{end}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}
