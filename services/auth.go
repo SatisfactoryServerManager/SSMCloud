@@ -28,7 +28,10 @@ func NewAuthService() (*AuthService, error) {
 	as.redirectURL = "https://handy-outgoing-finch.ngrok-free.app/auth/callback"
 
 	redisHost := os.Getenv("REDIS_HOST")
-	rs, err := redistore.NewRediStore(10, "tcp", redisHost, "", "", []byte("ssm-session-key"))
+	redisUser := os.Getenv("REDIS_USER")
+	redisPass := os.Getenv("REDIS_PASS")
+
+	rs, err := redistore.NewRediStore(10, "tcp", redisHost, redisUser, redisPass, []byte("ssm-session-key"))
 	if err != nil {
 		return nil, err
 	}
