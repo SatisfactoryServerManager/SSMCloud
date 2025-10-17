@@ -868,7 +868,7 @@ pre {
 }
 
 #toast-container > .toast-info:before {
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 7 Free";
     font-weight: 900;
     content: "\f129";
     font-size: 25px;
@@ -883,7 +883,7 @@ pre {
 }
 
 #toast-container > .toast-error:before {
-    font-family: "Font Awesome 6 Free";
+    font-family: "Font Awesome 7 Free";
     font-weight: 900;
     content: "\f12a";
     font-size: 25px;
@@ -898,7 +898,7 @@ pre {
 }
 
 #toast-container > .toast-success:before {
-    font-family: "Font Awesome 6 Free";
+    font-family: "Font Awesome 7 Free";
     font-weight: 900;
     content: "\f00c";
     font-size: 25px;
@@ -913,7 +913,7 @@ pre {
 }
 
 #toast-container > .toast-warning:before {
-    font-family: "Font Awesome 6 Free";
+    font-family: "Font Awesome 7 Free";
     font-weight: 900;
     content: "\f071";
     font-size: 25px;

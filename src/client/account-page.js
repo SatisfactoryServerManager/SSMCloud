@@ -104,7 +104,6 @@ class AccountPage {
         }
 
         this._Users = res.users;
-        console.log(this._Users);
 
         this.BuildUsersUI();
     };
@@ -121,8 +120,6 @@ class AccountPage {
     }
 
     BuildUserUI(User) {
-        console.log(User);
-
         const $div = $("<div/>").addClass(
             "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
         );

@@ -105,7 +105,6 @@ class AccountPage {
         }
 
         this._Users = res.users;
-        console.log(this._Users);
 
         this.BuildUsersUI();
     };
@@ -122,8 +121,6 @@ class AccountPage {
     }
 
     BuildUserUI(User) {
-        console.log(User);
-
         const $div = $("<div/>").addClass(
             "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
         );
@@ -447,7 +444,6 @@ function main() {
 
     $(".circle").each((index, el) => {
         const $el = $(el);
-        console.log($el);
 
         const percentValue = $el.attr("data-percent");
 
@@ -724,7 +720,6 @@ function main() {
             const $backupCard = $this.parent().parent().parent().parent();
 
             const search = $this.val().toLowerCase();
-            console.log(search);
             $backupCard.find(".backup-card").each((index, ele) => {
                 const $ele = $(ele);
                 if (
@@ -744,8 +739,10 @@ function main() {
         })
         .on("click", "#ssmagent-copykey", (e) => {
             const $this = $(e.currentTarget);
-
             navigator.clipboard.writeText($this.attr("data-key"));
+            toastr.success("", "API key has been copied to clipboard", {
+                timeOut: 4000,
+            });
         })
         .on("change", "#mods-sortby", (e) => {
             SortMods();
@@ -988,6 +985,15 @@ function main() {
                     });
                 }
             );
+        })
+        .on("click", "#copy-join-code", (e) => {
+            e.preventDefault();
+            const code = $("#join-code").val();
+            navigator.clipboard.writeText(code);
+
+            toastr.success("", "Account join code copied to clipboard", {
+                timeOut: 4000,
+            });
         });
 
     SortMods();
@@ -1035,7 +1041,6 @@ function main() {
 
         for (let i = 0; i < workflowData.actions.length; i++) {
             const action = workflowData.actions[i];
-            console.log(action);
 
             const $card = $("<div/>").addClass("card card-inner mb-2");
             $wrapper.append($card);
@@ -1140,7 +1145,6 @@ function FilterServerList() {
         ? 1
         : 0;
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
-    console.log(search);
 
     function doesMatch($el) {
         if (
