@@ -16,3 +16,8 @@ func InitServices() error {
 func GetAuthService() *AuthService {
 	return authService
 }
+
+func ShutdownAllServices() error {
+
+	return nil
+}

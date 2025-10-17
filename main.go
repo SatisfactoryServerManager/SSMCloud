@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"encoding/gob"
 	"fmt"
@@ -133,5 +134,25 @@ func main() {
 
 	httpBind := ":" + os.Getenv("PORT")
 
-	router.Run(httpBind)
+	srv := &http.Server{
+		Addr:    httpBind,
+		Handler: router,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	wait := gracefulShutdown(context.Background(), 30*time.Second, map[string]operation{
+		"gin": func(ctx context.Context) error {
+			return srv.Shutdown(ctx)
+		},
+		"services": func(ctx context.Context) error {
+			return services.ShutdownAllServices()
+		},
+	})
+
+	<-wait
 }
