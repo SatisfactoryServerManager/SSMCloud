@@ -1,5 +1,7 @@
 github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.14 h1:ElPvCpAeObxIUZE/11RuOjkqXRh+5Ryh0Q5LKTKIwf4=
 github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.14/go.mod h1:kZH0TGdW9Vjv7RB1NeRyO4yMeg13UKQZMbnFRdFXWN8=
+github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.16 h1:pN58TKWPFkWEzGOmXc55AF/are6cFuRBz3gbHa/sGJk=
+github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.16/go.mod h1:kZH0TGdW9Vjv7RB1NeRyO4yMeg13UKQZMbnFRdFXWN8=
 github.com/boj/redistore v1.4.1 h1:lP9ZZWqKMq2RIqexlZX1w1ODSnegL+puxGIujkU5tIw=
 github.com/boj/redistore v1.4.1/go.mod h1:c0Tvw6aMjslog4jHIAcNv6EtJM849YoOAhMY7JBbWpI=
 github.com/bytedance/gopkg v0.1.3 h1:TPBSwH8RsouGCBcMBktLt1AymVo2TVsBVCY4b6TnZ/M=

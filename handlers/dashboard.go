@@ -198,6 +198,44 @@ func (handler *DashboardHandler) GET_DashboardDeleteServer(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/dashboard")
 }
 
+func (handler *DashboardHandler) GET_DashboardAccount(c *gin.Context) {
+	RenderTemplate(c, "pages/dashboard/account", gin.H{"pageTitle": "Account"})
+}
+
+func (handler *DashboardHandler) GET_DashboardAccountAudit(c *gin.Context) {
+
+	auditType := c.Query("type")
+
+	auditRes, err := api.GetAccountAudit(&api.APIGetAccountAuditRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		AuditType: auditType,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "audit": auditRes.Audit})
+}
+
+func (handler *DashboardHandler) GET_DashboardAccountUsers(c *gin.Context) {
+	usersRes, err := api.GetAccountUsers(&api.APIRequest{
+		AccessToken: c.GetString("access_token"),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "users": usersRes.Users})
+}
+
 func (handler *DashboardHandler) GET_DashboardCreateAccount(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/account-create", gin.H{"pageTitle": "Create Account"})

@@ -159,3 +159,18 @@ type APIDownloadFileRequest struct {
 	LogType string `qs:"logtype,omitempty"`
 	Type    string `json:"-" qs:"-"`
 }
+
+type APIGetAccountAuditRequest struct {
+	APIRequest
+	AuditType string `qs:"auditType,omitempty"`
+}
+
+type APIGetAccountAuditResponse struct {
+	APIResponse
+	Audit []models.AccountAuditSchema `json:"audit"`
+}
+
+type APIGetAccountUsersResponse struct {
+	APIResponse
+	Users []models.UserSchema `json:"users"`
+}

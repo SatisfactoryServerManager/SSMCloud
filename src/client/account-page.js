@@ -103,13 +103,10 @@ class AccountPage {
             return;
         }
 
-        this._Users = res.users.filter((u) => u.inviteCode == "" && u.active);
-        this._UserInvites = res.users.filter(
-            (u) => u.inviteCode != "" && !u.active
-        );
+        this._Users = res.users;
+        console.log(this._Users);
 
         this.BuildUsersUI();
-        this.BuildUserInvitesUI();
     };
 
     BuildUsersUI() {
@@ -123,51 +120,9 @@ class AccountPage {
         }
     }
 
-    BuildUserInvitesUI() {
-        const $wrapper = $("#account-user-invites-wrapper");
-        $wrapper.empty();
-
-        if (this._UserInvites.length == 0) {
-            $wrapper.append(
-                `<div class="col-12"><div class="alert alert-info">There are no pending user invites</div></div>`
-            );
-            return;
-        }
-
-        for (let i = 0; i < this._UserInvites.length; i++) {
-            const User = this._UserInvites[i];
-
-            const $inviteUI = this.BuildUserUI(User);
-
-            const $copyLink = $(
-                `<button class="btn btn-light copy-userinvite-btn ms-md-auto"></button>`
-            );
-            $copyLink
-                .attr("data-bs-toggle", "tooltip")
-                .attr("data-bs-placement", "bottom")
-                .attr("data-bs-title", "Copy Invite Link");
-
-            new bootstrap.Tooltip($copyLink.get(0));
-            const hostnameURL = `${location.protocol}//${location.hostname}${
-                location.port != "" ? ":" + location.port : ""
-            }`;
-            const linkURL = `${hostnameURL}/acceptinvite/${User.inviteCode}`;
-
-            $copyLink.attr("data-invite-url", linkURL);
-
-            $copyLink.append(`<i class="fas fa-copy"></i>`);
-            $copyLink.append(
-                `<span class="ms-2 d-md-none d-inline-block">Delete User</span>`
-            );
-
-            const $deleteBtn = $inviteUI.find("button:last");
-            $deleteBtn.removeClass("ms-md-auto").addClass("ms-3");
-            $deleteBtn.before($copyLink);
-            $wrapper.append($inviteUI);
-        }
-    }
-
     BuildUserUI(User) {
+        console.log(User);
+
         const $div = $("<div/>").addClass(
             "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
         );

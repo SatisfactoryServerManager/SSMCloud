@@ -1,5 +1,5 @@
 {{define "includes/dashboard/small-server-card"}}
-<div class="card card-inner server-card" data-agentname="{{.AgentName}}" data-online="{{ if .Status.Online}}1{{else}}0{{end}}" data-installed="{{ if .Status.Installed}}1{{else}}0{{end}}">
+<div class="card card-inner server-card" data-agentname="{{.AgentName}}" data-online="{{ if .Status.Online}}1{{else}}0{{end}}" data-installed="{{ if .Status.Installed}}1{{else}}0{{end}}" data-running="{{ if .Status.Running}}1{{else}}0{{end}}">
   <div class="card-body">
     <div class="row">
       <div class="col-12">

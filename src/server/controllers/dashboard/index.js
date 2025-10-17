@@ -4,36 +4,6 @@ import path from "path";
 import Config from "../../server_config.js";
 import BackendAPI from "../../utils/backend-api.js";
 
-export async function getDashboard(req, res, next) {
-    const theAccount = await BackendAPI.GetAccount(req.session.token);
-
-    let message = req.flash("success");
-    message.length > 0 ? (message = message[0]) : (message = null);
-
-    if (theAccount) {
-        const agents = await BackendAPI.GetAgents(req.session.token);
-
-        res.render("dashboard/dashboard", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: theAccount.accountName,
-            agents,
-            errorMessage: "",
-            message,
-        });
-    } else {
-        res.render("dashboard/dashboard", {
-            path: "/dashboard",
-            pageTitle: "Dashboard",
-            accountName: "",
-            agents: [],
-            message,
-            errorMessage:
-                "Cant Find Account details. Please contact SSM Support.",
-        });
-    }
-}
-
 export async function getServerAction(req, res, next) {
     const { agentid, action } = req.params;
 

@@ -59,6 +59,14 @@
                                             </label>
                                         </div>
                                         </li>
+                                        <li class="dropdown-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input server-filter-checkbox" role="switch" type="checkbox" value="" id="server-filter-running" checked>
+                                            <label class="form-check-label" for="server-filter-running">
+                                            Running
+                                            </label>
+                                        </div>
+                                        </li>
                                     </ul>
                                     </div>
                                 </div>
@@ -68,6 +76,11 @@
 
                             </div>
                             <div class="card-body">
+                             {{if not .agents}}
+                                <div class="alert alert-info">
+                                    It looks there is no servers set up yet!
+                                </div>
+                            {{end}}
                             {{if .agents}}
                             <div class="row" id="serverlist-wrapper">
                                 {{range .agents}}  

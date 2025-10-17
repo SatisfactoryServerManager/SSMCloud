@@ -728,13 +728,15 @@ function FilterServerList() {
     const FilterInstalled = $("#server-filter-installed").prop("checked")
         ? 1
         : 0;
+    const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
     console.log(search);
 
     function doesMatch($el) {
         if (
             $el.attr("data-agentname").toLowerCase().includes(search) &&
-            $el.attr("data-online") == FilterOnline &&
-            $el.attr("data-installed") == FilterInstalled
+            ($el.attr("data-online") == FilterOnline ||
+                $el.attr("data-installed") == FilterInstalled ||
+                $el.attr("data-running") == FilterRunning)
         ) {
             return true;
         } else {

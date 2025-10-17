@@ -1,0 +1,30 @@
+{{define "includes/account/settings"}}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Settings</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-xl-3">
+                <b class="settings-prop">Account Join Code:</b>
+                <span class="settings-info">
+                    Use this code to join the account
+                </span>
+            </div>
+            <div class="col-12 col-md-6 col-xl-9">
+                <div class="input-group mb-3">
+                    <input id="join-code" type="text" readonly class="form-control" value="{{.account.JoinCode}}">
+                    <button class="btn btn-primary" id="regen-join-code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Generate a new join code">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    <button class="btn btn-primary" id="copy-join-code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copy the join code">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{end}}

@@ -69,7 +69,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 	}
 
 	if _, exists := c.Get("IsLoggedIn"); exists {
-		data["IsLoggedIn"] = true
+		data["IsLoggedIn"] = c.GetBool("IsLoggedIn")
 
 	} else {
 		data["IsLoggedIn"] = false

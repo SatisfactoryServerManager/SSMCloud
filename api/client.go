@@ -24,8 +24,12 @@ var encoder = qs.NewEncoder()
 func initClient() {
 	client = http.DefaultClient
 
+	scheme := "https"
+	if os.Getenv("APP_MODE") == "development" {
+		scheme = "http"
+	}
 	baseURL = url.URL{
-		Scheme: "http",
+		Scheme: scheme,
 		Host:   os.Getenv("BACKEND_URL"),
 		Path:   "/api/v2/",
 	}
@@ -92,6 +96,8 @@ func post(endpoint string, accessToken string, queryValues *url.Values, body int
 	}
 
 	url := BuildURL(endpoint, queryValues)
+
+	fmt.Println(url, endpoint)
 
 	data, _ := json.Marshal(body)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
@@ -412,4 +418,29 @@ func UpdateServerSettings(request *APIUpdateServerSettingsRequest) error {
 	}
 
 	return nil
+}
+
+func GetAccountAudit(request *APIGetAccountAuditRequest) (*APIGetAccountAuditResponse, error) {
+	values, err := encoder.Values(request)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &APIGetAccountAuditResponse{}
+
+	if err := get("frontend/users/me/account/audit", request.AccessToken, &values, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func GetAccountUsers(request *APIRequest) (*APIGetAccountUsersResponse, error) {
+	res := &APIGetAccountUsersResponse{}
+
+	if err := get("frontend/users/me/account/users", request.AccessToken, nil, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
