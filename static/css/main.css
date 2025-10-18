@@ -290,6 +290,12 @@ a.disabled {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25) !important;
 }
 
+.page-header .server-count-wrapper {
+    height: 45px !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
 .page-header .logout-btn {
     padding: 8px 12px;
     font-size: 20px;
@@ -430,7 +436,8 @@ a.disabled {
 }
 
 .form-control,
-.form-control:focus {
+.form-control:focus,
+.page-header .server-count-wrapper {
     font-size: 15px;
     background: var(--ssm-input-bg-colour);
     border: 1px solid var(--ssm-input-border-colour);

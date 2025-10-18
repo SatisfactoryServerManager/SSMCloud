@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
@@ -108,8 +107,6 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
-	fmt.Printf("%+v\n", PostData)
 
 	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
 }
@@ -369,4 +366,9 @@ func (handler *DashboardHandler) GET_DashboardDownloadLog(c *gin.Context) {
 		LogType: c.Query("logtype"),
 	}
 	api.DownloadFile(c, request)
+}
+
+func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
+
+	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile"})
 }

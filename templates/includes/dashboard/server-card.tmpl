@@ -28,7 +28,7 @@
         <div class="progress" style="height: 30px" aria-valuenow="{{.Status.CPU}}" aria-valuemin="0" aria-valuemax="100">
           <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Status.CPU}}%;"></div>
         </div>
-        <div class="text-center position-absolute top-50 start-50 translate-middle">{{.Status.CPU}} %</div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle">{{RoundTo .Status.CPU 2}} %</div>
       </div>
 
       <label class="mb-1 mt-3">RAM: </label>
@@ -36,7 +36,7 @@
         <div class="progress" style="height: 30px" aria-valuenow="{{.Status.RAM}}" aria-valuemin="0" aria-valuemax="100">
           <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Status.RAM}}%;"></div>
         </div>
-        <div class="text-center position-absolute top-50 start-50 translate-middle">{{.Status.RAM}} %</div>
+        <div class="text-center position-absolute top-50 start-50 translate-middle">{{RoundTo .Status.RAM 2}} %</div>
       </div>
       <hr />
 

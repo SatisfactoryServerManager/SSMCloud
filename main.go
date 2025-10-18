@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"io/fs"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"path"
@@ -48,16 +49,6 @@ func main() {
 	router := gin.Default()
 
 	tmpl := template.New("").Funcs(template.FuncMap{
-		"safe": func(s string) template.HTML { return template.HTML(s) },
-		"join": func(a interface{}) string {
-			if a == nil {
-				return ""
-			}
-			if tags, ok := a.([]string); ok {
-				return strings.Join(tags, ",")
-			}
-			return ""
-		},
 		"formatDate": func(t time.Time) string {
 			if t.IsZero() {
 				return ""
@@ -103,10 +94,14 @@ func main() {
 			slices.Reverse(logStrings)
 			return logStrings
 		},
-		"shortenApikey": func(apikey string) string {
-			apikeySplit := strings.Split(apikey, "AGT-API-")
+		"shortenApikey": func(prefix string, apikey string) string {
+			apikeySplit := strings.Split(apikey, prefix+"-")
 			shortKey := apikeySplit[1][len(apikeySplit[1])-4:]
-			return "AGT-API-••••" + shortKey
+			return prefix + "-••••" + shortKey
+		},
+		"RoundTo": func(value float64, digits int) float64 {
+			factor := math.Pow(10, float64(digits))
+			return math.Round(value*factor) / factor
 		},
 	})
 

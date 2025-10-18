@@ -58,30 +58,6 @@ function main() {
         );
     });
 
-    if ($("#agents-table").length > 0) {
-        $("#agents-table").DataTable();
-    }
-
-    if ($(".backup-agent-table").length > 0) {
-        $(".backup-agent-table").DataTable({
-            order: [[1, "desc"]],
-        });
-    }
-
-    if ($(".saves-table").length > 0) {
-        $(".saves-table").DataTable({
-            order: [[2, "desc"]],
-        });
-    }
-
-    if ($("#users-table").length > 0) {
-        $("#users-table").DataTable();
-        $("#roles-table").DataTable();
-        $("#invites-table").DataTable();
-        $("#apikeys-table").DataTable();
-        $("#account-events-table").DataTable();
-    }
-
     if ($(".mods-table").length > 0) {
         $(".mods-table").DataTable();
     }
@@ -705,6 +681,10 @@ function main() {
     if ($("#inp_maxplayers").length > 0) {
         const val = $("#inp_maxplayers").val();
         $("#max-players-value").text(`${val} / 500`);
+    }
+
+    if ($("#inp_new_apikey").length > 0) {
+        $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
     }
 
     var tooltipTriggerList = [].slice.call(

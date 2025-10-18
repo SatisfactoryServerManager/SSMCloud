@@ -6,17 +6,13 @@
         </div>
         <div class="d-flex flex-row align-items-center">
             <div
-                class="status-info-card bg-primary border-primary text-default mb-0 mt-0 me-3"
+                class="server-count-wrapper d-flex align-items-center text-default my-0 me-3"
             >
-                <div class="status-info-card-icon text-default">
-                    <i class="fas fa-server mt-1"></i>
-                </div>
-                <div class="status-info-card-secondary">
-                    <span id="server-count">{{ len .agents }}</span>
-                </div>
+                <i class="fas fa-server me-2"></i>
+                <span id="server-count">{{ len .agents }}</span>
             </div>
 
-            <a href="/auth/logout" class="btn btn-primary me-3 logout-btn">
+            <a href="/auth/logout" class="btn btn-light text-dark me-3 logout-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Log Out">
                 <i class="fa-solid fa-right-from-bracket mt-1"></i>
             </a>
 
