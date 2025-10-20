@@ -1,121 +1,32 @@
 # Getting Started
 
-# Terminology
+# Gettings Started With SSM
 
--   **SSM** - Satisfactory Server Manager.
--   **SSM Cloud** - Satisfactory Server Manager Cloud hosted web portal.
--   **SSM Hosted Cloud** - Satisfactory Server Manager locally hosted web portal.
--   **Agent / Server** - SSM Agent that manages the Satisfactory Server.
+## Registering a User
 
-# Cloud vs Hosted Cloud
+To get started using SSM you will first need to signup for an account.
 
-Below we cover the pros and cons of using cloud vs hosted cloud.
+We use Authentik for our identity provider hosted by us, you can login or register here: <a href="/auth/login">Login / Register page</a>
 
-## SSM Cloud
-
-**Pros:**
-
--   Hosted by the Refined R&D team.
--   Rapid Bug fixes.
--   Easy support channels.
--   Free of charge (Hardware).
--   No port-forwarding is required.
--   Software is tested for our environment.
-
-**Cons:**
-
--   Shared network connection.
--   Requires an internet connection.
-
-## SSM Hosted Cloud
-
-**Pros:**
-
--   Can be installed on low-level hardware.
--   Can be installed locally on your network.
-
-**Cons:**
-
--   Requires Port-forwarding if you want to access from the internet.
--   Bugs could be specific to your hardware.
--   Will require spare or purchase hardware.
--   Requires dependant software to be installed (MongoDB)
--   MongoDB will need to be secured before SSM installation.
-
-# Account
-
-## Create An Account
+## Create Or Join An Account
 
 To get started using SSM Cloud, you will need an account.
 
-You can setup an account free of charge using the <a href="/signup">Sign Up Page</a>
+You can setup an account in the dashboard after logging in by going to the <a href="/dashboard/account/create">Create Account</a> page.
 
-On the sign-up page, you will need to enter the following information:
+If you are joining an account you will need the Join Code of the account and then enter it in the <a href="/dashboard/account/join">Join Account</a> page.
 
--   Account Details
-    -   Account Name - This is the Organization/Community name
--   User Details
-    -   Email Address - This is the first user that will be added to the account
-    -   Password - Password for the user
-    -   Confirm Password - Confirmation Password for the user
-
-## Why do I need an account?
+### Why do I need an account?
 
 When using SSM Cloud or Hosted SSM Cloud, an account is required. The account acts as a data store for the following information:
 
--   API Keys
 -   Agents
--   Invites
--   Notifications
--   Notification Settings
--   Users
--   User Roles
-
-# Users
-
-## Create a User
-
-Creating a new user account can be done using the <a href="/dashboard/account">Account Page</a> under the `Users` section.
-
-In this section, you need to enter the Users email address. This is the email address to which the invite link will be sent.
-
-> **NOTE**: If you are using Hosted SSM Cloud, it will show the invite link in the success message.
-
-When creating a user, you can assign a [User Role](#user-roles). This will add permissions to the user.
-
-# User Roles
-
-User roles are groups of permissions. This determines what a user can do within the UI.
-
-By default, we create three common user roles:
-
--   Administrator
--   Super User
--   User
+-   Audit
+-   Integrations
 
 # Servers
 
-## Create a Server
-
-Creating a new server can be done using the <a href="/dashboard/server">Servers Page</a>
-
-In the Create New Server section, you will have three input fields you need to fill in.
-
--   Server Name - The logical name of the server.
--   Server Port - The port that Satisfactory Server will run with.
--   Server Memory - The amount of Memory the server can use. (**Docker Install Only**)
-
-Once you have created the server, you will get a success message.
-
-> **NOTE:** This message also contains the Server API Key. You will need to take note of this as it's used in the next step.
-
-> **IMPORTANT:** The Server API Key will not be shown again so make sure you make a note of this!
-
-![create server api key](images/createserver1.png)
-
-## Installing a new Server
-
-Once you have created the new server, you will need to install the server on your machines.
+## Prerequisites
 
 The following operating systems are supported:
 
@@ -123,6 +34,34 @@ The following operating systems are supported:
 -   Windows Server 2019 and above (Standalone only)
 -   Ubuntu 22.04 and above
 -   Debian 10 and above
+
+## Creating a Server
+
+Creating a new server can be done using the <a href="/dashboard/server">Servers Page</a>
+
+To create a new server click the `Create New Server` button. You will then be presented the Create New Server wizard
+
+**Configuration Tab**
+
+-   Server Name - The logical name of the server.
+-   Server Port - The port that Satisfactory Server will run with.
+-   Server Memory - The amount of Memory the server can use. (**Docker Install Only**)
+-   Admin Password - The Satisfactory Server admin password
+-   Client Password - The Satisfactory Server client password
+
+Once filled in click the next button.
+
+**Install Command Tab**
+
+This tab will disable the install command for your operating system, it will be prepopulated with the information and you just need to copy and paste the command.
+
+Once you have run the command in click the next button.
+
+**Progress Tab**
+
+The server is now created and will run a set of tasks to complete the install process (installing satisfactory, starting the server, claiming the server, setting the passwords, etc.)
+
+Once you have created the server, you will get a success message.
 
 ### Running the install scripts
 

@@ -30,6 +30,9 @@ var publicFS embed.FS
 //go:embed templates/*
 var templatesFS embed.FS
 
+//go:embed docs/*
+var docsFS embed.FS
+
 func init() {
 	godotenv.Load()
 	gob.Register(map[string]interface{}{})
@@ -118,7 +121,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	docsFiles, err := fs.Sub(docsFS, "docs")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router.StaticFS("/public", http.FS(publicFiles))
+
+	// Serve the embedded docs on /docs
+	router.GET("/docs", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/docs/")
+	})
+
+	// Serve /docs/* from the embedded filesystem
+	router.StaticFS("/docs", http.FS(docsFiles))
 
 	routes.RegisterPublicRoutes(router)
 
