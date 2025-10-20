@@ -45,7 +45,6 @@ func AuthRequired() gin.HandlerFunc {
 		// If access token expired, refresh it
 		if time.Now().After(expiry) && refreshToken != "" {
 			fmt.Println("Refreshing access token...")
-			t1 := time.Now()
 			newToken, err := refreshAccessToken(refreshToken)
 			if err != nil {
 				c.Redirect(http.StatusFound, "/auth/login")
@@ -60,10 +59,6 @@ func AuthRequired() gin.HandlerFunc {
 			session.Save(c.Request, c.Writer)
 
 			accessToken = newToken.AccessToken
-			t2 := time.Now()
-			diff := t2.Sub(t1)
-			out := time.Time{}.Add(diff)
-			fmt.Println(out.Format("15:04:05"))
 		}
 
 		c.Set("access_token", accessToken)

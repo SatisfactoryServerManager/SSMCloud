@@ -8,13 +8,7 @@ export async function getServerAction(req, res, next) {
     const { agentid, action } = req.params;
 
     try {
-        if (
-            action != "start" &&
-            action != "stop" &&
-            action != "kill" &&
-            action != "install" &&
-            action != "update"
-        ) {
+        if (action != "start" && action != "stop" && action != "kill" && action != "install" && action != "update") {
             throw new Error("Invalid server action");
         }
 
@@ -50,8 +44,7 @@ export async function getServerAction(req, res, next) {
 
         const successMessageData = {
             agentId: agentid,
-            message:
-                "Server Action was successfully sent to the server and will run in the background.",
+            message: "Server Action was successfully sent to the server and will run in the background.",
         };
 
         req.flash("success", JSON.stringify(successMessageData));
@@ -73,10 +66,7 @@ export async function postSaves(req, res, next) {
 
     try {
         const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const theAgent = await BackendAPI.GetAgentById(
-            req.session.token,
-            agentid
-        );
+        const theAgent = await BackendAPI.GetAgentById(req.session.token, agentid);
 
         if (theAccount == null) {
             throw new Error("Account was null");
@@ -89,12 +79,7 @@ export async function postSaves(req, res, next) {
         if (file == null) {
             throw new Error("No save file was selected");
         }
-        const newFileDir = path.join(
-            Config.get("ssm.uploadsdir"),
-            theAccount._id,
-            theAgent._id,
-            "saves"
-        );
+        const newFileDir = path.join(Config.get("ssm.uploadsdir"), theAccount._id, theAgent._id, "saves");
 
         fs.ensureDirSync(newFileDir);
 
@@ -106,11 +91,7 @@ export async function postSaves(req, res, next) {
 
         fs.writeFileSync(newFilePath, file.buffer, "binary");
 
-        await BackendAPI.FILE_APICall_Token(
-            `/api/v1/account/agents/upload/${agentid}/save`,
-            newFilePath,
-            req.session.token
-        );
+        await BackendAPI.FILE_APICall_Token(`/api/v1/account/agents/upload/${agentid}/save`, newFilePath, req.session.token);
 
         await BackendAPI.CreateAgentTask(req.session.token, agentid, {
             action: "downloadSave",
@@ -143,10 +124,7 @@ export async function postInstallMod(req, res, next) {
 
     try {
         const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const theAgent = await BackendAPI.GetAgentById(
-            req.session.token,
-            agentId
-        );
+        const theAgent = await BackendAPI.GetAgentById(req.session.token, agentId);
 
         if (theAccount == null) {
             throw new Error("Account was null");
@@ -170,10 +148,7 @@ export async function postUninstallMod(req, res, next) {
 
     try {
         const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const theAgent = await BackendAPI.GetAgentById(
-            req.session.token,
-            agentId
-        );
+        const theAgent = await BackendAPI.GetAgentById(req.session.token, agentId);
 
         if (theAccount == null) {
             throw new Error("Account was null");
@@ -196,9 +171,7 @@ export async function getIntegrationsPage(req, res, next) {
     try {
         const theAccount = await BackendAPI.GetAccount(req.session.token);
         const agents = await BackendAPI.GetAgents(req.session.token);
-        const integrations = await BackendAPI.GetAccountIntegrations(
-            req.session.token
-        );
+        const integrations = await BackendAPI.GetAccountIntegrations(req.session.token);
 
         res.render("dashboard/integrations", {
             path: "/integrations",
@@ -288,10 +261,7 @@ export async function getDeleteIntegration(req, res, next) {
     try {
         const { integrationId } = req.params;
 
-        await BackendAPI.DeleteAccountIntegration(
-            req.session.token,
-            integrationId
-        );
+        await BackendAPI.DeleteAccountIntegration(req.session.token, integrationId);
     } catch (err) {
         console.log(err);
     }
@@ -338,29 +308,20 @@ export async function getProfileImage(req, res, next) {
         message.length > 0 ? (message = message[0]) : (message = null);
 
         if (theUser.profileImageUrl == "") {
-            const imagePath = path.join(
-                __basedir,
-                "/src/client/public/images/blank-profile-image.png"
-            );
+            const imagePath = path.join(__basedir, "/src/client/public/images/blank-profile-image.png");
             res.sendFile(imagePath);
             return;
         }
 
         if (!fs.existsSync(theUser.profileImageUrl)) {
-            const imagePath = path.join(
-                __basedir,
-                "/public/images/blank-profile-image.png"
-            );
+            const imagePath = path.join(__basedir, "/public/images/blank-profile-image.png");
             res.sendFile(imagePath);
             return;
         }
 
         res.sendFile(theUser.profileImageUrl);
     } catch (err) {
-        const imagePath = path.join(
-            __basedir,
-            "/public/images/blank-profile-image.png"
-        );
+        const imagePath = path.join(__basedir, "/public/images/blank-profile-image.png");
         res.sendFile(imagePath);
     }
 }
@@ -385,155 +346,4 @@ export async function deleteProfileApiKey(req, res, next) {
     }
 
     return res.redirect("/dashboard/profile");
-}
-
-export async function getModsJS(req, res, next) {
-    try {
-        const { page, sort, direction, search, agentid } = req.query;
-
-        let mods = await BackendAPI.GetMods();
-
-        const totalMods = mods.length;
-
-        const theAgent = await BackendAPI.GetAgentById(
-            req.session.token,
-            agentid
-        );
-
-        const selectedMods = theAgent.modConfig.selectedMods;
-
-        for (let i = 0; i < mods.length; i++) {
-            const mod = mods[i];
-            mod.installed = false;
-            mod.needsUpdate = false;
-            mod.installedVersion = "0.0.0";
-            mod.desiredVersion = "0.0.0";
-            mod.pendingInstall = false;
-
-            const selectedMod = selectedMods.find(
-                (sm) => sm.mod.mod_reference == mod.mod_reference
-            );
-
-            if (selectedMod == null) continue;
-
-            mod.installed = selectedMod.installed;
-            mod.needsUpdate = selectedMod.needsUpdate;
-            mod.installedVersion = selectedMod.installedVersion;
-            mod.desiredVersion = selectedMod.desiredVersion;
-            mod.pendingInstall =
-                selectedMod.desiredVersion != selectedMod.installedVersion;
-        }
-
-        const installedMods = mods.filter((m) => m.installed).length;
-
-        if (search != "") {
-            mods = mods.filter((m) =>
-                m.name.toLowerCase().includes(search.toLowerCase())
-            );
-        }
-
-        function compareAZ(a, b) {
-            if (a.name < b.name) {
-                return -1;
-            }
-            if (a.name > b.name) {
-                return 1;
-            }
-            return 0;
-        }
-
-        function compareInstalled(a, b) {
-            if (!a.installed && b.installed) {
-                return -1;
-            }
-            if (a.installed && !b.installed) {
-                return 1;
-            }
-            return 0;
-        }
-
-        function compareDownloads(a, b) {
-            if (a.downloads < b.downloads) {
-                return -1;
-            }
-            if (a.downloads > b.downloads) {
-                return 1;
-            }
-            return 0;
-        }
-
-        function compareUpdated(a, b) {
-            const aLatestVersion = a.versions[0];
-            const bLatestVersion = b.versions[0];
-
-            const aDate = new Date(aLatestVersion.created_at).getTime();
-            const bDate = new Date(bLatestVersion.created_at).getTime();
-
-            if (aDate < bDate) {
-                return -1;
-            }
-            if (aDate > bDate) {
-                return 1;
-            }
-            return 0;
-        }
-
-        function compareNeedsUpdate(a, b) {
-            if (!a.needsUpdate && b.needsUpdate) {
-                return -1;
-            }
-            if (a.needsUpdate && !b.needsUpdate) {
-                return 1;
-            }
-            return 0;
-        }
-
-        // No need to sort if there is only one result.
-        if (mods.length > 1) {
-            if (sort == "az") {
-                mods.sort(compareAZ);
-            }
-
-            if (sort == "installed") {
-                mods.sort(compareInstalled);
-            }
-
-            if (sort == "downloads") {
-                mods.sort(compareDownloads);
-            }
-
-            if (sort == "updated") {
-                mods.sort(compareUpdated);
-            }
-
-            if (sort == "needsupdate") {
-                mods.sort(compareNeedsUpdate);
-            }
-
-            if (direction == "desc") {
-                mods.reverse();
-            }
-        }
-
-        const pageLimit = 30;
-        let start = 0;
-        let end = pageLimit;
-
-        if (mods.length > pageLimit) {
-            start = parseInt(page) * pageLimit;
-            end = (parseInt(page) + 1) * pageLimit;
-        }
-
-        if (mods.length < end) {
-            end = mods.length;
-        }
-
-        const pages = Math.ceil(mods.length / pageLimit);
-
-        mods = mods.slice(start, end);
-
-        res.json({ success: true, mods, pages, totalMods, installedMods });
-    } catch (err) {
-        console.log(err);
-    }
 }
