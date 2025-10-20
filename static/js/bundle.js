@@ -456,14 +456,11 @@ function main() {
             fill: {
                 color: "#ffa500",
             },
-        }).on(
-            "circle-animation-progress",
-            function (event, progress, stepValue) {
-                $(this)
-                    .find("strong")
-                    .text(`${(stepValue.toFixed(2) * 100).toFixed(0)}%`);
-            }
-        );
+        }).on("circle-animation-progress", function (event, progress, stepValue) {
+            $(this)
+                .find("strong")
+                .text(`${(stepValue.toFixed(2) * 100).toFixed(0)}%`);
+        });
     });
 
     if ($(".mods-table").length > 0) {
@@ -474,9 +471,7 @@ function main() {
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
 
-            $("#inp_servermemory_value").text(
-                `${parseFloat($this.val()).toFixed(1)}G`
-            );
+            $("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
 
             BuildAgentInstallCommands();
         })
@@ -489,19 +484,13 @@ function main() {
         .on("click", ".should-confirm-btn", (e) => {
             e.preventDefault();
             const $this = $(e.currentTarget);
-            window.openModal(
-                "/public/modals",
-                "server-action-confirm",
-                (modal) => {
-                    modal
-                        .find(".modal-title")
-                        .text($this.attr("data-confirm-title"));
+            window.openModal("/public/modals", "server-action-confirm", (modal) => {
+                modal.find(".modal-title").text($this.attr("data-confirm-title"));
 
-                    const $confirmBtn = modal.find("#confirm-action");
-                    $confirmBtn.attr("data-href", $this.attr("href"));
-                    $confirmBtn.attr("data-action", $this.attr("data-action"));
-                }
-            );
+                const $confirmBtn = modal.find("#confirm-action");
+                $confirmBtn.attr("data-href", $this.attr("href"));
+                $confirmBtn.attr("data-action", $this.attr("data-action"));
+            });
         })
         .on("click", "#server-action-confirm #cancel-action", (e) => {
             $("#server-action-confirm .btn-close").trigger("click");
@@ -533,15 +522,11 @@ function main() {
 
                 if (theMod) {
                     $versionBox.empty();
-                    $versionBox.append(
-                        `<option value="">Select Version</option>`
-                    );
+                    $versionBox.append(`<option value="">Select Version</option>`);
 
                     for (let i = 0; i < theMod.versions.length; i++) {
                         const version = theMod.versions[i];
-                        $versionBox.append(
-                            `<option value="${version.version}">${version.version}</option>`
-                        );
+                        $versionBox.append(`<option value="${version.version}">${version.version}</option>`);
                     }
                 }
             }
@@ -552,10 +537,7 @@ function main() {
             const $select = $this.parent().find("select");
             if ($select.val() == null) return;
 
-            const $pillWrapper = $this
-                .parent()
-                .parent()
-                .find(".event-types-pills");
+            const $pillWrapper = $this.parent().parent().find(".event-types-pills");
 
             $pillWrapper.append(`
             <span class="badge rounded-pill bg-info mb-1" data-event-type-id="${$select.val()}" style="font-size:12px">
@@ -647,10 +629,7 @@ function main() {
                 reader.readAsText(file, "UTF-8");
 
                 reader.onload = function (evt) {
-                    ProcessSMMMetaDataFile(
-                        $this.parent().find(".mod-list"),
-                        evt.target.result
-                    );
+                    ProcessSMMMetaDataFile($this.parent().find(".mod-list"), evt.target.result);
                 };
             }
         })
@@ -698,9 +677,7 @@ function main() {
             const search = $this.val().toLowerCase();
             $backupCard.find(".backup-card").each((index, ele) => {
                 const $ele = $(ele);
-                if (
-                    !$ele.attr("data-backupname").toLowerCase().includes(search)
-                ) {
+                if (!$ele.attr("data-backupname").toLowerCase().includes(search)) {
                     $ele.parent().addClass("hidden");
                 } else {
                     $ele.parent().removeClass("hidden");
@@ -731,14 +708,10 @@ function main() {
             const modReference = $this.attr("data-mod-reference");
 
             const mods = JSON.parse(localStorage.getItem("mods")).mods;
-            const selectedMods = JSON.parse(
-                localStorage.getItem("selectedMods")
-            ).selectedMods;
+            const selectedMods = JSON.parse(localStorage.getItem("selectedMods")).selectedMods;
 
             const mod = mods.find((m) => m.mod_reference == modReference);
-            const selectedMod = selectedMods.find(
-                (sm) => sm.mod.mod_reference == modReference
-            );
+            const selectedMod = selectedMods.find((sm) => sm.mod.mod_reference == modReference);
 
             console.log(modReference, mod, selectedMod);
 
@@ -755,9 +728,7 @@ function main() {
 
             window.openModal("/public/modals", "mod-settings", (modal) => {
                 modal.find(".modal-title").text(`${mod.name} Settings`);
-                modal
-                    .find("#mod-settings-config")
-                    .val(JSON.stringify(modConfig, null, 4));
+                modal.find("#mod-settings-config").val(JSON.stringify(modConfig, null, 4));
                 modal.find("#inp_mod_ref").val(mod.mod_reference);
                 modal.find("#mod-csrf").val($("#csrf").val());
             });
@@ -775,16 +746,10 @@ function main() {
             }
 
             if (isValid) {
-                $("#mod-settings-config-valid")
-                    .removeClass()
-                    .addClass("text-success")
-                    .text("Valid Mod Config");
+                $("#mod-settings-config-valid").removeClass().addClass("text-success").text("Valid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", false);
             } else {
-                $("#mod-settings-config-valid")
-                    .removeClass()
-                    .addClass("text-danger")
-                    .text("Invalid Mod Config");
+                $("#mod-settings-config-valid").removeClass().addClass("text-danger").text("Invalid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", true);
             }
         })
@@ -808,159 +773,93 @@ function main() {
         })
         .on("click", "#add-server-btn", (e) => {
             e.preventDefault();
-            window.openModal(
-                "/public/modals",
-                "create-server-modal",
-                (modal) => {
-                    let ServerName,
-                        ServerPort,
-                        ServerMemory,
-                        ServerAdminPass,
-                        ServerClientPass,
-                        ServerAPIKey;
+            window.openModal("/public/modals", "create-server-modal", (modal) => {
+                let ServerName, ServerPort, ServerMemory, ServerAdminPass, ServerClientPass, ServerAPIKey;
 
-                    let workflowFinished = false;
+                let workflowFinished = false;
 
-                    const wizard = modal.find("#wizard");
+                const wizard = modal.find("#wizard");
 
-                    wizard.on("change", "#inp_servermemory", (e) => {
-                        const $this = $(e.currentTarget);
+                wizard.on("change", "#inp_servermemory", (e) => {
+                    const $this = $(e.currentTarget);
 
-                        wizard
-                            .find("#inp_servermemory_value")
-                            .text(`${parseFloat($this.val()).toFixed(1)}G`);
-                    });
+                    wizard.find("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
+                });
 
-                    wizard.steps({
-                        onStepChanging: (event, currentIndex, newIndex) => {
-                            // if current index is on configuration page
+                wizard.steps({
+                    onStepChanging: (event, currentIndex, newIndex) => {
+                        // if current index is on configuration page
 
-                            if (currentIndex > newIndex) {
+                        if (currentIndex > newIndex) {
+                            return false;
+                        }
+
+                        if (currentIndex == 0) {
+                            ServerName = wizard.find("#inp_servername").val();
+                            ServerPort = wizard.find("#inp_serverport").val();
+                            ServerMemory = wizard.find("#inp_servermemory").val();
+                            ServerAdminPass = wizard.find("#inp_serveradminpass").val();
+                            ServerClientPass = wizard.find("#inp_serverclientpass").val();
+
+                            if (ServerName == "" || ServerMemory < 3 || ServerAdminPass == "") {
+                                const errorBox = $("#create-server-modal-config-error");
+                                errorBox.removeClass("hidden");
+
+                                if (ServerName == "") {
+                                    errorBox.find("ul").append("<ol>Please provide a server name!</ol>");
+                                }
+
+                                if (ServerPort < 7000) {
+                                    errorBox.find("ul").append("<ol>Server port must be greater or equal than 7000</ol>");
+                                }
+
+                                if (ServerMemory < 3) {
+                                    errorBox.find("ul").append("<ol>Server must have more than 3GB of memory</ol>");
+                                }
+                                if (ServerAdminPass == "") {
+                                    errorBox.find("ul").append("<ol>Please provide a server admin password!</ol>");
+                                }
                                 return false;
                             }
 
-                            if (currentIndex == 0) {
-                                ServerName = wizard
-                                    .find("#inp_servername")
-                                    .val();
-                                ServerPort = wizard
-                                    .find("#inp_serverport")
-                                    .val();
-                                ServerMemory = wizard
-                                    .find("#inp_servermemory")
-                                    .val();
-                                ServerAdminPass = wizard
-                                    .find("#inp_serveradminpass")
-                                    .val();
-                                ServerClientPass = wizard
-                                    .find("#inp_serverclientpass")
-                                    .val();
+                            ServerAPIKey = "AGT-API-" + makeapikey(32).toUpperCase();
 
-                                console.log(
-                                    ServerName,
-                                    ServerPort,
-                                    ServerMemory,
-                                    ServerAdminPass,
-                                    ServerClientPass
-                                );
+                            BuildAgentInstallCommands(ServerName, ServerMemory, ServerPort, ServerAPIKey);
+                        }
 
-                                if (
-                                    ServerName == "" ||
-                                    ServerMemory < 3 ||
-                                    ServerAdminPass == ""
-                                ) {
-                                    const errorBox = $(
-                                        "#create-server-modal-config-error"
-                                    );
-                                    errorBox.removeClass("hidden");
+                        // Submit Create Task
+                        if (currentIndex == 1) {
+                            const postData = {
+                                serverName: ServerName,
+                                serverPort: parseInt(ServerPort),
+                                serverMemory: parseFloat(ServerMemory) * 1024 * 1024 * 1024,
+                                serverAdminPass: ServerAdminPass,
+                                serverClientPass: ServerClientPass,
+                                serverApiKey: ServerAPIKey,
+                            };
 
-                                    if (ServerName == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server name!</ol>"
-                                            );
-                                    }
+                            $.post(`/dashboard/servers`, postData)
+                                .promise()
+                                .then((res) => {
+                                    const workflowId = res.workflow_id;
 
-                                    if (ServerPort < 7000) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server port must be greater or equal than 7000</ol>"
-                                            );
-                                    }
+                                    workflowFinished = BuildWorkflowActions(workflowId);
+                                    setInterval(async () => {
+                                        workflowFinished = BuildWorkflowActions(workflowId);
+                                    }, 2000);
+                                })
+                                .catch((err) => {
+                                    console.error(err);
+                                });
+                        }
 
-                                    if (ServerMemory < 3) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server must have more than 3GB of memory</ol>"
-                                            );
-                                    }
-                                    if (ServerAdminPass == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server admin password!</ol>"
-                                            );
-                                    }
-                                    return false;
-                                }
-
-                                ServerAPIKey =
-                                    "AGT-API-" + makeapikey(32).toUpperCase();
-
-                                BuildAgentInstallCommands(
-                                    ServerName,
-                                    ServerMemory,
-                                    ServerPort,
-                                    ServerAPIKey
-                                );
-                            }
-
-                            // Submit Create Task
-                            if (currentIndex == 1) {
-                                const postData = {
-                                    _csrf: $("#_csrf").val(),
-                                    serverName: ServerName,
-                                    serverPort: parseInt(ServerPort),
-                                    serverMemory:
-                                        parseFloat(ServerMemory) *
-                                        1024 *
-                                        1024 *
-                                        1024,
-                                    serverAdminPass: ServerAdminPass,
-                                    serverClientPass: ServerClientPass,
-                                    serverApiKey: ServerAPIKey,
-                                };
-
-                                $.post(`/dashboard/servers`, postData)
-                                    .promise()
-                                    .then((res) => {
-                                        const workflowId = res.workflow_id;
-
-                                        workflowFinished =
-                                            BuildWorkflowActions(workflowId);
-                                        setInterval(async () => {
-                                            workflowFinished =
-                                                BuildWorkflowActions(
-                                                    workflowId
-                                                );
-                                        }, 2000);
-                                    })
-                                    .catch((err) => {
-                                        console.error(err);
-                                    });
-                            }
-
-                            if (currentIndex == 2) {
-                                return workflowFinished;
-                            }
-                            return true;
-                        },
-                    });
-                }
-            );
+                        if (currentIndex == 2) {
+                            return workflowFinished;
+                        }
+                        return true;
+                    },
+                });
+            });
         })
         .on("click", "#copy-join-code", (e) => {
             e.preventDefault();
@@ -969,6 +868,27 @@ function main() {
 
             toastr.success("", "Account join code copied to clipboard", {
                 timeOut: 4000,
+            });
+        })
+        .on("click", ".copy-btn", (e) => {
+            e.preventDefault();
+            const $this = $(e.currentTarget);
+            const $parent = $this.parent();
+            let CopyString = "";
+
+            if ($parent.find("textarea").length > 0) {
+                CopyString = $parent.find("textarea").val();
+            }
+            if ($parent.find("input[type=text]").length > 0) {
+                CopyString = $parent.find("input[type=text]").val();
+            }
+
+            if (CopyString == "") return;
+
+            navigator.clipboard.writeText(CopyString.trim());
+
+            toastr.success("", "Copied to clipboard", {
+                timeOut: 3000,
             });
         });
 
@@ -986,23 +906,18 @@ function main() {
 
     function makeapikey(length) {
         let result = "";
-        const characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const charactersLength = characters.length;
         let counter = 0;
         while (counter < length) {
-            result += characters.charAt(
-                Math.floor(Math.random() * charactersLength)
-            );
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
             counter += 1;
         }
         return result;
     }
 
     async function BuildWorkflowActions(workflowId) {
-        const workflowRes = await $.get(
-            `/dashboard/servers/workflows/${workflowId}`
-        ).promise();
+        const workflowRes = await $.get(`/dashboard/servers/workflows/${workflowId}`).promise();
 
         const workflowData = workflowRes.workflow;
 
@@ -1063,9 +978,7 @@ function main() {
                     actionTypeString = action.type;
             }
 
-            $cardBody.append(
-                `<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`
-            );
+            $cardBody.append(`<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`);
         }
 
         let workflowFinished = true;
@@ -1095,9 +1008,7 @@ function main() {
         $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
     }
 
-    var tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    );
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
@@ -1121,17 +1032,13 @@ function FilterServerList() {
 
     const search = $(".server-search").val().toLowerCase();
     const FilterOnline = $("#server-filter-online").prop("checked") ? 1 : 0;
-    const FilterInstalled = $("#server-filter-installed").prop("checked")
-        ? 1
-        : 0;
+    const FilterInstalled = $("#server-filter-installed").prop("checked") ? 1 : 0;
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
         if (
             $el.attr("data-agentname").toLowerCase().includes(search) &&
-            ($el.attr("data-online") == FilterOnline ||
-                $el.attr("data-installed") == FilterInstalled ||
-                $el.attr("data-running") == FilterRunning)
+            ($el.attr("data-online") == FilterOnline || $el.attr("data-installed") == FilterInstalled || $el.attr("data-running") == FilterRunning)
         ) {
             return true;
         } else {
@@ -1175,9 +1082,7 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
     const modRefs = [];
 
     for (let modRef in installedMods) {
-        const existingMod = localStorageMods.mods.find(
-            (m) => m.modName == modRef
-        );
+        const existingMod = localStorageMods.mods.find((m) => m.modName == modRef);
         if (existingMod) {
             modRefs.push(modRef);
         }
@@ -1219,11 +1124,7 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
             modalEl.find("button.btn-close").on("click", (e) => {
                 e.preventDefault();
-                const $this = $(e.currentTarget)
-                    .parent()
-                    .parent()
-                    .parent()
-                    .parent();
+                const $this = $(e.currentTarget).parent().parent().parent().parent();
                 $this.trigger("hidden.bs.modal");
                 $this.remove();
                 $this.modal("hide");
@@ -1234,8 +1135,7 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
             modalEl.on("hidden.bs.modal", () => {
                 $(this).remove();
                 $('[name^="__privateStripe"]').remove();
-                if (options.allowBackdropRemoval == true)
-                    $(".modal-backdrop").remove();
+                if (options.allowBackdropRemoval == true) $(".modal-backdrop").remove();
             });
             modalEl.modal("show");
             if (callback) callback(modalEl);
@@ -1256,11 +1156,11 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     const portString = parseFloat(serverport);
     const portOffset = portString - 7777;
 
-    let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory} -SSMAPIKEY "${apikey}"`;
-    let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}" -SSMAPIKEY "${apikey}"`;
+    let WindowsInstallCommand = `Set-ExecutionPolicy Bypass -Scope Process -Force; $s="$env:TEMP\\ssm-agent-install.ps1"; iwr -useb https://tinyurl.com/ssm-agent-install-ps1 -OutFile $s; & $s -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory} -SSMAPIKEY "${apikey}"`;
+    let WindowsStandaloneInstallCommand = `Set-ExecutionPolicy Bypass -Scope Process -Force; $s="$env:TEMP\\ssm-agent-standalone-ps1"; iwr -useb https://tinyurl.com/ssm-agent-standalone-ps1 -OutFile $s; & $s -AGENTNAME "SSMAgent_${agentName}" -SSMAPIKEY "${apikey}"`;
 
-    let LinuxInstallCommand = `bash install-agent.sh --name "SSMAgent_${agentName}" --memory ${memory} --apikey "${apikey}"`;
-    let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}" --apikey "${apikey}`;
+    let LinuxInstallCommand = `wget -q https://tinyurl.com/ssm-agent-install-sh -O - | bash -s -- --name "SSMAgent_${agentName}" --memory ${memory} --apikey "${apikey}"`;
+    let LinuxStandaloneInstallCommand = `wget -q https://tinyurl.com/ssm-agent-standalone-sh -O - | bash -s -- --name "SSMAgent_${agentName}" --apikey "${apikey}"`;
 
     if (portOffset > 0) {
         WindowsInstallCommand += ` -PORTOFFSET ${portOffset}`;
@@ -1270,14 +1170,10 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     WindowsStandaloneInstallCommand += ` -PORTOFFSET ${portOffset}`;
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
-    $("#windows-install-agent .docker span").text(WindowsInstallCommand);
-    $("#windows-install-agent .standalone span").text(
-        WindowsStandaloneInstallCommand
-    );
-    $("#linux-install-agent .docker span").text(LinuxInstallCommand);
-    $("#linux-install-agent .standalone span").text(
-        LinuxStandaloneInstallCommand
-    );
+    $("#windows-install-agent .docker").val(WindowsInstallCommand);
+    $("#windows-install-agent .standalone").text(WindowsStandaloneInstallCommand);
+    $("#linux-install-agent .docker").text(LinuxInstallCommand);
+    $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
 }
 
 Number.prototype.pad = function (width, z) {
@@ -1319,12 +1215,7 @@ function BuildAgentCPUStats() {
             const date = new Date(stat.createdAt);
 
             data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.cpu),
             });
 
@@ -1399,12 +1290,7 @@ function BuildAgentRAMStats() {
             const date = new Date(stat.createdAt);
 
             data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.mem),
             });
 
@@ -1480,12 +1366,7 @@ function BuildAgentRunningStats() {
             }
 
             data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: stat.running == true ? 1 : -1,
             });
 
@@ -1535,10 +1416,7 @@ function BuildAgentRunningStats() {
 }
 
 function detectColorScheme() {
-    if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
         return "dark";
     } else {
         return "light";
