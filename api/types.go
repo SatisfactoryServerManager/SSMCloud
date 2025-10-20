@@ -1,7 +1,8 @@
 package api
 
 import (
-	models "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
+	models "github.com/SatisfactoryServerManager/ssmcloud-resources/models"
+	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 )
 
 type APIResult interface {
@@ -30,7 +31,7 @@ type APIGetUserRequest struct {
 
 type APIGetUserResponse struct {
 	APIResponse
-	User models.UserSchema `json:"user"`
+	User v2.UserSchema `json:"user"`
 }
 
 type APICreateUserRequest struct {
@@ -41,11 +42,11 @@ type APICreateUserRequest struct {
 
 type APIGetUserAccountResponse struct {
 	APIResponse
-	Account models.AccountSchema `json:"account"`
+	Account v2.AccountSchema `json:"account"`
 }
 type APIGetUserAccountAgentsResponse struct {
 	APIResponse
-	Agents []models.AgentSchema `json:"agents"`
+	Agents []v2.AgentSchema `json:"agents"`
 }
 
 type APIGetUserAccountSingleAgentRequest struct {
@@ -60,12 +61,12 @@ type APIDeleteAgentRequest struct {
 
 type APIGetUserAccountSingleAgentResponse struct {
 	APIResponse
-	Agents []models.AgentSchema `json:"agents"`
+	Agents []v2.AgentSchema `json:"agents"`
 }
 
 type APIGetUserLinkedAccountsResponse struct {
 	APIResponse
-	Accounts []models.AccountSchema `json:"accounts"`
+	Accounts []v2.AccountSchema `json:"accounts"`
 }
 
 type APINewServerData struct {
@@ -94,7 +95,7 @@ type APIGetServerWorkflowRequest struct {
 
 type APIGetServerWorkflowResponse struct {
 	APIResponse
-	Workflow models.WorkflowSchema `json:"workflow"`
+	Workflow v2.WorkflowSchema `json:"workflow"`
 }
 
 type APIUpdateServerSettings struct {
@@ -126,7 +127,7 @@ type APIGetAgentLogRequest struct {
 
 type APIGetAgentLogResponse struct {
 	APIResponse
-	models.AgentLogSchema `json:"agentLog"`
+	v2.AgentLogSchema `json:"agentLog"`
 }
 
 type APINewAccountData struct {
@@ -167,10 +168,27 @@ type APIGetAccountAuditRequest struct {
 
 type APIGetAccountAuditResponse struct {
 	APIResponse
-	Audit []models.AccountAuditSchema `json:"audit"`
+	Audit []v2.AccountAuditSchema `json:"audit"`
 }
 
 type APIGetAccountUsersResponse struct {
 	APIResponse
-	Users []models.UserSchema `json:"users"`
+	Users []v2.UserSchema `json:"users"`
+}
+
+type APIGetModsRequest struct {
+	APIRequest
+	AgentId   string `qs:"agentId"`
+	Page      int    `qs:"page"`
+	Sort      string `qs:"sort"`
+	Direction string `qs:"direction"`
+	Search    string `qs:"search"`
+}
+
+type APIGetModsResponse struct {
+	APIResponse
+	Mods           []models.Mods     `json:"mods"`
+	TotalMods      int64             `json:"totalMods"`
+	Pages          int               `json:"pages"`
+	AgentModConfig v2.AgentModConfig `json:"agentModConfig"`
 }

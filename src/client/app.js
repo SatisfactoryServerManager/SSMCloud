@@ -34,31 +34,6 @@ function main() {
 
     AccountPage.init();
 
-    $(".circle").each((index, el) => {
-        const $el = $(el);
-
-        const percentValue = $el.attr("data-percent");
-
-        $el.circleProgress({
-            startAngle: (-Math.PI / 4) * 2,
-            value: percentValue / 100,
-            size: 150,
-            lineCap: "round",
-            emptyFill: "rgba(255, 255, 255, .1)",
-            fill: {
-                color: "#ffa500",
-            },
-        }).on("circle-animation-progress", function (event, progress, stepValue) {
-            $(this)
-                .find("strong")
-                .text(`${(stepValue.toFixed(2) * 100).toFixed(0)}%`);
-        });
-    });
-
-    if ($(".mods-table").length > 0) {
-        $(".mods-table").DataTable();
-    }
-
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);

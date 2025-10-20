@@ -9,6 +9,9 @@ import (
 func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	handler := handlers.NewDashboardHandler()
 	r.GET("/", middleware.AuthRequired(), handler.GET_Dashboard)
+
+	r.GET("/mods", middleware.AuthRequired(), handler.GET_DashboardMods)
+
 	r.GET("/servers", middleware.AuthRequired(), handler.GET_DashboardServers)
 	r.POST("/servers", middleware.AuthRequired(), handler.POST_DashboardServers)
 	r.GET("/servers/delete", middleware.AuthRequired(), handler.GET_DashboardDeleteServer)
@@ -25,7 +28,7 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.POST("/account/join", middleware.AuthRequired(), handler.POST_DashboardJoinAccount)
 	r.GET("/account/switch", middleware.AuthRequired(), handler.GET_DashboardSwitchAccount)
 
-    r.GET("/profile", middleware.AuthRequired(), handler.GET_DashboardProfile)
+	r.GET("/profile", middleware.AuthRequired(), handler.GET_DashboardProfile)
 
 	r.GET("/download/backup", middleware.AuthRequired(), handler.GET_DashboardDownloadBackup)
 	r.GET("/download/save", middleware.AuthRequired(), handler.GET_DashboardDownloadSave)

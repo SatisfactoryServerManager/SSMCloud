@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
@@ -23,6 +24,35 @@ func (handler *DashboardHandler) GET_Dashboard(c *gin.Context) {
 	RenderTemplate(c, "pages/dashboard/index", gin.H{
 		"pageTitle": "Dashboard",
 	})
+}
+
+func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {
+	agentId := c.Query("agentid")
+	page := c.Query("page")
+	sort := c.Query("sort")
+	direction := c.Query("direction")
+	search := c.Query("search")
+
+	pageInt, _ := strconv.Atoi(page)
+
+	modsRes, err := api.GetMods(&api.APIGetModsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		AgentId:   agentId,
+		Page:      pageInt,
+		Sort:      sort,
+		Direction: direction,
+		Search:    search,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "mods": modsRes.Mods, "pages": modsRes.Pages, "totalMods": modsRes.TotalMods, "agentModConfig": modsRes.AgentModConfig})
 }
 
 func (handler *DashboardHandler) GET_DashboardServers(c *gin.Context) {

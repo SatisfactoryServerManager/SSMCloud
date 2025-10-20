@@ -444,3 +444,19 @@ func GetAccountUsers(request *APIRequest) (*APIGetAccountUsersResponse, error) {
 
 	return res, nil
 }
+
+func GetMods(request *APIGetModsRequest) (*APIGetModsResponse, error) {
+
+	values, err := encoder.Values(request)
+	if err != nil {
+		return nil, err
+	}
+	res := &APIGetModsResponse{}
+
+	if err := get("frontend/mods", request.AccessToken, &values, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+
+}
