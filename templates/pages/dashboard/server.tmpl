@@ -83,6 +83,9 @@
                                     <a class="nav-link active" data-bs-toggle="tab" href="#settings" aria-selected="true" role="tab">Settings</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#installcommand" aria-selected="false" role="tab">Install Command</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
                                     <a class="nav-link" data-bs-toggle="tab" href="#stats" aria-selected="false" role="tab">Stats</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -105,6 +108,9 @@
                         <div id="myTabContent" class="tab-content">
                             <div class="tab-pane fade active show" id="settings" role="tabpanel">
                                 {{template "includes/server/settings" .}}
+                            </div>
+                            <div class="tab-pane fade" id="installcommand">
+                                {{template "includes/server/installcommand" .}}
                             </div>
                             <div class="tab-pane fade" id="stats" role="tabpanel">
                                 <%- include('./server/stats.ejs') %>

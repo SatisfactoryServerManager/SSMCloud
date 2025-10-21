@@ -6,8 +6,7 @@ body {
 body {
     color: var(--ssm-text-colour);
     font-size: 16px;
-    background: var(--ssm-bg-colour)
-        url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp") fixed 0 0;
+    background: var(--ssm-bg-colour) url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp") fixed 0 0;
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -722,7 +721,7 @@ pre {
     max-height: 400px;
     overflow-x: auto;
     background: var(--ssm-log-viewer-bg-colour);
-    padding: 6px;
+    padding: 12px;
     border: 1px solid var(--ssm-log-viewer-border-colour);
     display: block;
     font-family: var(--bs-font-monospace);

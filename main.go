@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -37,6 +38,7 @@ func init() {
 	godotenv.Load()
 	gob.Register(map[string]interface{}{})
 	gob.Register(time.Time{})
+	gob.Register(services.FlashMessage{})
 }
 
 func main() {
@@ -105,6 +107,10 @@ func main() {
 		"RoundTo": func(value float64, digits int) float64 {
 			factor := math.Pow(10, float64(digits))
 			return math.Round(value*factor) / factor
+		},
+		"toJson": func(v interface{}) template.JS {
+			a, _ := json.Marshal(v)
+			return template.JS(a) // safe because it's JSON
 		},
 	})
 

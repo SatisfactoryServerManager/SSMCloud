@@ -1,0 +1,74 @@
+{{define "includes/server/installcommand"}}
+
+<div class="card">
+    <div class="card-header">
+        <h5>Install Command</h5>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs server-install-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#windows-install-agent" aria-selected="true" role="tab"> <i class="fa-brands fa-windows me-2"></i> Windows </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#linux-install-agent" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="fa-brands fa-ubuntu me-2"></i> Ubuntu / Debian
+                </a>
+            </li>
+        </ul>
+        <div id="myTabContent" class="tab-content server-install-command">
+            <div class="tab-pane fade active show" id="windows-install-agent" role="tabpanel">
+                <h6>Install agent using docker containers (default)</h6>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-terminal"></i>
+                    </span>
+                    <textarea class="form-control docker" rows="3" readonly></textarea>
+                    <button class="btn btn-primary copy-btn">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+
+                <h6>Install agent instance on local machine</h6>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-terminal"></i>
+                    </span>
+                    <textarea class="form-control standalone" rows="3" readonly></textarea>
+                    <button class="btn btn-primary copy-btn">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="linux-install-agent" role="tabpanel">
+                <h6>Install agent using docker containers (default)</h6>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-terminal"></i>
+                    </span>
+                    <textarea class="form-control docker" rows="3" readonly></textarea>
+                    <button class="btn btn-primary copy-btn">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+
+                <h6>Install agent instance on local machine</h6>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-terminal"></i>
+                    </span>
+                    <textarea class="form-control standalone" rows="3" readonly></textarea>
+                    <button class="btn btn-primary copy-btn">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script defer>
+$(function() {
+    window.BuildAgentInstallCommands({{.agent.AgentName}}, {{.agent.Config.Memory}}/1024/1024/1024, {{.agent.Config.Port}}, {{.agent.APIKey}})
+})
+</script>
+
+{{end}}

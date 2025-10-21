@@ -460,3 +460,30 @@ func GetMods(request *APIGetModsRequest) (*APIGetModsResponse, error) {
 	return res, nil
 
 }
+
+func PostServerTask(request *APIServerTaskRequest) error {
+	res := &APIResponse{}
+	if err := post("frontend/users/me/account/agents/tasks", request.AccessToken, nil, request, res); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func InstallMod(request *APIInstallModRequest) error {
+	res := &APIResponse{}
+	if err := post("frontend/users/me/account/agents/installmod", request.AccessToken, nil, request, res); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UninstallMod(request *APIUninstallModRequest) error {
+	res := &APIResponse{}
+	if err := post("frontend/users/me/account/agents/uninstallmod", request.AccessToken, nil, request, res); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -2,6 +2,7 @@ const AgentMap = require("./agentmap");
 
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
+const modsPage = require("./mods-page");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -209,32 +210,34 @@ function main() {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-mod-reference");
+            const modReference = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/installmod",
                 {
-                    _csrf: $("#_csrf").val(),
                     agentId,
-                    modId,
+                    modReference,
                 },
-                () => {}
+                () => {
+                    modsPage.UpdateView();
+                }
             );
         })
         .on("click", ".uninstall-mod-btn", (e) => {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-mod-reference");
+            const modReference = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/uninstallmod",
                 {
-                    _csrf: $("#_csrf").val(),
                     agentId,
-                    modId,
+                    modReference,
                 },
-                () => {}
+                () => {
+                    modsPage.UpdateView();
+                }
             );
         })
         .on("keyup", ".backup-search", (e) => {
@@ -713,8 +716,8 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
 function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     if (agentName == "") {
-        $("#windows-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
-        $("#linux-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
+        $("#windows-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
+        $("#linux-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
         return;
     }
 
@@ -742,6 +745,8 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     $("#linux-install-agent .docker").text(LinuxInstallCommand);
     $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
 }
+
+window.BuildAgentInstallCommands = BuildAgentInstallCommands;
 
 Number.prototype.pad = function (width, z) {
     let n = this;

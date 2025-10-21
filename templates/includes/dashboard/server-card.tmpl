@@ -17,9 +17,10 @@
     {{if not .Status.Installed}} {{$statusText = "Not Installed"}} {{end}}
 
         <div class="d-flex flex-column">
+            {{$modCount:= (len .ModConfig.SelectedMods)}}
             {{template "includes/dashboard/status-card" (dict "ClassColour" "blue" "ClassID" "status" "Data" $statusText "Icon" "fa-server")}}
             {{template "includes/dashboard/status-card" (dict "ClassColour" "orange" "ClassID" "users" "Title" "Players" "Data" 0 "Icon" "fa-user")}}
-            {{template "includes/dashboard/status-card" (dict "ClassColour" "green" "ClassID" "mods" "Title" "Mods" "Data" 0 "Icon" "fa-pencil-ruler")}}
+            {{template "includes/dashboard/status-card" (dict "ClassColour" "green" "ClassID" "mods" "Title" "Mods" "Data" $modCount "Icon" "fa-pencil-ruler")}}
         </div>
 
       <hr />

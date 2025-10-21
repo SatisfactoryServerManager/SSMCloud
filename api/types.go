@@ -192,3 +192,25 @@ type APIGetModsResponse struct {
 	Pages          int               `json:"pages"`
 	AgentModConfig v2.AgentModConfig `json:"agentModConfig"`
 }
+
+type APIServerTaskRequest struct {
+	APIRequest
+	Action  string      `json:"action"`
+	AgentID string      `json:"id"`
+	Data    interface{} `json:"data"`
+}
+
+type APIModData struct {
+	AgentID string `json:"agentId" form:"agentId"`
+	ModRef  string `json:"modReference" form:"modReference"`
+}
+
+type APIInstallModRequest struct {
+	APIRequest
+	APIModData
+}
+
+type APIUninstallModRequest struct {
+	APIRequest
+	APIModData
+}

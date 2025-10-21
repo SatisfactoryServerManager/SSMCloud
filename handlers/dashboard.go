@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -401,4 +402,150 @@ func (handler *DashboardHandler) GET_DashboardDownloadLog(c *gin.Context) {
 func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile"})
+}
+
+func (handler *DashboardHandler) GET_ServerAction_Start(c *gin.Context) {
+
+	err := api.PostServerTask(&api.APIServerTaskRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		Action:  "startsfserver",
+		AgentID: c.Query("id"),
+	})
+
+	if err != nil {
+		fmt.Println(err)
+		err := services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_ERROR, "Error starting server!")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	} else {
+
+		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Starting server in the background")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (handler *DashboardHandler) GET_ServerAction_Stop(c *gin.Context) {
+
+	err := api.PostServerTask(&api.APIServerTaskRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		Action:  "stopsfserver",
+		AgentID: c.Query("id"),
+	})
+
+	if err != nil {
+		fmt.Println(err)
+		err := services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_ERROR, "Error stopping server!")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	} else {
+
+		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Stopping server in the background")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (handler *DashboardHandler) GET_ServerAction_Kill(c *gin.Context) {
+
+	err := api.PostServerTask(&api.APIServerTaskRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		Action:  "killsfserver",
+		AgentID: c.Query("id"),
+	})
+
+	if err != nil {
+		err := services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_ERROR, "Error Killing server!")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	} else {
+
+		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Killing server in the background")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (handler *DashboardHandler) POST_DashboardMods_Install(c *gin.Context) {
+
+	PostData := api.APIModData{}
+	if err := c.Bind(&PostData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	fmt.Printf("%+v\n", PostData)
+
+	err := api.InstallMod(&api.APIInstallModRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		APIModData: PostData,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+func (handler *DashboardHandler) POST_DashboardMods_Uninstall(c *gin.Context) {
+
+	PostData := api.APIModData{}
+	if err := c.Bind(&PostData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	fmt.Printf("%+v\n", PostData)
+
+	err := api.UninstallMod(&api.APIUninstallModRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		APIModData: PostData,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }

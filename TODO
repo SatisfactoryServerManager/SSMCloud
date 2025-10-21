@@ -1,11 +1,11 @@
 
 Todo:
   ☐ Fix Upload Save File
-  ☐ Fix server actions
+  ✔ Fix server actions @done(25-10-21 13:58)
   ☐ Fix mods
-    ☐ Install
-    ☐ Update
-    ☐ Remove
+    ✔ Install @done(25-10-21 13:59)
+    ✔ Update @done(25-10-21 13:59)
+    ✔ Remove @done(25-10-21 13:59)
     ☐ Config
   ☐ Integrations page
   ☐ Profile page
@@ -14,3 +14,4 @@ Todo:
       ☐ Revoke
   ☐ Server Stats page
   ☐ Account Join Code Regenerate Button
+  ✔ Server Install Command Tab @done(25-10-21 14:01)

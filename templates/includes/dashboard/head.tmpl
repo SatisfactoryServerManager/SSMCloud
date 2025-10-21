@@ -64,6 +64,25 @@
 
         <script defer src="/public/js/bundle.js"></script>
 
+        <script defer>
+            // Pass Go flash messages into JS safely as JSON
+            const flashes = {{ toJson .flashes }};
+
+            $(function() {
+                if (flashes && flashes.length > 0) {
+                    const options={timeOut:3000, "closeButton": true,"progressBar": true,"positionClass": "toast-bottom-right",}
+                    flashes.forEach(flash => {
+                        switch (flash.type) {
+                            case "success": toastr.success(flash.message,"",options); break;
+                            case "error": toastr.error(flash.message,"",options); break;
+                            case "warning": toastr.warning(flash.message,"",options); break;
+                            default: toastr.info(flash.message,"",options);
+                        }
+                    });
+                }
+            });
+        </script>
+
         <meta name="HandheldFriendly" content="True" />
         <meta
             name="viewport"
