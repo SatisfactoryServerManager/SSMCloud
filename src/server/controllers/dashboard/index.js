@@ -119,54 +119,6 @@ export async function postSaves(req, res, next) {
     return res.redirect(`/dashboard/servers/${agentid}`);
 }
 
-export async function postInstallMod(req, res, next) {
-    const { agentId, modId } = req.body;
-
-    try {
-        const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const theAgent = await BackendAPI.GetAgentById(req.session.token, agentId);
-
-        if (theAccount == null) {
-            throw new Error("Account was null");
-        }
-
-        if (theAgent == null) {
-            throw new Error("Agent was null");
-        }
-
-        await BackendAPI.InstallAgentMod(req.session.token, agentId, modId);
-    } catch (err) {
-        console.log(err);
-        return res.json({ success: false, error: err.message });
-    }
-
-    return res.json({ success: true });
-}
-
-export async function postUninstallMod(req, res, next) {
-    const { agentId, modId } = req.body;
-
-    try {
-        const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const theAgent = await BackendAPI.GetAgentById(req.session.token, agentId);
-
-        if (theAccount == null) {
-            throw new Error("Account was null");
-        }
-
-        if (theAgent == null) {
-            throw new Error("Agent was null");
-        }
-
-        await BackendAPI.UninstallAgentMod(req.session.token, agentId, modId);
-    } catch (err) {
-        console.log(err);
-        return res.json({ success: false, error: err.message });
-    }
-
-    return res.json({ success: true });
-}
-
 export async function getIntegrationsPage(req, res, next) {
     try {
         const theAccount = await BackendAPI.GetAccount(req.session.token);
@@ -267,63 +219,6 @@ export async function getDeleteIntegration(req, res, next) {
     }
 
     return res.redirect("/dashboard/integrations");
-}
-
-export async function getProfile(req, res, next) {
-    try {
-        const theAccount = await BackendAPI.GetAccount(req.session.token);
-        const agents = await BackendAPI.GetAgents(req.session.token);
-        const theUser = await BackendAPI.GetUser(req.session.token);
-
-        let message = req.flash("success");
-        message.length > 0 ? (message = message[0]) : (message = null);
-
-        res.render("dashboard/profile", {
-            path: "/profile",
-            pageTitle: "My Profile",
-            accountName: theAccount.accountName,
-            agents: agents,
-            user: theUser,
-            message,
-            errorMessage: "",
-        });
-    } catch (err) {
-        res.render("dashboard/profile", {
-            path: "/profile",
-            pageTitle: "My Profile",
-            accountName: "",
-            agents: [],
-            mods: [],
-            message,
-            errorMessage: err.message,
-        });
-    }
-}
-
-export async function getProfileImage(req, res, next) {
-    try {
-        const theUser = await BackendAPI.GetUser(req.session.token);
-
-        let message = req.flash("success");
-        message.length > 0 ? (message = message[0]) : (message = null);
-
-        if (theUser.profileImageUrl == "") {
-            const imagePath = path.join(__basedir, "/src/client/public/images/blank-profile-image.png");
-            res.sendFile(imagePath);
-            return;
-        }
-
-        if (!fs.existsSync(theUser.profileImageUrl)) {
-            const imagePath = path.join(__basedir, "/public/images/blank-profile-image.png");
-            res.sendFile(imagePath);
-            return;
-        }
-
-        res.sendFile(theUser.profileImageUrl);
-    } catch (err) {
-        const imagePath = path.join(__basedir, "/public/images/blank-profile-image.png");
-        res.sendFile(imagePath);
-    }
 }
 
 export async function postProfileApiKey(req, res, next) {

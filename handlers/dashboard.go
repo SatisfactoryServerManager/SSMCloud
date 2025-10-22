@@ -139,10 +139,10 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 		return
 	}
 
-    if PostData.ConfigSetting == "modsettings"{
-        c.JSON(http.StatusOK, gin.H{"success": true})
-        return;
-    }
+	if PostData.ConfigSetting == "modsettings" {
+		c.JSON(http.StatusOK, gin.H{"success": true})
+		return
+	}
 
 	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
 }
@@ -491,6 +491,66 @@ func (handler *DashboardHandler) GET_ServerAction_Kill(c *gin.Context) {
 	} else {
 
 		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Killing server in the background")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (handler *DashboardHandler) GET_ServerAction_Install(c *gin.Context) {
+
+	err := api.PostServerTask(&api.APIServerTaskRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		Action:  "installsfserver",
+		AgentID: c.Query("id"),
+	})
+
+	if err != nil {
+		err := services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_ERROR, "Error Installing server!")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	} else {
+
+		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Installing server in the background")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	}
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (handler *DashboardHandler) GET_ServerAction_Update(c *gin.Context) {
+
+	err := api.PostServerTask(&api.APIServerTaskRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		Action:  "installsfserver",
+		AgentID: c.Query("id"),
+	})
+
+	if err != nil {
+		err := services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_ERROR, "Error Updating server!")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+	} else {
+
+		err = services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_SUCCESS, "Updating server in the background")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 			c.Abort()

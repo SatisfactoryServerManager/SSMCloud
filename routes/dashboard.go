@@ -15,6 +15,8 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/serveraction/start", middleware.AuthRequired(), handler.GET_ServerAction_Start)
 	r.GET("/serveraction/stop", middleware.AuthRequired(), handler.GET_ServerAction_Stop)
 	r.GET("/serveraction/kill", middleware.AuthRequired(), handler.GET_ServerAction_Kill)
+	r.GET("/serveraction/install", middleware.AuthRequired(), handler.GET_ServerAction_Install)
+	r.GET("/serveraction/update", middleware.AuthRequired(), handler.GET_ServerAction_Update)
 
 	r.GET("/servers", middleware.AuthRequired(), handler.GET_DashboardServers)
 	r.POST("/servers", middleware.AuthRequired(), handler.POST_DashboardServers)
