@@ -111,6 +111,8 @@ type APIUpdateServerSettings struct {
 	Branch               string  `form:"inp_sfbranch" json:"branch"`
 	BackupInterval       float32 `form:"inp_backupinterval" json:"backupInterval"`
 	BackupKeep           int     `form:"inp_backupkeep" json:"backupKeep"`
+	ModReference         string  `form:"inp_mod_ref" json:"modReference"`
+	ModConfig            string  `form:"inp_modConfig" json:"modConfig"`
 }
 
 type APIUpdateServerSettingsRequest struct {

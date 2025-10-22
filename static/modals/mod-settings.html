@@ -12,13 +12,12 @@
         <div>
           <h6>Mod Config</h6>
           <form action="" , method="post">
-            <input type="hidden" id="mod-csrf" name="_csrf" value="<%= csrfToken %>" />
             <input type="hidden" name="_ConfigSetting" value="modsettings" />
             <input type="hidden" name="modReference" id="inp_mod_ref">
-            <textarea class="form-control mb-2" rows="8" name="modConfig" id="mod-settings-config"></textarea>
+            <textarea class="form-control mb-2" rows="8" name="inp_modConfig" id="mod-settings-config"></textarea>
             <div class="d-flex align-items-center">
               <span id="mod-settings-config-valid" class="text-success">Valid Mod Config</span>
-              <button type="submit" class="btn btn-success ms-auto" id="mod-settings-save-btn">
+              <button class="btn btn-success ms-auto" id="mod-settings-save-btn">
                 <i class="fas fa-save me-2"></i> Save Changes
               </button>
             </div>

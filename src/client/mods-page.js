@@ -19,8 +19,6 @@ class ModsPage {
         this.totalMods = res.totalMods;
         this.installedMods = res.agentModConfig.selectedMods;
 
-        const selectedMods = res.agentModConfig.selectedMods;
-
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
             mod.installed = false;
@@ -29,7 +27,7 @@ class ModsPage {
             mod.desiredVersion = "0.0.0";
             mod.pendingInstall = false;
 
-            const selectedMod = selectedMods.find((sm) => sm.mod.mod_reference == mod.mod_reference);
+            const selectedMod = this.installedMods.find((sm) => sm.mod.mod_reference == mod.mod_reference);
 
             if (selectedMod == null) continue;
 
@@ -211,6 +209,55 @@ class ModsPage {
         $col.append($card);
 
         return $col;
+    }
+
+    OpenModSettings(modReference) {
+        const selectedMod = this.installedMods.find((sm) => sm.mod.mod_reference == modReference);
+
+        if (selectedMod == null) {
+            return;
+        }
+
+        let modConfig = {};
+        try {
+            modConfig = JSON.parse(selectedMod.config);
+        } catch (err) {
+            modConfig = {};
+        }
+
+        window.openModal("/public/modals", "mod-settings", (modal) => {
+            modal.find(".modal-title").text(`${selectedMod.mod.name} Settings`);
+            modal.find("#mod-settings-config").val(JSON.stringify(modConfig, null, 4));
+            modal.find("#inp_mod_ref").val(selectedMod.mod.mod_reference);
+
+            modal.find("#mod-settings-save-btn").on("click", async (e) => {
+                e.preventDefault();
+                const postData = {
+                    _ConfigSetting: "modsettings",
+                    inp_mod_ref: modal.find("#inp_mod_ref").val(),
+                    inp_modConfig: modal.find("#mod-settings-config").val(),
+                };
+
+                try {
+                    const res = await $.post(`/dashboard/servers/${this.agentId}`, postData).promise();
+                    if (res.success) {
+                        toastr.success("", "Mod Config Updated", { timeOut: 4000 });
+                        modal.find("button.btn-close").trigger("click");
+                        this.UpdateView();
+                    }
+                } catch (err) {
+                    console.error(err);
+
+                    try {
+                        const response = JSON.parse(err.responseText);
+                        console.error("Error response JSON:", response);
+                        toastr.error(response.error, "Error updating mod config", { timeOut: 4000 });
+                    } catch {
+                        console.error("Error response text:", err.responseText);
+                    }
+                }
+            });
+        });
     }
 }
 

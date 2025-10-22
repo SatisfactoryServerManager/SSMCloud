@@ -139,6 +139,11 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 		return
 	}
 
+    if PostData.ConfigSetting == "modsettings"{
+        c.JSON(http.StatusOK, gin.H{"success": true})
+        return;
+    }
+
 	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
 }
 

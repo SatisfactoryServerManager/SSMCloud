@@ -35,6 +35,38 @@ function main() {
 
     AccountPage.init();
 
+    // Try to get the last active tab from localStorage
+    const lastServerTab = localStorage.getItem("ServerActiveTab");
+
+    // If a tab was saved before, show it
+    if (lastServerTab) {
+        $('.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]').tab("show");
+    } else {
+        $(".server-tabs-header .nav-tabs a").first().tab("show");
+    }
+
+    // When a tab is clicked (and shown), save it
+    $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
+        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+        localStorage.setItem("ServerActiveTab", activeTab);
+    });
+
+    // Try to get the last active tab from localStorage
+    const lastAccountTab = localStorage.getItem("AccountActiveTab");
+
+    // If a tab was saved before, show it
+    if (lastAccountTab) {
+        $('.account-tabs-header .nav-tabs a[href="' + lastAccountTab + '"]').tab("show");
+    } else {
+        $(".account-tabs-header .nav-tabs a").first().tab("show");
+    }
+
+    // When a tab is clicked (and shown), save it
+    $('.account-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
+        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+        localStorage.setItem("AccountActiveTab", activeTab);
+    });
+
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
@@ -277,31 +309,7 @@ function main() {
             const $this = $(e.currentTarget);
             const modReference = $this.attr("data-mod-reference");
 
-            const mods = JSON.parse(localStorage.getItem("mods")).mods;
-            const selectedMods = JSON.parse(localStorage.getItem("selectedMods")).selectedMods;
-
-            const mod = mods.find((m) => m.mod_reference == modReference);
-            const selectedMod = selectedMods.find((sm) => sm.mod.mod_reference == modReference);
-
-            console.log(modReference, mod, selectedMod);
-
-            if (mod == null || selectedMod == null) {
-                return;
-            }
-
-            let modConfig = {};
-            try {
-                modConfig = JSON.parse(selectedMod.config);
-            } catch (err) {
-                modConfig = {};
-            }
-
-            window.openModal("/public/modals", "mod-settings", (modal) => {
-                modal.find(".modal-title").text(`${mod.name} Settings`);
-                modal.find("#mod-settings-config").val(JSON.stringify(modConfig, null, 4));
-                modal.find("#inp_mod_ref").val(mod.mod_reference);
-                modal.find("#mod-csrf").val($("#csrf").val());
-            });
+            modsPage.OpenModSettings(modReference);
         })
         .on("keyup", "#mod-settings-config", (e) => {
             const $this = $(e.currentTarget);

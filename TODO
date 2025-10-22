@@ -2,11 +2,11 @@
 Todo:
   ☐ Fix Upload Save File
   ✔ Fix server actions @done(25-10-21 13:58)
-  ☐ Fix mods
+  ✔ Fix mods @done(25-10-22 09:56)
     ✔ Install @done(25-10-21 13:59)
     ✔ Update @done(25-10-21 13:59)
     ✔ Remove @done(25-10-21 13:59)
-    ☐ Config
+    ✔ Config @done(25-10-22 09:56)
   ☐ Integrations page
   ☐ Profile page
     ☐ API Keys

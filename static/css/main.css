@@ -545,24 +545,28 @@ a.disabled {
     font-size: 15px;
 }
 
-.server-tabs-header {
+.server-tabs-header,
+.account-tabs-header {
     padding: 12px 12px 0 12px;
     background-color: var(--ssm-tabs-bg-colour);
     margin-top: -12px;
     margin-bottom: 12px;
 }
 
-.server-tabs-header .nav-link {
+.server-tabs-header .nav-link,
+.account-tabs-header .nav-link {
     color: var(--ssm-text-colour) !important;
 }
 
-.server-tabs-header .nav-link:hover {
+.server-tabs-header .nav-link:hover,
+.account-tabs-header .nav-link:hover {
     background-color: var(--ssm-tabs-tab-bg-hover-colour);
     border-color: var(--ssm-tabs-tab-border-hover-colour);
     color: var(--ssm-text-colour) !important;
 }
 
-.server-tabs-header .nav-link.active {
+.server-tabs-header .nav-link.active,
+.account-tabs-header .nav-link.active {
     background-color: var(--ssm-tabs-tab-bg-colour);
     border-color: var(--ssm-tabs-tab-border-colour);
     color: var(--ssm-text-colour) !important;

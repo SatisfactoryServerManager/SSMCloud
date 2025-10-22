@@ -1,14 +1,6 @@
 {{define "includes/server/mods"}}
 
 
-<div class="row">
-    <div class="col-12 col-lg-3">
-        {{$modCount:=0}}
-        {{template "includes/dashboard/status-card" (dict "ClassColour" "green" "ClassID" "status" "Title" "Installed Mods" "Data" $modCount "Icon" "fa-pencil-ruler")}}
-    </div>
-</div>
-
-
 <div class="card mb-3">
   <div class="card-header d-flex align-items-center">
     <h5>Mods</h5>

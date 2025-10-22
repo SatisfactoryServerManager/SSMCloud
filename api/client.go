@@ -453,7 +453,7 @@ func GetMods(request *APIGetModsRequest) (*APIGetModsResponse, error) {
 	}
 	res := &APIGetModsResponse{}
 
-	if err := get("frontend/mods", request.AccessToken, &values, res); err != nil {
+	if err := get("frontend/users/me/account/agents/mods", request.AccessToken, &values, res); err != nil {
 		return nil, err
 	}
 
