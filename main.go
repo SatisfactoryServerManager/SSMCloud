@@ -112,6 +112,10 @@ func main() {
 			a, _ := json.Marshal(v)
 			return template.JS(a) // safe because it's JSON
 		},
+		"toJsonPretty": func(v interface{}) template.JS {
+			a, _ := json.MarshalIndent(v, "", "  ")
+			return template.JS(a) // safe because it's JSON
+		},
 	})
 
 	// Parse the embedded templates

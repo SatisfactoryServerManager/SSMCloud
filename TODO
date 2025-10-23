@@ -9,6 +9,10 @@ Todo:
     ✔ Remove @done(25-10-21 13:59)
     ✔ Config @done(25-10-22 09:56)
   ☐ Integrations page
+    ✔ Test displaying of integrations @done(25-10-23 10:25)
+    ☐ Pull integrations from api
+    ☐ Fix add integration
+    ☐ Fix delete integration
   ☐ Profile page
     ☐ API Keys
       ☐ Add

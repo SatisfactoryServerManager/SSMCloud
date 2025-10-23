@@ -4,61 +4,6 @@ import path from "path";
 import Config from "../../server_config.js";
 import BackendAPI from "../../utils/backend-api.js";
 
-export async function getServerAction(req, res, next) {
-    const { agentid, action } = req.params;
-
-    try {
-        if (action != "start" && action != "stop" && action != "kill" && action != "install" && action != "update") {
-            throw new Error("Invalid server action");
-        }
-
-        const theAccount = await BackendAPI.GetAccount(req.session.token);
-
-        if (theAccount == null) {
-            throw new Error("Account is null!");
-        }
-
-        let actionString = "";
-
-        switch (action) {
-            case "start":
-                actionString = "startsfserver";
-                break;
-            case "stop":
-                actionString = "stopsfserver";
-                break;
-            case "kill":
-                actionString = "killsfserver";
-                break;
-            case "install":
-                actionString = "installsfserver";
-                break;
-            case "update":
-                actionString = "updatesfserver";
-                break;
-        }
-
-        await BackendAPI.CreateAgentTask(req.session.token, agentid, {
-            action: actionString,
-        });
-
-        const successMessageData = {
-            agentId: agentid,
-            message: "Server Action was successfully sent to the server and will run in the background.",
-        };
-
-        req.flash("success", JSON.stringify(successMessageData));
-    } catch (err) {
-        const errorMessageData = {
-            agentId: agentid,
-            message: err.message,
-        };
-
-        req.flash("error", JSON.stringify(errorMessageData));
-    }
-    res.redirect("/dashboard");
-}
-
 export async function postSaves(req, res, next) {
     const { agentid } = req.params;
 

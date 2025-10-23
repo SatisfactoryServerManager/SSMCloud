@@ -429,7 +429,7 @@ function main() {
 
     const faWebhook = {
         prefix: "fac",
-        iconName: "webhook",
+        iconName: "custom-webhook",
         icon: [
             130,
             121,
@@ -439,7 +439,7 @@ function main() {
         ],
     };
 
-    FontAwesome.library.add(faWebhook);
+    window.FontAwesome.library.add(faWebhook);
 
     AccountPage.init();
 

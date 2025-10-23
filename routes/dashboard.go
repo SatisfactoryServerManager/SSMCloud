@@ -10,6 +10,8 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	handler := handlers.NewDashboardHandler()
 	r.GET("/", middleware.AuthRequired(), handler.GET_Dashboard)
 
+	r.GET("/integrations", middleware.AuthRequired(), handler.GET_DashboardIntegrations)
+
 	r.GET("/mods", middleware.AuthRequired(), handler.GET_DashboardMods)
 
 	r.GET("/serveraction/start", middleware.AuthRequired(), handler.GET_ServerAction_Start)
@@ -40,6 +42,6 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/download/save", middleware.AuthRequired(), handler.GET_DashboardDownloadSave)
 	r.GET("/download/log", middleware.AuthRequired(), handler.GET_DashboardDownloadLog)
 
-    r.POST("/mods/installmod", middleware.AuthRequired(), handler.POST_DashboardMods_Install)
-    r.POST("/mods/uninstallmod", middleware.AuthRequired(), handler.POST_DashboardMods_Uninstall)
+	r.POST("/mods/installmod", middleware.AuthRequired(), handler.POST_DashboardMods_Install)
+	r.POST("/mods/uninstallmod", middleware.AuthRequired(), handler.POST_DashboardMods_Uninstall)
 }

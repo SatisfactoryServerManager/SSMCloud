@@ -1,0 +1,203 @@
+{{define "pages/dashboard/integrations"}}
+{{template "includes/dashboard/head" .}}
+
+{{$globalEventTypes := .globalEventTypes}}
+
+<body>
+    <div id="viewport" class="minimal">
+        {{template "includes/dashboard/nav" .}}
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    {{template "includes/dashboard/page-header" .}}
+
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="card mb-3 bg-glass">
+                                <div class="card-header">
+                                    <h5>Add New Integration</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form action="/dashboard/integrations/add" method="post" class="add-notification-form">
+                                        <div class="row">
+                                            <div class="col-12 col-lg-6">
+                                                <label for="sel_type" class="form-label">Integration Type:</label>
+                                                <div class="input-group mb-2">
+                                                <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
+                                                <select name="sel_type" id="sel_type" class="form-select">
+                                                    <option value="0">
+                                                    Webhook
+                                                    </option>
+                                                    <option value="1">Discord</option>
+                                                </select>
+                                                </div>
+                                                <label for="inp_url" class="form-label">Integration URL:</label>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+                                                    <input class="form-control" type="text" name="inp_url" id="inp_url" value="">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-lg-6">
+                                                <label class="form-label">Selected Event Types:</label>
+                                                <div class="event-types-pills mb-3"></div>
+                                                <hr>
+                                                <label class="form-label">Add Event Types:</label>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
+                                                    <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
+                                                        {{range $i, $e := $globalEventTypes}}
+                                                            <option value="{{$i}}">{{$e}}</option>
+                                                        {{end}}
+                                                    </select>
+                                                    <button class="btn btn-success add-event-type">
+                                                        <i class="fas fa-plus" style="font-size:20px"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Integration</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card mb-3 bg-glass">
+                                <div class="card-header">
+                                    <h5>Integrations</h5>
+                                </div>
+                                <div class="card-body">
+                                    {{if not .integrations}}
+                                        <div class="alert alert-info">It looks like integrations has not been setup yet!</div>
+                                    {{end}}
+                                    {{range .integrations}}
+                                        <form action="/dashboard/integrations/update/{{OIDtoString .ID}}" method="post" class="edit-notification-form">
+                                            <div class="row">
+                                                <div class="col-12 col-lg-6">
+                                                    <label for="sel_type" class="form-label">Integration Type:</label>
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
+                                                        <select name="sel_type" id="sel_type" class="form-select">
+                                                            <option value="0" {{if eq .Type 0}}selected{{end}}>Webhook</option>
+                                                            <option value="1" {{if eq .Type 1}}selected{{end}}>Discord</option>
+                                                        </select>
+                                                    </div>
+                                                    <label for="inp_url" class="form-label">Integration URL:</label>
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+                                                        <input class="form-control" type="text" name="inp_url" id="inp_url" value="{{.Url}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-lg-6">
+                                                    <label class="form-label">Selected Event Types:</label>
+                                                    <div class="event-types-pills mb-3">
+                                                        {{range $i, $e := .EventTypes}}
+                                                            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="{{$e}}" style="font-size:12px">
+                                                                {{index $globalEventTypes $e}}
+                                                                <i class="fas fa-times ms-1 float-end"></i>
+                                                            </span>
+                                                        {{end}}
+                                                    </div>
+                                                    <hr>
+                                                    <label class="form-label">Add Event Types:</label>
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
+                                                        <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
+                                                            {{range $i, $e := $globalEventTypes}}
+                                                                <option value="{{$i}}">{{$e}}</option>
+                                                            {{end}}
+                                                        </select>
+                                                        <button class="btn btn-success add-event-type">
+                                                            <i class="fas fa-plus" style="font-size:20px"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Integration</button>
+                                            <a href="/dashboard/integrations/delete/{{OIDtoString .ID}}" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Integration</a>
+                                        </form>
+                                        <hr>
+                                    {{end}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card mb-3 bg-glass">
+                            <div class="card-header">
+                                <h5>Integration Events</h5>
+                            </div>
+                            <div class="card-body" style="max-height: 1000px; overflow-y: auto;">
+
+                                {{range $i, $integration := .integrations}}
+                                    <div class="card card-inner mb-2">
+                                        <div class="d-flex align-items-center p-3 gap-2">
+                                            {{if eq $integration.Type 0}}
+                                                <i class="fa-solid fa-webhook"></i>
+                                            {{end}}
+                                            <h5>{{$integration.Url}}</h5>
+                                        </div>
+                                        <hr class="p-0 m-0" />
+
+                                        {{if not $integration.Events}}
+                                            <div class="alert alert-info">No events to display!</div>
+                                        {{end}}
+
+                                        <div class="accordion" id="accordion_{{OIDtoString $integration.ID}}">
+                                            {{range $i2, $event := $integration.Events}}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="accordion_header_{{OIDtoString $event.ID}}">
+                                                        <button class="accordion-button {{if gt $i2 0}}collapsed{{end}}" type="button" data-bs-toggle="collapse" data-bs-target="#accordion_content_{{OIDtoString $event.ID}}" aria-expanded="{{if eq $i2 0}}true{{else}}false{{end}}" aria-controls="accordion_content_{{OIDtoString $event.ID}}">
+                                                            {{if eq $event.Status "delivered"}}
+                                                                <i class="fas fa-circle-check text-success me-2"></i>
+                                                            {{else}}
+                                                                <i class="fas fa-circle-xmark text-danger me-2"></i>
+                                                            {{end}}
+                                                            Event #{{$i2}}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="accordion_content_{{OIDtoString $event.ID}}" class="accordion-collapse collapse {{if eq $i2 0}}show{{end}}" aria-labelledby="accordion_header_{{OIDtoString $event.ID}}" data-bs-parent="#accordion_{{OIDtoString $integration.ID}}">
+                                                        <div class="accordion-body text-white">
+                                                            <div class="row">
+                                                                <div class="col-12 col-md-6">
+                                                                    <h6>Request Data</h6>
+                                                                    <hr />
+                                                                    <div><b>Request URL:</b> {{$integration.Url}}</div>
+                                                                    <hr />
+                                                                    <div>
+                                                                        <b>Completed:</b>
+                                                                        {{if $event.Completed}}
+                                                                        <i class="fas fa-circle-check text-success"></i>
+                                                                        {{else}}
+                                                                        <i class="fas fa-circle-xmark text-danger"></i>
+                                                                        {{end}}
+                                                                    </div>
+                                                                    <div><b>Event Date/Time:</b> {{formatDate $event.Data.EventData.EventTime}}</div>
+                                                                    <div><b>Retries:</b> {{$event.Retries}} / 10</div>
+                                                                    <hr />
+
+                                                                    <pre>{{toJsonPretty $event.Data}}</pre>
+                                                                </div>
+                                                                <div class="col-12 col-md-6">
+                                                                    <h6>Response Data</h6>
+                                                                    <hr />
+                                                                    <pre>{{toJsonPretty $event.ResponseData}}</pre>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {{end}}
+                                        </div>
+                                    </div>
+                                {{end}}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+{{template "includes/dashboard/footer" .}}
+{{end}}
