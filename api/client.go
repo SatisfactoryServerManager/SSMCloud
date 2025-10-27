@@ -487,3 +487,13 @@ func UninstallMod(request *APIUninstallModRequest) error {
 
 	return nil
 }
+
+func GetAccountIntegrations(request *APIRequest) (*APIGetAccountIntegrationsResponse, error) {
+	res := &APIGetAccountIntegrationsResponse{}
+
+	if err := get("frontend/users/me/account/integrations", request.AccessToken, nil, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

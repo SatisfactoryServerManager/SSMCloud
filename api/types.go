@@ -216,3 +216,8 @@ type APIUninstallModRequest struct {
 	APIRequest
 	APIModData
 }
+
+type APIGetAccountIntegrationsResponse struct {
+	APIResponse
+	Integrations []v2.AccountIntegrationSchema `json:"integrations"`
+}

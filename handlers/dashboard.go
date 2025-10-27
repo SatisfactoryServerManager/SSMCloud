@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
-	modelsv1 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v1"
-	models "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type DashboardHandler struct {
@@ -33,34 +29,46 @@ func (handler *DashboardHandler) GET_Dashboard(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 
-	integrations := []models.AccountIntegrationSchema{
-		{
-			ID:   primitive.NewObjectID(),
-			Type: models.IntegrationWebhook,
-			Url:  "https://test.com",
-			EventTypes: []models.IntegrationEventType{
-				models.IntegrationEventTypeAgentOnline,
-				models.IntegrationEventTypeAgentOffline,
-				models.IntegrationEventTypePlayerJoined,
-			},
-			Events: []models.AccountIntegrationEvent{
-				{
-					ID:           primitive.NewObjectID(),
-					Type:         models.IntegrationEventTypeAgentOnline,
-					Retries:      0,
-					Status:       "delivered",
-					ResponseData: "{'success': true}",
-					Completed:    true,
-					Data: modelsv1.EventDataAgentOnline{
-						AgentName: "Test",
-						EventData: modelsv1.EventData{
-							EventTime: time.Now(),
-						},
-					},
-				},
-			},
-		},
+	integrationRes, err := api.GetAccountIntegrations(&api.APIRequest{
+		AccessToken: c.GetString("access_token"),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
 	}
+
+	fmt.Printf("%+v\n", integrationRes.Integrations)
+
+	// integrations := []models.AccountIntegrationSchema{
+	// 	{
+	// 		ID:   primitive.NewObjectID(),
+	// 		Type: models.IntegrationWebhook,
+	// 		Url:  "https://test.com",
+	// 		EventTypes: []models.IntegrationEventType{
+	// 			models.IntegrationEventTypeAgentOnline,
+	// 			models.IntegrationEventTypeAgentOffline,
+	// 			models.IntegrationEventTypePlayerJoined,
+	// 		},
+	// 		Events: []models.AccountIntegrationEvent{
+	// 			{
+	// 				ID:           primitive.NewObjectID(),
+	// 				Type:         models.IntegrationEventTypeAgentOnline,
+	// 				Retries:      0,
+	// 				Status:       "delivered",
+	// 				ResponseData: "{'success': true}",
+	// 				Completed:    true,
+	// 				Data: modelsv1.EventDataAgentOnline{
+	// 					AgentName: "Test",
+	// 					EventData: modelsv1.EventData{
+	// 						EventTime: time.Now(),
+	// 					},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
 
 	eventTypes := []string{
 		"agent.online",
@@ -72,7 +80,7 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 	RenderTemplate(c, "pages/dashboard/integrations", gin.H{
 		"pageTitle":        "Integrations",
 		"globalEventTypes": eventTypes,
-		"integrations":     integrations,
+		"integrations":     integrationRes.Integrations,
 	})
 }
 
