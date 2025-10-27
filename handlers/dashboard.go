@@ -7,6 +7,7 @@ import (
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
+	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,40 +40,15 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 		return
 	}
 
-	// integrations := []models.AccountIntegrationSchema{
-	// 	{
-	// 		ID:   primitive.NewObjectID(),
-	// 		Type: models.IntegrationWebhook,
-	// 		Url:  "https://test.com",
-	// 		EventTypes: []models.IntegrationEventType{
-	// 			models.IntegrationEventTypeAgentOnline,
-	// 			models.IntegrationEventTypeAgentOffline,
-	// 			models.IntegrationEventTypePlayerJoined,
-	// 		},
-	// 		Events: []models.AccountIntegrationEvent{
-	// 			{
-	// 				ID:           primitive.NewObjectID(),
-	// 				Type:         models.IntegrationEventTypeAgentOnline,
-	// 				Retries:      0,
-	// 				Status:       "delivered",
-	// 				ResponseData: "{'success': true}",
-	// 				Completed:    true,
-	// 				Data: modelsv1.EventDataAgentOnline{
-	// 					AgentName: "Test",
-	// 					EventData: modelsv1.EventData{
-	// 						EventTime: time.Now(),
-	// 					},
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// }
-
-	eventTypes := []string{
-		"agent.online",
-		"agent.offline",
-		"player.joined",
-		"player.left",
+	eventTypes := []v2.IntegrationEventType{
+		v2.IntegrationEventTypeAgentCreated,
+		v2.IntegrationEventTypeAgentRemoved,
+		v2.IntegrationEventTypeAgentOnline,
+		v2.IntegrationEventTypeAgentOffline,
+		v2.IntegrationEventTypeUserAdded,
+		v2.IntegrationEventTypeUserRemoved,
+		v2.IntegrationEventTypePlayerJoined,
+		v2.IntegrationEventTypePlayerLeft,
 	}
 
 	RenderTemplate(c, "pages/dashboard/integrations", gin.H{

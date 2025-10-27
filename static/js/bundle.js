@@ -553,7 +553,7 @@ function main() {
             const $pillWrapper = $this.parent().parent().find(".event-types-pills");
 
             $pillWrapper.append(`
-            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="${$select.val()}" style="font-size:12px">
+            <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
                 ${$select.find("option:selected").text()}
                 <i class="fas fa-times ms-1 float-end" ></i>
             </span>
@@ -577,7 +577,7 @@ function main() {
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push(parseInt($el.attr("data-event-type-id")));
+                data.eventTypes.push(parseInt($el.attr("data-event-type")));
             });
 
             $.ajax({
@@ -608,7 +608,7 @@ function main() {
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push(parseInt($el.attr("data-event-type-id")));
+                data.eventTypes.push($el.attr("data-event-type"));
             });
 
             try {

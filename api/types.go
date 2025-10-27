@@ -223,9 +223,9 @@ type APIGetAccountIntegrationsResponse struct {
 }
 
 type APIPostAccountIntegrationsData struct {
-	Type       int     `json:"type"`
-	URL        string  `json:"url"`
-	EventTypes []int64 `json:"eventTypes"`
+	Type       int                       `json:"type"`
+	URL        string                    `json:"url"`
+	EventTypes []v2.IntegrationEventType `json:"eventTypes"`
 }
 
 type APIPostAccountIntegrationsRequest struct {

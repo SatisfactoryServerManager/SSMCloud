@@ -47,7 +47,7 @@
                                                     <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
                                                     <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
                                                         {{range $i, $e := $globalEventTypes}}
-                                                            <option value="{{$i}}">{{$e}}</option>
+                                                            <option value="{{$e}}">{{$e}}</option>
                                                         {{end}}
                                                     </select>
                                                     <button class="btn btn-success add-event-type">
@@ -68,30 +68,30 @@
                                     {{if not .integrations}}
                                         <div class="alert alert-info">It looks like integrations has not been setup yet!</div>
                                     {{end}}
-                                    {{range .integrations}}
-                                        <form action="/dashboard/integrations/update/{{OIDtoString .ID}}" method="post" class="edit-notification-form">
+                                    {{range $integration := .integrations}}
+                                        <form action="/dashboard/integrations/update/{{OIDtoString $integration.ID}}" method="post" class="edit-notification-form">
                                             <div class="row">
                                                 <div class="col-12 col-lg-6">
                                                     <label for="sel_type" class="form-label">Integration Type:</label>
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
                                                         <select name="sel_type" id="sel_type" class="form-select">
-                                                            <option value="0" {{if eq .Type 0}}selected{{end}}>Webhook</option>
-                                                            <option value="1" {{if eq .Type 1}}selected{{end}}>Discord</option>
+                                                            <option value="0" {{if eq $integration.Type 0}}selected{{end}}>Webhook</option>
+                                                            <option value="1" {{if eq $integration.Type 1}}selected{{end}}>Discord</option>
                                                         </select>
                                                     </div>
                                                     <label for="inp_url" class="form-label">Integration URL:</label>
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
-                                                        <input class="form-control" type="text" name="inp_url" id="inp_url" value="{{.Url}}">
+                                                        <input class="form-control" type="text" name="inp_url" id="inp_url" value="{{$integration.Url}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-lg-6">
                                                     <label class="form-label">Selected Event Types:</label>
                                                     <div class="event-types-pills mb-3">
-                                                        {{range $i, $e := .EventTypes}}
+                                                        {{range $i, $e := $integration.EventTypes}}
                                                             <span class="badge rounded-pill bg-info mb-1" data-event-type-id="{{$e}}" style="font-size:12px">
-                                                                {{index $globalEventTypes $e}}
+                                                                {{$e}}
                                                                 <i class="fas fa-times ms-1 float-end"></i>
                                                             </span>
                                                         {{end}}
@@ -101,8 +101,18 @@
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
                                                         <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
-                                                            {{range $i, $e := $globalEventTypes}}
-                                                                <option value="{{$i}}">{{$e}}</option>
+                                                            {{range $e := $globalEventTypes}}
+                                                                {{$found := false}}
+                                                                {{range $eventType := $integration.EventTypes}}
+                                                                    
+                                                                    {{if eq $e $eventType}}
+                                                                        {{$found = true}}
+                                                                    {{end}}
+                                                                {{end}}
+
+                                                                {{if not $found}}
+                                                                    <option value="{{$e}}">{{$e}}</option>
+                                                                {{end}}
                                                             {{end}}
                                                         </select>
                                                         <button class="btn btn-success add-event-type">
@@ -112,7 +122,7 @@
                                                 </div>
                                             </div>
                                             <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Integration</button>
-                                            <a href="/dashboard/integrations/delete/{{OIDtoString .ID}}" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Integration</a>
+                                            <a href="/dashboard/integrations/delete/{{OIDtoString $integration.ID}}" class="btn btn-danger float-end should-confirm-btn" data-confirm-title="Delete Notification Setting"><i class="fas fa-trash"></i> Delete Integration</a>
                                         </form>
                                         <hr>
                                     {{end}}
