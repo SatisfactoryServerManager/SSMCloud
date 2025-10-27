@@ -39,8 +39,6 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("%+v\n", integrationRes.Integrations)
-
 	// integrations := []models.AccountIntegrationSchema{
 	// 	{
 	// 		ID:   primitive.NewObjectID(),
@@ -82,6 +80,47 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 		"globalEventTypes": eventTypes,
 		"integrations":     integrationRes.Integrations,
 	})
+}
+
+func (handler *DashboardHandler) POST_DashboardIntegrations(c *gin.Context) {
+
+	PostData := api.APIPostAccountIntegrationsData{}
+	if err := c.BindJSON(&PostData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	if PostData.URL == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "url was empty"})
+		c.Abort()
+		return
+	}
+
+	if len(PostData.EventTypes) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "event types was empty"})
+		c.Abort()
+		return
+	}
+
+	if err := api.AddAccountIntegration(&api.APIPostAccountIntegrationsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		APIPostAccountIntegrationsData: PostData,
+	}); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	if err := services.AddFlash(c.Writer, c.Request, "success", "Successfully added integration"); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "error": ""})
 }
 
 func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {

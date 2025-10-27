@@ -178,15 +178,16 @@ function main() {
 
             return true;
         })
-        .on("submit", ".add-notification-form", (e) => {
+        .on("submit", ".add-notification-form", async (e) => {
             e.preventDefault();
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
-            var data = $form.serializeArray().reduce(function (obj, item) {
-                obj[item.name] = item.value;
-                return obj;
-            }, {});
+            const data = {
+                type: parseInt($form.find("#type").val()),
+                url: $form.find("#url").val(),
+                eventTypes: [],
+            };
 
             data.eventTypes = [];
 
@@ -194,16 +195,30 @@ function main() {
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push($el.attr("data-event-type-id"));
+                data.eventTypes.push(parseInt($el.attr("data-event-type-id")));
             });
-            $.ajax({
-                method: "post",
-                url: action,
-                enctype: "multipart/form-data",
-                data: data,
-            }).then(() => {
+
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                }).promise();
+
                 window.location = "/dashboard/integrations";
-            });
+            } catch (err) {
+                console.error(err);
+
+                try {
+                    const response = JSON.parse(err.responseText);
+                    console.error("Error response JSON:", response);
+                    toastr.error(response.error, "Error adding integration", { timeOut: 4000 });
+                } catch {
+                    console.error("Error response text:", err.responseText);
+                }
+            }
 
             return true;
         })

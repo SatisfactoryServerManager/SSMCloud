@@ -497,3 +497,13 @@ func GetAccountIntegrations(request *APIRequest) (*APIGetAccountIntegrationsResp
 
 	return res, nil
 }
+
+func AddAccountIntegration(request *APIPostAccountIntegrationsRequest) error {
+	res := &APIResponse{}
+
+	if err := post("frontend/users/me/account/integrations/add", request.AccessToken, nil, request, res); err != nil {
+		return err
+	}
+
+	return nil
+}

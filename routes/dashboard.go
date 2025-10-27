@@ -11,6 +11,7 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/", middleware.AuthRequired(), handler.GET_Dashboard)
 
 	r.GET("/integrations", middleware.AuthRequired(), handler.GET_DashboardIntegrations)
+	r.POST("/integrations/add", middleware.AuthRequired(), handler.POST_DashboardIntegrations)
 
 	r.GET("/mods", middleware.AuthRequired(), handler.GET_DashboardMods)
 

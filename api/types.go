@@ -189,10 +189,10 @@ type APIGetModsRequest struct {
 
 type APIGetModsResponse struct {
 	APIResponse
-	Mods           []models.Mods     `json:"mods"`
-	TotalMods      int64             `json:"totalMods"`
-	Pages          int               `json:"pages"`
-	AgentModConfig v2.AgentModConfig `json:"agentModConfig"`
+	Mods           []models.ModSchema `json:"mods"`
+	TotalMods      int64              `json:"totalMods"`
+	Pages          int                `json:"pages"`
+	AgentModConfig v2.AgentModConfig  `json:"agentModConfig"`
 }
 
 type APIServerTaskRequest struct {
@@ -220,4 +220,15 @@ type APIUninstallModRequest struct {
 type APIGetAccountIntegrationsResponse struct {
 	APIResponse
 	Integrations []v2.AccountIntegrationSchema `json:"integrations"`
+}
+
+type APIPostAccountIntegrationsData struct {
+	Type       int     `json:"type"`
+	URL        string  `json:"url"`
+	EventTypes []int64 `json:"eventTypes"`
+}
+
+type APIPostAccountIntegrationsRequest struct {
+	APIRequest
+	APIPostAccountIntegrationsData
 }
