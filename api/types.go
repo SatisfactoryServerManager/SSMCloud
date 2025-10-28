@@ -223,6 +223,7 @@ type APIGetAccountIntegrationsResponse struct {
 }
 
 type APIPostAccountIntegrationsData struct {
+	Name       string                    `json:"name"`
 	Type       int                       `json:"type"`
 	URL        string                    `json:"url"`
 	EventTypes []v2.IntegrationEventType `json:"eventTypes"`

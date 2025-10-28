@@ -597,6 +597,7 @@ function main() {
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
             const data = {
+                name: $form.find("#name").val(),
                 type: parseInt($form.find("#type").val()),
                 url: $form.find("#url").val(),
                 eventTypes: [],

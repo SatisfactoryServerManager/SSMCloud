@@ -3,21 +3,21 @@ module github.com/SatisfactoryServerManager/SSMCloud
 go 1.25
 
 require (
-	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.20
+	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.23
 	github.com/boj/redistore v1.4.1
 	github.com/coreos/go-oidc/v3 v3.16.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/gorilla/sessions v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/sonh/qs v0.6.4
-	go.mongodb.org/mongo-driver v1.17.4
+	go.mongodb.org/mongo-driver v1.17.6
 	golang.org/x/oauth2 v0.32.0
 )
 
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
-	github.com/bytedance/sonic v1.14.1 // indirect
-	github.com/bytedance/sonic/loader v0.3.0 // indirect
+	github.com/bytedance/sonic v1.14.2 // indirect
+	github.com/bytedance/sonic/loader v0.4.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/gertd/go-pluralize v0.2.1 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.55.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.3.0 // indirect
+	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
