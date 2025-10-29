@@ -219,6 +219,37 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
 }
 
+func (handler *DashboardHandler) POST_DashboardServerSaveFile(c *gin.Context) {
+	agentId, _ := c.Params.Get("agentId")
+
+	// Retrieve uploaded file
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		return
+	}
+	defer file.Close()
+
+	err = api.SendSaveFile(&api.APIPostAgentSaveFile{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		File:    file,
+		Header:  header,
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		return
+	}
+
+	services.AddFlash(c.Writer, c.Request, "success", "Save file has been uploaded")
+
+	// Redirect after successful upload
+	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
+}
+
 func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 
 	PostData := api.APINewServerData{}

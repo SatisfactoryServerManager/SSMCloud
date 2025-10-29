@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -217,6 +218,42 @@ func DownloadFile(c *gin.Context, request *APIDownloadFileRequest) {
 
 	// Stream directly from the external response to the client
 	io.Copy(c.Writer, resp.Body)
+}
+
+func postFile(endpoint string, accessToken string, fileBytes bytes.Buffer, contentType string, resData APIResult) error {
+	if client == nil {
+		initClient()
+	}
+
+	url := BuildURL(endpoint, nil)
+	req, err := http.NewRequest("POST", url, &fileBytes)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("apikey", os.Getenv("BACKEND_SECRET_KEY"))
+    req.Header.Set("Content-Type", contentType)
+
+	if accessToken != "" {
+		req.Header.Add("x-ssm-auth-token", accessToken)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {
+		return err
+	}
+
+	if !resData.IsSuccess() {
+		return fmt.Errorf("api returned error: %s", resData.GetError())
+	}
+
+	return nil
 }
 
 func PingBackend() error {
@@ -506,4 +543,36 @@ func AddAccountIntegration(request *APIPostAccountIntegrationsRequest) error {
 	}
 
 	return nil
+}
+
+func SendSaveFile(request *APIPostAgentSaveFile) error {
+	filename := request.Header.Filename
+
+	// Prepare multipart form to send to another backend
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+
+	// Create the form field "file"
+	part, err := writer.CreateFormFile("file", filename)
+	if err != nil {
+		return err
+	}
+
+	// Copy file data into multipart form
+	if _, err := io.Copy(part, request.File); err != nil {
+		return err
+	}
+
+	// Close writer to finalize the form
+	writer.Close()
+
+    contentType := writer.FormDataContentType()
+
+    endpoint:= fmt.Sprintf("frontend/users/me/account/agents/upload/%s/save", request.AgentId)
+    res := &APIResponse{}
+    if err := postFile(endpoint, request.AccessToken, buf, contentType, res); err != nil{
+        return err;
+    }
+
+    return nil;
 }

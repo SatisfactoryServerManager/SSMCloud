@@ -1,6 +1,8 @@
 package api
 
 import (
+	"mime/multipart"
+
 	models "github.com/SatisfactoryServerManager/ssmcloud-resources/models"
 	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 )
@@ -232,4 +234,11 @@ type APIPostAccountIntegrationsData struct {
 type APIPostAccountIntegrationsRequest struct {
 	APIRequest
 	APIPostAccountIntegrationsData
+}
+
+type APIPostAgentSaveFile struct {
+	APIRequest
+	AgentId string
+	File    multipart.File
+	Header  *multipart.FileHeader
 }
