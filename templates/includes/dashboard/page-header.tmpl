@@ -13,7 +13,7 @@
             </div>
 
             <a href="/auth/logout" class="btn btn-light text-dark me-3 logout-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Log Out">
-                <i class="fa-solid fa-right-from-bracket mt-1"></i>
+                <i class="fa-solid fa-right-from-bracket"></i>
             </a>
 
             <div
@@ -21,7 +21,10 @@
                 role="group"
                 aria-label="Button group with nested dropdown"
             >
-                <a href="/dashboard/profile" class="btn w-100">{{.user.Username}}</a>
+                <a href="/dashboard/profile" class="btn w-100 d-flex align-items-center">
+                    <img class="profile-image me-1" src="{{.user.ProfileImageURL}}"/>
+                    {{.user.Username}}
+                </a>
                 <div class="btn-group" role="group">
                     <button
                         id="btnGroupDrop1"

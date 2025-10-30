@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -277,6 +278,8 @@ func GetMyUser(request *APIGetUserRequest) (*APIGetUserResponse, error) {
 		}
 		return nil, err
 	}
+
+	userRes.User.ProfileImageURL = template.URL(userRes.User.ProfileImageStr)
 
 	return userRes, nil
 }
@@ -580,7 +583,7 @@ func SendSaveFile(request *APIPostAgentSaveFile) error {
 func GetAgentStats(request *APIGetAgentStatsRequest) (*APIGetAgentStatsResponse, error) {
 	res := &APIGetAgentStatsResponse{}
 
-    values, err := encoder.Values(request)
+	values, err := encoder.Values(request)
 	if err != nil {
 		return nil, err
 	}

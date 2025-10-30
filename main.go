@@ -136,7 +136,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	router.StaticFS("/public", http.FS(publicFiles))
+	fileServer := http.FileServer(http.FS(publicFiles))
+
+	router.GET("/public/*filepath", func(c *gin.Context) {
+		// Add caching headers
+		c.Header("Cache-Control", "public, max-age=604800") // 7 days
+		c.Header("Expires", time.Now().Add(7*24*time.Hour).UTC().Format(http.TimeFormat))
+
+		// Remove `/public` prefix so the embedded FS resolves correctly
+		http.StripPrefix("/public", fileServer).ServeHTTP(c.Writer, c.Request)
+	})
 
 	// Serve the embedded docs on /docs
 	router.GET("/docs", func(c *gin.Context) {

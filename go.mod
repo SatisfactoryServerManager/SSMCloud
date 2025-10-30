@@ -3,7 +3,7 @@ module github.com/SatisfactoryServerManager/SSMCloud
 go 1.25
 
 require (
-	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.23
+	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.27
 	github.com/boj/redistore v1.4.1
 	github.com/coreos/go-oidc/v3 v3.16.0
 	github.com/gin-gonic/gin v1.11.0
@@ -19,7 +19,7 @@ require (
 	github.com/bytedance/sonic v1.14.2 // indirect
 	github.com/bytedance/sonic/loader v0.4.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.11 // indirect
 	github.com/gertd/go-pluralize v0.2.1 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect

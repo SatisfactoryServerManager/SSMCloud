@@ -259,6 +259,11 @@ a.disabled {
     float: left;
 }
 
+#sidebar .nav-item .nav-link {
+    display: flex;
+    align-items: center;
+}
+
 #viewport #sidebar .nav-item a span {
     font-size: 16px;
     line-height: 22px;
@@ -299,16 +304,17 @@ a.disabled {
     padding: 8px 12px;
     font-size: 20px;
     height: 45px;
-    line-height: 45px;
-}
-
-.page-header .logout-btn svg {
-    vertical-align: middle;
 }
 
 .profile-btn-group {
     background-color: var(--ssm-btn-bg-colour);
     border: 1px solid var(--ssm-btn-border-colour);
+}
+
+.profile-btn-group .profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
 }
 
 .page-header .profile-btn-group .btn {

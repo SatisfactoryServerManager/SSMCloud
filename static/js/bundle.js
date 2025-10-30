@@ -433,6 +433,8 @@ function main() {
 
     AccountPage.init();
 
+    window.displayFlashes();
+
     const lastServerTab = localStorage.getItem("ServerActiveTab");
 
     if ($(".server-tabs-header").length > 0) {

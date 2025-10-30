@@ -12,12 +12,15 @@ Todo:
     ✔ Test displaying of integrations @done(25-10-23 10:25)
     ✔ Pull integrations from api @done(25-10-27 09:32)
     ✔ Fix add integration @done(25-10-27 13:57)
+    ☐ Fix update integration
     ☐ Fix delete integration
+    ☐ Add new page for viewing integration events
   ☐ Profile page
     ☐ API Keys
       ☐ Add
       ☐ Revoke
-  ☐ Server Stats page
+  ✔ Server Stats page @done(25-10-30 14:37)
   ☐ Account Join Code Regenerate Button
   ✔ Server Install Command Tab @done(25-10-21 14:01)
   ✔ Update Favicons @done(25-10-22 13:58)
+Archive:
