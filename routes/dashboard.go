@@ -27,6 +27,7 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/servers/:agentId", middleware.AuthRequired(), handler.GET_DashboardServer)
 	r.POST("/servers/:agentId", middleware.AuthRequired(), handler.POST_DashboardServerUpdate)
 	r.POST("/servers/:agentId/saves", middleware.AuthRequired(), handler.POST_DashboardServerSaveFile)
+	r.GET("/servers/:agentId/stats", middleware.AuthRequired(), handler.GET_DashboardServerStats)
 	r.GET("/servers/workflows/:workflowId", middleware.AuthRequired(), handler.GET_DashboardServerWorkflow)
 
 	r.GET("/account", middleware.AuthRequired(), handler.GET_DashboardAccount)

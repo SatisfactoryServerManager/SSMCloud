@@ -250,6 +250,26 @@ func (handler *DashboardHandler) POST_DashboardServerSaveFile(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/dashboard/servers/"+agentId)
 }
 
+func (handler *DashboardHandler) GET_DashboardServerStats(c *gin.Context) {
+
+	agentId := c.Param("agentId")
+
+	statsRes, err := api.GetAgentStats(&api.APIGetAgentStatsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "stats": statsRes.Stats})
+}
+
 func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 
 	PostData := api.APINewServerData{}

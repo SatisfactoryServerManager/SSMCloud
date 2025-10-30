@@ -242,3 +242,13 @@ type APIPostAgentSaveFile struct {
 	File    multipart.File
 	Header  *multipart.FileHeader
 }
+
+type APIGetAgentStatsRequest struct {
+	APIRequest
+	AgentId string `qs:"agentId"`
+}
+
+type APIGetAgentStatsResponse struct {
+	APIResponse
+	Stats []v2.AgentStatSchema `json:"stats"`
+}

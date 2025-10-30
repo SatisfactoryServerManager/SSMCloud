@@ -36,6 +36,7 @@ func NewAuthService() (*AuthService, error) {
 		return nil, err
 	}
 	rs.SetMaxLength(8192)
+	rs.SetMaxAge(3600)
 
 	as.SessionStore = rs
 

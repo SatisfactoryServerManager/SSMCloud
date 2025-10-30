@@ -233,7 +233,7 @@ func postFile(endpoint string, accessToken string, fileBytes bytes.Buffer, conte
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("apikey", os.Getenv("BACKEND_SECRET_KEY"))
-    req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Type", contentType)
 
 	if accessToken != "" {
 		req.Header.Add("x-ssm-auth-token", accessToken)
@@ -566,13 +566,28 @@ func SendSaveFile(request *APIPostAgentSaveFile) error {
 	// Close writer to finalize the form
 	writer.Close()
 
-    contentType := writer.FormDataContentType()
+	contentType := writer.FormDataContentType()
 
-    endpoint:= fmt.Sprintf("frontend/users/me/account/agents/upload/%s/save", request.AgentId)
-    res := &APIResponse{}
-    if err := postFile(endpoint, request.AccessToken, buf, contentType, res); err != nil{
-        return err;
-    }
+	endpoint := fmt.Sprintf("frontend/users/me/account/agents/upload/%s/save", request.AgentId)
+	res := &APIResponse{}
+	if err := postFile(endpoint, request.AccessToken, buf, contentType, res); err != nil {
+		return err
+	}
 
-    return nil;
+	return nil
+}
+
+func GetAgentStats(request *APIGetAgentStatsRequest) (*APIGetAgentStatsResponse, error) {
+	res := &APIGetAgentStatsResponse{}
+
+    values, err := encoder.Values(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := get("frontend/users/me/account/agents/stats", request.AccessToken, &values, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

@@ -10,6 +10,8 @@
                 <div class="page-container" data-page="dashboard">
                     {{template "includes/dashboard/page-header" .}}
 
+                    <input type="hidden" id="inp_agent_id" value="{{OIDtoString .agent.ID}}"/>
+
                     {{if not .agent.Config.Version}}
                     <div class="alert alert-warning">Uh Oh looks like this server has not been started before!</div>
 
@@ -17,7 +19,7 @@
                     <div class="col-12 col-md-6">
                     <div class="card border-secondary mb-3 bg-glass">
                         <div class="card-header">
-                        <h5>Install Command</h5>
+                            <h5>Install Command</h5>
                         </div>
                         <div class="card-body">
 
@@ -26,7 +28,7 @@
                             <li>SSM Url - This is the url that the agent will connect to. By default this will be SSM Cloud, you can enter your hosted SSM cloud url/ip address if needed. </li>
                             <li>API Key: This is the secure api key used for sending data to SSM Cloud</li>
                         </ul>
-                        <input type="hidden" id="inp_servername" value="<%=agent.agentName%>">
+                            <input type="hidden" id="inp_servername" value="<%=agent.agentName%>">
                             <input type="hidden" id="inp_serverport" value="<%=agent.sfPortNum%>">
                             <input type="hidden" id="inp_servermemory" value="<%=agent.memory/1024/1024/1024%>">
                             <ul class="nav nav-tabs" role="tablist">
@@ -113,7 +115,7 @@
                                 {{template "includes/server/installcommand" .}}
                             </div>
                             <div class="tab-pane fade" id="stats" role="tabpanel">
-                                <%- include('./server/stats.ejs') %>
+                                {{template "includes/server/stats" .}}
                             </div>
                             <div class="tab-pane fade" id="map" role="tabpanel">
                                 {{template "includes/server/map" .}}

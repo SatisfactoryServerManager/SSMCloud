@@ -2,7 +2,6 @@ const AgentMap = require("./agentmap");
 
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
-const modsPage = require("./mods-page");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -19,30 +18,22 @@ function main() {
     toastr.options.progressBar = true;
     toastr.options.positionClass = "toast-bottom-right";
 
-    const faWebhook = {
-        prefix: "fac",
-        iconName: "custom-webhook",
-        icon: [
-            130,
-            121,
-            [],
-            "e001",
-            "M60.467 50.345C55.1 59.367 49.958 68.104 44.709 76.775C43.361 79.001 42.694 80.814 43.771 83.644C46.744 91.461 42.55 99.068 34.667 101.133C27.233 103.081 19.99 98.195 18.515 90.236C17.208 83.191 22.675 76.285 30.442 75.184C31.093 75.091 31.757 75.08 32.851 74.998C36.657 68.616 40.556 62.079 44.666 55.186C37.235 47.797 32.812 39.159 33.791 28.456C34.483 20.89 37.458 14.352 42.896 8.99301C53.311 -1.26899 69.2 -2.93099 81.463 4.94601C93.241 12.512 98.635 27.25 94.037 39.864C90.57 38.924 87.079 37.976 83.241 36.935C84.685 29.922 83.617 23.624 78.887 18.229C75.762 14.667 71.752 12.8 67.192 12.112C58.051 10.731 49.076 16.604 46.413 25.576C43.39 35.759 47.965 44.077 60.467 50.345Z M75.794 39.676C79.575 46.346 83.414 53.117 87.219 59.826C106.451 53.876 120.951 64.522 126.153 75.92C132.436 89.688 128.141 105.995 115.801 114.489C103.135 123.209 87.117 121.719 75.895 110.518C78.755 108.124 81.629 105.719 84.7 103.15C95.784 110.329 105.478 109.991 112.675 101.49C118.812 94.238 118.679 83.425 112.364 76.325C105.076 68.132 95.314 67.882 83.514 75.747C78.619 67.063 73.639 58.448 68.899 49.701C67.301 46.753 65.536 45.043 61.934 44.419C55.918 43.376 52.034 38.21 51.801 32.422C51.572 26.698 54.944 21.524 60.215 19.508C65.436 17.511 71.563 19.123 75.075 23.562C77.945 27.189 78.857 31.271 77.347 35.744C76.927 36.991 76.383 38.198 75.794 39.676Z M84.831 94.204C77.226 94.204 69.593 94.204 61.679 94.204C59.46 103.331 54.667 110.7 46.408 115.386C39.988 119.028 33.068 120.263 25.703 119.074C12.143 116.887 1.055 104.68 0.0790008 90.934C-1.026 75.363 9.677 61.522 23.943 58.413C24.928 61.99 25.923 65.601 26.908 69.169C13.819 75.847 9.289 84.261 12.952 94.782C16.177 104.041 25.337 109.116 35.283 107.153C45.44 105.149 50.561 96.708 49.936 83.161C59.565 83.161 69.202 83.061 78.832 83.21C82.592 83.269 85.495 82.879 88.328 79.564C92.992 74.109 101.576 74.601 106.599 79.753C111.732 85.018 111.486 93.49 106.054 98.533C100.813 103.399 92.533 103.139 87.63 97.896C86.622 96.815 85.828 95.532 84.831 94.204Z",
-        ],
-    };
-
-    window.FontAwesome.library.add(faWebhook);
-
     AccountPage.init();
 
-    // Try to get the last active tab from localStorage
     const lastServerTab = localStorage.getItem("ServerActiveTab");
 
-    // If a tab was saved before, show it
-    if (lastServerTab) {
-        $('.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]').tab("show");
-    } else {
-        $(".server-tabs-header .nav-tabs a").first().tab("show");
+    if ($(".server-tabs-header").length > 0) {
+        if (lastServerTab) {
+            $('.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]').tab("show");
+        } else {
+            $(".server-tabs-header .nav-tabs a").first().tab("show");
+        }
+
+        if (lastServerTab == "#map") {
+            window.agentMap.SetUpMap();
+        } else if (lastServerTab == "#stats") {
+            BuildAgentStats();
+        }
     }
 
     // When a tab is clicked (and shown), save it
@@ -267,7 +258,7 @@ function main() {
                     modReference,
                 },
                 () => {
-                    modsPage.UpdateView();
+                    ModsPage.UpdateView();
                 }
             );
         })
@@ -284,7 +275,7 @@ function main() {
                     modReference,
                 },
                 () => {
-                    modsPage.UpdateView();
+                    ModsPage.UpdateView();
                 }
             );
         })
@@ -325,7 +316,7 @@ function main() {
             const $this = $(e.currentTarget);
             const modReference = $this.attr("data-mod-reference");
 
-            modsPage.OpenModSettings(modReference);
+            ModsPage.OpenModSettings(modReference);
         })
         .on("keyup", "#mod-settings-config", (e) => {
             const $this = $(e.currentTarget);
@@ -779,45 +770,70 @@ Number.prototype.pad = function (width, z) {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
 
-function BuildAgentStats() {
+BuildAgentStats = async () => {
     if (window.builtAgentStats != null && window.builtAgentStats) return;
-    BuildAgentCPUStats();
-    BuildAgentRAMStats();
-    BuildAgentRunningStats();
 
-    window.builtAgentStats = true;
-}
+    const agentId = $("#inp_agent_id").val();
 
-function BuildAgentCPUStats() {
+    try {
+        const res = await $.get(`/dashboard/servers/${agentId}/stats`).promise();
+        const stats = res.stats;
+
+        console.log(res);
+
+        let count = 0;
+
+        const cpuStats = [];
+        const memStats = [];
+        const runningStats = [];
+        const runningBgColor = [];
+
+        for (let i = stats.length - 1; i >= 0; i--) {
+            if (count >= 50) {
+                break;
+            }
+            const stat = stats[i];
+
+            const date = new Date(stat.createdAt);
+
+            cpuStats.push({
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
+                value: parseFloat(stat.cpu),
+            });
+            memStats.push({
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
+                value: parseFloat(stat.mem),
+            });
+            const runningVal = stat.running ? 1 : -1;
+            runningStats.push({
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
+                value: runningVal,
+            });
+
+            if (!stat.running) {
+                runningBgColor.push("rgba(255, 99, 132, 0.7)");
+            } else {
+                runningBgColor.push("rgba(75, 192, 192, 0.7)");
+            }
+
+            count++;
+        }
+
+        BuildAgentCPUStats(cpuStats);
+        BuildAgentRAMStats(memStats);
+        BuildAgentRunningStats(runningStats, runningBgColor);
+
+        window.builtAgentStats = true;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+function BuildAgentCPUStats(data) {
     if ($("#cpuChart").length == 0) return;
 
     const textColour = $("body").hasClass("dark") ? "white" : "black";
     const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
-
-    const agent = window.agent;
-
-    let data = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            data.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.cpu),
-            });
-
-            count++;
-        }
-    }
 
     data.reverse();
 
@@ -865,34 +881,10 @@ function BuildAgentCPUStats() {
     });
 }
 
-function BuildAgentRAMStats() {
+function BuildAgentRAMStats(data) {
     if ($("#ramChart").length == 0) return;
 
     const textColour = $("body").hasClass("dark") ? "white" : "black";
-
-    const agent = window.agent;
-    let data = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            data.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.mem),
-            });
-
-            count++;
-        }
-    }
 
     data.reverse();
 
@@ -934,43 +926,13 @@ function BuildAgentRAMStats() {
     });
 }
 
-function BuildAgentRunningStats() {
+function BuildAgentRunningStats(data, backgroundColor) {
     if ($("#uptimeChart").length == 0) return;
 
     const textColour = $("body").hasClass("dark") ? "white" : "black";
 
-    const agent = window.agent;
-    let data = [];
-    let backgroundColor = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            if (!stat.running) {
-                backgroundColor.push("rgba(255, 99, 132, 0.7)");
-            } else {
-                backgroundColor.push("rgba(75, 192, 192, 0.7)");
-            }
-
-            data.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: stat.running == true ? 1 : -1,
-            });
-
-            count++;
-        }
-    }
-
     data.reverse();
+    backgroundColor.reverse();
 
     new Chart(document.getElementById("uptimeChart"), {
         type: "bar",
