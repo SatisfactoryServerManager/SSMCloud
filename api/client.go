@@ -548,6 +548,32 @@ func AddAccountIntegration(request *APIPostAccountIntegrationsRequest) error {
 	return nil
 }
 
+func GetAccountIntegrationEvents(request *APIGetAccountIntegrationEventsRequest) (*APIGetAccountIntegrationEventsResponse, error) {
+
+	values, err := encoder.Values(request)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &APIGetAccountIntegrationEventsResponse{}
+
+	if err := get("frontend/users/me/account/integrations/events", request.AccessToken, &values, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func UpdateAccountIntegration() error {
+
+	return nil
+}
+
+func DeleteAccountIntegration() error {
+
+	return nil
+}
+
 func SendSaveFile(request *APIPostAgentSaveFile) error {
 	filename := request.Header.Filename
 

@@ -252,3 +252,13 @@ type APIGetAgentStatsResponse struct {
 	APIResponse
 	Stats []v2.AgentStatSchema `json:"stats"`
 }
+
+type APIGetAccountIntegrationEventsRequest struct {
+	APIRequest
+	IntegrationId string `qs:"integrationId"`
+}
+
+type APIGetAccountIntegrationEventsResponse struct {
+	APIResponse
+	IntegrationEvents []v2.IntegrationEventSchema `json:"events"`
+}

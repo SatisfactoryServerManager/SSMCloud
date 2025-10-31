@@ -9,6 +9,20 @@ import (
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+var (
+	eventTypes = []v2.IntegrationEventType{
+		v2.IntegrationEventTypeAgentCreated,
+		v2.IntegrationEventTypeAgentRemoved,
+		v2.IntegrationEventTypeAgentOnline,
+		v2.IntegrationEventTypeAgentOffline,
+		v2.IntegrationEventTypeUserAdded,
+		v2.IntegrationEventTypeUserRemoved,
+		v2.IntegrationEventTypePlayerJoined,
+		v2.IntegrationEventTypePlayerLeft,
+	}
 )
 
 type DashboardHandler struct {
@@ -38,17 +52,6 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
 		return
-	}
-
-	eventTypes := []v2.IntegrationEventType{
-		v2.IntegrationEventTypeAgentCreated,
-		v2.IntegrationEventTypeAgentRemoved,
-		v2.IntegrationEventTypeAgentOnline,
-		v2.IntegrationEventTypeAgentOffline,
-		v2.IntegrationEventTypeUserAdded,
-		v2.IntegrationEventTypeUserRemoved,
-		v2.IntegrationEventTypePlayerJoined,
-		v2.IntegrationEventTypePlayerLeft,
 	}
 
 	RenderTemplate(c, "pages/dashboard/integrations", gin.H{
@@ -97,6 +100,70 @@ func (handler *DashboardHandler) POST_DashboardIntegrations(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "error": ""})
+}
+
+func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
+	integrationId, err := primitive.ObjectIDFromHex(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	integrationRes, err := api.GetAccountIntegrations(&api.APIRequest{
+		AccessToken: c.GetString("access_token"),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	integrationEventsRes, err := api.GetAccountIntegrationEvents(&api.APIGetAccountIntegrationEventsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		IntegrationId: integrationId.Hex(),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	var theIntegration *v2.AccountIntegrationSchema
+	for idx := range integrationRes.Integrations {
+		integration := &integrationRes.Integrations[idx]
+		if integration.ID == integrationId {
+			theIntegration = integration
+		}
+	}
+
+	if theIntegration == nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "integration not found"})
+		c.Abort()
+		return
+	}
+
+	fmt.Printf("%+v\n", integrationEventsRes.IntegrationEvents)
+
+	RenderTemplate(c, "pages/dashboard/integration", gin.H{
+		"pageTitle":         "Integrations",
+		"globalEventTypes":  eventTypes,
+		"integration":       theIntegration,
+		"integrationEvents": integrationEventsRes.IntegrationEvents,
+	})
+}
+
+func (handler *DashboardHandler) POST_DashboardUpdateIntegrations(c *gin.Context) {
+
+}
+
+func (handler *DashboardHandler) POST_DashboardDeleteIntegrations(c *gin.Context) {
+
 }
 
 func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {

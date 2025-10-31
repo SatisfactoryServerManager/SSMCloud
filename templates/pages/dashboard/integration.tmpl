@@ -1,4 +1,4 @@
-{{define "pages/dashboard/integrations"}}
+{{define "pages/dashboard/integration"}}
 {{template "includes/dashboard/head" .}}
 
 {{$globalEventTypes := .globalEventTypes}}
@@ -14,21 +14,18 @@
 
                     <div class="row">
                         <div class="col-12">
-                            {{template "includes/components/add-integration-form" .}}
+                            {{template "includes/components/update-integration-form" (dict "integration" .integration "globalEventTypes" $globalEventTypes)}}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
                             <div class="card mb-3 bg-glass">
                                 <div class="card-header">
-                                    <h5>Integrations</h5>
+                                    <h5>Integration Events</h5>
                                 </div>
                                 <div class="card-body">
-                                    {{if not .integrations}}
-                                        <div class="alert alert-info">It looks like you have no integrations setup yet!</div>
-                                    {{end}}
-                                    {{range $integration := .integrations}}
-                                        {{template "includes/components/integration-card" (dict "integration" $integration) }}
+                                    {{if not .integrationEvents}}
+                                        <div class="alert alert-info">It looks like you have no integration events yet!</div>
                                     {{end}}
                                 </div>
                             </div>

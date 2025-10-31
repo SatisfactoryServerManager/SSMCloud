@@ -141,17 +141,17 @@ function main() {
 
             $select.find("option:selected").remove();
         })
-        .on("submit", ".edit-notification-form", (e) => {
+        .on("submit", ".edit-notification-form", async (e) => {
             e.preventDefault();
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
-            var data = $form.serializeArray().reduce(function (obj, item) {
-                obj[item.name] = item.value;
-                return obj;
-            }, {});
-
-            data.eventTypes = [];
+            const data = {
+                name: $form.find("#name").val(),
+                type: parseInt($form.find("#type").val()),
+                url: $form.find("#url").val(),
+                eventTypes: [],
+            };
 
             const $PillWrapper = $form.find(".event-types-pills");
             const $Pills = $PillWrapper.children();
@@ -160,14 +160,28 @@ function main() {
                 data.eventTypes.push(parseInt($el.attr("data-event-type")));
             });
 
-            $.ajax({
-                method: "post",
-                url: action,
-                enctype: "multipart/form-data",
-                data: data,
-            }).then(() => {
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                }).promise();
+
                 window.location = "/dashboard/integrations";
-            });
+            } catch (err) {
+                console.error(err);
+
+                try {
+                    const response = JSON.parse(err.responseText);
+                    console.error("Error response JSON:", response);
+                    toastr.error(response.error, "Error updating integration", { timeOut: 4000 });
+                } catch {
+                    console.error("Error response text:", err.responseText);
+                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
+                }
+            }
 
             return true;
         })
@@ -182,8 +196,6 @@ function main() {
                 url: $form.find("#url").val(),
                 eventTypes: [],
             };
-
-            data.eventTypes = [];
 
             const $PillWrapper = $form.find(".event-types-pills");
             const $Pills = $PillWrapper.children();
