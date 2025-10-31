@@ -14,19 +14,19 @@
 
                     <div class="row">
                         <div class="col-12">
-                            {{template "includes/components/add-integration-form" .}}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
                             <div class="card mb-3 bg-glass">
-                                <div class="card-header">
-                                    <h5>Integrations</h5>
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="m-0 flex-grow-1">Integrations</h5>
+                                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvas-add-integration" aria-controls="canvas-add-integration">
+                                        <span class="d-none d-md-inline-block me-2">Add Integraion</span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
                                 </div>
                                 <div class="card-body">
                                     {{if not .integrations}}
                                         <div class="alert alert-info">It looks like you have no integrations setup yet!</div>
                                     {{end}}
+
                                     {{range $integration := .integrations}}
                                         {{template "includes/components/integration-card" (dict "integration" $integration) }}
                                     {{end}}
@@ -36,6 +36,15 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="canvas-add-integration" aria-labelledby="canvas-add-integration-label">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="canvas-add-integration-label">Add Integration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            {{template "includes/components/add-integration-form" .}}
         </div>
     </div>
 </body>

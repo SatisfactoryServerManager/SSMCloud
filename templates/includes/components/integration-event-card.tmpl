@@ -1,0 +1,59 @@
+{{define "includes/components/integration-event-card"}}
+{{$event:=.event}}
+
+<div class="card card-inner mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-column flex-xl-row align-items-center">
+                    <span class="d-inline-block text-truncate mb-2 mb-xl-0 text-center text-xl-start" style="width:200px">{{$event.EventType}}</span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <div style="width:100px">
+                        {{if eq $event.Status "pending"}}
+                            <span class="badge text-bg-primary mb-2 mb-xl-0">
+                                <i class="fa-solid fa-clock"></i>
+                                Pending
+                            </span>
+                        {{else if eq $event.Status "processing"}}
+                            <span class="badge text-bg-primary mb-2 mb-xl-0">
+                            <i class="fa-solid fa-rotate fa-spinner fa-spin-pulse me-1"></i>
+                            Processing
+                        </span>
+                        {{else if eq $event.Status "sent"}}
+                            <span class="badge text-bg-success mb-2 mb-xl-0">
+                                <i class="fa-solid fa-circle-check me-1"></i>
+                                Succeeded
+                            </span>
+                        {{else if eq $event.Status "failed"}}
+                            <span class="badge text-bg-light mb-2 mb-xl-0 text-black">
+                                <i class="fa-solid fa-circle-xmark me-1 text-danger"></i>
+                                Failed
+                            </span>
+                        {{end}}
+                    </div>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="d-inline-block mb-2 mb-xl-0 text-start">Attempts: {{$event.Attempts}} / 5</span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="d-inline-block mb-2 mb-xl-0 text-start" >{{formatDate $event.CreatedAt}}</span>
+                    <span class="flex-grow-1"></span>
+                    <a class="btn btn-light d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#canvas-view-integration-event-{{OIDtoString $event.ID}}" aria-controls="canvas-view-integration-event-{{OIDtoString $event.ID}}">
+                        <span class="d-xl-none me-2">View Event</span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="canvas-view-integration-event-{{OIDtoString $event.ID}}" aria-labelledby="canvas-view-integration-event-{{OIDtoString $event.ID}}-label">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="canvas-view-integration-event-{{OIDtoString $event.ID}}-label">Event Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {{template "includes/components/integration-event-details" (dict "event" $event)}}
+    </div>
+</div>
+
+{{end}}

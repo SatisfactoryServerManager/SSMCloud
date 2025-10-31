@@ -2,56 +2,43 @@
 
 {{$globalEventTypes := .globalEventTypes}}
 
-<div class="card mb-3 bg-glass">
-    <div class="card-header">
-        <h5>Add New Integration</h5>
+<form action="/dashboard/integrations/add" method="post" class="add-notification-form">
+    <label for="name" class="form-label">Integration Name:</label>
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fas fa-tag" style="font-size:20px"></i></span>
+        <input class="form-control" type="text" name="name" id="name" value="">
     </div>
-    <div class="card-body">
-        <form action="/dashboard/integrations/add" method="post" class="add-notification-form">
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <label for="name" class="form-label">Integration Name:</label>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text"><i class="fas fa-tag" style="font-size:20px"></i></span>
-                        <input class="form-control" type="text" name="name" id="name" value="">
-                    </div>
-                    <label for="type" class="form-label">Integration Type:</label>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
-                        <select name="type" id="type" class="form-select">
-                            <option value="0">
-                            Webhook
-                            </option>
-                            <option value="1">Discord</option>
-                        </select>
-                    </div>
-                    <label for="url" class="form-label">Integration URL:</label>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
-                        <input class="form-control" type="text" name="url" id="url" value="">
-                    </div>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Selected Event Types:</label>
-                    <div class="event-types-pills mb-3"></div>
-                    <hr>
-                    <label class="form-label">Add Event Types:</label>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
-                        <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
-                            {{range $i, $e := $globalEventTypes}}
-                                <option value="{{$e}}">{{$e}}</option>
-                            {{end}}
-                        </select>
-                        <button class="btn btn-success add-event-type">
-                            <i class="fas fa-plus" style="font-size:20px"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Integration</button>
-        </form>
+    <label for="type" class="form-label">Integration Type:</label>
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
+        <select name="type" id="type" class="form-select">
+            <option value="0">
+            Webhook
+            </option>
+            <option value="1">Discord</option>
+        </select>
     </div>
-</div>
+    <label for="url" class="form-label">Integration URL:</label>
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
+        <input class="form-control" type="text" name="url" id="url" value="">
+    </div>
+    <label class="form-label">Selected Event Types:</label>
+    <div class="event-types-pills mb-3"></div>
+    <hr>
+    <label class="form-label">Add Event Types:</label>
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fas fa-list-check" style="font-size:20px"></i></span>
+        <select name="sel_add_event_type" id="sel_add_event_type" class="form-select">
+            {{range $i, $e := $globalEventTypes}}
+                <option value="{{$e}}">{{$e}}</option>
+            {{end}}
+        </select>
+        <button class="btn btn-success add-event-type">
+            <i class="fas fa-plus" style="font-size:20px"></i>
+        </button>
+    </div>
+    <button class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Integration</button>
+</form>
 
 {{end}}

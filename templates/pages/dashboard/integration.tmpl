@@ -27,6 +27,9 @@
                                     {{if not .integrationEvents}}
                                         <div class="alert alert-info">It looks like you have no integration events yet!</div>
                                     {{end}}
+                                    {{range $event := .integrationEvents}}
+                                        {{template "includes/components/integration-event-card" (dict "event" $event)}}
+                                    {{end}}
                                 </div>
                             </div>
                         </div>

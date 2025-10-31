@@ -87,3 +87,28 @@
         background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/></svg>");
     }
 }
+
+@media (min-width: 1199.98px) {
+    .offcanvas.offcanvas-end,
+    .offcanvas.offcanvas-start {
+        --bs-offcanvas-width: 600px;
+    }
+
+    .offcanvas.offcanvas-bottom,
+    .offcanvas.offcanvas-top {
+        --bs-offcanvas-height: 600px;
+    }
+}
+
+.offcanvas {
+    --bs-offcanvas-bg: var(--ssm-card-bg-colour);
+    --bs-offcanvas-border-color: var(--ssm-card-border-colour);
+}
+
+.badge.text-bg-success {
+    color: #003516 !important;
+}
+
+.badge.text-bg-danger {
+    color: #260400 !important;
+}

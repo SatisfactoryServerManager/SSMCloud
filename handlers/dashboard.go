@@ -148,8 +148,6 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("%+v\n", integrationEventsRes.IntegrationEvents)
-
 	RenderTemplate(c, "pages/dashboard/integration", gin.H{
 		"pageTitle":         "Integrations",
 		"globalEventTypes":  eventTypes,
@@ -760,8 +758,6 @@ func (handler *DashboardHandler) POST_DashboardMods_Install(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("%+v\n", PostData)
-
 	err := api.InstallMod(&api.APIInstallModRequest{
 		APIRequest: api.APIRequest{
 			AccessToken: c.GetString("access_token"),
@@ -786,8 +782,6 @@ func (handler *DashboardHandler) POST_DashboardMods_Uninstall(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
-	fmt.Printf("%+v\n", PostData)
 
 	err := api.UninstallMod(&api.APIUninstallModRequest{
 		APIRequest: api.APIRequest{

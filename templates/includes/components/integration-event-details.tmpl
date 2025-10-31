@@ -1,0 +1,51 @@
+{{define "includes/components/integration-event-details"}}
+{{$event:=.event}}
+
+<div class="container">
+    <div class="row">
+    <div class="col-12 col-md-6">
+        <h6>Request Data</h6>
+        <hr />
+        <div><b>Request URL:</b> {{$event.URL}}</div>
+        <hr />
+        <div>
+            <b class="me-1">Status:</b>
+
+            {{if eq $event.Status "pending"}}
+                <span class="badge text-bg-primary mb-2 mb-xl-0">
+                    <i class="fa-solid fa-clock"></i>
+                    Pending
+                </span>
+            {{else if eq $event.Status "processing"}}
+                <span class="badge text-bg-primary mb-2 mb-xl-0">
+                <i class="fa-solid fa-rotate fa-spinner fa-spin-pulse me-1"></i>
+                Processing
+            </span>
+            {{else if eq $event.Status "sent"}}
+                <span class="badge text-bg-success mb-2 mb-xl-0">
+                    <i class="fa-solid fa-circle-check me-1"></i>
+                    Succeeded
+                </span>
+            {{else if eq $event.Status "failed"}}
+                <span class="badge text-bg-light mb-2 mb-xl-0 text-black">
+                    <i class="fa-solid fa-circle-xmark me-1 text-danger"></i>
+                    Failed
+                </span>
+            {{end}}
+        </div>
+        <div><b class="me-1">Date:</b> {{formatDate $event.CreatedAt}}</div>
+        <div><b class="me-1">Attempts:</b> {{$event.Attempts}} / 5</div>
+        <hr />
+
+        <pre>{{toJsonPretty $event.Payload}}</pre>
+    </div>
+    <div class="col-12 col-md-6">
+        <h6>Response Data</h6>
+        <hr />
+        <div><b class="me-1">Status Code:</b> {{$event.ResponseCode}}</div>
+        <hr />
+        <pre>{{toJsonPretty $event.Response}}</pre>
+    </div>
+    </div>
+</div>
+{{end}}
