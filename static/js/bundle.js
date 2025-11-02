@@ -570,7 +570,7 @@ function main() {
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push(parseInt($el.attr("data-event-type")));
+                data.eventTypes.push($el.attr("data-event-type"));
             });
 
             try {

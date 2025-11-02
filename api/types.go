@@ -236,6 +236,17 @@ type APIPostAccountIntegrationsRequest struct {
 	APIPostAccountIntegrationsData
 }
 
+type APIUpdateAccountIntegrationsRequest struct {
+	APIRequest
+	APIPostAccountIntegrationsData
+	IntegrationId string `json:"integrationId"`
+}
+
+type APIDeleteAccountIntegrationsRequest struct {
+	APIRequest
+	IntegrationId string `qs:"integrationId"`
+}
+
 type APIPostAgentSaveFile struct {
 	APIRequest
 	AgentId string

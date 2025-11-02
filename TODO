@@ -12,9 +12,9 @@ Todo:
     ✔ Test displaying of integrations @done(25-10-23 10:25)
     ✔ Pull integrations from api @done(25-10-27 09:32)
     ✔ Fix add integration @done(25-10-27 13:57)
-    ☐ Fix update integration
-    ☐ Fix delete integration
-    ☐ Add new page for viewing integration events
+    ✔ Fix update integration @done(25-11-02 17:27)
+    ✔ Fix delete integration @done(25-11-02 17:34)
+    ✔ Add new page for viewing integration events @done(25-11-02 17:27)
   ☐ Profile page
     ☐ API Keys
       ☐ Add

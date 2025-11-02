@@ -12,7 +12,7 @@ build:
 	@if [ ! -d bin ]; then mkdir bin; fi
 	$(GO_BUILD) .
 
-run: build
+run: build bundle cleancss
 	@echo "🚀 Running Go app..."
 	./bin/$(APP_NAME)
 
@@ -35,6 +35,10 @@ kill:
 cleancss: 
 	@echo "Running css clean"
 	bash ./scripts/clean-css.sh
+
+bundle:
+	browserify src/client/app.js -o static/js/bundle.js
+	browserify src/client/map.js -o static/js/map.bundle.js
 
 watch:
 	watchify src/client/app.js -o static/js/bundle.js

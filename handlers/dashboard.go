@@ -156,12 +156,68 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 	})
 }
 
-func (handler *DashboardHandler) POST_DashboardUpdateIntegrations(c *gin.Context) {
+func (handler *DashboardHandler) POST_DashboardUpdateIntegration(c *gin.Context) {
 
+	id := c.Param("id")
+
+	PostData := api.APIPostAccountIntegrationsData{}
+	if err := c.BindJSON(&PostData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	if PostData.URL == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "url was empty"})
+		c.Abort()
+		return
+	}
+
+	if len(PostData.EventTypes) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "event types was empty"})
+		c.Abort()
+		return
+	}
+
+	if err := api.UpdateAccountIntegration(&api.APIUpdateAccountIntegrationsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		APIPostAccountIntegrationsData: PostData,
+		IntegrationId:                  id,
+	}); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	if err := services.AddFlash(c.Writer, c.Request, "success", "Successfully updated integration"); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "error": ""})
 }
 
-func (handler *DashboardHandler) POST_DashboardDeleteIntegrations(c *gin.Context) {
+func (handler *DashboardHandler) GET_DashboardDeleteIntegration(c *gin.Context) {
 
+	id := c.Param("id")
+
+	if err := api.DeleteAccountIntegration(&api.APIDeleteAccountIntegrationsRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		IntegrationId: id,
+	}); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	services.AddFlash(c.Writer, c.Request, "success", "Successfully deleted integration")
+
+	c.Redirect(http.StatusFound, "/dashboard")
 }
 
 func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {

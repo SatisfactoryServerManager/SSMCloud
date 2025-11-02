@@ -16,25 +16,25 @@
                         <span class="input-group-text"><i class="fas fa-tag" style="font-size:20px"></i></span>
                         <input class="form-control" type="text" name="name" id="name" value="{{$integration.Name}}">
                     </div>
-                    <label for="sel_type" class="form-label">Integration Type:</label>
+                    <label for="type" class="form-label">Integration Type:</label>
                     <div class="input-group mb-2">
                         <span class="input-group-text"><i class="fas fa-bell" style="font-size:20px"></i></span>
-                        <select name="sel_type" id="sel_type" class="form-select">
+                        <select name="type" id="type" class="form-select">
                             <option value="0" {{if eq $integration.Type 0}}selected{{end}}>Webhook</option>
                             <option value="1" {{if eq $integration.Type 1}}selected{{end}}>Discord</option>
                         </select>
                     </div>
-                    <label for="inp_url" class="form-label">Integration URL:</label>
+                    <label for="url" class="form-label">Integration URL:</label>
                     <div class="input-group mb-2">
                         <span class="input-group-text"><i class="fas fa-globe" style="font-size:20px"></i></span>
-                        <input class="form-control" type="text" name="inp_url" id="inp_url" value="{{$integration.Url}}">
+                        <input class="form-control" type="text" name="url" id="url" value="{{$integration.Url}}">
                     </div>
                 </div>
                 <div class="col-12 col-lg-6">
                     <label class="form-label">Selected Event Types:</label>
                     <div class="event-types-pills mb-3">
                         {{range $i, $e := $integration.EventTypes}}
-                            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="{{$e}}" style="font-size:12px">
+                            <span class="badge rounded-pill bg-info mb-1" data-event-type="{{$e}}" style="font-size:12px">
                                 {{$e}}
                                 <i class="fas fa-times ms-1 float-end"></i>
                             </span>

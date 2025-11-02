@@ -131,6 +131,46 @@ func post(endpoint string, accessToken string, queryValues *url.Values, body int
 	return nil
 }
 
+func put(endpoint string, accessToken string, queryValues *url.Values, body interface{}, resData APIResult) error {
+
+	if client == nil {
+		initClient()
+	}
+
+	url := BuildURL(endpoint, queryValues)
+
+	fmt.Println(url, endpoint)
+
+	data, _ := json.Marshal(body)
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("apikey", os.Getenv("BACKEND_SECRET_KEY"))
+
+	if accessToken != "" {
+		req.Header.Add("x-ssm-auth-token", accessToken)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {
+		return err
+	}
+
+	if !resData.IsSuccess() {
+		return fmt.Errorf("api returned error: %s", resData.GetError())
+	}
+
+	return nil
+}
+
 func delete(endpoint string, accessToken string, queryValues *url.Values, resData APIResult) error {
 
 	if client == nil {
@@ -548,6 +588,32 @@ func AddAccountIntegration(request *APIPostAccountIntegrationsRequest) error {
 	return nil
 }
 
+func UpdateAccountIntegration(request *APIUpdateAccountIntegrationsRequest) error {
+	res := &APIResponse{}
+
+	if err := put("frontend/users/me/account/integrations/update", request.AccessToken, nil, request, res); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteAccountIntegration(request *APIDeleteAccountIntegrationsRequest) error {
+
+	values, err := encoder.Values(request)
+	if err != nil {
+		return err
+	}
+
+	res := &APIResponse{}
+
+	if err := delete("frontend/users/me/account/integrations/delete", request.AccessToken, &values, res); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetAccountIntegrationEvents(request *APIGetAccountIntegrationEventsRequest) (*APIGetAccountIntegrationEventsResponse, error) {
 
 	values, err := encoder.Values(request)
@@ -562,16 +628,6 @@ func GetAccountIntegrationEvents(request *APIGetAccountIntegrationEventsRequest)
 	}
 
 	return res, nil
-}
-
-func UpdateAccountIntegration() error {
-
-	return nil
-}
-
-func DeleteAccountIntegration() error {
-
-	return nil
 }
 
 func SendSaveFile(request *APIPostAgentSaveFile) error {

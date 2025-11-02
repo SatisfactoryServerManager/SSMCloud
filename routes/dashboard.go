@@ -14,8 +14,8 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.POST("/integrations/add", middleware.AuthRequired(), handler.POST_DashboardIntegrations)
 
 	r.GET("/integrations/:id", middleware.AuthRequired(), handler.GET_DashboardIntegration)
-	r.POST("/integrations/:id/update", middleware.AuthRequired(), handler.POST_DashboardUpdateIntegrations)
-	r.GET("/integrations/:id/delete", middleware.AuthRequired(), handler.POST_DashboardDeleteIntegrations)
+	r.POST("/integrations/:id/update", middleware.AuthRequired(), handler.POST_DashboardUpdateIntegration)
+	r.GET("/integrations/:id/delete", middleware.AuthRequired(), handler.GET_DashboardDeleteIntegration)
 
 	r.GET("/mods", middleware.AuthRequired(), handler.GET_DashboardMods)
 
