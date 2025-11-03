@@ -449,6 +449,8 @@ function main() {
         } else if (lastServerTab == "#stats") {
             BuildAgentStats();
         }
+
+        window.BuildAgentInstallCommands(window.agentName, window.agentMemory, window.agentPort, window.agentAPIKey);
     }
 
     // When a tab is clicked (and shown), save it
