@@ -47,6 +47,12 @@ a.disabled {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25) !important;
 }
 
+.card.border-danger {
+    border: 2px solid rgba(var(--bs-danger-rgb), var(--bs-border-opacity)) !important;
+    border-bottom-width: 5px !important;
+    border-color: rgba(var(--bs-danger-rgb), var(--bs-border-opacity)) !important;
+}
+
 .card .card-header {
     background: var(--ssm-card-header-bg) !important;
 }
