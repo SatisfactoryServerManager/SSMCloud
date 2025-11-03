@@ -654,8 +654,8 @@ function main() {
                 return;
             }
 
-            if (!$this.val().endsWith(".json")) {
-                console.log("Not Json file extension!");
+            if (!$this.val().endsWith(".smmprofile")) {
+                console.log("Not .smmprofile file extension!");
                 return;
             }
 
@@ -736,9 +736,6 @@ function main() {
             });
         })
         .on("change", "#mods-sortby", (e) => {
-            SortMods();
-        })
-        .on("change", "#mods-sortby-direction", (e) => {
             SortMods();
         })
         .on("click", ".settings-mod-btn", (e) => {
@@ -910,10 +907,20 @@ function main() {
 
     function SortMods() {
         const sortBy = $("#mods-sortby").val();
-        const direction = $("#mods-sortby-direction").val();
 
-        ModsPage.sort = sortBy;
-        ModsPage.direction = direction;
+        if (sortBy == "az") {
+            ModsPage.sort = "az";
+            ModsPage.direction = "asc";
+        } else if (sortBy == "za") {
+            ModsPage.sort = "az";
+            ModsPage.direction = "desc";
+        } else if (sortBy == "downloads-high") {
+            ModsPage.sort = "downloads";
+            ModsPage.direction = "desc";
+        } else if (sortBy == "downloads-low") {
+            ModsPage.sort = "downloads";
+            ModsPage.direction = "asc";
+        }
 
         ModsPage.UpdateView();
     }
@@ -1079,6 +1086,9 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
     if (JsonData == null) {
         return;
     }
+
+    console.log(JsonData);
+    return;
 
     let localStorageMods = null;
     try {
