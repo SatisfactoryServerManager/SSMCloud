@@ -12,7 +12,7 @@ build:
 	@if [ ! -d bin ]; then mkdir bin; fi
 	$(GO_BUILD) .
 
-run: build bundle cleancss
+run: bundle cleancss build
 	@echo "🚀 Running Go app..."
 	./bin/$(APP_NAME)
 
