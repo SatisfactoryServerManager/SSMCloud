@@ -7,6 +7,22 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12 col-md-6 col-xl-3">
+                <b class="settings-prop">Account Name:</b>
+                <span class="settings-info">
+                    The name for this account
+                </span>
+            </div>
+            <div class="col-12 col-md-6 col-xl-9">
+                <div class="input-group mb-3">
+                    <input id="inp-account-name" type="text" class="form-control" value="{{.account.AccountName}}">
+                    <button class="btn btn-primary" data-save-for="inp-account-name" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Save">
+                        <i class="fa-solid fa-save"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6 col-xl-3">
                 <b class="settings-prop">Account Join Code:</b>
                 <span class="settings-info">
                     Use this code to join the account
@@ -22,6 +38,28 @@
                         <i class="fa-solid fa-copy"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-danger mb-3">
+    <div class="card-header">
+        <h5>Danger Area</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-xl-3">
+                <b class="settings-prop">Delete Account:</b>
+                <span class="settings-info">
+                    This will delete the account, servers & integrations.
+                    <b>This action is irreversible and all data is lost!</b>
+                </span>
+            </div>
+            <div class="col-12 col-md-6 col-xl-9">
+                <a href="/dashboard/account/delete?id={{OIDtoString .account.ID}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Account Confirmation">
+                    <i class="fas fa-trash me-1"></i> Delete Account
+                </a>
             </div>
         </div>
     </div>
