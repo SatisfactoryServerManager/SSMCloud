@@ -8,6 +8,8 @@ import (
 
 func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	handler := handlers.NewDashboardHandler()
+	handlerWS := handlers.NewDashboardWSHandler()
+
 	r.GET("/", middleware.AuthRequired(), handler.GET_Dashboard)
 
 	r.GET("/integrations", middleware.AuthRequired(), handler.GET_DashboardIntegrations)
@@ -51,4 +53,6 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 
 	r.POST("/mods/installmod", middleware.AuthRequired(), handler.POST_DashboardMods_Install)
 	r.POST("/mods/uninstallmod", middleware.AuthRequired(), handler.POST_DashboardMods_Uninstall)
+
+	r.GET("/ws", middleware.AuthRequired(), handlerWS.WSHandler)
 }

@@ -1,16 +1,19 @@
 package services
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 var (
 	authService *AuthService
 )
 
 const (
-    FLASHTYPE_INFO="info"
-    FLASHTYPE_SUCCESS="success"
-    FLASHTYPE_WARNING="warning"
-    FLASHTYPE_ERROR="error"
+	FLASHTYPE_INFO    = "info"
+	FLASHTYPE_SUCCESS = "success"
+	FLASHTYPE_WARNING = "warning"
+	FLASHTYPE_ERROR   = "error"
 )
 
 type FlashMessage struct {
@@ -19,11 +22,15 @@ type FlashMessage struct {
 }
 
 func InitServices() error {
+	fmt.Println("Initializing services")
+
 	as, err := NewAuthService()
 	if err != nil {
 		return err
 	}
 	authService = as
+
+	fmt.Println("Initialized all services")
 	return nil
 }
 

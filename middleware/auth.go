@@ -1,15 +1,12 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
 )
 
 func CheckIsLoggedIn() gin.HandlerFunc {
@@ -45,7 +42,7 @@ func AuthRequired() gin.HandlerFunc {
 		// If access token expired, refresh it
 		if time.Now().After(expiry) && refreshToken != "" {
 			fmt.Println("Refreshing access token...")
-			newToken, err := refreshAccessToken(refreshToken)
+			newToken, err := services.GetAuthService().RefreshAccessToken(refreshToken)
 			if err != nil {
 				c.Redirect(http.StatusFound, "/auth/login")
 				c.Abort()
@@ -64,20 +61,4 @@ func AuthRequired() gin.HandlerFunc {
 		c.Set("access_token", accessToken)
 		c.Next()
 	}
-}
-
-func refreshAccessToken(refreshToken string) (*oauth2.Token, error) {
-	oc := oauth2.Config{
-		ClientID:     os.Getenv("AUTHENTIK_CLIENT_ID"),
-		ClientSecret: os.Getenv("AUTHENTIK_CLIENT_SECRET"),
-		Endpoint: oauth2.Endpoint{
-			TokenURL: "https://auth.hostxtra.co.uk/application/o/token/",
-		},
-	}
-
-	tokenSource := oc.TokenSource(context.Background(), &oauth2.Token{
-		RefreshToken: refreshToken,
-	})
-
-	return tokenSource.Token()
 }

@@ -279,6 +279,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		},
 		ID:   agentId,
 		Type: "Agent",
+        LastIndex: 0,
 	})
 
 	if err != nil {
@@ -293,6 +294,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		},
 		ID:   agentId,
 		Type: "FactoryGame",
+        LastIndex: 0,
 	})
 
 	if err != nil {
@@ -389,6 +391,27 @@ func (handler *DashboardHandler) GET_DashboardServerStats(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "stats": statsRes.Stats})
+}
+
+func (handler *DashboardHandler) GET_DashboardServerConsoleStatus(c *gin.Context) {
+	agentId := c.Param("agentId")
+
+	accountAgentRes, err := api.GetMyUserAccountSingleAgent(&api.APIGetUserAccountSingleAgentRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		ID: agentId,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	theAgent := accountAgentRes.Agents[0]
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "status": theAgent.Status})
 }
 
 func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {

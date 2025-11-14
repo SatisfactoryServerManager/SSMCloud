@@ -125,8 +125,9 @@ type APIUpdateServerSettingsRequest struct {
 
 type APIGetAgentLogRequest struct {
 	APIRequest
-	ID   string `qs:"_id"`
-	Type string `qs:"type"`
+	ID        string `qs:"_id"`
+	Type      string `qs:"type"`
+	LastIndex int    `qs:"lastIndex"`
 }
 
 type APIGetAgentLogResponse struct {
@@ -272,4 +273,16 @@ type APIGetAccountIntegrationEventsRequest struct {
 type APIGetAccountIntegrationEventsResponse struct {
 	APIResponse
 	IntegrationEvents []v2.IntegrationEventSchema `json:"events"`
+}
+
+type WSMessage struct {
+	Action       string `json:"action"`
+	AgentId      string `json:"agentId"`
+	LastLogIndex int    `json:"lastLogIndex"`
+	ServerAction string `json:"serverAction"`
+}
+
+type WSResponse struct {
+	Action string      `json:"action"`
+	Data   interface{} `json:"data"`
 }

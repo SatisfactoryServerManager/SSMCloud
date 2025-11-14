@@ -1,7 +1,8 @@
 const AgentMap = require("./agentmap");
-
+const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
+const ServerConsole = require("./server-console");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -18,7 +19,9 @@ function main() {
     toastr.options.progressBar = true;
     toastr.options.positionClass = "toast-bottom-right";
 
+    WS.init();
     AccountPage.init();
+    ServerConsole.init();
 
     window.displayFlashes();
 
@@ -807,197 +810,13 @@ BuildAgentStats = async () => {
 
         console.log(res);
 
-        let count = 0;
-
-        const cpuStats = [];
-        const memStats = [];
-        const runningStats = [];
-        const runningBgColor = [];
-
-        for (let i = stats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = stats[i];
-
-            const date = new Date(stat.createdAt);
-
-            cpuStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.cpu),
-            });
-            memStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.mem),
-            });
-            const runningVal = stat.running ? 1 : -1;
-            runningStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: runningVal,
-            });
-
-            if (!stat.running) {
-                runningBgColor.push("rgba(255, 99, 132, 0.7)");
-            } else {
-                runningBgColor.push("rgba(75, 192, 192, 0.7)");
-            }
-
-            count++;
-        }
-
-        BuildAgentCPUStats(cpuStats);
-        BuildAgentRAMStats(memStats);
-        BuildAgentRunningStats(runningStats, runningBgColor);
+        
 
         window.builtAgentStats = true;
     } catch (err) {
         console.error(err);
     }
 };
-
-function BuildAgentCPUStats(data) {
-    if ($("#cpuChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-    const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
-
-    data.reverse();
-
-    new Chart(document.getElementById("cpuChart"), {
-        type: "line",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Percent",
-                    data: data.map((row) => row.value),
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        color: textColour,
-                    },
-                    grid: {
-                        color: gridColour,
-                    },
-                },
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: textColour,
-                    },
-                    grid: {
-                        color: gridColour,
-                    },
-                },
-            },
-        },
-    });
-}
-
-function BuildAgentRAMStats(data) {
-    if ($("#ramChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-
-    data.reverse();
-
-    new Chart(document.getElementById("ramChart"), {
-        type: "line",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Percent",
-                    data: data.map((row) => row.value),
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-            },
-        },
-    });
-}
-
-function BuildAgentRunningStats(data, backgroundColor) {
-    if ($("#uptimeChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-
-    data.reverse();
-    backgroundColor.reverse();
-
-    new Chart(document.getElementById("uptimeChart"), {
-        type: "bar",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Running",
-                    data: data.map((row) => row.value),
-                    backgroundColor,
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    min: -1,
-                    max: 1,
-                    ticks: {
-                        color: textColour,
-                        stepSize: 1,
-                    },
-                },
-                x: {
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-            },
-        },
-    });
-}
 
 function detectColorScheme() {
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {

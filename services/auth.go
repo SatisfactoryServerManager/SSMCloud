@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/boj/redistore"
@@ -20,6 +21,8 @@ type AuthService struct {
 }
 
 func NewAuthService() (*AuthService, error) {
+
+	fmt.Println("Creating New Auth Service")
 
 	as := &AuthService{}
 	as.clientID = os.Getenv("AUTHENTIK_CLIENT_ID")
@@ -57,5 +60,23 @@ func NewAuthService() (*AuthService, error) {
 		Scopes:       []string{oidc.ScopeOpenID, "profile", "email", "offline_access"},
 	}
 
+	fmt.Println("Created Auth Service")
+
 	return as, nil
+}
+
+func (service *AuthService) RefreshAccessToken(refreshToken string) (*oauth2.Token, error) {
+	oc := oauth2.Config{
+		ClientID:     os.Getenv("AUTHENTIK_CLIENT_ID"),
+		ClientSecret: os.Getenv("AUTHENTIK_CLIENT_SECRET"),
+		Endpoint: oauth2.Endpoint{
+			TokenURL: "https://auth.hostxtra.co.uk/application/o/token/",
+		},
+	}
+
+	tokenSource := oc.TokenSource(context.Background(), &oauth2.Token{
+		RefreshToken: refreshToken,
+	})
+
+	return tokenSource.Token()
 }

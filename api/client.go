@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sonh/qs"
@@ -24,7 +25,9 @@ var (
 var encoder = qs.NewEncoder()
 
 func initClient() {
-	client = http.DefaultClient
+	client = &http.Client{
+		Timeout: 5 * time.Second,
+	}
 
 	scheme := "https"
 	if os.Getenv("APP_MODE") == "development" {

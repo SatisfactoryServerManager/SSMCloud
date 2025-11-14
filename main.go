@@ -42,14 +42,18 @@ func init() {
 }
 
 func main() {
+	fmt.Println("Starting ssmcloud frontend")
 
 	if err := services.InitServices(); err != nil {
 		panic(err)
 	}
 
+	fmt.Println("Testing connection to backend")
 	if err := api.PingBackend(); err != nil {
 		fmt.Printf("test backend connection failed with error: %s\n", err.Error())
+		panic(err)
 	}
+	fmt.Println("connection to backend succeeded")
 
 	router := gin.Default()
 
@@ -94,10 +98,9 @@ func main() {
 				return fmt.Sprintf("%d Bytes", size)
 			}
 		},
-		"displayLogSnippet": func(str string) []string {
-			logStrings := strings.Split(str, "\n")
-			slices.Reverse(logStrings)
-			return logStrings
+		"displayLogLines": func(lines []string) []string {
+			slices.Reverse(lines)
+			return lines
 		},
 		"shortenApikey": func(prefix string, apikey string) string {
 			apikeySplit := strings.Split(apikey, prefix+"-")
