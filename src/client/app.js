@@ -165,6 +165,8 @@ function main() {
                 data.eventTypes.push($el.attr("data-event-type"));
             });
 
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
             try {
                 const res = await $.ajax({
                     method: "post",
@@ -172,6 +174,7 @@ function main() {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
                 }).promise();
 
                 window.location = "/dashboard/integrations";
@@ -195,6 +198,8 @@ function main() {
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
             const data = {
                 name: $form.find("#name").val(),
                 type: parseInt($form.find("#type").val()),
@@ -216,6 +221,7 @@ function main() {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
                 }).promise();
 
                 window.location = "/dashboard/integrations";
@@ -228,6 +234,7 @@ function main() {
                     toastr.error(response.error, "Error adding integration", { timeOut: 4000 });
                 } catch {
                     console.error("Error response text:", err.responseText);
+                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
                 }
             }
 
@@ -797,25 +804,6 @@ Number.prototype.pad = function (width, z) {
     z = z || "0";
     n = n + "";
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-};
-
-BuildAgentStats = async () => {
-    if (window.builtAgentStats != null && window.builtAgentStats) return;
-
-    const agentId = $("#inp_agent_id").val();
-
-    try {
-        const res = await $.get(`/dashboard/servers/${agentId}/stats`).promise();
-        const stats = res.stats;
-
-        console.log(res);
-
-        
-
-        window.builtAgentStats = true;
-    } catch (err) {
-        console.error(err);
-    }
 };
 
 function detectColorScheme() {

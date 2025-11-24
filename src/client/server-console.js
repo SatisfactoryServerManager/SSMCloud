@@ -167,38 +167,40 @@ class ServerConsole extends EventTarget {
     }
 
     onLogsRecieved(event) {
-        const logLines = event.detail;
-        for (let i = logLines.length - 1; i >= 0; i--) {
-            if (!logLines[i]) {
-                logLines.splice(i, 1);
-            }
-        }
+        let logLines = event.detail.filter(Boolean); // removes null/undefined/empty safely
 
         this.resetLogViewCounter++;
-        if (this.resetLogViewCounter == 120) {
+        if (this.resetLogViewCounter === 120) {
             this.resetLogViewCounter = 0;
             this.$serverConsole.empty();
             this.lastLogIndex = 0;
         }
 
-        if (logLines.length == 0) {
-            return;
-        }
-        this.lastLogIndex = this.lastLogIndex + logLines.length;
+        if (logLines.length === 0) return;
+        this.lastLogIndex += logLines.length;
 
-        logLines.forEach((line) => {
-            let textColour = "text-white";
-            if (line.toLowerCase().includes("warning:")) {
-                textColour = "text-warning";
-            } else if (line.toLowerCase().includes("error:")) {
-                textColour = "text-danger";
+        let html = "";
+        for (const line of logLines) {
+            const lower = line.toLowerCase();
+            if (lower.includes("warning:")) {
+                html += `<p class="text-warning">${line}</p>\n`;
+            } else if (lower.includes("error:")) {
+                html += `<p class="text-danger">${line}</p>\n`;
+            } else {
+                html += `<p>${line}</p>`;
             }
-            this.$serverConsole.append(`<p class="${textColour}">${line}</p>`);
+        }
+
+        if (html == "") return;
+
+        // 🔥 Single DOM update instead of hundreds
+        this.$serverConsole.append(html);
+
+        // Delay scroll update to next frame for smoother UI
+        requestAnimationFrame(() => {
+            this.$serverConsole.scrollTop(this.$serverConsole.prop("scrollHeight"));
         });
-
-        this.$serverConsole.animate({ scrollTop: this.$serverConsole.prop("scrollHeight") }, 1000);
     }
-
     onStatsRecieved(event) {
         const stats = event.detail;
         let count = 0;

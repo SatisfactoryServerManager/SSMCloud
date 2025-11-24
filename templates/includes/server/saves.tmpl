@@ -6,6 +6,7 @@
   </div>
   <div class="card-body">
     <form id="save-upload-form" enctype="multipart/form-data" method="post" action="/dashboard/servers/{{OIDtoString .agent.ID}}/saves">
+        {{ .csrfField }}
       <input type="hidden" name="inp_agentid" value="{{OIDtoString .agent.ID}}" />
       <fieldset>
         <div class="row">
@@ -40,7 +41,7 @@
     {{if eq (len .agent.Saves) 0}}
     <p>There are currently no saves for this server yet.</p>
     {{end}}
-    <div style="max-height:400px; overflow-y: auto; overflow-x: hidden;">
+    <div style="overflow-x: hidden;">
         <div class="row pe-3">
             {{ range .agent.Saves}}
                 <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">

@@ -17,6 +17,7 @@
                     </div>
                 {{end}}
                 <form method="post" action="/dashboard/account/create">
+                    {{ .csrfField }}
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control {{if .errorMessage}}is-invalid{{end}}" name="inp_accountName" id="inp_accountName" placeholder="Example Account">
                         <label for="inp_accountName">Account Name</label>

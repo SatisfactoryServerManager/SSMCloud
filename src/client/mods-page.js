@@ -232,14 +232,24 @@ class ModsPage {
 
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();
+                let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
                 const postData = {
-                    _ConfigSetting: "modsettings",
-                    inp_mod_ref: modal.find("#inp_mod_ref").val(),
-                    inp_modConfig: modal.find("#mod-settings-config").val(),
+                    configSetting: "modsettings",
+                    modReference: modal.find("#inp_mod_ref").val(),
+                    modConfig: modal.find("#mod-settings-config").val(),
                 };
 
                 try {
-                    const res = await $.post(`/dashboard/servers/${this.agentId}`, postData).promise();
+                    const res = await $.ajax({
+                        method: "post",
+                        url: `/dashboard/servers/${this.agentId}`,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(postData),
+                        headers: { "X-CSRF-Token": csrfToken },
+                    }).promise();
+
                     if (res.success) {
                         toastr.success("", "Mod Config Updated", { timeOut: 4000 });
                         modal.find("button.btn-close").trigger("click");

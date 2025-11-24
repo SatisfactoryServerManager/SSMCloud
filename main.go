@@ -21,6 +21,7 @@ import (
 	"github.com/SatisfactoryServerManager/SSMCloud/routes"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/csrf"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -56,6 +57,11 @@ func main() {
 	fmt.Println("connection to backend succeeded")
 
 	router := gin.Default()
+
+	csrfMiddleware := csrf.Protect(
+		[]byte("CSRF_KEY_32_BYTES"),
+		csrf.Secure(false), // set true in production with HTTPS
+	)
 
 	tmpl := template.New("").Funcs(template.FuncMap{
 		"formatDate": func(t time.Time) string {
@@ -170,7 +176,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    httpBind,
-		Handler: router,
+		Handler: csrfMiddleware(router),
 	}
 
 	go func() {

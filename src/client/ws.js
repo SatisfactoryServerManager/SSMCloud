@@ -15,10 +15,9 @@ class WS extends EventTarget {
 
         this.ws.onopen = () => console.log("Connected to WebSocket");
         this.ws.onclose = (event) => {
-            console.log("Connection closed");
-            if (event.code == 4001) {
-                this.reconnect();
-            }
+            console.log("Connection closed", event.code, event.reason);
+            console.log("Reconnecting..")
+            this.reconnect()
         };
         this.ws.onerror = (err) => console.error(`Error: ${err.message}`);
         this.ws.onmessage = (event) => {

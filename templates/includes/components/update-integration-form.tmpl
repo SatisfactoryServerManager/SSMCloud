@@ -9,6 +9,7 @@
     </div>
     <div class="card-body">
         <form action="/dashboard/integrations/{{OIDtoString $integration.ID}}/update" method="post" class="edit-notification-form">
+            {{ .csrfField }}
             <div class="row">
                 <div class="col-12 col-lg-6">
                     <label for="name" class="form-label">Integration Name:</label>

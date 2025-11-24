@@ -9,6 +9,7 @@ import (
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/csrf"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -58,6 +59,7 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 		"pageTitle":        "Integrations",
 		"globalEventTypes": eventTypes,
 		"integrations":     integrationRes.Integrations,
+		"csrfField":        csrf.TemplateField(c.Request),
 	})
 }
 
@@ -277,9 +279,9 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		APIRequest: api.APIRequest{
 			AccessToken: c.GetString("access_token"),
 		},
-		ID:   agentId,
-		Type: "Agent",
-        LastIndex: 0,
+		ID:        agentId,
+		Type:      "Agent",
+		LastIndex: 0,
 	})
 
 	if err != nil {
@@ -292,9 +294,9 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		APIRequest: api.APIRequest{
 			AccessToken: c.GetString("access_token"),
 		},
-		ID:   agentId,
-		Type: "FactoryGame",
-        LastIndex: 0,
+		ID:        agentId,
+		Type:      "FactoryGame",
+		LastIndex: 0,
 	})
 
 	if err != nil {
@@ -308,6 +310,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		"agent":     accountAgentRes.Agents[0],
 		"agentLog":  agentLogRes.AgentLogSchema,
 		"gameLog":   gameLogRes.AgentLogSchema,
+		"csrfField": csrf.TemplateField(c.Request),
 	})
 }
 
@@ -538,7 +541,7 @@ func (handler *DashboardHandler) GET_DashboardAccountUsers(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardCreateAccount(c *gin.Context) {
 
-	RenderTemplate(c, "pages/dashboard/account-create", gin.H{"pageTitle": "Create Account"})
+	RenderTemplate(c, "pages/dashboard/account-create", gin.H{"pageTitle": "Create Account", "csrfField": csrf.TemplateField(c.Request)})
 }
 
 func (handler *DashboardHandler) POST_DashboardCreateAccount(c *gin.Context) {
@@ -576,7 +579,7 @@ func (handler *DashboardHandler) POST_DashboardCreateAccount(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardJoinAccount(c *gin.Context) {
 
-	RenderTemplate(c, "pages/dashboard/account-join", gin.H{"pageTitle": "Join Account"})
+	RenderTemplate(c, "pages/dashboard/account-join", gin.H{"pageTitle": "Join Account", "csrfField": csrf.TemplateField(c.Request)})
 }
 
 func (handler *DashboardHandler) POST_DashboardJoinAccount(c *gin.Context) {
@@ -673,7 +676,7 @@ func (handler *DashboardHandler) GET_DashboardDownloadLog(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
 
-	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile"})
+	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile", "csrfField": csrf.TemplateField(c.Request)})
 }
 
 func (handler *DashboardHandler) GET_ServerAction_Start(c *gin.Context) {

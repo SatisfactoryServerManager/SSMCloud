@@ -57,7 +57,7 @@ func NewAuthService() (*AuthService, error) {
 		ClientSecret: as.clientSecret,
 		RedirectURL:  as.redirectURL,
 		Endpoint:     provider.Endpoint(),
-		Scopes:       []string{oidc.ScopeOpenID, "profile", "email", "offline_access"},
+		Scopes:       []string{oidc.ScopeOpenID, "profile", "email", "offline_access", "avatar"},
 	}
 
 	fmt.Println("Created Auth Service")

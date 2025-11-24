@@ -13,82 +13,68 @@
 </div>
 {{ end }}
 
-<div class="row">
-    <div class="col-12 col-xl-3 mb-3">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4">
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-body">
+                <small class="d-block">Server Status:</small>
+                {{if not .agent.Status.Online}}
+                    <span class="badge bg-danger"
+                        ><i class="fa-solid fa-triangle-exclamation"></i>
+                        <b>Offline</b></span
+                    >
+                {{else}}
+                    <span class="badge bg-success"><b>Online</b></span>
+                    {{if .agent.Status.Installed}}
+                        <span class="badge bg-success"><b>Installed</b></span>
+                    {{else}}
+                        <span class="badge bg-warning"><b>Not Installed</b></span>
+                    {{ end }}
+                    {{if .agent.Status.Running}}
+                        <span class="badge bg-success"><b>Running</b></span>
+                    {{else}}
+                        <span class="badge bg-warning"><b>Not Running</b></span>
+                    {{ end }}
+                {{ end }}
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-body">
+                <small class="d-block">Server Connection:</small>
+                <b>{{.agent.Config.IP}}:{{.agent.Config.Port}}</b>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-body">
+                <small class="d-block">Server Version:</small>
+                <b>{{.agent.Config.Version}} / {{.agent.LatestAgentVersion}}</b>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-body">
+                <button class="btn btn-primary float-end" id="ssmagent-copykey" data-key="{{.agent.APIKey}}">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <small class="d-block">Server API Key:</small>
+                <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="{{.agent.APIKey}}">{{shortenApikey "AGT-API" .agent.APIKey}}</b>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
         <div class="card border-secondary h-100 bg-glass">
             <div class="card-header">
                 <h5>Server Information</h5>
             </div>
             <div class="card-body">
-                <div class="row settings-row">
-                    <div class="col-12 col-md-6">
-                        <b class="settings-prop">Server Status:</b>
-                        <span class="settings-info">
-                            This is the servers status.
-                        </span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{if not .agent.Status.Online}}
-                        <span class="badge bg-danger"
-                            ><i class="fa-solid fa-triangle-exclamation"></i>
-                            <b>Offline</b></span
-                        >
-                        {{else}}
-                        <span class="badge bg-success"><b>Online</b></span>
-                        {{if .agent.Status.Installed}}
-                        <span class="badge bg-success"><b>Installed</b></span>
-                        {{else}}
-                        <span class="badge bg-warning"
-                            ><b>Not Installed</b></span
-                        >
-                        {{ end }}
-                        {{if .agent.Status.Running}}
-                        <span class="badge bg-success"><b>Running</b></span>
-                        {{else}}
-                        <span class="badge bg-warning"><b>Not Running</b></span>
-                        {{ end }}
-                        {{ end }}
-                        <b id="agent-publicip"></b>
-                    </div>
-                </div>
-                <div class="row settings-row">
-                    <div class="col-12 col-md-6">
-                        <b class="settings-prop">Server Host:</b>
-                        <span class="settings-info">
-                            This is your Hostname to connect to the Server in
-                            game.
-                        </span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <b id="agent-publicip">{{.agent.Config.IP}}</b>
-                    </div>
-                </div>
-                <div class="row settings-row">
-                    <div class="col-12 col-md-6">
-                        <b class="settings-prop">Connection Port:</b>
-                        <span class="settings-info">
-                            This is the port number of the SF server.
-                        </span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <b id="agent-connectionport">{{.agent.Config.Port}}</b>
-                    </div>
-                </div>
-                <div class="row settings-row">
-                    <div class="col-12 col-md-6">
-                        <b class="settings-prop">Server Version:</b>
-                        <span class="settings-info">
-                            This is the agent/server version.
-                        </span>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <b id="sfserver-version">{{.agent.Config.Version}}</b> /
-                        <b
-                            id="sfserver-version"
-                            >{{.agent.LatestAgentVersion}}</b
-                        >
-                    </div>
-                </div>
                 <div class="row settings-row">
                     <div class="col-12 col-md-6">
                         <b class="settings-prop">SF Server Version:</b>
@@ -108,466 +94,440 @@
                         >
                     </div>
                 </div>
-                <div class="row settings-row">
-                    <div class="col-12 col-md-6">
-                        <b class="settings-prop">Server API Key:</b>
-                        <span class="settings-info">
-                            This is the Servers API Key
-                        </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-6">
+        <div class="card border-secondary mb-3 bg-glass">
+            <div class="card-header">
+                <h5>Satisfactory Server Settings</h5>
+            </div>
+            <div class="card-body">
+                <form action="" method="post" class="form-horizontal">
+                    {{ .csrfField }}
+                    <input
+                        type="hidden"
+                        name="_ConfigSetting"
+                        value="sfsettings"
+                    />
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Update Server On Start:</b
+                            >
+                            <span class="settings-info">
+                                Update Satisfactory server on start of
+                                SSM.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                name="inp_updateonstart"
+                                id="inp_updateonstart"
+                                type="checkbox"
+                                {{if
+                                .agent.ServerConfig.UpdateOnStart}}
+                                checked
+                                {{end}}
+                                data-on="Enabled"
+                                data-off="Disabled"
+                                data-onstyle="success"
+                                data-offstyle="danger"
+                                data-toggle="toggle"
+                                data-width="120"
+                                data-size="small"
+                            />
+                        </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex align-items-center">
-                            <b
-                                id="ssmagent-shortkey"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                data-bs-original-title="{{.agent.APIKey}}"
-                                >{{shortenApikey "AGT-API" .agent.APIKey}}</b
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Auto Restart Server:</b
                             >
+                            <span class="settings-info">
+                                Automatically restarts the SF server if
+                                it crashes.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                name="inp_autorestart"
+                                id="inp_autorestart"
+                                type="checkbox"
+                                {{if
+                                .agent.ServerConfig.AutoRestart}}
+                                checked
+                                {{end}}
+                                data-on="Enabled"
+                                data-off="Disabled"
+                                data-onstyle="success"
+                                data-offstyle="danger"
+                                data-toggle="toggle"
+                                data-width="120"
+                                data-size="small"
+                            />
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Auto Pause Server:</b
+                            >
+                            <span class="settings-info">
+                                Automatically pause server if no players
+                                are online
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                name="inp_autoPause"
+                                id="inp_autoPause"
+                                type="checkbox"
+                                {{if
+                                .agent.ServerConfig.AutoPause}}
+                                checked
+                                {{end}}
+                                data-on="Enabled"
+                                data-off="Disabled"
+                                data-onstyle="success"
+                                data-offstyle="danger"
+                                data-toggle="toggle"
+                                data-width="120"
+                                data-size="small"
+                            />
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Auto Save On Disconnect:</b
+                            >
+                            <span class="settings-info">
+                                Automatically save server when player
+                                disconnects.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                name="inp_autoSaveOnDisconnect"
+                                id="inp_autoSaveOnDisconnect"
+                                type="checkbox"
+                                {{if
+                                .agent.ServerConfig.AutoSaveOnDisconnect}}
+                                checked
+                                {{end}}
+                                data-on="Enabled"
+                                data-off="Disabled"
+                                data-onstyle="success"
+                                data-offstyle="danger"
+                                data-toggle="toggle"
+                                data-width="120"
+                                data-size="small"
+                            />
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Auto Save Interval:</b
+                            >
+                            <span class="settings-info">
+                                Auto Save Interval
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <select
+                                name="inp_autoSaveInterval"
+                                id="inp_autoSaveInterval"
+                                class="form-select"
+                            >
+                                <option
+                                    value="60"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    60}}
+                                    selected
+                                    {{end}}
+                                >
+                                    1 Minute
+                                </option>
+                                <option
+                                    value="300"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    300}}
+                                    selected
+                                    {{end}}
+                                >
+                                    5 Minutes
+                                </option>
+                                <option
+                                    value="600"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    600}}
+                                    selected
+                                    {{end}}
+                                >
+                                    10 Minutes
+                                </option>
+                                <option
+                                    value="900"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    900}}
+                                    selected
+                                    {{end}}
+                                >
+                                    15 Minutes
+                                </option>
+                                <option
+                                    value="1800"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    1800}}
+                                    selected
+                                    {{end}}
+                                >
+                                    30 Minutes
+                                </option>
+                                <option
+                                    value="3600"
+                                    {{if
+                                    eq
+                                    .agent.ServerConfig.AutoSaveInterval
+                                    3600}}
+                                    selected
+                                    {{end}}
+                                >
+                                    1 Hour
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Seasonal Events:</b
+                            >
+                            <span class="settings-info">
+                                Enable Or Disable Seasonal Events
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                name="inp_seasonalEvents"
+                                id="inp_seasonalEvents"
+                                type="checkbox"
+                                {{if
+                                not
+                                .agent.ServerConfig.DisableSeasonalEvents}}checked{{end}}
+                                data-on="Enabled"
+                                data-off="Disabled"
+                                data-onstyle="success"
+                                data-offstyle="danger"
+                                data-toggle="toggle"
+                                data-width="120"
+                                data-size="small"
+                            />
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop">Max Players:</b>
+                            <span class="settings-info">
+                                Number of players that can join the
+                                server.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <input
+                                type="range"
+                                class="form-range"
+                                id="inp_maxplayers"
+                                name="inp_maxplayers"
+                                min="4"
+                                max="500"
+                                value="{{.agent.ServerConfig.MaxPlayers}}"
+                            />
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <span id="max-players-value">0 / 500</span>
+                        </div>
+                    </div>
+
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop">Worker Threads:</b>
+                            <span class="settings-info">
+                                Number of worker threads to allocate to
+                                the server.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                type="number"
+                                value="{{.agent.ServerConfig.WorkerThreads}}"
+                                id="inp_workerthreads"
+                                name="inp_workerthreads"
+                                class="form-control"
+                            />
+                        </div>
+                    </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop">Version Branch</b>
+                            <span class="settings-info">
+                                Choose whether to use the Public Branch
+                                or Experimental.
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" {{if eq .agent.ServerConfig.Branch "experimental"}}checked{{end}} data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
                             <button
-                                class="btn btn-primary ms-2"
-                                id="ssmagent-copykey"
-                                data-key="{{.agent.APIKey}}"
+                                class="btn btn-success float-end"
+                                id="save-sf-settings"
                             >
-                                <i class="fas fa-copy"></i>
+                                <i class="fas fa-save"></i> Update
+                                Settings
                             </button>
                         </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <div class="card border-danger mb-3 bg-glass">
+            <div class="card-header">
+                <h5>Server Options</h5>
+            </div>
+            <div class="card-body">
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                        <b class="settings-prop"
+                            >Install/Reinstall Server:</b
+                        >
+                        <span class="settings-info">
+                            Install or Reinstall Satisfactory Server
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <a
+                            href="/dashboard/serveraction/install?id={{
+                                OIDtoString .agent.ID
+                            }}"
+                        >
+                            <button
+                                class="btn btn-danger"
+                                id="settings-dangerarea-installsf"
+                            >
+                                <i class="fas fa-download"></i> Install
+                                / Reinstall
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="row settings-row">
+                    <div class="col-12 col-md-4">
+                        <b class="settings-prop">Update Server:</b>
+                        <span class="settings-info">
+                            Update Satisfactory Server
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <a
+                            href="/dashboard/serveraction/update?id={{
+                                OIDtoString .agent.ID
+                            }}"
+                        >
+                            <button class="btn btn-warning">
+                                <i
+                                    class="fa-solid fa-circle-arrow-up"
+                                ></i>
+                                Update Server
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-12 col-xl-9">
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <div class="card border-secondary mb-3 bg-glass">
-                    <div class="card-header">
-                        <h5>Satisfactory Server Settings</h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="" method="post" class="form-horizontal">
-                            <input
-                                type="hidden"
-                                name="_ConfigSetting"
-                                value="sfsettings"
-                            />
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Update Server On Start:</b
-                                    >
-                                    <span class="settings-info">
-                                        Update Satisfactory server on start of
-                                        SSM.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        name="inp_updateonstart"
-                                        id="inp_updateonstart"
-                                        type="checkbox"
-                                        {{if
-                                        .agent.ServerConfig.UpdateOnStart}}
-                                        checked
-                                        {{end}}
-                                        data-on="Enabled"
-                                        data-off="Disabled"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        data-toggle="toggle"
-                                        data-width="120"
-                                        data-size="small"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Auto Restart Server:</b
-                                    >
-                                    <span class="settings-info">
-                                        Automatically restarts the SF server if
-                                        it crashes.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        name="inp_autorestart"
-                                        id="inp_autorestart"
-                                        type="checkbox"
-                                        {{if
-                                        .agent.ServerConfig.AutoRestart}}
-                                        checked
-                                        {{end}}
-                                        data-on="Enabled"
-                                        data-off="Disabled"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        data-toggle="toggle"
-                                        data-width="120"
-                                        data-size="small"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Auto Pause Server:</b
-                                    >
-                                    <span class="settings-info">
-                                        Automatically pause server if no players
-                                        are online
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        name="inp_autoPause"
-                                        id="inp_autoPause"
-                                        type="checkbox"
-                                        {{if
-                                        .agent.ServerConfig.AutoPause}}
-                                        checked
-                                        {{end}}
-                                        data-on="Enabled"
-                                        data-off="Disabled"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        data-toggle="toggle"
-                                        data-width="120"
-                                        data-size="small"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Auto Save On Disconnect:</b
-                                    >
-                                    <span class="settings-info">
-                                        Automatically save server when player
-                                        disconnects.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        name="inp_autoSaveOnDisconnect"
-                                        id="inp_autoSaveOnDisconnect"
-                                        type="checkbox"
-                                        {{if
-                                        .agent.ServerConfig.AutoSaveOnDisconnect}}
-                                        checked
-                                        {{end}}
-                                        data-on="Enabled"
-                                        data-off="Disabled"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        data-toggle="toggle"
-                                        data-width="120"
-                                        data-size="small"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Auto Save Interval:</b
-                                    >
-                                    <span class="settings-info">
-                                        Auto Save Interval
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <select
-                                        name="inp_autoSaveInterval"
-                                        id="inp_autoSaveInterval"
-                                        class="form-select"
-                                    >
-                                        <option
-                                            value="60"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            60}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            1 Minute
-                                        </option>
-                                        <option
-                                            value="300"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            300}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            5 Minutes
-                                        </option>
-                                        <option
-                                            value="600"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            600}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            10 Minutes
-                                        </option>
-                                        <option
-                                            value="900"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            900}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            15 Minutes
-                                        </option>
-                                        <option
-                                            value="1800"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            1800}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            30 Minutes
-                                        </option>
-                                        <option
-                                            value="3600"
-                                            {{if
-                                            eq
-                                            .agent.ServerConfig.AutoSaveInterval
-                                            3600}}
-                                            selected
-                                            {{end}}
-                                        >
-                                            1 Hour
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Seasonal Events:</b
-                                    >
-                                    <span class="settings-info">
-                                        Enable Or Disable Seasonal Events
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        name="inp_seasonalEvents"
-                                        id="inp_seasonalEvents"
-                                        type="checkbox"
-                                        {{if
-                                        not
-                                        .agent.ServerConfig.DisableSeasonalEvents}}checked{{end}}
-                                        data-on="Enabled"
-                                        data-off="Disabled"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        data-toggle="toggle"
-                                        data-width="120"
-                                        data-size="small"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Max Players:</b>
-                                    <span class="settings-info">
-                                        Number of players that can join the
-                                        server.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <input
-                                        type="range"
-                                        class="form-range"
-                                        id="inp_maxplayers"
-                                        name="inp_maxplayers"
-                                        min="4"
-                                        max="500"
-                                        value="{{.agent.ServerConfig.MaxPlayers}}"
-                                    />
-                                </div>
-
-                                <div class="col-12 col-md-2">
-                                    <span id="max-players-value">0 / 500</span>
-                                </div>
-                            </div>
-
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Worker Threads:</b>
-                                    <span class="settings-info">
-                                        Number of worker threads to allocate to
-                                        the server.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        type="number"
-                                        value="{{.agent.ServerConfig.WorkerThreads}}"
-                                        id="inp_workerthreads"
-                                        name="inp_workerthreads"
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop">Version Branch</b>
-                                    <span class="settings-info">
-                                        Choose whether to use the Public Branch
-                                        or Experimental.
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input name="inp_sfbranch" id="inp_sfbranch" type="checkbox" {{if eq .agent.ServerConfig.Branch "experimental"}}checked{{end}} data-on="Experimental" data-off="Public" data-onstyle="danger" data-offstyle="success" data-toggle="toggle" data-width="120" data-size="small"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <button
-                                        class="btn btn-success float-end"
-                                        id="save-sf-settings"
-                                    >
-                                        <i class="fas fa-save"></i> Update
-                                        Settings
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        <div class="card border-secondary mb-3 bg-glass">
+            <div class="card-header">
+                <h5>Backup Settings</h5>
             </div>
-
-            <div class="col-12 col-md-6">
-                <div class="card border-danger mb-3 bg-glass">
-                    <div class="card-header">
-                        <h5>Server Options</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row settings-row">
-                            <div class="col-12 col-md-4">
-                                <b class="settings-prop"
-                                    >Install/Reinstall Server:</b
-                                >
-                                <span class="settings-info">
-                                    Install or Reinstall Satisfactory Server
-                                </span>
-                            </div>
-                            <div class="col-12 col-md-8">
-                                <a
-                                    href="/dashboard/serveraction/install?id={{
-                                        OIDtoString .agent.ID
-                                    }}"
-                                >
-                                    <button
-                                        class="btn btn-danger"
-                                        id="settings-dangerarea-installsf"
-                                    >
-                                        <i class="fas fa-download"></i> Install
-                                        / Reinstall
-                                    </button>
-                                </a>
-                            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ .csrfField }}
+                    <input
+                        type="hidden"
+                        name="_ConfigSetting"
+                        value="backupsettings"
+                    />
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Backup Interval:</b
+                            >
+                            <span class="settings-info">
+                                This is the interval between backups
+                                <b>(Hours)</b>
+                            </span>
                         </div>
-                        <div class="row settings-row">
-                            <div class="col-12 col-md-4">
-                                <b class="settings-prop">Update Server:</b>
-                                <span class="settings-info">
-                                    Update Satisfactory Server
-                                </span>
-                            </div>
-                            <div class="col-12 col-md-8">
-                                <a
-                                    href="/dashboard/serveraction/update?id={{
-                                        OIDtoString .agent.ID
-                                    }}"
-                                >
-                                    <button class="btn btn-warning">
-                                        <i
-                                            class="fa-solid fa-circle-arrow-up"
-                                        ></i>
-                                        Update Server
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card border-secondary mb-3 bg-glass">
-                    <div class="card-header">
-                        <h5>Backup Settings</h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="" method="post">
+                        <div class="col-12 col-md-8">
                             <input
-                                type="hidden"
-                                name="_ConfigSetting"
-                                value="backupsettings"
+                                type="number"
+                                name="inp_backupinterval"
+                                class="form-control"
+                                id="inp_backupinterval"
+                                value="{{.agent.Config.BackupInterval}}"
                             />
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Backup Interval:</b
-                                    >
-                                    <span class="settings-info">
-                                        This is the interval between backups
-                                        <b>(Hours)</b>
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        type="number"
-                                        name="inp_backupinterval"
-                                        class="form-control"
-                                        id="inp_backupinterval"
-                                        value="{{.agent.Config.BackupInterval}}"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row settings-row">
-                                <div class="col-12 col-md-4">
-                                    <b class="settings-prop"
-                                        >Backups To Keep:</b
-                                    >
-                                    <span class="settings-info">
-                                        This is the number of backup to keep
-                                    </span>
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <input
-                                        type="number"
-                                        name="inp_backupkeep"
-                                        class="form-control"
-                                        id="inp_backupkeep"
-                                        value="{{.agent.Config.BackupKeepAmount}}"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <button
-                                        class="btn btn-success float-end"
-                                        id="save-backup-settings"
-                                    >
-                                        <i class="fas fa-save"></i> Update
-                                        Settings
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                    <div class="row settings-row">
+                        <div class="col-12 col-md-4">
+                            <b class="settings-prop"
+                                >Backups To Keep:</b
+                            >
+                            <span class="settings-info">
+                                This is the number of backup to keep
+                            </span>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input
+                                type="number"
+                                name="inp_backupkeep"
+                                class="form-control"
+                                id="inp_backupkeep"
+                                value="{{.agent.Config.BackupKeepAmount}}"
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button
+                                class="btn btn-success float-end"
+                                id="save-backup-settings"
+                            >
+                                <i class="fas fa-save"></i> Update
+                                Settings
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

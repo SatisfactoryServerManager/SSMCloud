@@ -17,6 +17,7 @@
                     </div>
                 {{end}}
                 <form method="post" action="/dashboard/account/join">
+                    {{ .csrfField }}
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control {{if .errorMessage}}is-invalid{{end}}" name="inp_joincode" id="inp_joincode" placeholder="Join Code">
                         <label for="inp_joincode">Join Code</label>

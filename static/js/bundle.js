@@ -578,6 +578,8 @@ function main() {
                 data.eventTypes.push($el.attr("data-event-type"));
             });
 
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
             try {
                 const res = await $.ajax({
                     method: "post",
@@ -585,6 +587,7 @@ function main() {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
                 }).promise();
 
                 window.location = "/dashboard/integrations";
@@ -608,6 +611,8 @@ function main() {
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
             const data = {
                 name: $form.find("#name").val(),
                 type: parseInt($form.find("#type").val()),
@@ -629,6 +634,7 @@ function main() {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
                 }).promise();
 
                 window.location = "/dashboard/integrations";
@@ -641,6 +647,7 @@ function main() {
                     toastr.error(response.error, "Error adding integration", { timeOut: 4000 });
                 } catch {
                     console.error("Error response text:", err.responseText);
+                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
                 }
             }
 
@@ -1212,25 +1219,6 @@ Number.prototype.pad = function (width, z) {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
 
-BuildAgentStats = async () => {
-    if (window.builtAgentStats != null && window.builtAgentStats) return;
-
-    const agentId = $("#inp_agent_id").val();
-
-    try {
-        const res = await $.get(`/dashboard/servers/${agentId}/stats`).promise();
-        const stats = res.stats;
-
-        console.log(res);
-
-        
-
-        window.builtAgentStats = true;
-    } catch (err) {
-        console.error(err);
-    }
-};
-
 function detectColorScheme() {
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
         return "dark";
@@ -1478,14 +1466,24 @@ class ModsPage {
 
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();
+                let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
                 const postData = {
-                    _ConfigSetting: "modsettings",
-                    inp_mod_ref: modal.find("#inp_mod_ref").val(),
-                    inp_modConfig: modal.find("#mod-settings-config").val(),
+                    configSetting: "modsettings",
+                    modReference: modal.find("#inp_mod_ref").val(),
+                    modConfig: modal.find("#mod-settings-config").val(),
                 };
 
                 try {
-                    const res = await $.post(`/dashboard/servers/${this.agentId}`, postData).promise();
+                    const res = await $.ajax({
+                        method: "post",
+                        url: `/dashboard/servers/${this.agentId}`,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(postData),
+                        headers: { "X-CSRF-Token": csrfToken },
+                    }).promise();
+
                     if (res.success) {
                         toastr.success("", "Mod Config Updated", { timeOut: 4000 });
                         modal.find("button.btn-close").trigger("click");
@@ -1681,38 +1679,40 @@ class ServerConsole extends EventTarget {
     }
 
     onLogsRecieved(event) {
-        const logLines = event.detail;
-        for (let i = logLines.length - 1; i >= 0; i--) {
-            if (!logLines[i]) {
-                logLines.splice(i, 1);
-            }
-        }
+        let logLines = event.detail.filter(Boolean); // removes null/undefined/empty safely
 
         this.resetLogViewCounter++;
-        if (this.resetLogViewCounter == 120) {
+        if (this.resetLogViewCounter === 120) {
             this.resetLogViewCounter = 0;
             this.$serverConsole.empty();
             this.lastLogIndex = 0;
         }
 
-        if (logLines.length == 0) {
-            return;
-        }
-        this.lastLogIndex = this.lastLogIndex + logLines.length;
+        if (logLines.length === 0) return;
+        this.lastLogIndex += logLines.length;
 
-        logLines.forEach((line) => {
-            let textColour = "text-white";
-            if (line.toLowerCase().includes("warning:")) {
-                textColour = "text-warning";
-            } else if (line.toLowerCase().includes("error:")) {
-                textColour = "text-danger";
+        let html = "";
+        for (const line of logLines) {
+            const lower = line.toLowerCase();
+            if (lower.includes("warning:")) {
+                html += `<p class="text-warning">${line}</p>\n`;
+            } else if (lower.includes("error:")) {
+                html += `<p class="text-danger">${line}</p>\n`;
+            } else {
+                html += `<p>${line}</p>`;
             }
-            this.$serverConsole.append(`<p class="${textColour}">${line}</p>`);
+        }
+
+        if (html == "") return;
+
+        // 🔥 Single DOM update instead of hundreds
+        this.$serverConsole.append(html);
+
+        // Delay scroll update to next frame for smoother UI
+        requestAnimationFrame(() => {
+            this.$serverConsole.scrollTop(this.$serverConsole.prop("scrollHeight"));
         });
-
-        this.$serverConsole.animate({ scrollTop: this.$serverConsole.prop("scrollHeight") }, 1000);
     }
-
     onStatsRecieved(event) {
         const stats = event.detail;
         let count = 0;
@@ -1938,10 +1938,9 @@ class WS extends EventTarget {
 
         this.ws.onopen = () => console.log("Connected to WebSocket");
         this.ws.onclose = (event) => {
-            console.log("Connection closed");
-            if (event.code == 4001) {
-                this.reconnect();
-            }
+            console.log("Connection closed", event.code, event.reason);
+            console.log("Reconnecting..")
+            this.reconnect()
         };
         this.ws.onerror = (err) => console.error(`Error: ${err.message}`);
         this.ws.onmessage = (event) => {
