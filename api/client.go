@@ -26,7 +26,7 @@ var encoder = qs.NewEncoder()
 
 func initClient() {
 	client = &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: 15 * time.Second,
 	}
 
 	scheme := "https"
