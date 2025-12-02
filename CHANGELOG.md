@@ -1,4 +1,4 @@
-## 1.0.166 (December 02, 2025)
+## 1.0.167 (December 02, 2025)
 
 -   Merge pull request #18 from SatisfactoryServerManager/dev
 -   feat: Updated docker compose file
