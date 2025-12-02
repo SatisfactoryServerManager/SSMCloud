@@ -1934,13 +1934,14 @@ class WS extends EventTarget {
     }
 
     reconnect() {
-        this.ws = new WebSocket("wss://ssmcloud-dev.hostxtra.co.uk/dashboard/ws");
+        const hostname = window.location.hostname;
+        this.ws = new WebSocket(`wss://${hostname}/dashboard/ws`);
 
         this.ws.onopen = () => console.log("Connected to WebSocket");
         this.ws.onclose = (event) => {
             console.log("Connection closed", event.code, event.reason);
-            console.log("Reconnecting..")
-            this.reconnect()
+            console.log("Reconnecting..");
+            this.reconnect();
         };
         this.ws.onerror = (err) => console.error(`Error: ${err.message}`);
         this.ws.onmessage = (event) => {
