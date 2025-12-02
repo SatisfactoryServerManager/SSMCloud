@@ -43,7 +43,7 @@ jobs:
             - name: Build and push
               uses: docker/build-push-action@v3
               with:
-                  context: .
+                  context: ./docker
                   push: true
                   tags: mrhid6/ssmcloud:latest , mrhid6/ssmcloud:v${{ steps.versionnum.outputs.version }}
     build-windows:

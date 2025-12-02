@@ -1,3 +1,48 @@
+## 1.0.165 (December 02, 2025)
+
+  - Merge pull request #18 from SatisfactoryServerManager/dev
+  - feat: Updated docker compose file
+  - feat: increased api client timeout to 15 seconds
+  - feat: CSRF tokens
+  - feat: Added server console tab
+  - feat: Updated todo list
+  - feat: Updated mods page filters
+  - fix: Fixed button icon alignment
+  - fix: Fixed card danger border css
+  - fix: Fixed install command generation
+  - fix: Fixed make file run command
+  - feat: More account settings
+  - feat: Update/Delete integration
+  - feat: Removed old nodejs files
+  - feat: Display integration events and details
+  - feat: seperate integrations to their own page
+  - fix: Fixed new server modal from closing
+  - feat: User avatar
+  - feat: Agent Stats page
+  - feat: Send save file to api
+  - feat: Integration display name
+  - feat: updated event types to strings
+  - feat: Updated audit types
+  - feat: Add Integration
+  - feat: get account integrations from api
+  - feat: Integrations page
+  - feat: server action install/update
+  - feat: Update fav icons
+  - feat: Update mod config settings
+  - feat: mods page
+  - feat: Cleanup old files
+  - feat: Mods page
+  - feat: Created copy button for install commands
+  - feat: updated docs
+  - feat: Profile page
+  - fix: Fixed toastr lib
+  - feat: Cleanup script
+  - feat: added toast messages to copy buttons
+  - feat: Updated accounts page
+  - fix: Fixed redis auth
+  - fix: Fixed redis host env
+  - feat: initial rewrite to golang
+
 ## 1.0.163 (September 26, 2025)
   - fix: Fixed csrf error
 

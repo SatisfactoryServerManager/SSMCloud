@@ -55,7 +55,6 @@ if [ -f VERSION ]; then
     fi
     echo -e "${NOTICE_FLAG} Will set new version to be ${WHITE}$INPUT_STRING${RESET}"
     echo -en $INPUT_STRING >VERSION
-    sed -i "s/\"version\": \"[0-9]*\.[0-9]*\.[0-9]*\"/\"version\": \"$INPUT_STRING\"/g" package.json
     echo "## $INPUT_STRING ($NOW)" >tmpfile
     git log --pretty=format:"  - %s" "v$BASE_STRING"...HEAD >>tmpfile
     echo "" >>tmpfile
@@ -65,7 +64,7 @@ if [ -f VERSION ]; then
     echo -e "$ADJUSTMENTS_MSG"
     read
     echo -e "$PUSHING_MSG"
-    git add CHANGELOG.md VERSION package.json
+    git add CHANGELOG.md VERSION 
     git commit -m "Bump version to ${INPUT_STRING}."
     git push
     git tag -a -m "Tag version ${INPUT_STRING}." "v$INPUT_STRING"
