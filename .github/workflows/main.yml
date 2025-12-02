@@ -9,6 +9,25 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version-file: "go.mod"
+            - name: Install dependencies
+              run: go get .
+            - name: Build
+              run: go build -o ./release/linux/ssmcloud-frontend .
+            - run: if [ ! -f ./release/linux/ssmcloud-frontend ]; then exit 1; fi
+            - run: mkdir -p ./docker/release >/dev/null && cp ./release/linux/* ./docker/release/.
+            - uses: vimtor/action-zip@v1
+              with:
+                  files: release/linux/ssmcloud-frontend
+                  recursive: false
+                  dest: SSMCloud-frontend-Linux-amd64.zip
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: ssm-build-linux
+                  path: ${{ github.workspace }}/SSMCloud-frontend-Linux-amd64.zip
             - name: Get version
               id: versionnum
               run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -27,6 +46,27 @@ jobs:
                   context: .
                   push: true
                   tags: mrhid6/ssmcloud:latest , mrhid6/ssmcloud:v${{ steps.versionnum.outputs.version }}
+    build-windows:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version-file: "go.mod"
+            - name: Install dependencies
+              run: go get .
+            - name: Build
+              run: go build -o ./release/windows/ssmcloud-frontend.exe .
+            - uses: vimtor/action-zip@v1
+              with:
+                  files: release/windows/ssmcloud-frontend.exe
+                  recursive: false
+                  dest: SSMCloud-frontend-Windows-x64.zip
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: ssm-build-win64
+                  path: ${{ github.workspace }}/SSMCloud-frontend-Windows-x64.zip
     deploy:
         needs:
             - build-linux

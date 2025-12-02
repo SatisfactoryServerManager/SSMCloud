@@ -8,6 +8,16 @@ services:
         restart: unless-stopped
         environment:
             - SSM_BACKEND_URL=http://ssmcloud-backend:3000
+            - APP_URL=${APP_URL}
+            - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
+            - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
+            - AUTHENTIK_URL=${AUTHENTIK_URL}
+            - BACKEND_URL=${BACKEND_URL}
+            - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_USER=${REDIS_USER}
+            - REDIS_PASS=${REDIS_PASS}
+            - APP_MODE=${APP_MODE}
         container_name: ssmcloud
         image: mrhid6/ssmcloud:latest
         depends_on:
@@ -15,16 +25,26 @@ services:
     ssmcloud-backend:
         ports:
             - 3001:3000
+            - 50051:50051
         volumes:
             - /home/ssm/backend:/home/ssm
         restart: unless-stopped
         environment:
             - DB_HOST=mongodb
             - DB_PORT=27017
-            - DB_DB=ssm
+            - DB_DATABASE=ssm
             - DB_USER=ssm
-            - DB_PASS=SSMPass
-            - JWT_Key=<RANDOM_KEY>
+            - DB_PASSWORD=SSMPass
+            - SECRET_KEY=${BACKEND_SECRET_KEY}
+            - AUTHENTIK_URL=${AUTHENTIK_URL}
+            - AUTHENTIK_APPLICATION=${AUTHENTIK_APPLICATION}
+            - STORAGE_MINIO_ENDPOINT=${STORAGE_MINIO_ENDPOINT}
+            - STORAGE_MINIO_ACCESSKEYID=${STORAGE_MINIO_ACCESSKEYID}
+            - STORAGE_MINIO_SECRETKEY=${STORAGE_MINIO_SECRETKEY}
+            - STORAGE_MINIO_USESSL=${STORAGE_MINIO_USESSL}
+            - STORAGE_MINIO_BUCKET=${STORAGE_MINIO_BUCKET}
+            - FLAG_DISABLEPURGEACCOUNTDATA=${FLAG_DISABLEPURGEACCOUNTDATA}
+            - FLAG_USEMINIOSTORAGE=${FLAG_USEMINIOSTORAGE}
         container_name: ssmcloud-backend
         image: mrhid6/ssmcloud-backend:latest
         depends_on:
