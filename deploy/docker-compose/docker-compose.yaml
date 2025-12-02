@@ -19,7 +19,7 @@ services:
             - REDIS_PASS=${REDIS_PASS}
             - APP_MODE=${APP_MODE}
         container_name: ssmcloud
-        image: mrhid6/ssmcloud:latest
+        image: ssmcloud-frontend:latest
         depends_on:
             - ssmcloud-backend
     ssmcloud-backend:
