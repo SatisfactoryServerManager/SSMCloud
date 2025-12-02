@@ -1,3 +1,6 @@
+## 1.0.168 (December 02, 2025)
+  - fix: Fixed static ws connection url
+
 ## 1.0.167 (December 02, 2025)
 
 -   Merge pull request #18 from SatisfactoryServerManager/dev
