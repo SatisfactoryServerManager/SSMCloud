@@ -1,0 +1,143 @@
+<div class="modal ssm-modal" id="create-server-modal" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Server</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="wizard">
+                    <h1>Configuration</h1>
+                    <div>
+                        <div class="alert alert-danger hidden error-box" id="create-server-modal-config-error">
+                            Failed to progress to next steps with the following errors:
+                            <ul></ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="inp_servername" class="form-label">Server Name:</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-server"></i></span>
+                                <input id="inp_servername" name="inp_servername" type="text" class="form-control" placeholder="Server Name" value="" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inp_serverport" class="form-label">Server Port:</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-network-wired"></i></span>
+                                <input id="inp_serverport" name="inp_serverport" type="number" class="form-control" placeholder="Server Port" value="7777" />
+                            </div>
+                        </div>
+
+                        <fieldset class="form-group">
+                            <label for="inp_servermemory" class="form-label"> Server Memory: </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fa-solid fa-memory"></i></span>
+                                <input type="range" class="form-range custom-range" min="3" max="12" step="0.5" id="inp_servermemory" name="inp_servermemory" value="6" />
+                                <span class="input-group-text" id="inp_servermemory_value">6.0G</span>
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <label for="inp_serverport" class="form-label">Admin Password</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                <input id="inp_serveradminpass" name="inp_serveradminpass" type="password" class="form-control" placeholder="Admin Password" value="" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inp_serverport" class="form-label">Client Password <small>(optional)</small></label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                <input id="inp_serverclientpass" name="inp_serverclientpass" type="password" class="form-control" placeholder="Client Password" value="" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1>Install Command</h1>
+                    <div>
+                        <p>Run the following install script for your desired operating system and then click next.</p>
+                        <p>When running this install script, you will be prompted for the following information:</p>
+                        <ul>
+                            <li>SSM Url - This is the url that the agent will connect to. By default this will be SSM Cloud, you can enter your hosted SSM cloud url/ip address if needed.</li>
+                            <li>API Key: This is the secure api key used for sending data to SSM Cloud</li>
+                        </ul>
+                        <ul class="nav nav-tabs server-install-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#windows-install-agent" aria-selected="true" role="tab"> <i class="fa-brands fa-windows me-2"></i> Windows </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" href="#linux-install-agent" aria-selected="false" role="tab" tabindex="-1">
+                                    <i class="fa-brands fa-ubuntu me-2"></i> Ubuntu / Debian
+                                </a>
+                            </li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content server-install-command">
+                            <div class="tab-pane fade active show" id="windows-install-agent" role="tabpanel">
+                                <h6>Install agent using docker containers (default)</h6>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-terminal"></i>
+                                    </span>
+                                    <textarea class="form-control docker" rows="4" readonly></textarea>
+                                    <button class="btn btn-primary copy-btn">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+
+                                <h6>Install agent instance on local machine</h6>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-terminal"></i>
+                                    </span>
+                                    <textarea class="form-control standalone" rows="4" readonly></textarea>
+                                    <button class="btn btn-primary copy-btn">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="linux-install-agent" role="tabpanel">
+                                <h6>Install agent using docker containers (default)</h6>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-terminal"></i>
+                                    </span>
+                                    <textarea class="form-control docker" rows="4" readonly></textarea>
+                                    <button class="btn btn-primary copy-btn">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+
+                                <h6>Install agent instance on local machine</h6>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-terminal"></i>
+                                    </span>
+                                    <textarea class="form-control standalone" rows="4" readonly></textarea>
+                                    <button class="btn btn-primary copy-btn">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h1>Progress</h1>
+                    <div>
+                        <div id="create-agent-workflow-wrapper"></div>
+                    </div>
+                    <h1>Finished</h1>
+                    <div>
+                        <h3>Hurray - Server Created</h3>
+                        <p>
+                            You have successfully created a new server. Access the new server in the SSM Servers page here:
+                            <a href="/dashboard/servers">Servers</a>
+                        </p>
+                        <p>The SF Server has also been automatically claimd and the admin & client password has been set using the passwords set in the previoud steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

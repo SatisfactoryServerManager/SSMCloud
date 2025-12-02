@@ -1,0 +1,110 @@
+{{define "includes/server/mods"}}
+
+{{ .csrfField }}
+
+<div class="card mb-3">
+  <div class="card-header d-flex align-items-center">
+    <h5>Mods</h5>
+    <div class="badge bg-light text-black ms-auto" id="mod-count"></div>
+  </div>
+  <div class="card-body">
+    <label class="form-label">Select Mods from Mod Manager Profile</label>
+    <input type="file" class="form-control smm-metadata-file" name="">
+    <hr>
+
+    <div class="d-flex flex-column flex-md-row">
+        <div class="flex-grow-1"></div>
+       
+
+        <div class="ms-md-4 d-flex mt-3 mt-md-0">
+            <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvas-mods-filter" aria-controls="canvas-mods-filter">
+                <i class="fa-solid fa-filter"></i>
+            </button>
+            <select class="form-select me-2 w-100" style="min-width: 150px;" name=" inp_mod_sortby" id="mods-sortby">
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+                <option value="downloads-high">Downloads (High - Low)</option>
+                <option value="downloads-low">Downloads (Low - High)</option>
+            </select>
+        </div>
+        <div>
+            <ul class="pagination m-0 ms-2" id="mods-pagination">
+            </ul>
+        </div>
+    </div>
+
+    <div class="mod-list mt-2">
+      <div class="row">
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="canvas-mods-filter" aria-labelledby="canvas-mods-filter-label">
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title" id="canvas-mods-filter-label">Filter Mods</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control mod-search" name="" id="" placeholder="Search Mods">
+            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Installed
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                         <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="check-not-installed" checked>
+                            <label class="form-check-label" for="check-not-installed">
+                                Not Installed
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="check-installed" checked>
+                            <label class="form-check-label" for="check-installed">
+                                Installed
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                        Update Available
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="check-needs-update" checked>
+                            <label class="form-check-label" for="check-needs-update">
+                                Update Available
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                    Accordion Item #3
+                </button>
+                </h2>
+                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{end}}

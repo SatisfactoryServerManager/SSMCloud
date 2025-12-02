@@ -1,0 +1,101 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/SatisfactoryServerManager/SSMCloud/api"
+	"github.com/SatisfactoryServerManager/SSMCloud/services"
+	"github.com/gin-gonic/gin"
+)
+
+func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
+	if _, exists := c.Get("access_token"); exists {
+
+		session, err := services.GetAuthService().SessionStore.Get(c.Request, "session")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		flashes := session.Flashes()
+		if len(flashes) > 0 {
+			_ = session.Save(c.Request, c.Writer)
+		}
+
+		// Cast to []FlashMessage
+		var flashMessages []services.FlashMessage
+		for _, f := range flashes {
+			if fm, ok := f.(services.FlashMessage); ok {
+				flashMessages = append(flashMessages, fm)
+			}
+		}
+
+		userRes, err := api.GetMyUser(&api.APIGetUserRequest{
+			APIRequest: api.APIRequest{
+				AccessToken: c.GetString("access_token"),
+			},
+		})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		accountRes, err := api.GetMyUserAccount(&api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		accountAgentsRes, err := api.GetMyUserAccountAgents(&api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		linkedAccounts, err := api.GetUserLinkedAccounts(&api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		data["user"] = userRes.User
+		data["account"] = accountRes.Account
+		data["agents"] = accountAgentsRes.Agents
+		data["linkedAccounts"] = linkedAccounts.Accounts
+		data["flashes"] = flashMessages
+
+		if len(linkedAccounts.Accounts) == 0 {
+
+			path := c.Request.URL.Path
+			if path != "/dashboard/account/create" && path != "/dashboard/account/join" {
+				c.Redirect(http.StatusFound, "/dashboard/account/create")
+				return
+			}
+
+		}
+	}
+
+	if _, exists := c.Get("IsLoggedIn"); exists {
+		data["IsLoggedIn"] = c.GetBool("IsLoggedIn")
+
+	} else {
+		data["IsLoggedIn"] = false
+	}
+
+	c.HTML(http.StatusOK, tmpl, data)
+}

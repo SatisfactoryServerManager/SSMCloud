@@ -1,8 +1,8 @@
 const AgentMap = require("./agentmap");
-
+const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
-const { plugins, Legend } = require("chart.js");
+const ServerConsole = require("./server-console");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -19,82 +19,57 @@ function main() {
     toastr.options.progressBar = true;
     toastr.options.positionClass = "toast-bottom-right";
 
-    const faWebhook = {
-        prefix: "fac",
-        iconName: "webhook",
-        icon: [
-            130,
-            121,
-            [],
-            "e001",
-            "M60.467 50.345C55.1 59.367 49.958 68.104 44.709 76.775C43.361 79.001 42.694 80.814 43.771 83.644C46.744 91.461 42.55 99.068 34.667 101.133C27.233 103.081 19.99 98.195 18.515 90.236C17.208 83.191 22.675 76.285 30.442 75.184C31.093 75.091 31.757 75.08 32.851 74.998C36.657 68.616 40.556 62.079 44.666 55.186C37.235 47.797 32.812 39.159 33.791 28.456C34.483 20.89 37.458 14.352 42.896 8.99301C53.311 -1.26899 69.2 -2.93099 81.463 4.94601C93.241 12.512 98.635 27.25 94.037 39.864C90.57 38.924 87.079 37.976 83.241 36.935C84.685 29.922 83.617 23.624 78.887 18.229C75.762 14.667 71.752 12.8 67.192 12.112C58.051 10.731 49.076 16.604 46.413 25.576C43.39 35.759 47.965 44.077 60.467 50.345Z M75.794 39.676C79.575 46.346 83.414 53.117 87.219 59.826C106.451 53.876 120.951 64.522 126.153 75.92C132.436 89.688 128.141 105.995 115.801 114.489C103.135 123.209 87.117 121.719 75.895 110.518C78.755 108.124 81.629 105.719 84.7 103.15C95.784 110.329 105.478 109.991 112.675 101.49C118.812 94.238 118.679 83.425 112.364 76.325C105.076 68.132 95.314 67.882 83.514 75.747C78.619 67.063 73.639 58.448 68.899 49.701C67.301 46.753 65.536 45.043 61.934 44.419C55.918 43.376 52.034 38.21 51.801 32.422C51.572 26.698 54.944 21.524 60.215 19.508C65.436 17.511 71.563 19.123 75.075 23.562C77.945 27.189 78.857 31.271 77.347 35.744C76.927 36.991 76.383 38.198 75.794 39.676Z M84.831 94.204C77.226 94.204 69.593 94.204 61.679 94.204C59.46 103.331 54.667 110.7 46.408 115.386C39.988 119.028 33.068 120.263 25.703 119.074C12.143 116.887 1.055 104.68 0.0790008 90.934C-1.026 75.363 9.677 61.522 23.943 58.413C24.928 61.99 25.923 65.601 26.908 69.169C13.819 75.847 9.289 84.261 12.952 94.782C16.177 104.041 25.337 109.116 35.283 107.153C45.44 105.149 50.561 96.708 49.936 83.161C59.565 83.161 69.202 83.061 78.832 83.21C82.592 83.269 85.495 82.879 88.328 79.564C92.992 74.109 101.576 74.601 106.599 79.753C111.732 85.018 111.486 93.49 106.054 98.533C100.813 103.399 92.533 103.139 87.63 97.896C86.622 96.815 85.828 95.532 84.831 94.204Z",
-        ],
-    };
-
-    FontAwesome.library.add(faWebhook);
-
+    WS.init();
     AccountPage.init();
+    ServerConsole.init();
 
-    $(".circle").each((index, el) => {
-        const $el = $(el);
-        console.log($el);
+    window.displayFlashes();
 
-        const percentValue = $el.attr("data-percent");
+    const lastServerTab = localStorage.getItem("ServerActiveTab");
 
-        $el.circleProgress({
-            startAngle: (-Math.PI / 4) * 2,
-            value: percentValue / 100,
-            size: 150,
-            lineCap: "round",
-            emptyFill: "rgba(255, 255, 255, .1)",
-            fill: {
-                color: "#ffa500",
-            },
-        }).on(
-            "circle-animation-progress",
-            function (event, progress, stepValue) {
-                $(this)
-                    .find("strong")
-                    .text(`${(stepValue.toFixed(2) * 100).toFixed(0)}%`);
-            }
-        );
+    if ($(".server-tabs-header").length > 0) {
+        if (lastServerTab) {
+            $('.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]').tab("show");
+        } else {
+            $(".server-tabs-header .nav-tabs a").first().tab("show");
+        }
+
+        if (lastServerTab == "#map") {
+            window.agentMap.SetUpMap();
+        } else if (lastServerTab == "#stats") {
+            BuildAgentStats();
+        }
+
+        window.BuildAgentInstallCommands(window.agentName, window.agentMemory, window.agentPort, window.agentAPIKey);
+    }
+
+    // When a tab is clicked (and shown), save it
+    $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
+        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+        localStorage.setItem("ServerActiveTab", activeTab);
     });
 
-    if ($("#agents-table").length > 0) {
-        $("#agents-table").DataTable();
+    // Try to get the last active tab from localStorage
+    const lastAccountTab = localStorage.getItem("AccountActiveTab");
+
+    // If a tab was saved before, show it
+    if (lastAccountTab) {
+        $('.account-tabs-header .nav-tabs a[href="' + lastAccountTab + '"]').tab("show");
+    } else {
+        $(".account-tabs-header .nav-tabs a").first().tab("show");
     }
 
-    if ($(".backup-agent-table").length > 0) {
-        $(".backup-agent-table").DataTable({
-            order: [[1, "desc"]],
-        });
-    }
-
-    if ($(".saves-table").length > 0) {
-        $(".saves-table").DataTable({
-            order: [[2, "desc"]],
-        });
-    }
-
-    if ($("#users-table").length > 0) {
-        $("#users-table").DataTable();
-        $("#roles-table").DataTable();
-        $("#invites-table").DataTable();
-        $("#apikeys-table").DataTable();
-        $("#account-events-table").DataTable();
-    }
-
-    if ($(".mods-table").length > 0) {
-        $(".mods-table").DataTable();
-    }
+    // When a tab is clicked (and shown), save it
+    $('.account-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
+        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+        localStorage.setItem("AccountActiveTab", activeTab);
+    });
 
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
 
-            $("#inp_servermemory_value").text(
-                `${parseFloat($this.val()).toFixed(1)}G`
-            );
+            $("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
 
             BuildAgentInstallCommands();
         })
@@ -107,19 +82,13 @@ function main() {
         .on("click", ".should-confirm-btn", (e) => {
             e.preventDefault();
             const $this = $(e.currentTarget);
-            window.openModal(
-                "/public/modals",
-                "server-action-confirm",
-                (modal) => {
-                    modal
-                        .find(".modal-title")
-                        .text($this.attr("data-confirm-title"));
+            window.openModal("/public/modals", "server-action-confirm", (modal) => {
+                modal.find(".modal-title").text($this.attr("data-confirm-title"));
 
-                    const $confirmBtn = modal.find("#confirm-action");
-                    $confirmBtn.attr("data-href", $this.attr("href"));
-                    $confirmBtn.attr("data-action", $this.attr("data-action"));
-                }
-            );
+                const $confirmBtn = modal.find("#confirm-action");
+                $confirmBtn.attr("data-href", $this.attr("href"));
+                $confirmBtn.attr("data-action", $this.attr("data-action"));
+            });
         })
         .on("click", "#server-action-confirm #cancel-action", (e) => {
             $("#server-action-confirm .btn-close").trigger("click");
@@ -151,15 +120,11 @@ function main() {
 
                 if (theMod) {
                     $versionBox.empty();
-                    $versionBox.append(
-                        `<option value="">Select Version</option>`
-                    );
+                    $versionBox.append(`<option value="">Select Version</option>`);
 
                     for (let i = 0; i < theMod.versions.length; i++) {
                         const version = theMod.versions[i];
-                        $versionBox.append(
-                            `<option value="${version.version}">${version.version}</option>`
-                        );
+                        $versionBox.append(`<option value="${version.version}">${version.version}</option>`);
                     }
                 }
             }
@@ -170,13 +135,10 @@ function main() {
             const $select = $this.parent().find("select");
             if ($select.val() == null) return;
 
-            const $pillWrapper = $this
-                .parent()
-                .parent()
-                .find(".event-types-pills");
+            const $pillWrapper = $this.parent().parent().find(".event-types-pills");
 
             $pillWrapper.append(`
-            <span class="badge rounded-pill bg-info mb-1" data-event-type-id="${$select.val()}" style="font-size:12px">
+            <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
                 ${$select.find("option:selected").text()}
                 <i class="fas fa-times ms-1 float-end" ></i>
             </span>
@@ -184,62 +146,97 @@ function main() {
 
             $select.find("option:selected").remove();
         })
-        .on("submit", ".edit-notification-form", (e) => {
+        .on("submit", ".edit-notification-form", async (e) => {
             e.preventDefault();
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
-            var data = $form.serializeArray().reduce(function (obj, item) {
-                obj[item.name] = item.value;
-                return obj;
-            }, {});
-
-            data.eventTypes = [];
+            const data = {
+                name: $form.find("#name").val(),
+                type: parseInt($form.find("#type").val()),
+                url: $form.find("#url").val(),
+                eventTypes: [],
+            };
 
             const $PillWrapper = $form.find(".event-types-pills");
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push(parseInt($el.attr("data-event-type-id")));
+                data.eventTypes.push($el.attr("data-event-type"));
             });
 
-            $.ajax({
-                method: "post",
-                url: action,
-                enctype: "multipart/form-data",
-                data: data,
-            }).then(() => {
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
+                }).promise();
+
                 window.location = "/dashboard/integrations";
-            });
+            } catch (err) {
+                console.error(err);
+
+                try {
+                    const response = JSON.parse(err.responseText);
+                    console.error("Error response JSON:", response);
+                    toastr.error(response.error, "Error updating integration", { timeOut: 4000 });
+                } catch {
+                    console.error("Error response text:", err.responseText);
+                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
+                }
+            }
 
             return true;
         })
-        .on("submit", ".add-notification-form", (e) => {
+        .on("submit", ".add-notification-form", async (e) => {
             e.preventDefault();
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
-            var data = $form.serializeArray().reduce(function (obj, item) {
-                obj[item.name] = item.value;
-                return obj;
-            }, {});
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
 
-            data.eventTypes = [];
+            const data = {
+                name: $form.find("#name").val(),
+                type: parseInt($form.find("#type").val()),
+                url: $form.find("#url").val(),
+                eventTypes: [],
+            };
 
             const $PillWrapper = $form.find(".event-types-pills");
             const $Pills = $PillWrapper.children();
             $Pills.each((index, el) => {
                 const $el = $(el);
-                data.eventTypes.push($el.attr("data-event-type-id"));
+                data.eventTypes.push($el.attr("data-event-type"));
             });
-            $.ajax({
-                method: "post",
-                url: action,
-                enctype: "multipart/form-data",
-                data: data,
-            }).then(() => {
+
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    headers: { "X-CSRF-Token": csrfToken },
+                }).promise();
+
                 window.location = "/dashboard/integrations";
-            });
+            } catch (err) {
+                console.error(err);
+
+                try {
+                    const response = JSON.parse(err.responseText);
+                    console.error("Error response JSON:", response);
+                    toastr.error(response.error, "Error adding integration", { timeOut: 4000 });
+                } catch {
+                    console.error("Error response text:", err.responseText);
+                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
+                }
+            }
 
             return true;
         })
@@ -254,8 +251,8 @@ function main() {
                 return;
             }
 
-            if (!$this.val().endsWith(".json")) {
-                console.log("Not Json file extension!");
+            if (!$this.val().endsWith(".smmprofile")) {
+                console.log("Not .smmprofile file extension!");
                 return;
             }
 
@@ -265,10 +262,7 @@ function main() {
                 reader.readAsText(file, "UTF-8");
 
                 reader.onload = function (evt) {
-                    ProcessSMMMetaDataFile(
-                        $this.parent().find(".mod-list"),
-                        evt.target.result
-                    );
+                    ProcessSMMMetaDataFile($this.parent().find(".mod-list"), evt.target.result);
                 };
             }
         })
@@ -281,32 +275,34 @@ function main() {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-mod-reference");
+            const modReference = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/installmod",
                 {
-                    _csrf: $("#_csrf").val(),
                     agentId,
-                    modId,
+                    modReference,
                 },
-                () => {}
+                () => {
+                    ModsPage.UpdateView();
+                }
             );
         })
         .on("click", ".uninstall-mod-btn", (e) => {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
-            const modId = $this.attr("data-mod-reference");
+            const modReference = $this.attr("data-mod-reference");
 
             $.post(
                 "/dashboard/mods/uninstallmod",
                 {
-                    _csrf: $("#_csrf").val(),
                     agentId,
-                    modId,
+                    modReference,
                 },
-                () => {}
+                () => {
+                    ModsPage.UpdateView();
+                }
             );
         })
         .on("keyup", ".backup-search", (e) => {
@@ -314,12 +310,9 @@ function main() {
             const $backupCard = $this.parent().parent().parent().parent();
 
             const search = $this.val().toLowerCase();
-            console.log(search);
             $backupCard.find(".backup-card").each((index, ele) => {
                 const $ele = $(ele);
-                if (
-                    !$ele.attr("data-backupname").toLowerCase().includes(search)
-                ) {
+                if (!$ele.attr("data-backupname").toLowerCase().includes(search)) {
                     $ele.parent().addClass("hidden");
                 } else {
                     $ele.parent().removeClass("hidden");
@@ -334,50 +327,19 @@ function main() {
         })
         .on("click", "#ssmagent-copykey", (e) => {
             const $this = $(e.currentTarget);
-
             navigator.clipboard.writeText($this.attr("data-key"));
+            toastr.success("", "API key has been copied to clipboard", {
+                timeOut: 4000,
+            });
         })
         .on("change", "#mods-sortby", (e) => {
-            SortMods();
-        })
-        .on("change", "#mods-sortby-direction", (e) => {
             SortMods();
         })
         .on("click", ".settings-mod-btn", (e) => {
             const $this = $(e.currentTarget);
             const modReference = $this.attr("data-mod-reference");
 
-            const mods = JSON.parse(localStorage.getItem("mods")).mods;
-            const selectedMods = JSON.parse(
-                localStorage.getItem("selectedMods")
-            ).selectedMods;
-
-            const mod = mods.find((m) => m.mod_reference == modReference);
-            const selectedMod = selectedMods.find(
-                (sm) => sm.mod.mod_reference == modReference
-            );
-
-            console.log(modReference, mod, selectedMod);
-
-            if (mod == null || selectedMod == null) {
-                return;
-            }
-
-            let modConfig = {};
-            try {
-                modConfig = JSON.parse(selectedMod.config);
-            } catch (err) {
-                modConfig = {};
-            }
-
-            window.openModal("/public/modals", "mod-settings", (modal) => {
-                modal.find(".modal-title").text(`${mod.name} Settings`);
-                modal
-                    .find("#mod-settings-config")
-                    .val(JSON.stringify(modConfig, null, 4));
-                modal.find("#inp_mod_ref").val(mod.mod_reference);
-                modal.find("#mod-csrf").val($("#csrf").val());
-            });
+            ModsPage.OpenModSettings(modReference);
         })
         .on("keyup", "#mod-settings-config", (e) => {
             const $this = $(e.currentTarget);
@@ -392,16 +354,10 @@ function main() {
             }
 
             if (isValid) {
-                $("#mod-settings-config-valid")
-                    .removeClass()
-                    .addClass("text-success")
-                    .text("Valid Mod Config");
+                $("#mod-settings-config-valid").removeClass().addClass("text-success").text("Valid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", false);
             } else {
-                $("#mod-settings-config-valid")
-                    .removeClass()
-                    .addClass("text-danger")
-                    .text("Invalid Mod Config");
+                $("#mod-settings-config-valid").removeClass().addClass("text-danger").text("Invalid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", true);
             }
         })
@@ -425,189 +381,161 @@ function main() {
         })
         .on("click", "#add-server-btn", (e) => {
             e.preventDefault();
-            window.openModal(
-                "/public/modals",
-                "create-server-modal",
-                (modal) => {
-                    let ServerName,
-                        ServerPort,
-                        ServerMemory,
-                        ServerAdminPass,
-                        ServerClientPass,
-                        ServerAPIKey;
+            window.openModal("/public/modals", "create-server-modal", (modal) => {
+                let ServerName, ServerPort, ServerMemory, ServerAdminPass, ServerClientPass, ServerAPIKey;
 
-                    let workflowFinished = false;
+                let workflowFinished = false;
 
-                    const wizard = modal.find("#wizard");
+                const wizard = modal.find("#wizard");
 
-                    wizard.on("change", "#inp_servermemory", (e) => {
-                        const $this = $(e.currentTarget);
+                wizard.on("change", "#inp_servermemory", (e) => {
+                    const $this = $(e.currentTarget);
 
-                        wizard
-                            .find("#inp_servermemory_value")
-                            .text(`${parseFloat($this.val()).toFixed(1)}G`);
-                    });
+                    wizard.find("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
+                });
 
-                    wizard.steps({
-                        onStepChanging: (event, currentIndex, newIndex) => {
-                            // if current index is on configuration page
+                wizard.steps({
+                    onStepChanging: (event, currentIndex, newIndex) => {
+                        // if current index is on configuration page
 
-                            if (currentIndex > newIndex) {
+                        if (currentIndex > newIndex) {
+                            return false;
+                        }
+
+                        if (currentIndex == 0) {
+                            ServerName = wizard.find("#inp_servername").val();
+                            ServerPort = wizard.find("#inp_serverport").val();
+                            ServerMemory = wizard.find("#inp_servermemory").val();
+                            ServerAdminPass = wizard.find("#inp_serveradminpass").val();
+                            ServerClientPass = wizard.find("#inp_serverclientpass").val();
+
+                            if (ServerName == "" || ServerMemory < 3 || ServerAdminPass == "") {
+                                const errorBox = $("#create-server-modal-config-error");
+                                errorBox.removeClass("hidden");
+
+                                if (ServerName == "") {
+                                    errorBox.find("ul").append("<ol>Please provide a server name!</ol>");
+                                }
+
+                                if (ServerPort < 7000) {
+                                    errorBox.find("ul").append("<ol>Server port must be greater or equal than 7000</ol>");
+                                }
+
+                                if (ServerMemory < 3) {
+                                    errorBox.find("ul").append("<ol>Server must have more than 3GB of memory</ol>");
+                                }
+                                if (ServerAdminPass == "") {
+                                    errorBox.find("ul").append("<ol>Please provide a server admin password!</ol>");
+                                }
                                 return false;
                             }
 
-                            if (currentIndex == 0) {
-                                ServerName = wizard
-                                    .find("#inp_servername")
-                                    .val();
-                                ServerPort = wizard
-                                    .find("#inp_serverport")
-                                    .val();
-                                ServerMemory = wizard
-                                    .find("#inp_servermemory")
-                                    .val();
-                                ServerAdminPass = wizard
-                                    .find("#inp_serveradminpass")
-                                    .val();
-                                ServerClientPass = wizard
-                                    .find("#inp_serverclientpass")
-                                    .val();
+                            ServerAPIKey = "AGT-API-" + makeapikey(32).toUpperCase();
 
-                                console.log(
-                                    ServerName,
-                                    ServerPort,
-                                    ServerMemory,
-                                    ServerAdminPass,
-                                    ServerClientPass
-                                );
+                            BuildAgentInstallCommands(ServerName, ServerMemory, ServerPort, ServerAPIKey);
+                        }
 
-                                if (
-                                    ServerName == "" ||
-                                    ServerMemory < 3 ||
-                                    ServerAdminPass == ""
-                                ) {
-                                    const errorBox = $(
-                                        "#create-server-modal-config-error"
-                                    );
-                                    errorBox.removeClass("hidden");
+                        // Submit Create Task
+                        if (currentIndex == 1) {
+                            const postData = {
+                                serverName: ServerName,
+                                serverPort: parseInt(ServerPort),
+                                serverMemory: parseFloat(ServerMemory) * 1024 * 1024 * 1024,
+                                serverAdminPass: ServerAdminPass,
+                                serverClientPass: ServerClientPass,
+                                serverApiKey: ServerAPIKey,
+                            };
 
-                                    if (ServerName == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server name!</ol>"
-                                            );
-                                    }
+                            $.post(`/dashboard/servers`, postData)
+                                .promise()
+                                .then((res) => {
+                                    const workflowId = res.workflow_id;
 
-                                    if (ServerPort < 7000) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server port must be greater or equal than 7000</ol>"
-                                            );
-                                    }
+                                    workflowFinished = BuildWorkflowActions(workflowId);
+                                    setInterval(async () => {
+                                        workflowFinished = BuildWorkflowActions(workflowId);
+                                    }, 2000);
+                                })
+                                .catch((err) => {
+                                    console.error(err);
+                                });
+                        }
 
-                                    if (ServerMemory < 3) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server must have more than 3GB of memory</ol>"
-                                            );
-                                    }
-                                    if (ServerAdminPass == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server admin password!</ol>"
-                                            );
-                                    }
-                                    return false;
-                                }
+                        if (currentIndex == 2) {
+                            return workflowFinished;
+                        }
+                        return true;
+                    },
+                });
+            });
+        })
+        .on("click", "#copy-join-code", (e) => {
+            e.preventDefault();
+            const code = $("#join-code").val();
+            navigator.clipboard.writeText(code);
 
-                                ServerAPIKey =
-                                    "AGT-API-" + makeapikey(32).toUpperCase();
+            toastr.success("", "Account join code copied to clipboard", {
+                timeOut: 4000,
+            });
+        })
+        .on("click", ".copy-btn", (e) => {
+            e.preventDefault();
+            const $this = $(e.currentTarget);
+            const $parent = $this.parent();
+            let CopyString = "";
 
-                                BuildAgentInstallCommands(
-                                    ServerName,
-                                    ServerMemory,
-                                    ServerPort,
-                                    ServerAPIKey
-                                );
-                            }
+            if ($parent.find("textarea").length > 0) {
+                CopyString = $parent.find("textarea").val();
+            }
+            if ($parent.find("input[type=text]").length > 0) {
+                CopyString = $parent.find("input[type=text]").val();
+            }
 
-                            // Submit Create Task
-                            if (currentIndex == 1) {
-                                const postData = {
-                                    _csrf: $("#_csrf").val(),
-                                    serverName: ServerName,
-                                    serverPort: parseInt(ServerPort),
-                                    serverMemory:
-                                        parseFloat(ServerMemory) *
-                                        1024 *
-                                        1024 *
-                                        1024,
-                                    serverAdminPass: ServerAdminPass,
-                                    serverClientPass: ServerClientPass,
-                                    serverApiKey: ServerAPIKey,
-                                };
+            if (CopyString == "") return;
 
-                                $.post(`/dashboard/servers`, postData)
-                                    .promise()
-                                    .then((res) => {
-                                        const workflowId = res.workflow_id;
+            navigator.clipboard.writeText(CopyString.trim());
 
-                                        workflowFinished =
-                                            BuildWorkflowActions(workflowId);
-                                        setInterval(async () => {
-                                            workflowFinished =
-                                                BuildWorkflowActions(
-                                                    workflowId
-                                                );
-                                        }, 2000);
-                                    });
-                            }
-
-                            if (currentIndex == 2) {
-                                return workflowFinished;
-                            }
-                            return true;
-                        },
-                    });
-                }
-            );
+            toastr.success("", "Copied to clipboard", {
+                timeOut: 3000,
+            });
         });
 
     SortMods();
 
     function SortMods() {
         const sortBy = $("#mods-sortby").val();
-        const direction = $("#mods-sortby-direction").val();
 
-        ModsPage.sort = sortBy;
-        ModsPage.direction = direction;
+        if (sortBy == "az") {
+            ModsPage.sort = "az";
+            ModsPage.direction = "asc";
+        } else if (sortBy == "za") {
+            ModsPage.sort = "az";
+            ModsPage.direction = "desc";
+        } else if (sortBy == "downloads-high") {
+            ModsPage.sort = "downloads";
+            ModsPage.direction = "desc";
+        } else if (sortBy == "downloads-low") {
+            ModsPage.sort = "downloads";
+            ModsPage.direction = "asc";
+        }
 
         ModsPage.UpdateView();
     }
 
     function makeapikey(length) {
         let result = "";
-        const characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const charactersLength = characters.length;
         let counter = 0;
         while (counter < length) {
-            result += characters.charAt(
-                Math.floor(Math.random() * charactersLength)
-            );
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
             counter += 1;
         }
         return result;
     }
 
     async function BuildWorkflowActions(workflowId) {
-        const workflowRes = await $.get(
-            `/dashboard/servers/workflows/${workflowId}`
-        ).promise();
+        const workflowRes = await $.get(`/dashboard/servers/workflows/${workflowId}`).promise();
 
         const workflowData = workflowRes.workflow;
 
@@ -622,7 +550,6 @@ function main() {
 
         for (let i = 0; i < workflowData.actions.length; i++) {
             const action = workflowData.actions[i];
-            console.log(action);
 
             const $card = $("<div/>").addClass("card card-inner mb-2");
             $wrapper.append($card);
@@ -669,9 +596,7 @@ function main() {
                     actionTypeString = action.type;
             }
 
-            $cardBody.append(
-                `<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`
-            );
+            $cardBody.append(`<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`);
         }
 
         let workflowFinished = true;
@@ -697,9 +622,11 @@ function main() {
         $("#max-players-value").text(`${val} / 500`);
     }
 
-    var tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    );
+    if ($("#inp_new_apikey").length > 0) {
+        $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
+    }
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
@@ -723,16 +650,13 @@ function FilterServerList() {
 
     const search = $(".server-search").val().toLowerCase();
     const FilterOnline = $("#server-filter-online").prop("checked") ? 1 : 0;
-    const FilterInstalled = $("#server-filter-installed").prop("checked")
-        ? 1
-        : 0;
-    console.log(search);
+    const FilterInstalled = $("#server-filter-installed").prop("checked") ? 1 : 0;
+    const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
         if (
             $el.attr("data-agentname").toLowerCase().includes(search) &&
-            $el.attr("data-online") == FilterOnline &&
-            $el.attr("data-installed") == FilterInstalled
+            ($el.attr("data-online") == FilterOnline || $el.attr("data-installed") == FilterInstalled || $el.attr("data-running") == FilterRunning)
         ) {
             return true;
         } else {
@@ -760,6 +684,9 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
         return;
     }
 
+    console.log(JsonData);
+    return;
+
     let localStorageMods = null;
     try {
         localStorageMods = JSON.parse(localStorage.getItem("mods"));
@@ -776,9 +703,7 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
     const modRefs = [];
 
     for (let modRef in installedMods) {
-        const existingMod = localStorageMods.mods.find(
-            (m) => m.modName == modRef
-        );
+        const existingMod = localStorageMods.mods.find((m) => m.modName == modRef);
         if (existingMod) {
             modRefs.push(modRef);
         }
@@ -820,11 +745,7 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
             modalEl.find("button.btn-close").on("click", (e) => {
                 e.preventDefault();
-                const $this = $(e.currentTarget)
-                    .parent()
-                    .parent()
-                    .parent()
-                    .parent();
+                const $this = $(e.currentTarget).parent().parent().parent().parent();
                 $this.trigger("hidden.bs.modal");
                 $this.remove();
                 $this.modal("hide");
@@ -835,8 +756,7 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
             modalEl.on("hidden.bs.modal", () => {
                 $(this).remove();
                 $('[name^="__privateStripe"]').remove();
-                if (options.allowBackdropRemoval == true)
-                    $(".modal-backdrop").remove();
+                if (options.allowBackdropRemoval == true) $(".modal-backdrop").remove();
             });
             modalEl.modal("show");
             if (callback) callback(modalEl);
@@ -847,8 +767,8 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
 function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     if (agentName == "") {
-        $("#windows-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
-        $("#linux-install-agent span").text("PLEASE PROVIDE A SERVER NAME!");
+        $("#windows-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
+        $("#linux-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
         return;
     }
 
@@ -857,11 +777,11 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     const portString = parseFloat(serverport);
     const portOffset = portString - 7777;
 
-    let WindowsInstallCommand = `.\\install-agent.ps1 -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory} -SSMAPIKEY "${apikey}"`;
-    let WindowsStandaloneInstallCommand = `.\\install-agent-standalone.ps1 -AGENTNAME "SSMAgent_${agentName}" -SSMAPIKEY "${apikey}"`;
+    let WindowsInstallCommand = `Set-ExecutionPolicy Bypass -Scope Process -Force; $s="$env:TEMP\\ssm-agent-install.ps1"; iwr -useb https://tinyurl.com/ssm-agent-install-ps1 -OutFile $s; & $s -AGENTNAME "SSMAgent_${agentName}" -MEMORY ${memory} -SSMAPIKEY "${apikey}"`;
+    let WindowsStandaloneInstallCommand = `Set-ExecutionPolicy Bypass -Scope Process -Force; $s="$env:TEMP\\ssm-agent-standalone-ps1"; iwr -useb https://tinyurl.com/ssm-agent-standalone-ps1 -OutFile $s; & $s -AGENTNAME "SSMAgent_${agentName}" -SSMAPIKEY "${apikey}"`;
 
-    let LinuxInstallCommand = `bash install-agent.sh --name "SSMAgent_${agentName}" --memory ${memory} --apikey "${apikey}"`;
-    let LinuxStandaloneInstallCommand = `bash install-agent-standalone.sh --name "SSMAgent_${agentName}" --apikey "${apikey}`;
+    let LinuxInstallCommand = `wget -q https://tinyurl.com/ssm-agent-install-sh -O - | bash -s -- --name "SSMAgent_${agentName}" --memory ${memory} --apikey "${apikey}"`;
+    let LinuxStandaloneInstallCommand = `wget -q https://tinyurl.com/ssm-agent-standalone-sh -O - | bash -s -- --name "SSMAgent_${agentName}" --apikey "${apikey}"`;
 
     if (portOffset > 0) {
         WindowsInstallCommand += ` -PORTOFFSET ${portOffset}`;
@@ -871,15 +791,13 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     WindowsStandaloneInstallCommand += ` -PORTOFFSET ${portOffset}`;
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
-    $("#windows-install-agent .docker span").text(WindowsInstallCommand);
-    $("#windows-install-agent .standalone span").text(
-        WindowsStandaloneInstallCommand
-    );
-    $("#linux-install-agent .docker span").text(LinuxInstallCommand);
-    $("#linux-install-agent .standalone span").text(
-        LinuxStandaloneInstallCommand
-    );
+    $("#windows-install-agent .docker").val(WindowsInstallCommand);
+    $("#windows-install-agent .standalone").text(WindowsStandaloneInstallCommand);
+    $("#linux-install-agent .docker").text(LinuxInstallCommand);
+    $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
 }
+
+window.BuildAgentInstallCommands = BuildAgentInstallCommands;
 
 Number.prototype.pad = function (width, z) {
     let n = this;
@@ -888,258 +806,8 @@ Number.prototype.pad = function (width, z) {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
 
-function BuildAgentStats() {
-    if (window.builtAgentStats != null && window.builtAgentStats) return;
-    BuildAgentCPUStats();
-    BuildAgentRAMStats();
-    BuildAgentRunningStats();
-
-    window.builtAgentStats = true;
-}
-
-function BuildAgentCPUStats() {
-    if ($("#cpuChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-    const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
-
-    const agent = window.agent;
-
-    let data = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
-                value: parseFloat(stat.cpu),
-            });
-
-            count++;
-        }
-    }
-
-    data.reverse();
-
-    new Chart(document.getElementById("cpuChart"), {
-        type: "line",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Percent",
-                    data: data.map((row) => row.value),
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        color: textColour,
-                    },
-                    grid: {
-                        color: gridColour,
-                    },
-                },
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: textColour,
-                    },
-                    grid: {
-                        color: gridColour,
-                    },
-                },
-            },
-        },
-    });
-}
-
-function BuildAgentRAMStats() {
-    if ($("#ramChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-
-    const agent = window.agent;
-    let data = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
-                value: parseFloat(stat.mem),
-            });
-
-            count++;
-        }
-    }
-
-    data.reverse();
-
-    new Chart(document.getElementById("ramChart"), {
-        type: "line",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Percent",
-                    data: data.map((row) => row.value),
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-            },
-        },
-    });
-}
-
-function BuildAgentRunningStats() {
-    if ($("#uptimeChart").length == 0) return;
-
-    const textColour = $("body").hasClass("dark") ? "white" : "black";
-
-    const agent = window.agent;
-    let data = [];
-    let backgroundColor = [];
-    if (agent.stats != null) {
-        const cpuStats = agent.stats;
-
-        let count = 0;
-
-        for (let i = cpuStats.length - 1; i >= 0; i--) {
-            if (count >= 50) {
-                break;
-            }
-            const stat = cpuStats[i];
-
-            const date = new Date(stat.createdAt);
-
-            if (!stat.running) {
-                backgroundColor.push("rgba(255, 99, 132, 0.7)");
-            } else {
-                backgroundColor.push("rgba(75, 192, 192, 0.7)");
-            }
-
-            data.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
-                value: stat.running == true ? 1 : -1,
-            });
-
-            count++;
-        }
-    }
-
-    data.reverse();
-
-    new Chart(document.getElementById("uptimeChart"), {
-        type: "bar",
-        data: {
-            labels: data.map((row) => row.date),
-            datasets: [
-                {
-                    label: "Running",
-                    data: data.map((row) => row.value),
-                    backgroundColor,
-                },
-            ],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColour,
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    min: -1,
-                    max: 1,
-                    ticks: {
-                        color: textColour,
-                        stepSize: 1,
-                    },
-                },
-                x: {
-                    ticks: {
-                        color: textColour,
-                    },
-                },
-            },
-        },
-    });
-}
-
 function detectColorScheme() {
-    if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
         return "dark";
     } else {
         return "light";

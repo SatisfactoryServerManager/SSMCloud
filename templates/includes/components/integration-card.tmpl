@@ -1,0 +1,35 @@
+{{define "includes/components/integration-card"}}
+{{$integration:=.integration}}
+
+<div class="card card-inner mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-column flex-xl-row align-items-center">
+                    <span>
+                        {{if eq $integration.Type 0}}
+                            <i class="fa-solid fa-webhook"></i>
+                        {{else if eq $integration.Type 1}}
+                             <i class="fa-brands fa-discord"></i>
+                        {{end}}
+                    </span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="d-inline-block text-truncate mb-2 mb-xl-0 text-center text-xl-start" style="width:200px">{{$integration.Name}}</span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="d-inline-block text-truncate mb-2 mb-xl-0 w-100 text-start" style="max-width:600px">{{$integration.Url}}</span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="badge text-bg-secondary mb-2 mb-xl-0">Event Types: {{len $integration.EventTypes}}</span>
+                    <div class="vr mx-2 d-none d-xl-block"></div>
+                    <span class="flex-grow-1"></span>
+                    <a class="btn btn-light d-flex align-items-center" href="/dashboard/integrations/{{OIDtoString $integration.ID}}">
+                        <span class="d-xl-none me-2">View Integration</span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{end}}

@@ -1,0 +1,117 @@
+{{define "pages/dashboard/profile"}}
+{{template "includes/dashboard/head" .}}
+<body>
+    <div id="viewport" class="minimal">
+        {{template "includes/dashboard/nav" .}}
+        <div id="content">
+            <div class="container-fluid">
+                <!-- BODY -->
+                <div class="page-container" data-page="dashboard">
+                    {{template "includes/dashboard/page-header" .}}
+
+                    <div class="row">
+                        <div class="col-12 col-md-4 col-lg-3 mb-2">
+                        <div class="card bg-glass">
+                            <div class="card-body">
+                            <div class="text-center">
+                                <span class=" bg-light rounded-4 shadow d-inline-block">
+                                <img src="/dashboard/profile/image" alt="" class="p-3 rounded-5" width="200px" height="200px">
+                                </span>
+                            </div>
+                            <hr>
+                            <form action="/profile/update" method="post">
+                                {{ .csrfField }}
+                                <div class="input-group">
+                                <span class="input-group-text">Email:</span>
+                                <input type="text" class="form-control" value="<%=user.email%>" name="inp_email">
+                                </div>
+                                <hr>
+                                <div class="input-group mb-3">
+                                <span class="input-group-text" style="width:160px">Password:</span>
+                                <input type="password" class="form-control" value="" name="inp_password">
+                                </div>
+                                <div class="input-group">
+                                <span class="input-group-text" style="width:160px">Confirm Password:</span>
+                                <input type="password" class="form-control" value="" name="inp_confirmpassword">
+                                </div>
+                                <hr>
+
+                                <div class="form-group">
+                                <h5 class="text-center">Enter Your 2FA Code:</h5>
+                                <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 mt-3">
+                                <i class="fas fa-save me-1"></i>
+                                Update Settings
+                                </button>
+
+                            </form>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-12 col-md-8 col-lg-9 mb-2">
+                        <div class="card">
+                            <div class="card-header">
+                            <h5>API Keys</h5>
+                            </div>
+                            <div class="card-body">
+                            <h6>Add Api Key</h6>
+
+                            <form action="/dashboard/profile/apikey" method="post">
+                                {{ .csrfField }}
+                                <div class="input-group">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <input type="text" class="form-control" name="inp_new_apikey" id="inp_new_apikey" value="">
+                                    <a class="btn btn-primary ">
+                                        <i class="fas fa-refresh mt-1" id="refresh-new-api-key"></i>
+                                    </a>
+                                    <button class="btn btn-success" type="submit">
+                                        <i class="fas fa-plus"></i>
+                                        Add Key
+                                    </button>
+                                </div>
+                            </form>
+
+                            <p>
+                                If you are happy with the current api key, please copy the key <b>BEFORE</b> clicking the Add Key button.
+                            </p>
+
+                            <hr />
+
+                            {{if not .user.APIKeys }}
+                            <div class="alert alert-info">
+                                There are currently no api keys setup on your account.
+                            </div>
+                            {{end}}
+
+                            {{range .user.APIKeys }}
+                                <div class="card card-inner mb-2">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-key me-2"></i>
+                                            <span class="flex-grow-1">API-••••{{.ShortKey}}</span>
+                                            <a href="/dashboard/profile/deletekey/{{.ShortKey}}">
+                                            <button class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{end}}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+{{template "includes/dashboard/footer" .}}
+{{end}}

@@ -1,3 +1,7 @@
 # SSM Cloud Frontend
 
-A nodejs frontend web ui for Satisfactory Server Manager.
+The SSM Cloud frontend application.
+
+Written in GoLang.
+
+Requires **Redis** & **Authentik** services to run.

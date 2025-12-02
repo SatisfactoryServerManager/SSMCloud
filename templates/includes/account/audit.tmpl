@@ -1,0 +1,38 @@
+{{define "includes/account/audit"}}
+<div class="row">
+  <div class="col-12">
+    <div class="card border-secondary mb-3 bg-glass">
+      <div class="card-header">
+
+        <div class="d-flex flex-column flex-md-row align-items-center">
+          <h5>Audit</h5>
+          <div class="ms-0 ms-md-auto me-0 me-md-2">
+            <label for="account-audit-types">Audit Type</label>
+          </div>
+          <select name="" id="account-audit-types" class="form-select mr-0 mr-md-auto w-auto">
+            <option value="">All</option>
+            <option value="added-user">Users Added</option>
+            <option value="removed-user">Users Removed</option>
+            <option value="added-integration">Integrations Added</option>
+            <option value="removed-integration">Integrations Removed</option>
+            <option value="added-agent">Servers Added</option>
+            <option value="removed-agent">Servers Removed</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mt-3">
+          <div class="col-12">
+            <div id="account-audit-wrapper" class="d-flex flex-column">
+              <div class="row">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}

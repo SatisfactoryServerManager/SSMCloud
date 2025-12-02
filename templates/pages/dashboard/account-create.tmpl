@@ -1,0 +1,36 @@
+{{define "pages/dashboard/account-create"}}
+{{template "includes/dashboard/head" .}}
+
+<body>
+     <div class="container py-lg-5 py-3 h-100">
+        <!-- BODY -->
+        <div class="card mx-auto my-auto " style="max-width:650px;">
+            <div class="card-header">
+                <h5>Create New Account</h5>
+            </div>
+            <div class="card-body">
+                <p>Ready to setup a new account. If not you can join an existing account by going here: <a href="/dashboard/account/join">Join Account</a></p>
+                <p>To create a new account please provide an account name in the form below.</p>
+                {{if .errorMessage}}
+                    <div class="alert alert-danger">
+                        {{.errorMessage}}
+                    </div>
+                {{end}}
+                <form method="post" action="/dashboard/account/create">
+                    {{ .csrfField }}
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control {{if .errorMessage}}is-invalid{{end}}" name="inp_accountName" id="inp_accountName" placeholder="Example Account">
+                        <label for="inp_accountName">Account Name</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-plus"></i> Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+{{template "includes/dashboard/footer" .}}
+{{end}}

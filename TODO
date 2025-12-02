@@ -1,0 +1,37 @@
+
+Todo:
+  ✔ Fix Upload Save File @done(25-10-29 15:39)
+  ✔ Fix server actions @done(25-10-21 13:58)
+    ✔ Server action install/update @done(25-10-22 14:12)
+  ☐ Mods Page
+    ✔ Install @done(25-10-21 13:59)
+    ✔ Update @done(25-10-21 13:59)
+    ✔ Remove @done(25-10-21 13:59)
+    ✔ Config @done(25-10-22 09:56)
+    ☐ Filter Mods
+    ☐ SMM Profile Install
+      ☐ Show Wizard for installing multiple mods
+  ☐ Integrations page
+    ✔ Test displaying of integrations @done(25-10-23 10:25)
+    ✔ Pull integrations from api @done(25-10-27 09:32)
+    ✔ Fix add integration @done(25-10-27 13:57)
+    ✔ Fix update integration @done(25-11-02 17:27)
+    ✔ Fix delete integration @done(25-11-02 17:34)
+    ✔ Add new page for viewing integration events @done(25-11-02 17:27)
+  ☐ Profile page
+    ☐ API Keys
+      ☐ Add
+      ☐ Revoke
+  ✔ Server Stats page @done(25-10-30 14:37)
+  ✔ Server Install Command Tab @done(25-10-21 14:01)
+  ✔ Update Favicons @done(25-10-22 13:58)
+  ☐ Accounts Page
+    ☐ Regen join code
+    ☐ Delete account
+    ☐ Save account name
+  ☐ Server Page
+    ✔ Console tab @done(25-11-14 16:40)
+        ✔ Server log @done(25-11-14 16:40)
+        ✔ Server actions @done(25-11-14 16:40)
+        ✔ Server stats @done(25-11-14 16:40)
+Archive:

@@ -1,0 +1,44 @@
+{{define "includes/dashboard/small-server-card"}}
+<div class="card card-inner server-card" data-agentname="{{.AgentName}}" data-online="{{ if .Status.Online}}1{{else}}0{{end}}" data-installed="{{ if .Status.Installed}}1{{else}}0{{end}}" data-running="{{ if .Status.Running}}1{{else}}0{{end}}">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12 d-flex align-items-center">
+         <h5 class="flex-grow-1">
+          {{if .Status.Online}}
+          <i class="fas fa-circle-check text-success pe-2"></i>
+          {{else}}
+          <i class="fas fa-circle-xmark text-danger pe-2"></i>
+          {{end}}
+        {{.AgentName}}
+        </h5>
+        <a href="/dashboard/servers/{{OIDtoString .ID}}" class="btn btn-primary me-2" style="height:40px">
+          <i class="fas fa-cog"></i>
+        </a>
+                <a href="/dashboard/servers/delete?id={{OIDtoString .ID}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Agent Confirmation">
+          <i class="fas fa-trash"></i>
+        </a>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-12">
+        <span class="badge bg-dark border-dark p-2">
+          {{if .Status.Installed}}
+          <i class="fas fa-circle-check text-success pe-2"></i> Installed
+          {{else}}
+          <i class="fas fa-circle-xmark text-danger pe-2"></i> Not Installed
+          {{end}}
+        </span>
+        {{if .Config.Version}}
+          <span class="badge bg-dark border-dark p-2">
+            {{.Config.Version}} / {{.LatestAgentVersion}}
+          </span>
+          <span class="badge bg-dark border-dark p-2">
+            {{.ServerConfig.Branch}}
+          </span>
+          {{end}}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

@@ -1,0 +1,45 @@
+{{define "includes/server/stats"}}
+
+<div class="row mb-3">
+  <div class="col-12 col-xl-6">
+    <div class="card border-secondary h-100 bg-glass mb-3">
+      <div class="card-header">
+        <h5>CPU</h5>
+      </div>
+      <div class="card-body">
+        <div style="position: relative; height:300px;width:100%">
+          <canvas id="cpuChart" style="height:300px; width:100%"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-6">
+    <div class="card border-secondary h-100 bg-glass mb-3">
+      <div class="card-header">
+        <h5>RAM</h5>
+      </div>
+      <div class="card-body">
+        <div style="position: relative; height:300px;width:100%">
+          <canvas id="ramChart" style="height:300px; width:100%"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card border-secondary h-100 bg-glass mb-3">
+      <div class="card-header">
+        <h5>Uptime</h5>
+      </div>
+      <div class="card-body">
+        <div style="position: relative; height:300px;width:100%">
+          <canvas id="uptimeChart" style="height:300px; width:100%"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}

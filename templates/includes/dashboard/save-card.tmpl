@@ -1,0 +1,21 @@
+{{define "includes/dashboard/save-card"}}
+
+<div class="card card-inner save-card" data-savename="{{.save.FileName}}">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <a target="_blank" href="/dashboard/download/save?agentid={{OIDtoString .agent.ID}}&uuid={{.save.UUID}}" class="btn btn-primary float-end">
+          <i class="fas fa-download"></i>
+        </a>
+        <h6>{{.save.FileName}}</h6>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <small>{{toBytes .save.Size}} - {{formatDate .save.CreatedAt}}</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}

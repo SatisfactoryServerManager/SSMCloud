@@ -52,9 +52,7 @@ class AccountPage {
         $wrapper.empty();
 
         if (this._AuditList.length == 0) {
-            $wrapper.append(
-                `<div class="col-12"><div class="alert alert-info">No Audit Events recorded</div></div>`
-            );
+            $wrapper.append(`<div class="col-12"><div class="alert alert-info">No Audit Events recorded</div></div>`);
             return;
         }
 
@@ -66,31 +64,47 @@ class AccountPage {
 
     BuildAuditUI(audit) {
         const $col = $("<div/>").addClass("col-12 col-md-6 col-lg-4 col-xl-3");
-        const $div = $("<div/>").addClass(
-            "rounded account-audit-item mb-3 p-3"
-        );
+        const $div = $("<div/>").addClass("rounded account-audit-item mb-3 p-3");
 
         let auditTypeString = "";
         switch (audit.type) {
-            case "LOGIN_SUCCESS":
-                auditTypeString = "Successful Login";
+            case "added-user":
+                auditTypeString = "User Added";
                 break;
-            case "LOGIN_FAILURE":
-                auditTypeString = "Failed Login";
+            case "removed-user":
+                auditTypeString = "User Removed";
                 break;
-            case "CREATE_AGENT":
-                auditTypeString = "New Agent";
+            case "added-integration":
+                auditTypeString = "Integration Added";
                 break;
-            case "DELETE_AGENT":
-                auditTypeString = "Agent Deleted";
+            case "removed-integration":
+                auditTypeString = "Integration Removed";
+                break;
+            case "added-agent":
+                auditTypeString = "Server Added";
+                break;
+            case "removed-agent":
+                auditTypeString = "Server Removed";
                 break;
             default:
                 auditTypeString = "Unknown";
                 break;
         }
 
+        const date = new Date(audit.createdAt);
+
+        const formatted = date.toLocaleString("en-US", {
+            month: "long", // "October"
+            day: "2-digit", // "27"
+            year: "numeric", // "2025"
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false, // 24-hour format
+        });
+
         $div.append(`<h5 class="m-0">${auditTypeString}</h5>`);
-        $div.append(`<div>${audit.createdAt}</div>`);
+        $div.append(`<div>${formatted}</div>`);
         $div.append(`<div>${audit.message}</div>`);
         $col.append($div);
         return $col;
@@ -103,13 +117,9 @@ class AccountPage {
             return;
         }
 
-        this._Users = res.users.filter((u) => u.inviteCode == "" && u.active);
-        this._UserInvites = res.users.filter(
-            (u) => u.inviteCode != "" && !u.active
-        );
+        this._Users = res.users;
 
         this.BuildUsersUI();
-        this.BuildUserInvitesUI();
     };
 
     BuildUsersUI() {
@@ -123,75 +133,22 @@ class AccountPage {
         }
     }
 
-    BuildUserInvitesUI() {
-        const $wrapper = $("#account-user-invites-wrapper");
-        $wrapper.empty();
-
-        if (this._UserInvites.length == 0) {
-            $wrapper.append(
-                `<div class="col-12"><div class="alert alert-info">There are no pending user invites</div></div>`
-            );
-            return;
-        }
-
-        for (let i = 0; i < this._UserInvites.length; i++) {
-            const User = this._UserInvites[i];
-
-            const $inviteUI = this.BuildUserUI(User);
-
-            const $copyLink = $(
-                `<button class="btn btn-light copy-userinvite-btn ms-md-auto"></button>`
-            );
-            $copyLink
-                .attr("data-bs-toggle", "tooltip")
-                .attr("data-bs-placement", "bottom")
-                .attr("data-bs-title", "Copy Invite Link");
-
-            new bootstrap.Tooltip($copyLink.get(0));
-            const hostnameURL = `${location.protocol}//${location.hostname}${
-                location.port != "" ? ":" + location.port : ""
-            }`;
-            const linkURL = `${hostnameURL}/acceptinvite/${User.inviteCode}`;
-
-            $copyLink.attr("data-invite-url", linkURL);
-
-            $copyLink.append(`<i class="fas fa-copy"></i>`);
-            $copyLink.append(
-                `<span class="ms-2 d-md-none d-inline-block">Delete User</span>`
-            );
-
-            const $deleteBtn = $inviteUI.find("button:last");
-            $deleteBtn.removeClass("ms-md-auto").addClass("ms-3");
-            $deleteBtn.before($copyLink);
-            $wrapper.append($inviteUI);
-        }
-    }
-
     BuildUserUI(User) {
-        const $div = $("<div/>").addClass(
-            "account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center"
-        );
+        const $div = $("<div/>").addClass("account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center");
 
         const $title = $(`<div class="mb-2 m-md-0"></div>`);
         const $icon = $(`<i class="fas fa-user me-2 fa-lg"></i>`);
 
-        const $deleteBtn = $(
-            `<button class="btn btn-danger delete-user-btn ms-md-auto"></button>`
-        );
+        const $deleteBtn = $(`<button class="btn btn-danger delete-user-btn ms-md-auto"></button>`);
 
         $deleteBtn.append(`<i class="fas fa-trash"></i>`);
-        $deleteBtn.append(
-            `<span class="ms-2 d-md-none d-inline-block">Delete User</span>`
-        );
+        $deleteBtn.append(`<span class="ms-2 d-md-none d-inline-block">Delete User</span>`);
 
         if (User.isAccountAdmin) {
             $icon.removeClass("fa-user").addClass("fa-user-shield");
             $deleteBtn.prop("disabled", true).removeClass("delete-user-btn");
         } else {
-            $deleteBtn
-                .attr("data-bs-toggle", "tooltip")
-                .attr("data-bs-placement", "bottom")
-                .attr("data-bs-title", "Delete User");
+            $deleteBtn.attr("data-bs-toggle", "tooltip").attr("data-bs-placement", "bottom").attr("data-bs-title", "Delete User");
 
             new bootstrap.Tooltip($deleteBtn.get(0));
         }
