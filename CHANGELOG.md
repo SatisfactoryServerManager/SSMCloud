@@ -1,3 +1,6 @@
+## 1.0.169 (December 03, 2025)
+  - fix: Logout url redirect
+
 ## 1.0.168 (December 02, 2025)
   - fix: Fixed static ws connection url
 
