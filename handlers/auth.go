@@ -52,6 +52,7 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 	session.Values["access_token"] = token.AccessToken
 	session.Values["refresh_token"] = token.RefreshToken
+	session.Values["id_token"] = rawIDToken
 	session.Values["expiry"] = token.Expiry
 	session.Save(c.Request, c.Writer)
 	err = session.Save(c.Request, c.Writer)
@@ -90,6 +91,9 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 
 func (handler *AuthHandler) Get_Auth_Logout(c *gin.Context) {
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
+
+	idToken := session.Values["id_token"].(string)
+
 	session.Values = make(map[interface{}]interface{})
 	session.Options = &sessions.Options{
 		Path:     "/",
@@ -97,5 +101,8 @@ func (handler *AuthHandler) Get_Auth_Logout(c *gin.Context) {
 		HttpOnly: true,
 	}
 	session.Save(c.Request, c.Writer)
-	c.Redirect(http.StatusFound, "/")
+
+	redirectUrl := services.GetAuthService().AuthLogoutURL(idToken)
+
+	c.Redirect(http.StatusFound, redirectUrl)
 }
