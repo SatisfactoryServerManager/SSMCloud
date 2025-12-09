@@ -679,3 +679,13 @@ func GetAgentStats(request *APIGetAgentStatsRequest) (*APIGetAgentStatsResponse,
 
 	return res, nil
 }
+
+func DeleteAccount(request *APIDeleteAccountRequest) error {
+
+	res := &APIResponse{}
+	if err := delete("frontend/users/me/account", request.AccessToken, nil, res); err != nil {
+		return err
+	}
+
+	return nil
+}

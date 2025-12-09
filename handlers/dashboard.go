@@ -577,6 +577,26 @@ func (handler *DashboardHandler) POST_DashboardCreateAccount(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/dashboard")
 }
 
+func (handler *DashboardHandler) GET_DashboardDeleteAccount(c *gin.Context) {
+	accountId := c.Query("id")
+
+	err := api.DeleteAccount(&api.APIDeleteAccountRequest{
+		APIRequest: api.APIRequest{
+			AccessToken: c.GetString("access_token"),
+		},
+		AccountID: accountId,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	services.AddFlash(c.Writer, c.Request, "success", "Successfully deleted account")
+
+	c.Redirect(http.StatusFound, "/dashboard")
+}
+
 func (handler *DashboardHandler) GET_DashboardJoinAccount(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/account-join", gin.H{"pageTitle": "Join Account", "csrfField": csrf.TemplateField(c.Request)})

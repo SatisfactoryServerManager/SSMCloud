@@ -41,6 +41,7 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/account/audit", middleware.AuthRequired(), handler.GET_DashboardAccountAudit)
 	r.GET("/account/create", middleware.AuthRequired(), handler.GET_DashboardCreateAccount)
 	r.POST("/account/create", middleware.AuthRequired(), handler.POST_DashboardCreateAccount)
+	r.GET("/account/delete", middleware.AuthRequired(), handler.GET_DashboardDeleteAccount)
 	r.GET("/account/join", middleware.AuthRequired(), handler.GET_DashboardJoinAccount)
 	r.POST("/account/join", middleware.AuthRequired(), handler.POST_DashboardJoinAccount)
 	r.GET("/account/switch", middleware.AuthRequired(), handler.GET_DashboardSwitchAccount)

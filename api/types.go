@@ -286,3 +286,9 @@ type WSResponse struct {
 	Action string      `json:"action"`
 	Data   interface{} `json:"data"`
 }
+
+
+type APIDeleteAccountRequest struct{
+	APIRequest
+	AccountID string `json:"id"`
+}
