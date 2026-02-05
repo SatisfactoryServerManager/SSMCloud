@@ -271,39 +271,55 @@ function main() {
             ModsPage.search = $this.val().toLowerCase();
             SortMods();
         })
-        .on("click", ".install-mod-btn, .update-mod-btn", (e) => {
+        .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
 
-            $.post(
-                "/dashboard/mods/installmod",
-                {
-                    agentId,
-                    modReference,
-                },
-                () => {
-                    ModsPage.UpdateView();
-                }
-            );
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: "/dashboard/mods/installmod",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        agentId,
+                        modReference,
+                    }),
+                    headers: { "X-CSRF-Token": csrfToken },
+                }).promise();
+            } catch (err) {
+                console.error(err);
+            }
+
+            ModsPage.UpdateView();
         })
-        .on("click", ".uninstall-mod-btn", (e) => {
+        .on("click", ".uninstall-mod-btn", async (e) => {
             const $this = $(e.currentTarget);
 
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
 
-            $.post(
-                "/dashboard/mods/uninstallmod",
-                {
-                    agentId,
-                    modReference,
-                },
-                () => {
-                    ModsPage.UpdateView();
-                }
-            );
+            try {
+                const res = await $.ajax({
+                    method: "post",
+                    url: "/dashboard/mods/uninstallmod",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        agentId,
+                        modReference,
+                    }),
+                    headers: { "X-CSRF-Token": csrfToken },
+                }).promise();
+            } catch (err) {
+                console.error(err);
+            }
+
+            ModsPage.UpdateView();
         })
         .on("keyup", ".backup-search", (e) => {
             const $this = $(e.currentTarget);
@@ -395,7 +411,7 @@ function main() {
                 });
 
                 wizard.steps({
-                    onStepChanging: (event, currentIndex, newIndex) => {
+                    onStepChanging: async (event, currentIndex, newIndex) => {
                         // if current index is on configuration page
 
                         if (currentIndex > newIndex) {
@@ -437,6 +453,8 @@ function main() {
 
                         // Submit Create Task
                         if (currentIndex == 1) {
+                            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+
                             const postData = {
                                 serverName: ServerName,
                                 serverPort: parseInt(ServerPort),
@@ -445,20 +463,25 @@ function main() {
                                 serverClientPass: ServerClientPass,
                                 serverApiKey: ServerAPIKey,
                             };
+                            try {
+                                const res = await $.ajax({
+                                    method: "post",
+                                    url: "/dashboard/servers",
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    data: JSON.stringify(postData),
+                                    headers: { "X-CSRF-Token": csrfToken },
+                                }).promise();
 
-                            $.post(`/dashboard/servers`, postData)
-                                .promise()
-                                .then((res) => {
-                                    const workflowId = res.workflow_id;
+                                const workflowId = res.workflow_id;
 
+                                workflowFinished = BuildWorkflowActions(workflowId);
+                                setInterval(async () => {
                                     workflowFinished = BuildWorkflowActions(workflowId);
-                                    setInterval(async () => {
-                                        workflowFinished = BuildWorkflowActions(workflowId);
-                                    }, 2000);
-                                })
-                                .catch((err) => {
-                                    console.error(err);
-                                });
+                                }, 2000);
+                            } catch (err) {
+                                console.error(err);
+                            }
                         }
 
                         if (currentIndex == 2) {
@@ -654,10 +677,7 @@ function FilterServerList() {
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
-        if (
-            $el.attr("data-agentname").toLowerCase().includes(search) &&
-            ($el.attr("data-online") == FilterOnline || $el.attr("data-installed") == FilterInstalled || $el.attr("data-running") == FilterRunning)
-        ) {
+        if ($el.attr("data-agentname").toLowerCase().includes(search) && ($el.attr("data-online") == FilterOnline || $el.attr("data-installed") == FilterInstalled || $el.attr("data-running") == FilterRunning)) {
             return true;
         } else {
             return false;
