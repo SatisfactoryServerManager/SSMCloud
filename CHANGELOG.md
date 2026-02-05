@@ -1,3 +1,8 @@
+## 1.0.170 (February 05, 2026)
+  - feat: CSRF post data calls
+  - feat: Updated deps
+  - feat: Delete account endpoint
+
 ## 1.0.169 (December 03, 2025)
   - fix: Logout url redirect
 
