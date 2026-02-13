@@ -31,6 +31,8 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			}
 		}
 
+		//userEid := c.GetString("user_eid")
+
 		userRes, err := api.GetMyUser(&api.APIGetUserRequest{
 			APIRequest: api.APIRequest{
 				AccessToken: c.GetString("access_token"),

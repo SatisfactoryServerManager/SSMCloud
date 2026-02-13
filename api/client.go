@@ -387,16 +387,6 @@ func GetUserLinkedAccounts(request *APIRequest) (*APIGetUserLinkedAccountsRespon
 	return accountsRes, nil
 }
 
-func CreateUser(request *APICreateUserRequest) error {
-
-	res := &APIResponse{}
-	if err := post("frontend/users", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func CreateAccount(request *APICreateAccountRequest) error {
 
 	res := &APIResponse{}
@@ -427,27 +417,6 @@ func SwitchAccount(request *APISwitchAccountRequest) error {
 	res := &APIResponse{}
 	if err := get("frontend/users/me/accounts/switch", request.AccessToken, &values, res); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func CheckUserExistsOrCreate(request *APIGetUserRequest) error {
-
-	theUser, err := GetMyUser(request)
-	if err != nil {
-		return err
-	}
-
-	if theUser == nil {
-		if err := CreateUser(&APICreateUserRequest{
-			APIRequest: request.APIRequest,
-			Email:      request.Email,
-			ExternalId: request.ExternalId,
-		}); err != nil {
-			return err
-		}
-		return nil
 	}
 
 	return nil

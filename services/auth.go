@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/boj/redistore"
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/oauth2"
 )
 
@@ -15,7 +17,9 @@ type AuthService struct {
 	clientID     string
 	clientSecret string
 	authUrl      string
+	baseAuthUrl  string
 	redirectURL  string
+	jwtSecret    string
 	Oauth2Config *oauth2.Config
 	Verifier     *oidc.IDTokenVerifier
 	SessionStore *redistore.RediStore
@@ -28,8 +32,19 @@ func NewAuthService() (*AuthService, error) {
 	as := &AuthService{}
 	as.clientID = os.Getenv("AUTHENTIK_CLIENT_ID")
 	as.clientSecret = os.Getenv("AUTHENTIK_CLIENT_SECRET")
-	as.authUrl = os.Getenv("AUTHENTIK_URL")
+	baseAuthUrl := os.Getenv("AUTHENTIK_URL")
+	as.baseAuthUrl = baseAuthUrl
+	providerName := os.Getenv("AUTHENTIK_PROVIDER")
+
+	// Construct the full issuer URL for OIDC discovery
+	// For Authentik, it should be: https://auth.example.com/application/o/{provider}/
+	as.authUrl = baseAuthUrl + "/application/o/" + providerName + "/"
+
 	as.redirectURL = os.Getenv("APP_URL") + "/auth/callback"
+	as.jwtSecret = os.Getenv("JWT_SECRET")
+	if as.jwtSecret == "" {
+		return nil, fmt.Errorf("JWT_SECRET environment variable is required")
+	}
 
 	redisHost := os.Getenv("REDIS_HOST")
 	redisUser := os.Getenv("REDIS_USER")
@@ -46,8 +61,10 @@ func NewAuthService() (*AuthService, error) {
 
 	ctx := context.Background()
 
+	fmt.Printf("Attempting OIDC discovery at: %s\n", as.authUrl)
 	provider, err := oidc.NewProvider(ctx, as.authUrl)
 	if err != nil {
+		fmt.Printf("OIDC Provider creation failed: %v\n", err)
 		panic(err)
 	}
 	as.Verifier = provider.Verifier(&oidc.Config{ClientID: as.clientID})
@@ -62,28 +79,13 @@ func NewAuthService() (*AuthService, error) {
 	}
 
 	fmt.Println("Created Auth Service")
+	fmt.Printf("Token Endpoint: %s\n", as.Oauth2Config.Endpoint.TokenURL)
 
 	return as, nil
 }
 
-func (service *AuthService) RefreshAccessToken(refreshToken string) (*oauth2.Token, error) {
-	oc := oauth2.Config{
-		ClientID:     os.Getenv("AUTHENTIK_CLIENT_ID"),
-		ClientSecret: os.Getenv("AUTHENTIK_CLIENT_SECRET"),
-		Endpoint: oauth2.Endpoint{
-			TokenURL: "https://auth.hostxtra.co.uk/application/o/token/",
-		},
-	}
-
-	tokenSource := oc.TokenSource(context.Background(), &oauth2.Token{
-		RefreshToken: refreshToken,
-	})
-
-	return tokenSource.Token()
-}
-
 func (service *AuthService) AuthLogoutURL(idToken string) string {
-	endSessionURL := os.Getenv("AUTHENTIK_URL") + "/end-session/"
+	endSessionURL := service.baseAuthUrl + "/application/o/logout/"
 
 	params := url.Values{}
 	params.Set("client_id", service.Oauth2Config.ClientID)
@@ -97,4 +99,55 @@ func (service *AuthService) AuthLogoutURL(idToken string) string {
 
 	redirectURL := endSessionURL + "?" + params.Encode()
 	return redirectURL
+}
+
+// CustomClaims represents the custom JWT claims
+type CustomClaims struct {
+	jwt.RegisteredClaims
+}
+
+// GenerateCustomToken creates a custom JWT token with the subject
+func (service *AuthService) GenerateCustomToken(subject string) (string, error) {
+	expirationTime := time.Now().Add(24 * time.Hour) // Token valid for 24 hours
+
+	claims := &CustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "ssmcloud",
+			Subject:   subject,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(service.jwtSecret))
+	if err != nil {
+		return "", fmt.Errorf("failed to sign token: %w", err)
+	}
+
+	return tokenString, nil
+}
+
+// ValidateCustomToken validates and parses the custom JWT token
+func (service *AuthService) ValidateCustomToken(tokenString string) (*CustomClaims, error) {
+	claims := &CustomClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// Verify the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(service.jwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token: %w", err)
+	}
+
+	if !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return claims, nil
 }

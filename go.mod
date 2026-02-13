@@ -3,10 +3,11 @@ module github.com/SatisfactoryServerManager/SSMCloud
 go 1.25
 
 require (
-	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.52
+	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.54
 	github.com/boj/redistore v1.4.1
 	github.com/coreos/go-oidc/v3 v3.17.0
 	github.com/gin-gonic/gin v1.11.0
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/gorilla/csrf v1.7.3
 	github.com/gorilla/sessions v1.4.0
 	github.com/gorilla/websocket v1.5.3
@@ -14,6 +15,7 @@ require (
 	github.com/sonh/qs v0.6.4
 	go.mongodb.org/mongo-driver v1.17.6
 	golang.org/x/oauth2 v0.34.0
+	google.golang.org/grpc v1.76.0
 )
 
 require (
@@ -48,5 +50,6 @@ require (
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )

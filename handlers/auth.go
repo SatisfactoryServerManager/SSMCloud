@@ -48,32 +48,36 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 	var claims map[string]interface{}
 	idtok.Claims(&claims)
 
-	// Store claims in session
+	// Extract subject from authentik token
+	subject := claims["sub"].(string)
+
+	// Generate custom token with same subject
+	customToken, err := services.GetAuthService().GenerateCustomToken(subject)
+	if err != nil {
+		c.String(500, "failed to generate custom token: %v", err)
+		return
+	}
+
+	// Store only custom token in session
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
-	session.Values["access_token"] = token.AccessToken
-	session.Values["refresh_token"] = token.RefreshToken
-	session.Values["id_token"] = rawIDToken
-	session.Values["expiry"] = token.Expiry
-	session.Save(c.Request, c.Writer)
+	session.Values["access_token"] = customToken
 	err = session.Save(c.Request, c.Writer)
 	if err != nil {
 		c.String(500, "cant save session: %v", err)
 		return
 	}
 
-	if err := api.CheckUserExistsOrCreate(&api.APIGetUserRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: token.AccessToken,
-		},
-		Email:      claims["email"].(string),
-		ExternalId: claims["sub"].(string),
-	}); err != nil {
-		c.String(500, "cant check user: %v", err)
+	email := claims["email"].(string)
+	username, _ := claims["preferred_username"].(string) // Optional: adjust based on available claims
+
+	// Call gRPC service to check/create user
+	if err := api.CheckUserExistsOrCreateGRPC(context.Background(), email, subject, username); err != nil {
+		c.String(500, "cant check/create user via gRPC: %v", err)
 		return
 	}
 
 	accountRes, err := api.GetUserLinkedAccounts(&api.APIRequest{
-		AccessToken: token.AccessToken,
+		AccessToken: customToken,
 	})
 
 	if err != nil {

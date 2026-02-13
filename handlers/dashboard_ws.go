@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
@@ -39,24 +38,14 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 
 		accessToken, _ := session.Values["access_token"].(string)
-		refreshToken, _ := session.Values["refresh_token"].(string)
-		expiry, _ := session.Values["expiry"].(time.Time)
 
-		// If access token expired, refresh it
-		if time.Now().After(expiry) && refreshToken != "" {
-			newToken, err := services.GetAuthService().RefreshAccessToken(refreshToken)
-			if err != nil {
-				fmt.Println("Token refresh failed:", err)
-				conn.WriteMessage(websocket.CloseMessage,
-					websocket.FormatCloseMessage(4001, "Token expired"))
-				break
-			}
-
-			session.Values["access_token"] = newToken.AccessToken
-			session.Values["refresh_token"] = newToken.RefreshToken
-			session.Values["expiry"] = newToken.Expiry
-			session.Save(c.Request, c.Writer)
-			accessToken = newToken.AccessToken
+		// Validate token is still valid
+		_, err := services.GetAuthService().ValidateCustomToken(accessToken)
+		if err != nil {
+			fmt.Println("Token validation failed:", err)
+			conn.WriteMessage(websocket.CloseMessage,
+				websocket.FormatCloseMessage(4001, "Token expired"))
+			break
 		}
 
 		if err := conn.ReadJSON(msg); err != nil {
