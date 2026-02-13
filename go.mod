@@ -7,7 +7,7 @@ require (
 	github.com/boj/redistore v1.4.1
 	github.com/coreos/go-oidc/v3 v3.17.0
 	github.com/gin-gonic/gin v1.11.0
-	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/gorilla/csrf v1.7.3
 	github.com/gorilla/sessions v1.4.0
 	github.com/gorilla/websocket v1.5.3
