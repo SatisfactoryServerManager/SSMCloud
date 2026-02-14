@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -262,12 +263,9 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 
 	agentId, _ := c.Params.Get("agentId")
 
-	accountAgentRes, err := api.GetMyUserAccountSingleAgent(&api.APIGetUserAccountSingleAgentRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID: agentId,
-	})
+	userEid := c.GetString("user_eid")
+
+	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, agentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -275,14 +273,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		return
 	}
 
-	agentLogRes, err := api.GetAgentLog(&api.APIGetAgentLogRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID:        agentId,
-		Type:      "Agent",
-		LastIndex: 0,
-	})
+	agentLogRes, err := api.GetAgentLogGRPC(context.Background(), userEid, agentId, "Agent", 0)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -290,14 +281,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 		return
 	}
 
-	gameLogRes, err := api.GetAgentLog(&api.APIGetAgentLogRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID:        agentId,
-		Type:      "FactoryGame",
-		LastIndex: 0,
-	})
+	gameLogRes, err := api.GetAgentLogGRPC(context.Background(), userEid, agentId, "FactoryGame", 0)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -307,9 +291,9 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/server", gin.H{
 		"pageTitle": "Server",
-		"agent":     accountAgentRes.Agents[0],
-		"agentLog":  agentLogRes.AgentLogSchema,
-		"gameLog":   gameLogRes.AgentLogSchema,
+		"agent":     theAgent,
+		"agentLog":  agentLogRes,
+		"gameLog":   gameLogRes,
 		"csrfField": csrf.TemplateField(c.Request),
 	})
 }
@@ -399,20 +383,20 @@ func (handler *DashboardHandler) GET_DashboardServerStats(c *gin.Context) {
 func (handler *DashboardHandler) GET_DashboardServerConsoleStatus(c *gin.Context) {
 	agentId := c.Param("agentId")
 
-	accountAgentRes, err := api.GetMyUserAccountSingleAgent(&api.APIGetUserAccountSingleAgentRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID: agentId,
-	})
+	userEid := c.GetString("user_eid")
 
+	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, agentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
 		return
 	}
 
-	theAgent := accountAgentRes.Agents[0]
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "status": theAgent.Status})
 }
@@ -427,9 +411,9 @@ func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 		return
 	}
 
-	accountAgentsRes, err := api.GetMyUserAccountAgents(&api.APIRequest{
-		AccessToken: c.GetString("access_token"),
-	})
+	userEid := c.GetString("user_eid")
+
+	agentsRes, err := api.GetMyUserActiveAccountAgentsGRPC(context.Background(), userEid)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -437,7 +421,7 @@ func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 		return
 	}
 
-	for _, agent := range accountAgentsRes.Agents {
+	for _, agent := range agentsRes {
 		if agent.AgentName == PostData.ServerName {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Server with the same name already exists!"})
 			c.Abort()

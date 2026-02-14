@@ -113,9 +113,9 @@ func main() {
 			shortKey := apikeySplit[1][len(apikeySplit[1])-4:]
 			return prefix + "-••••" + shortKey
 		},
-		"RoundTo": func(value float64, digits int) float64 {
+		"RoundTo": func(value float32, digits int) float64 {
 			factor := math.Pow(10, float64(digits))
-			return math.Round(value*factor) / factor
+			return math.Round(float64(value)*factor) / factor
 		},
 		"toJson": func(v interface{}) template.JS {
 			a, _ := json.Marshal(v)

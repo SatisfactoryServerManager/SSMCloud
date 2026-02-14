@@ -5,9 +5,9 @@
     <h5>Satisfactory Saves</h5>
   </div>
   <div class="card-body">
-    <form id="save-upload-form" enctype="multipart/form-data" method="post" action="/dashboard/servers/{{OIDtoString .agent.ID}}/saves">
+    <form id="save-upload-form" enctype="multipart/form-data" method="post" action="/dashboard/servers/{{.agent.Id}}/saves">
         {{ .csrfField }}
-      <input type="hidden" name="inp_agentid" value="{{OIDtoString .agent.ID}}" />
+      <input type="hidden" name="inp_agentid" value="{{.agent.Id}}" />
       <fieldset>
         <div class="row">
           <div class="col-12 col-md-3">

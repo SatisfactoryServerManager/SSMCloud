@@ -11,10 +11,10 @@
           {{end}}
         {{.AgentName}}
         </h5>
-        <a href="/dashboard/servers/{{OIDtoString .ID}}" class="btn btn-primary me-2" style="height:40px">
+        <a href="/dashboard/servers/{{.Id}}" class="btn btn-primary me-2" style="height:40px">
           <i class="fas fa-cog"></i>
         </a>
-                <a href="/dashboard/servers/delete?id={{OIDtoString .ID}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Agent Confirmation">
+                <a href="/dashboard/servers/delete?id={{.Id}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Agent Confirmation">
           <i class="fas fa-trash"></i>
         </a>
       </div>

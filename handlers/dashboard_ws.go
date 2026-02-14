@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -38,6 +39,7 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 
 		accessToken, _ := session.Values["access_token"].(string)
+		userEid, _ := session.Values["user_eid"].(string)
 
 		// Validate token is still valid
 		_, err := services.GetAuthService().ValidateCustomToken(accessToken)
@@ -57,13 +59,13 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 			handler.WS_ServerAction(conn, accessToken, msg)
 		}
 		if msg.Action == "console.agent.status" {
-			handler.WS_GetAgentStatus(conn, accessToken, msg)
+			handler.WS_GetAgentStatus(conn, userEid, msg)
 		}
 		if msg.Action == "console.agent.stats" {
 			handler.WS_GetAgentStats(conn, accessToken, msg)
 		}
 		if msg.Action == "console.agent.logs" {
-			handler.WS_GetAgentLogs(conn, accessToken, msg)
+			handler.WS_GetAgentLogs(conn, userEid, msg)
 		}
 	}
 }
@@ -94,20 +96,13 @@ func (handler *DashboardWSHandler) WS_ServerAction(conn *websocket.Conn, accessT
 	}
 }
 
-func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, accessToken string, msg *api.WSMessage) {
-	accountAgentRes, err := api.GetMyUserAccountSingleAgent(&api.APIGetUserAccountSingleAgentRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: accessToken,
-		},
-		ID: msg.AgentId,
-	})
+func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
 
 	if err != nil {
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
 		return
 	}
-
-	theAgent := accountAgentRes.Agents[0]
 
 	res := api.WSResponse{
 		Action: msg.Action,
@@ -142,15 +137,8 @@ func (handler *DashboardWSHandler) WS_GetAgentStats(conn *websocket.Conn, access
 	}
 }
 
-func (handler *DashboardWSHandler) WS_GetAgentLogs(conn *websocket.Conn, accessToken string, msg *api.WSMessage) {
-	gameLogRes, err := api.GetAgentLog(&api.APIGetAgentLogRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: accessToken,
-		},
-		ID:        msg.AgentId,
-		Type:      "FactoryGame",
-		LastIndex: msg.LastLogIndex,
-	})
+func (handler *DashboardWSHandler) WS_GetAgentLogs(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	gameLogRes, err := api.GetAgentLogGRPC(context.Background(), userEid, msg.AgentId, "FactoryGame", int32(msg.LastLogIndex))
 
 	if err != nil {
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})

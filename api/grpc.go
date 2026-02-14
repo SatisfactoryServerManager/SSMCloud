@@ -7,10 +7,12 @@ import (
 	"os"
 	"sync"
 
-	pb "github.com/SatisfactoryServerManager/ssmcloud-resources/proto"
+	pb "github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated"
+	pbModels "github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated/models"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -42,6 +44,11 @@ func GetGRPCConnection() (*grpc.ClientConn, error) {
 		// Create TLS credentials
 		tlsConfig := &tls.Config{}
 		creds := credentials.NewTLS(tlsConfig)
+
+		if os.Getenv("APP_MODE") == "development" {
+			creds = insecure.NewCredentials()
+			fmt.Println("Using insecure gRPC credentials for development mode")
+		}
 
 		grpcConn, err = grpc.NewClient(
 			grpcAddr,
@@ -135,7 +142,7 @@ func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Acc
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbActiveAccountRes, err := frontendServiceClient.GetMyUserActiveAccount(ctx, &pb.GetMyUserActiveAccountsRequest{
+	pbActiveAccountRes, err := frontendServiceClient.GetMyUserActiveAccount(ctx, &pb.GetMyUserActiveAccountRequest{
 		Eid: externalID,
 	})
 
@@ -144,4 +151,60 @@ func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Acc
 	}
 
 	return pbActiveAccountRes.ActiveAccount, nil
+}
+
+func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([]*pbModels.Agent, error) {
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbAgentsRes, err := frontendServiceClient.GetMyUserActiveAccountAgents(ctx, &pb.GetMyUserActiveAccountAgentsRequest{
+		Eid: externalID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbAgentsRes.Agents, nil
+}
+
+func GetMyUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID string, agentId string) (*pbModels.Agent, error) {
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbAgentsRes, err := frontendServiceClient.GetMyUserActiveAccountSingleAgent(ctx, &pb.GetMyUserActiveAccountSingleAgentRequest{
+		Eid:     externalID,
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbAgentsRes.Agent, nil
+}
+
+func GetAgentLogGRPC(ctx context.Context, externalID string, agentId string, logType string, lastIndex int32) (*pbModels.AgentLog, error) {
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbLogRes, err := frontendServiceClient.GetAgentLog(ctx, &pb.GetAgentLogRequest{
+		Eid:       externalID,
+		AgentId:   agentId,
+		Type:      logType,
+		LastIndex: lastIndex,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbLogRes.Log, nil
 }

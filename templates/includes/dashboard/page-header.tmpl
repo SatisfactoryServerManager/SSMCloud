@@ -1,4 +1,5 @@
 {{define "includes/dashboard/page-header"}}
+
 <div class="row page-header">
     <div class="d-flex flex-column flex-lg-row align-items-center">
         <div class="flex-grow-1">
@@ -22,7 +23,7 @@
                 aria-label="Button group with nested dropdown"
             >
                 <a href="/dashboard/profile" class="btn w-100 d-flex align-items-center">
-                    <img class="profile-image me-1" src="{{.user.ProfileImageURL}}"/>
+                    <img class="profile-image me-1" src="{{.user.ProfileImageUrl}}"/>
                     {{.user.Username}}
                 </a>
                 <div class="btn-group" role="group">
@@ -36,7 +37,7 @@
                     ></button>
                     <ul class="dropdown-menu">
                         {{range .linkedAccounts}}
-                            <li><a class="dropdown-item" href="/dashboard/account/switch?id={{OIDtoString .ID}}"><i class="fa-solid fa-building-shield me-2"></i> {{.AccountName}}</a></li>
+                            <li><a class="dropdown-item" href="/dashboard/account/switch?id={{.Id}}"><i class="fa-solid fa-building-shield me-2"></i> {{.AccountName}}</a></li>
                         {{end}}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/dashboard/account/create">Create Account</a></li>

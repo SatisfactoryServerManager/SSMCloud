@@ -50,9 +50,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		accountAgentsRes, err := api.GetMyUserAccountAgents(&api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		})
+		accountAgentsRes, err := api.GetMyUserActiveAccountAgentsGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -70,7 +68,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 
 		data["user"] = userRes
 		data["account"] = account
-		data["agents"] = accountAgentsRes.Agents
+		data["agents"] = accountAgentsRes
 		data["linkedAccounts"] = linkedAccounts
 		data["flashes"] = flashMessages
 

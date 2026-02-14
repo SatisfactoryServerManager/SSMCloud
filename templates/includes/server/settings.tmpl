@@ -43,7 +43,7 @@
         <div class="card mb-3">
             <div class="card-body">
                 <small class="d-block">Server Connection:</small>
-                <b>{{.agent.Config.IP}}:{{.agent.Config.Port}}</b>
+                <b>{{.agent.Config.IpAddress}}:{{.agent.Config.Port}}</b>
             </div>
         </div>
     </div>
@@ -58,11 +58,11 @@
     <div class="col">
         <div class="card mb-3">
             <div class="card-body">
-                <button class="btn btn-primary float-end" id="ssmagent-copykey" data-key="{{.agent.APIKey}}">
+                <button class="btn btn-primary float-end" id="ssmagent-copykey" data-key="{{.agent.ApiKey}}">
                     <i class="fas fa-copy"></i>
                 </button>
                 <small class="d-block">Server API Key:</small>
-                <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="{{.agent.APIKey}}">{{shortenApikey "AGT-API" .agent.APIKey}}</b>
+                <b id="ssmagent-shortkey" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="{{.agent.ApiKey}}">{{shortenApikey "AGT-API" .agent.ApiKey}}</b>
             </div>
         </div>
     </div>
@@ -85,12 +85,12 @@
                     <div class="col-12 col-md-6">
                         <b
                             id="sfserver-version"
-                            >{{.agent.Status.InstalledSFVersion}}</b
+                            >{{.agent.Status.InstalledSfVersion}}</b
                         >
                         /
                         <b
                             id="sfserver-version"
-                            >{{.agent.Status.LatestSFVersion}}</b
+                            >{{.agent.Status.LatestSfVersion}}</b
                         >
                     </div>
                 </div>
@@ -428,7 +428,7 @@
                     <div class="col-12 col-md-8">
                         <a
                             href="/dashboard/serveraction/install?id={{
-                                OIDtoString .agent.ID
+                                .agent.Id
                             }}"
                         >
                             <button
@@ -451,7 +451,7 @@
                     <div class="col-12 col-md-8">
                         <a
                             href="/dashboard/serveraction/update?id={{
-                                OIDtoString .agent.ID
+                                .agent.Id
                             }}"
                         >
                             <button class="btn btn-warning">

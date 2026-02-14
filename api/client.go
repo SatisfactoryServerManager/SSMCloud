@@ -305,45 +305,6 @@ func PingBackend() error {
 	}
 	return nil
 }
-
-func GetMyUserAccountAgents(request *APIRequest) (*APIGetUserAccountAgentsResponse, error) {
-	accountAgentsRes := &APIGetUserAccountAgentsResponse{}
-	if err := get("frontend/users/me/account/agents", request.AccessToken, nil, accountAgentsRes); err != nil {
-		return nil, err
-	}
-
-	return accountAgentsRes, nil
-}
-
-func GetMyUserAccountSingleAgent(request *APIGetUserAccountSingleAgentRequest) (*APIGetUserAccountSingleAgentResponse, error) {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	accountAgentRes := &APIGetUserAccountSingleAgentResponse{}
-	if err := get("frontend/users/me/account/agents", request.AccessToken, &values, accountAgentRes); err != nil {
-		return nil, err
-	}
-
-	return accountAgentRes, nil
-}
-
-func GetAgentLog(request *APIGetAgentLogRequest) (*APIGetAgentLogResponse, error) {
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	agentLogsRes := &APIGetAgentLogResponse{}
-	if err := get("frontend/users/me/account/agents/log", request.AccessToken, &values, agentLogsRes); err != nil {
-		return nil, err
-	}
-
-	return agentLogsRes, nil
-}
-
 func CreateAccount(request *APICreateAccountRequest) error {
 
 	res := &APIResponse{}

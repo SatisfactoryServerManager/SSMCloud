@@ -4,7 +4,7 @@
   <div class="col-12 col-lg-6">
     <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
       <div class="card-header">
-        <a href="/dashboard/download/log?agentid={{OIDtoString .agent.ID}}&logtype=Agent" class="btn btn-primary float-end">
+        <a href="/dashboard/download/log?agentid={{.agent.Id}}&logtype=Agent" class="btn btn-primary float-end">
           <i class="fas fa-download"></i> SSM Log File
         </a>
         <h5>SSM Log</h5>
@@ -26,7 +26,7 @@
   <div class="col-12 col-lg-6">
     <div class="card border-secondary mb-3 bg-glass bg-glass-blue">
       <div class="card-header">
-        <a href="/dashboard/download/log?agentid={{OIDtoString .agent.ID}}&logtype=FactoryGame" class="btn btn-primary float-end">
+        <a href="/dashboard/download/log?agentid={{.agent.Id}}&logtype=FactoryGame" class="btn btn-primary float-end">
           <i class="fas fa-download"></i> Satisfactory Log File
         </a>
         <h5>Satisfactory Log</h5>

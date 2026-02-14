@@ -61,6 +61,7 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 	// Store only custom token in session
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 	session.Values["access_token"] = customToken
+	session.Values["user_eid"] = subject
 	err = session.Save(c.Request, c.Writer)
 	if err != nil {
 		c.String(500, "cant save session: %v", err)

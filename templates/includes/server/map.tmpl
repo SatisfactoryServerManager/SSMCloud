@@ -5,8 +5,8 @@
     <div class="card border-secondary mb-3 bg-glass">
       <div class="card-header d-flex flex-col align-items-center">
         <h5 class="flex-grow-1">Map</h5>
-        <div class="badge bg-light text-black">{{len .agent.MapData.Players}}</div>
-        <a href="/map/{{OIDtoString .agent.ID}}" class="btn btn-light ms-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Public Map">
+        <div class="badge bg-light text-black"></div>
+        <a href="/map/{{.agent.Id}}" class="btn btn-light ms-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Public Map">
           <i class="fa-solid fa-earth-americas"></i>
         </a>
       </div>

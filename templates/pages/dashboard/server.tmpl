@@ -10,7 +10,7 @@
                 <div class="page-container" data-page="dashboard">
                     {{template "includes/dashboard/page-header" .}}
 
-                    <input type="hidden" id="inp_agent_id" value="{{OIDtoString .agent.ID}}"/>
+                    <input type="hidden" id="inp_agent_id" value="{{.agent.Id}}"/>
 
                     {{if not .agent.Config.Version}}
                     <div class="alert alert-warning">Uh Oh looks like this server has not been started before!</div>
@@ -146,6 +146,6 @@
 window.agentName={{.agent.AgentName}}
 window.agentMemory={{.agent.Config.Memory}}/1024/1024/1024
 window.agentPort={{.agent.Config.Port}}
-window.agentAPIKey={{.agent.APIKey}}
+window.agentAPIKey={{.agent.ApiKey}}
 </script>
 {{end}}
