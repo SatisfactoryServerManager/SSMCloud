@@ -76,16 +76,14 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 		return
 	}
 
-	accountRes, err := api.GetUserLinkedAccounts(&api.APIRequest{
-		AccessToken: customToken,
-	})
+	linkedAccounts, err := api.GetMyUserLinkedAccountsGRPC(context.Background(), subject)
 
 	if err != nil {
 		c.String(500, "cant get linked accounts: %v", err)
 		return
 	}
 
-	if len(accountRes.Accounts) == 0 {
+	if len(linkedAccounts) == 0 {
 		c.Redirect(http.StatusFound, "/dashboard/account/create")
 		return
 	}

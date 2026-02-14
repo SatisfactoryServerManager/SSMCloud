@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -308,37 +306,6 @@ func PingBackend() error {
 	return nil
 }
 
-func GetMyUser(request *APIGetUserRequest) (*APIGetUserResponse, error) {
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	userRes := &APIGetUserResponse{}
-	if err := get("frontend/users/me", request.AccessToken, &values, userRes); err != nil {
-		if strings.Contains(userRes.GetError(), "no document") {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	userRes.User.ProfileImageURL = template.URL(userRes.User.ProfileImageStr)
-
-	return userRes, nil
-}
-
-func GetMyUserAccount(request *APIRequest) (*APIGetUserAccountResponse, error) {
-	accountRes := &APIGetUserAccountResponse{}
-	if err := get("frontend/users/me/account", request.AccessToken, nil, accountRes); err != nil {
-		if strings.Contains(accountRes.GetError(), "no document") {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return accountRes, nil
-}
-
 func GetMyUserAccountAgents(request *APIRequest) (*APIGetUserAccountAgentsResponse, error) {
 	accountAgentsRes := &APIGetUserAccountAgentsResponse{}
 	if err := get("frontend/users/me/account/agents", request.AccessToken, nil, accountAgentsRes); err != nil {
@@ -375,16 +342,6 @@ func GetAgentLog(request *APIGetAgentLogRequest) (*APIGetAgentLogResponse, error
 	}
 
 	return agentLogsRes, nil
-}
-
-func GetUserLinkedAccounts(request *APIRequest) (*APIGetUserLinkedAccountsResponse, error) {
-
-	accountsRes := &APIGetUserLinkedAccountsResponse{}
-	if err := get("frontend/users/me/accounts", request.AccessToken, nil, accountsRes); err != nil {
-		return nil, err
-	}
-
-	return accountsRes, nil
 }
 
 func CreateAccount(request *APICreateAccountRequest) error {

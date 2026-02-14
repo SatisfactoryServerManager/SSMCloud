@@ -91,3 +91,57 @@ func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, usernam
 
 	return nil
 }
+
+func GetMyUserGRPC(ctx context.Context, externalID string) (*pb.User, error) {
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	userpbres, err := frontendServiceClient.GetMyUser(ctx, &pb.GetMyUserRequest{
+		Eid: externalID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userpbres.User, nil
+}
+
+func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pb.Account, error) {
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbLinkedAccountsRes, err := frontendServiceClient.GetMyUserLinkedAccounts(ctx, &pb.GetMyUserLinkedAccountsRequest{
+		Eid: externalID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbLinkedAccountsRes.LinkedAccounts, nil
+}
+
+func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Account, error) {
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbActiveAccountRes, err := frontendServiceClient.GetMyUserActiveAccount(ctx, &pb.GetMyUserActiveAccountsRequest{
+		Eid: externalID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbActiveAccountRes.ActiveAccount, nil
+}

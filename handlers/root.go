@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
@@ -31,13 +32,9 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			}
 		}
 
-		//userEid := c.GetString("user_eid")
+		userEid := c.GetString("user_eid")
 
-		userRes, err := api.GetMyUser(&api.APIGetUserRequest{
-			APIRequest: api.APIRequest{
-				AccessToken: c.GetString("access_token"),
-			},
-		})
+		userRes, err := api.GetMyUserGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -45,9 +42,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		accountRes, err := api.GetMyUserAccount(&api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		})
+		account, err := api.GetMyUserActiveAccountGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -65,9 +60,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		linkedAccounts, err := api.GetUserLinkedAccounts(&api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		})
+		linkedAccounts, err := api.GetMyUserLinkedAccountsGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -75,13 +68,13 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		data["user"] = userRes.User
-		data["account"] = accountRes.Account
+		data["user"] = userRes
+		data["account"] = account
 		data["agents"] = accountAgentsRes.Agents
-		data["linkedAccounts"] = linkedAccounts.Accounts
+		data["linkedAccounts"] = linkedAccounts
 		data["flashes"] = flashMessages
 
-		if len(linkedAccounts.Accounts) == 0 {
+		if len(linkedAccounts) == 0 {
 
 			path := c.Request.URL.Path
 			if path != "/dashboard/account/create" && path != "/dashboard/account/join" {
