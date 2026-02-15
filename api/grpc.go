@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -28,6 +29,13 @@ func init() {
 	if err != nil {
 		fmt.Printf("Warning: Failed to initialize gRPC connection during startup: %v\n", err)
 	}
+}
+
+func CreategRPCContext(ctx context.Context) context.Context {
+	md := metadata.New(map[string]string{
+		"x-ssmcloud-key": os.Getenv("BACKEND_SECRET_KEY"),
+	})
+	return metadata.NewOutgoingContext(ctx, md)
 }
 
 // GetGRPCConnection returns a singleton gRPC connection to the backend service
@@ -79,6 +87,9 @@ func CloseGRPCConnection() error {
 
 // CheckUserExistsOrCreateGRPC calls the backend gRPC FrontendService to check or create a user
 func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, username string) error {
+
+	ctx = CreategRPCContext(ctx)
+
 	// Ensure the connection and client are initialized
 	_, err := GetGRPCConnection()
 	if err != nil {
@@ -100,6 +111,7 @@ func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, usernam
 }
 
 func GetMyUserGRPC(ctx context.Context, externalID string) (*pb.User, error) {
+	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
 	if err != nil {
@@ -118,6 +130,7 @@ func GetMyUserGRPC(ctx context.Context, externalID string) (*pb.User, error) {
 }
 
 func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pb.Account, error) {
+	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
 	if err != nil {
@@ -136,6 +149,7 @@ func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pb.
 }
 
 func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Account, error) {
+	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
 	if err != nil {
@@ -154,6 +168,7 @@ func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Acc
 }
 
 func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([]*pbModels.Agent, error) {
+	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
 	if err != nil {
@@ -172,6 +187,8 @@ func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([
 }
 
 func GetMyUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID string, agentId string) (*pbModels.Agent, error) {
+	ctx = CreategRPCContext(ctx)
+
 	_, err := GetGRPCConnection()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
@@ -190,6 +207,8 @@ func GetMyUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID strin
 }
 
 func GetAgentLogGRPC(ctx context.Context, externalID string, agentId string, logType string, lastIndex int32) (*pbModels.AgentLog, error) {
+	ctx = CreategRPCContext(ctx)
+
 	_, err := GetGRPCConnection()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
@@ -207,4 +226,43 @@ func GetAgentLogGRPC(ctx context.Context, externalID string, agentId string, log
 	}
 
 	return pbLogRes.Log, nil
+}
+
+func GetAgentStatsGRPC(ctx context.Context, externalID string, agentId string) ([]*pbModels.AgentStat, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbStatRes, err := frontendServiceClient.GetAgentStats(ctx, &pb.GetAgentStatsRequest{
+		Eid:     externalID,
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pbStatRes.Stats, nil
+
+}
+
+func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string, action string, taskData interface{}) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.CreateAgentTask(ctx, &pb.CreateAgentTaskRequest{
+		Eid:     externalID,
+		AgentId: agentId,
+		Action:  action,
+		//TaskData: taskData,
+	})
+
+	return err
 }

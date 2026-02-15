@@ -29,7 +29,9 @@ function main() {
 
     if ($(".server-tabs-header").length > 0) {
         if (lastServerTab) {
-            $('.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]').tab("show");
+            $(
+                '.server-tabs-header .nav-tabs a[href="' + lastServerTab + '"]',
+            ).tab("show");
         } else {
             $(".server-tabs-header .nav-tabs a").first().tab("show");
         }
@@ -40,36 +42,51 @@ function main() {
             BuildAgentStats();
         }
 
-        window.BuildAgentInstallCommands(window.agentName, window.agentMemory, window.agentPort, window.agentAPIKey);
+        window.BuildAgentInstallCommands(
+            window.agentName,
+            window.agentMemory,
+            window.agentPort,
+            window.agentAPIKey,
+        );
     }
 
     // When a tab is clicked (and shown), save it
-    $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
-        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
-        localStorage.setItem("ServerActiveTab", activeTab);
-    });
+    $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on(
+        "shown.bs.tab",
+        function (e) {
+            const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+            localStorage.setItem("ServerActiveTab", activeTab);
+        },
+    );
 
     // Try to get the last active tab from localStorage
     const lastAccountTab = localStorage.getItem("AccountActiveTab");
 
     // If a tab was saved before, show it
     if (lastAccountTab) {
-        $('.account-tabs-header .nav-tabs a[href="' + lastAccountTab + '"]').tab("show");
+        $(
+            '.account-tabs-header .nav-tabs a[href="' + lastAccountTab + '"]',
+        ).tab("show");
     } else {
         $(".account-tabs-header .nav-tabs a").first().tab("show");
     }
 
     // When a tab is clicked (and shown), save it
-    $('.account-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
-        const activeTab = $(e.target).attr("href"); // e.g. "#profile"
-        localStorage.setItem("AccountActiveTab", activeTab);
-    });
+    $('.account-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on(
+        "shown.bs.tab",
+        function (e) {
+            const activeTab = $(e.target).attr("href"); // e.g. "#profile"
+            localStorage.setItem("AccountActiveTab", activeTab);
+        },
+    );
 
     $("body")
         .on("change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
 
-            $("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
+            $("#inp_servermemory_value").text(
+                `${parseFloat($this.val()).toFixed(1)}G`,
+            );
 
             BuildAgentInstallCommands();
         })
@@ -82,13 +99,19 @@ function main() {
         .on("click", ".should-confirm-btn", (e) => {
             e.preventDefault();
             const $this = $(e.currentTarget);
-            window.openModal("/public/modals", "server-action-confirm", (modal) => {
-                modal.find(".modal-title").text($this.attr("data-confirm-title"));
+            window.openModal(
+                "/public/modals",
+                "server-action-confirm",
+                (modal) => {
+                    modal
+                        .find(".modal-title")
+                        .text($this.attr("data-confirm-title"));
 
-                const $confirmBtn = modal.find("#confirm-action");
-                $confirmBtn.attr("data-href", $this.attr("href"));
-                $confirmBtn.attr("data-action", $this.attr("data-action"));
-            });
+                    const $confirmBtn = modal.find("#confirm-action");
+                    $confirmBtn.attr("data-href", $this.attr("href"));
+                    $confirmBtn.attr("data-action", $this.attr("data-action"));
+                },
+            );
         })
         .on("click", "#server-action-confirm #cancel-action", (e) => {
             $("#server-action-confirm .btn-close").trigger("click");
@@ -120,11 +143,15 @@ function main() {
 
                 if (theMod) {
                     $versionBox.empty();
-                    $versionBox.append(`<option value="">Select Version</option>`);
+                    $versionBox.append(
+                        `<option value="">Select Version</option>`,
+                    );
 
                     for (let i = 0; i < theMod.versions.length; i++) {
                         const version = theMod.versions[i];
-                        $versionBox.append(`<option value="${version.version}">${version.version}</option>`);
+                        $versionBox.append(
+                            `<option value="${version.version}">${version.version}</option>`,
+                        );
                     }
                 }
             }
@@ -135,7 +162,10 @@ function main() {
             const $select = $this.parent().find("select");
             if ($select.val() == null) return;
 
-            const $pillWrapper = $this.parent().parent().find(".event-types-pills");
+            const $pillWrapper = $this
+                .parent()
+                .parent()
+                .find(".event-types-pills");
 
             $pillWrapper.append(`
             <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
@@ -165,7 +195,8 @@ function main() {
                 data.eventTypes.push($el.attr("data-event-type"));
             });
 
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+            let csrfToken =
+                document.getElementsByName("gorilla.csrf.Token")[0].value;
 
             try {
                 const res = await $.ajax({
@@ -184,10 +215,16 @@ function main() {
                 try {
                     const response = JSON.parse(err.responseText);
                     console.error("Error response JSON:", response);
-                    toastr.error(response.error, "Error updating integration", { timeOut: 4000 });
+                    toastr.error(response.error, "Error updating integration", {
+                        timeOut: 4000,
+                    });
                 } catch {
                     console.error("Error response text:", err.responseText);
-                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
+                    toastr.error(
+                        err.responseText,
+                        "Error updating integration",
+                        { timeOut: 4000 },
+                    );
                 }
             }
 
@@ -198,7 +235,8 @@ function main() {
 
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+            let csrfToken =
+                document.getElementsByName("gorilla.csrf.Token")[0].value;
 
             const data = {
                 name: $form.find("#name").val(),
@@ -231,10 +269,16 @@ function main() {
                 try {
                     const response = JSON.parse(err.responseText);
                     console.error("Error response JSON:", response);
-                    toastr.error(response.error, "Error adding integration", { timeOut: 4000 });
+                    toastr.error(response.error, "Error adding integration", {
+                        timeOut: 4000,
+                    });
                 } catch {
                     console.error("Error response text:", err.responseText);
-                    toastr.error(err.responseText, "Error updating integration", { timeOut: 4000 });
+                    toastr.error(
+                        err.responseText,
+                        "Error updating integration",
+                        { timeOut: 4000 },
+                    );
                 }
             }
 
@@ -262,7 +306,10 @@ function main() {
                 reader.readAsText(file, "UTF-8");
 
                 reader.onload = function (evt) {
-                    ProcessSMMMetaDataFile($this.parent().find(".mod-list"), evt.target.result);
+                    ProcessSMMMetaDataFile(
+                        $this.parent().find(".mod-list"),
+                        evt.target.result,
+                    );
                 };
             }
         })
@@ -276,7 +323,8 @@ function main() {
 
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+            let csrfToken =
+                document.getElementsByName("gorilla.csrf.Token")[0].value;
 
             try {
                 const res = await $.ajax({
@@ -301,7 +349,8 @@ function main() {
 
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+            let csrfToken =
+                document.getElementsByName("gorilla.csrf.Token")[0].value;
 
             try {
                 const res = await $.ajax({
@@ -328,7 +377,9 @@ function main() {
             const search = $this.val().toLowerCase();
             $backupCard.find(".backup-card").each((index, ele) => {
                 const $ele = $(ele);
-                if (!$ele.attr("data-backupname").toLowerCase().includes(search)) {
+                if (
+                    !$ele.attr("data-backupname").toLowerCase().includes(search)
+                ) {
                     $ele.parent().addClass("hidden");
                 } else {
                     $ele.parent().removeClass("hidden");
@@ -370,10 +421,16 @@ function main() {
             }
 
             if (isValid) {
-                $("#mod-settings-config-valid").removeClass().addClass("text-success").text("Valid Mod Config");
+                $("#mod-settings-config-valid")
+                    .removeClass()
+                    .addClass("text-success")
+                    .text("Valid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", false);
             } else {
-                $("#mod-settings-config-valid").removeClass().addClass("text-danger").text("Invalid Mod Config");
+                $("#mod-settings-config-valid")
+                    .removeClass()
+                    .addClass("text-danger")
+                    .text("Invalid Mod Config");
                 $("#mod-settings-save-btn").prop("disabled", true);
             }
         })
@@ -397,100 +454,163 @@ function main() {
         })
         .on("click", "#add-server-btn", (e) => {
             e.preventDefault();
-            window.openModal("/public/modals", "create-server-modal", (modal) => {
-                let ServerName, ServerPort, ServerMemory, ServerAdminPass, ServerClientPass, ServerAPIKey;
+            window.openModal(
+                "/public/modals",
+                "create-server-modal",
+                (modal) => {
+                    let ServerName,
+                        ServerPort,
+                        ServerMemory,
+                        ServerAdminPass,
+                        ServerClientPass,
+                        ServerAPIKey;
 
-                let workflowFinished = false;
+                    let workflowFinished = false;
 
-                const wizard = modal.find("#wizard");
+                    const wizard = modal.find("#wizard");
 
-                wizard.on("change", "#inp_servermemory", (e) => {
-                    const $this = $(e.currentTarget);
+                    wizard.on("change", "#inp_servermemory", (e) => {
+                        const $this = $(e.currentTarget);
 
-                    wizard.find("#inp_servermemory_value").text(`${parseFloat($this.val()).toFixed(1)}G`);
-                });
+                        wizard
+                            .find("#inp_servermemory_value")
+                            .text(`${parseFloat($this.val()).toFixed(1)}G`);
+                    });
 
-                wizard.steps({
-                    onStepChanging: async (event, currentIndex, newIndex) => {
-                        // if current index is on configuration page
+                    wizard.steps({
+                        onStepChanging: async (
+                            event,
+                            currentIndex,
+                            newIndex,
+                        ) => {
+                            // if current index is on configuration page
 
-                        if (currentIndex > newIndex) {
-                            return false;
-                        }
-
-                        if (currentIndex == 0) {
-                            ServerName = wizard.find("#inp_servername").val();
-                            ServerPort = wizard.find("#inp_serverport").val();
-                            ServerMemory = wizard.find("#inp_servermemory").val();
-                            ServerAdminPass = wizard.find("#inp_serveradminpass").val();
-                            ServerClientPass = wizard.find("#inp_serverclientpass").val();
-
-                            if (ServerName == "" || ServerMemory < 3 || ServerAdminPass == "") {
-                                const errorBox = $("#create-server-modal-config-error");
-                                errorBox.removeClass("hidden");
-
-                                if (ServerName == "") {
-                                    errorBox.find("ul").append("<ol>Please provide a server name!</ol>");
-                                }
-
-                                if (ServerPort < 7000) {
-                                    errorBox.find("ul").append("<ol>Server port must be greater or equal than 7000</ol>");
-                                }
-
-                                if (ServerMemory < 3) {
-                                    errorBox.find("ul").append("<ol>Server must have more than 3GB of memory</ol>");
-                                }
-                                if (ServerAdminPass == "") {
-                                    errorBox.find("ul").append("<ol>Please provide a server admin password!</ol>");
-                                }
+                            if (currentIndex > newIndex) {
                                 return false;
                             }
 
-                            ServerAPIKey = "AGT-API-" + makeapikey(32).toUpperCase();
+                            if (currentIndex == 0) {
+                                ServerName = wizard
+                                    .find("#inp_servername")
+                                    .val();
+                                ServerPort = wizard
+                                    .find("#inp_serverport")
+                                    .val();
+                                ServerMemory = wizard
+                                    .find("#inp_servermemory")
+                                    .val();
+                                ServerAdminPass = wizard
+                                    .find("#inp_serveradminpass")
+                                    .val();
+                                ServerClientPass = wizard
+                                    .find("#inp_serverclientpass")
+                                    .val();
 
-                            BuildAgentInstallCommands(ServerName, ServerMemory, ServerPort, ServerAPIKey);
-                        }
+                                if (
+                                    ServerName == "" ||
+                                    ServerMemory < 3 ||
+                                    ServerAdminPass == ""
+                                ) {
+                                    const errorBox = $(
+                                        "#create-server-modal-config-error",
+                                    );
+                                    errorBox.removeClass("hidden");
 
-                        // Submit Create Task
-                        if (currentIndex == 1) {
-                            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
+                                    if (ServerName == "") {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Please provide a server name!</ol>",
+                                            );
+                                    }
 
-                            const postData = {
-                                serverName: ServerName,
-                                serverPort: parseInt(ServerPort),
-                                serverMemory: parseFloat(ServerMemory) * 1024 * 1024 * 1024,
-                                serverAdminPass: ServerAdminPass,
-                                serverClientPass: ServerClientPass,
-                                serverApiKey: ServerAPIKey,
-                            };
-                            try {
-                                const res = await $.ajax({
-                                    method: "post",
-                                    url: "/dashboard/servers",
-                                    contentType: "application/json; charset=utf-8",
-                                    dataType: "json",
-                                    data: JSON.stringify(postData),
-                                    headers: { "X-CSRF-Token": csrfToken },
-                                }).promise();
+                                    if (ServerPort < 7000) {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Server port must be greater or equal than 7000</ol>",
+                                            );
+                                    }
 
-                                const workflowId = res.workflow_id;
+                                    if (ServerMemory < 3) {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Server must have more than 3GB of memory</ol>",
+                                            );
+                                    }
+                                    if (ServerAdminPass == "") {
+                                        errorBox
+                                            .find("ul")
+                                            .append(
+                                                "<ol>Please provide a server admin password!</ol>",
+                                            );
+                                    }
+                                    return false;
+                                }
 
-                                workflowFinished = BuildWorkflowActions(workflowId);
-                                setInterval(async () => {
-                                    workflowFinished = BuildWorkflowActions(workflowId);
-                                }, 2000);
-                            } catch (err) {
-                                console.error(err);
+                                ServerAPIKey =
+                                    "AGT-API-" + makeapikey(32).toUpperCase();
+
+                                BuildAgentInstallCommands(
+                                    ServerName,
+                                    ServerMemory,
+                                    ServerPort,
+                                    ServerAPIKey,
+                                );
                             }
-                        }
 
-                        if (currentIndex == 2) {
-                            return workflowFinished;
-                        }
-                        return true;
-                    },
-                });
-            });
+                            // Submit Create Task
+                            if (currentIndex == 1) {
+                                let csrfToken =
+                                    document.getElementsByName(
+                                        "gorilla.csrf.Token",
+                                    )[0].value;
+
+                                const postData = {
+                                    serverName: ServerName,
+                                    serverPort: parseInt(ServerPort),
+                                    serverMemory:
+                                        parseFloat(ServerMemory) *
+                                        1024 *
+                                        1024 *
+                                        1024,
+                                    serverAdminPass: ServerAdminPass,
+                                    serverClientPass: ServerClientPass,
+                                    serverApiKey: ServerAPIKey,
+                                };
+                                try {
+                                    const res = await $.ajax({
+                                        method: "post",
+                                        url: "/dashboard/servers",
+                                        contentType:
+                                            "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        data: JSON.stringify(postData),
+                                        headers: { "X-CSRF-Token": csrfToken },
+                                    }).promise();
+
+                                    const workflowId = res.workflow_id;
+
+                                    workflowFinished =
+                                        BuildWorkflowActions(workflowId);
+                                    setInterval(async () => {
+                                        workflowFinished =
+                                            BuildWorkflowActions(workflowId);
+                                    }, 2000);
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                            }
+
+                            if (currentIndex == 2) {
+                                return workflowFinished;
+                            }
+                            return true;
+                        },
+                    });
+                },
+            );
         })
         .on("click", "#copy-join-code", (e) => {
             e.preventDefault();
@@ -521,6 +641,12 @@ function main() {
             toastr.success("", "Copied to clipboard", {
                 timeOut: 3000,
             });
+        })
+        .on("click", ".server-action-btn", (e) => {
+            const $this = $(e.currentTarget);
+            const action = $this.attr("data-server-action");
+            const agentId = $this.attr("data-agent-id");
+            WS.sendServerAction(agentId, action);
         });
 
     SortMods();
@@ -547,18 +673,23 @@ function main() {
 
     function makeapikey(length) {
         let result = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const charactersLength = characters.length;
         let counter = 0;
         while (counter < length) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength),
+            );
             counter += 1;
         }
         return result;
     }
 
     async function BuildWorkflowActions(workflowId) {
-        const workflowRes = await $.get(`/dashboard/servers/workflows/${workflowId}`).promise();
+        const workflowRes = await $.get(
+            `/dashboard/servers/workflows/${workflowId}`,
+        ).promise();
 
         const workflowData = workflowRes.workflow;
 
@@ -619,7 +750,9 @@ function main() {
                     actionTypeString = action.type;
             }
 
-            $cardBody.append(`<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`);
+            $cardBody.append(
+                `<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`,
+            );
         }
 
         let workflowFinished = true;
@@ -649,7 +782,9 @@ function main() {
         $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
     }
 
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+    );
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
@@ -673,11 +808,18 @@ function FilterServerList() {
 
     const search = $(".server-search").val().toLowerCase();
     const FilterOnline = $("#server-filter-online").prop("checked") ? 1 : 0;
-    const FilterInstalled = $("#server-filter-installed").prop("checked") ? 1 : 0;
+    const FilterInstalled = $("#server-filter-installed").prop("checked")
+        ? 1
+        : 0;
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
-        if ($el.attr("data-agentname").toLowerCase().includes(search) && ($el.attr("data-online") == FilterOnline || $el.attr("data-installed") == FilterInstalled || $el.attr("data-running") == FilterRunning)) {
+        if (
+            $el.attr("data-agentname").toLowerCase().includes(search) &&
+            ($el.attr("data-online") == FilterOnline ||
+                $el.attr("data-installed") == FilterInstalled ||
+                $el.attr("data-running") == FilterRunning)
+        ) {
             return true;
         } else {
             return false;
@@ -723,7 +865,9 @@ function ProcessSMMMetaDataFile($wrapper, fileData) {
     const modRefs = [];
 
     for (let modRef in installedMods) {
-        const existingMod = localStorageMods.mods.find((m) => m.modName == modRef);
+        const existingMod = localStorageMods.mods.find(
+            (m) => m.modName == modRef,
+        );
         if (existingMod) {
             modRefs.push(modRef);
         }
@@ -765,7 +909,11 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
             modalEl.find("button.btn-close").on("click", (e) => {
                 e.preventDefault();
-                const $this = $(e.currentTarget).parent().parent().parent().parent();
+                const $this = $(e.currentTarget)
+                    .parent()
+                    .parent()
+                    .parent()
+                    .parent();
                 $this.trigger("hidden.bs.modal");
                 $this.remove();
                 $this.modal("hide");
@@ -776,7 +924,8 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
             modalEl.on("hidden.bs.modal", () => {
                 $(this).remove();
                 $('[name^="__privateStripe"]').remove();
-                if (options.allowBackdropRemoval == true) $(".modal-backdrop").remove();
+                if (options.allowBackdropRemoval == true)
+                    $(".modal-backdrop").remove();
             });
             modalEl.modal("show");
             if (callback) callback(modalEl);
@@ -787,7 +936,9 @@ window.openModal = function (modal_dir, modal_name, var1, var2) {
 
 function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     if (agentName == "") {
-        $("#windows-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
+        $("#windows-install-agent textarea").val(
+            "PLEASE PROVIDE A SERVER NAME!",
+        );
         $("#linux-install-agent textarea").val("PLEASE PROVIDE A SERVER NAME!");
         return;
     }
@@ -812,7 +963,9 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
     $("#windows-install-agent .docker").val(WindowsInstallCommand);
-    $("#windows-install-agent .standalone").text(WindowsStandaloneInstallCommand);
+    $("#windows-install-agent .standalone").text(
+        WindowsStandaloneInstallCommand,
+    );
     $("#linux-install-agent .docker").text(LinuxInstallCommand);
     $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
 }
@@ -827,7 +980,10 @@ Number.prototype.pad = function (width, z) {
 };
 
 function detectColorScheme() {
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
         return "dark";
     } else {
         return "light";

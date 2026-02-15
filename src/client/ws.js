@@ -7,12 +7,20 @@ class WS extends EventTarget {
         this.reconnect();
 
         this.addEventListener("error", this.onError);
-        this.addEventListener("global.agent.action", this.onServerActionReceived);
+        this.addEventListener(
+            "global.agent.action",
+            this.onServerActionReceived,
+        );
     }
 
     reconnect() {
         const hostname = window.location.hostname;
-        this.ws = new WebSocket(`wss://${hostname}/dashboard/ws`);
+        const port = window.location.port ? `:${window.location.port}` : "";
+        if (hostname === "localhost") {
+            this.ws = new WebSocket(`ws://${hostname}${port}/dashboard/ws`);
+        } else {
+            this.ws = new WebSocket(`wss://${hostname}${port}/dashboard/ws`);
+        }
 
         this.ws.onopen = () => console.log("Connected to WebSocket");
         this.ws.onclose = (event) => {

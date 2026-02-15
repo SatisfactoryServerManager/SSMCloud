@@ -21,19 +21,12 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 
 	r.GET("/mods", middleware.AuthRequired(), handler.GET_DashboardMods)
 
-	r.GET("/serveraction/start", middleware.AuthRequired(), handler.GET_ServerAction_Start)
-	r.GET("/serveraction/stop", middleware.AuthRequired(), handler.GET_ServerAction_Stop)
-	r.GET("/serveraction/kill", middleware.AuthRequired(), handler.GET_ServerAction_Kill)
-	r.GET("/serveraction/install", middleware.AuthRequired(), handler.GET_ServerAction_Install)
-	r.GET("/serveraction/update", middleware.AuthRequired(), handler.GET_ServerAction_Update)
-
 	r.GET("/servers", middleware.AuthRequired(), handler.GET_DashboardServers)
 	r.POST("/servers", middleware.AuthRequired(), handler.POST_DashboardServers)
 	r.GET("/servers/delete", middleware.AuthRequired(), handler.GET_DashboardDeleteServer)
 	r.GET("/servers/:agentId", middleware.AuthRequired(), handler.GET_DashboardServer)
 	r.POST("/servers/:agentId", middleware.AuthRequired(), handler.POST_DashboardServerUpdate)
 	r.POST("/servers/:agentId/saves", middleware.AuthRequired(), handler.POST_DashboardServerSaveFile)
-	r.GET("/servers/:agentId/stats", middleware.AuthRequired(), handler.GET_DashboardServerStats)
 	r.GET("/servers/workflows/:workflowId", middleware.AuthRequired(), handler.GET_DashboardServerWorkflow)
 
 	r.GET("/account", middleware.AuthRequired(), handler.GET_DashboardAccount)

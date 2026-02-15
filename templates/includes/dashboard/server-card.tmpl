@@ -41,16 +41,10 @@
       </div>
       <hr />
 
-      <div class="d-flex flex-column flex-md-row">
-        <a href="/dashboard/serveraction/start?id={{.Id}}" class="flex-fill mt-2 mt-md-0 me-md-2 {{if .Status.Running}}disabled{{end}}">
-            <button class='btn btn-success server-action-btn w-100' {{if .Status.Running}}disabled{{end}}><i class="fas fa-play me-1"></i>Start</button>
-        </a>
-        <a href="/dashboard/serveraction/stop?id={{.Id}}" class="flex-fill mt-2  mt-md-0 {{if not .Status.Running}}disabled{{end}}">
-            <button class='btn btn-warning server-action-btn w-100' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-stop me-1"></i>Stop</button>
-        </a>
-        <a href="/dashboard/serveraction/kill?id={{.Id}}" class="flex-fill mt-2  mt-md-0 ms-md-2 {{if not .Status.Running}}disabled{{end}}">
-            <button class='btn btn-danger server-action-btn w-100' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-skull-crossbones me-1"></i>Kill</button>
-        </a>
+      <div class="d-flex flex-column flex-md-row gap-2">
+          <button data-agent-id="{{.Id}}" data-server-action="start" class='btn btn-success server-action-btn flex-fill mt-2 mt-md-0' {{if .Status.Running}}disabled{{end}}><i class="fas fa-play me-1"></i>Start</button>
+          <button data-agent-id="{{.Id}}" data-server-action="stop" class='btn btn-warning server-action-btn flex-fill mt-2 mt-md-0' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-stop me-1"></i>Stop</button>
+          <button data-agent-id="{{.Id}}" data-server-action="kill" class='btn btn-danger server-action-btn flex-fill mt-2  mt-md-0' {{if not .Status.Running}}disabled{{end}}><i class="fas fa-skull-crossbones me-1"></i>Kill</button>
       </div>
     </div>
   </div>

@@ -431,15 +431,6 @@ func GetMods(request *APIGetModsRequest) (*APIGetModsResponse, error) {
 
 }
 
-func PostServerTask(request *APIServerTaskRequest) error {
-	res := &APIResponse{}
-	if err := post("frontend/users/me/account/agents/tasks", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func InstallMod(request *APIInstallModRequest) error {
 	res := &APIResponse{}
 	if err := post("frontend/users/me/account/agents/installmod", request.AccessToken, nil, request, res); err != nil {
@@ -550,21 +541,6 @@ func SendSaveFile(request *APIPostAgentSaveFile) error {
 	}
 
 	return nil
-}
-
-func GetAgentStats(request *APIGetAgentStatsRequest) (*APIGetAgentStatsResponse, error) {
-	res := &APIGetAgentStatsResponse{}
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := get("frontend/users/me/account/agents/stats", request.AccessToken, &values, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
 }
 
 func DeleteAccount(request *APIDeleteAccountRequest) error {

@@ -56,13 +56,13 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		}
 
 		if msg.Action == "global.agent.action" {
-			handler.WS_ServerAction(conn, accessToken, msg)
+			handler.WS_ServerAction(conn, userEid, msg)
 		}
 		if msg.Action == "console.agent.status" {
 			handler.WS_GetAgentStatus(conn, userEid, msg)
 		}
 		if msg.Action == "console.agent.stats" {
-			handler.WS_GetAgentStats(conn, accessToken, msg)
+			handler.WS_GetAgentStats(conn, userEid, msg)
 		}
 		if msg.Action == "console.agent.logs" {
 			handler.WS_GetAgentLogs(conn, userEid, msg)
@@ -70,16 +70,11 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 	}
 }
 
-func (handler *DashboardWSHandler) WS_ServerAction(conn *websocket.Conn, accessToken string, msg *api.WSMessage) {
-	err := api.PostServerTask(&api.APIServerTaskRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: accessToken,
-		},
-		Action:  msg.ServerAction,
-		AgentID: msg.AgentId,
-	})
+func (handler *DashboardWSHandler) WS_ServerAction(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	err := api.CreateAgentTaskGPRC(context.Background(), userEid, msg.AgentId, msg.ServerAction, nil)
 
 	if err != nil {
+		fmt.Println("Error posting server task:", err)
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
 		return
 	}
@@ -100,6 +95,7 @@ func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userE
 	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
 
 	if err != nil {
+		fmt.Println("Error getting agent status:", err)
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
 		return
 	}
@@ -114,22 +110,18 @@ func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userE
 	}
 }
 
-func (handler *DashboardWSHandler) WS_GetAgentStats(conn *websocket.Conn, accessToken string, msg *api.WSMessage) {
-	statsRes, err := api.GetAgentStats(&api.APIGetAgentStatsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: accessToken,
-		},
-		AgentId: msg.AgentId,
-	})
+func (handler *DashboardWSHandler) WS_GetAgentStats(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	statsRes, err := api.GetAgentStatsGRPC(context.Background(), userEid, msg.AgentId)
 
 	if err != nil {
+		fmt.Println("Error getting agent stats:", err)
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
 		return
 	}
 
 	res := api.WSResponse{
 		Action: msg.Action,
-		Data:   statsRes.Stats,
+		Data:   statsRes,
 	}
 
 	if err := conn.WriteJSON(res); err != nil {

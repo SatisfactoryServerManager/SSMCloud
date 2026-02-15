@@ -3,7 +3,9 @@ const ws = require("./ws");
 class ServerConsole extends EventTarget {
     constructor() {
         super();
-        this.agentId = window.location.href.substring(window.location.href.lastIndexOf("/") + 1);
+        this.agentId = window.location.href.substring(
+            window.location.href.lastIndexOf("/") + 1,
+        );
         this.status = {
             running: false,
             installed: false,
@@ -65,7 +67,12 @@ class ServerConsole extends EventTarget {
     deepEqual(x, y) {
         if (x === y) {
             return true;
-        } else if (typeof x == "object" && x != null && typeof y == "object" && y != null) {
+        } else if (
+            typeof x == "object" &&
+            x != null &&
+            typeof y == "object" &&
+            y != null
+        ) {
             if (Object.keys(x).length != Object.keys(y).length) return false;
 
             for (var prop in x) {
@@ -198,7 +205,9 @@ class ServerConsole extends EventTarget {
 
         // Delay scroll update to next frame for smoother UI
         requestAnimationFrame(() => {
-            this.$serverConsole.scrollTop(this.$serverConsole.prop("scrollHeight"));
+            this.$serverConsole.scrollTop(
+                this.$serverConsole.prop("scrollHeight"),
+            );
         });
     }
     onStatsRecieved(event) {
@@ -216,19 +225,35 @@ class ServerConsole extends EventTarget {
             }
             const stat = stats[i];
 
-            const date = new Date(stat.createdAt);
+            var date = new Date(1970, 0, 1); // Epoch
+            date.setSeconds(stat.created_at.seconds);
 
             cpuStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.cpu),
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
+                value: parseFloat(stat.cpu || 0),
             });
             memStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
-                value: parseFloat(stat.mem),
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
+                value: parseFloat(stat.mem || 0),
             });
             const runningVal = stat.running ? 1 : -1;
             runningStats.push({
-                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
+                date:
+                    date.getHours().pad(2) +
+                    ":" +
+                    date.getMinutes().pad(2) +
+                    ":" +
+                    date.getSeconds().pad(2),
                 value: runningVal,
             });
 
@@ -358,7 +383,9 @@ class ServerConsole extends EventTarget {
         const textColour = $("body").hasClass("dark") ? "white" : "black";
 
         if (this.uptimeChart != null) {
-            this.uptimeChart.data.datasets[0].data = data.map((row) => row.value);
+            this.uptimeChart.data.datasets[0].data = data.map(
+                (row) => row.value,
+            );
             this.uptimeChart.data.labels = data.map((row) => row.date);
             this.uptimeChart.data.datasets[0].backgroundColor = backgroundColor;
             this.uptimeChart.update();
