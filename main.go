@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 //go:embed static/*
@@ -69,6 +70,12 @@ func main() {
 				return ""
 			}
 			return t.Format("January 2, 2006 03:04:05 PM")
+		},
+		"formatDatePb": func(t *timestamppb.Timestamp) string {
+			if t.AsTime().IsZero() {
+				return ""
+			}
+			return t.AsTime().Format("January 2, 2006 03:04:05 PM")
 		},
 		"OIDtoString": func(id primitive.ObjectID) string {
 			return id.Hex()
@@ -177,6 +184,11 @@ func main() {
 	srv := &http.Server{
 		Addr:    httpBind,
 		Handler: csrfMiddleware(router),
+	}
+
+	if os.Getenv("APP_MODE") == "development" {
+		fmt.Printf("Running in development mode with CORS disabled\n")
+		srv.Handler = router
 	}
 
 	go func() {

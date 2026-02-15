@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -231,16 +232,7 @@ func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {
 
 	pageInt, _ := strconv.Atoi(page)
 
-	modsRes, err := api.GetMods(&api.APIGetModsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		AgentId:   agentId,
-		Page:      pageInt,
-		Sort:      sort,
-		Direction: direction,
-		Search:    search,
-	})
+	modsRes, err := api.GetAgentModsGRPC(context.Background(), c.GetString("user_eid"), agentId, int32(pageInt), sort, direction, search)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -307,13 +299,7 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err := api.UpdateServerSettings(&api.APIUpdateServerSettingsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIUpdateServerSettings: PostData,
-		ID:                      agentId,
-	})
+	err := api.UpdateAgentSettingsGRPC(context.Background(), c.GetString("user_eid"), agentId, PostData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
@@ -331,24 +317,23 @@ func (handler *DashboardHandler) POST_DashboardServerUpdate(c *gin.Context) {
 func (handler *DashboardHandler) POST_DashboardServerSaveFile(c *gin.Context) {
 	agentId, _ := c.Params.Get("agentId")
 
-	// Retrieve uploaded file
-	file, header, err := c.Request.FormFile("file")
+	fileHeader, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer file.Close()
 
-	err = api.SendSaveFile(&api.APIPostAgentSaveFile{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		File:    file,
-		Header:  header,
-		AgentId: agentId,
-	})
+	err = api.UploadSaveFileGRPC(context.Background(), c.GetString("user_eid"), agentId, file, fileHeader.Filename, fileHeader.Header.Get("Content-Type"))
 
 	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		return
 	}
@@ -451,12 +436,7 @@ func (handler *DashboardHandler) GET_DashboardAccountAudit(c *gin.Context) {
 
 	auditType := c.Query("type")
 
-	auditRes, err := api.GetAccountAudit(&api.APIGetAccountAuditRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		AuditType: auditType,
-	})
+	auditRes, err := api.GetMyUserActiveAccountAuditsGRPC(context.Background(), c.GetString("user_eid"), auditType)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -464,13 +444,11 @@ func (handler *DashboardHandler) GET_DashboardAccountAudit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "audit": auditRes.Audit})
+	c.JSON(http.StatusOK, gin.H{"success": true, "audit": auditRes})
 }
 
 func (handler *DashboardHandler) GET_DashboardAccountUsers(c *gin.Context) {
-	usersRes, err := api.GetAccountUsers(&api.APIRequest{
-		AccessToken: c.GetString("access_token"),
-	})
+	usersRes, err := api.GetMyUserActiveAccountUsersGRPC(context.Background(), c.GetString("user_eid"))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -478,7 +456,7 @@ func (handler *DashboardHandler) GET_DashboardAccountUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "users": usersRes.Users})
+	c.JSON(http.StatusOK, gin.H{"success": true, "users": usersRes})
 }
 
 func (handler *DashboardHandler) GET_DashboardCreateAccount(c *gin.Context) {
@@ -650,12 +628,7 @@ func (handler *DashboardHandler) POST_DashboardMods_Install(c *gin.Context) {
 		return
 	}
 
-	err := api.InstallMod(&api.APIInstallModRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIModData: PostData,
-	})
+	err := api.InstallAgentModGRPC(context.Background(), c.GetString("user_eid"), PostData.AgentID, PostData.ModRef)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -675,12 +648,7 @@ func (handler *DashboardHandler) POST_DashboardMods_Uninstall(c *gin.Context) {
 		return
 	}
 
-	err := api.UninstallMod(&api.APIUninstallModRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIModData: PostData,
-	})
+	err := api.UninstallAgentModGRPC(context.Background(), c.GetString("user_eid"), PostData.AgentID, PostData.ModRef)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})

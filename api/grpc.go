@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"os"
 	"sync"
 
@@ -110,7 +111,7 @@ func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, usernam
 	return nil
 }
 
-func GetMyUserGRPC(ctx context.Context, externalID string) (*pb.User, error) {
+func GetMyUserGRPC(ctx context.Context, externalID string) (*pbModels.User, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -129,7 +130,7 @@ func GetMyUserGRPC(ctx context.Context, externalID string) (*pb.User, error) {
 	return userpbres.User, nil
 }
 
-func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pb.Account, error) {
+func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pbModels.Account, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -148,7 +149,7 @@ func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pb.
 	return pbLinkedAccountsRes.LinkedAccounts, nil
 }
 
-func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pb.Account, error) {
+func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pbModels.Account, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -265,4 +266,179 @@ func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string,
 	})
 
 	return err
+}
+
+func GetAgentModsGRPC(ctx context.Context, externalID string, agentId string, page int32, sort string, direction string, search string) (*pb.GetAgentModsResponse, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbModsRes, err := frontendServiceClient.GetAgentMods(ctx, &pb.GetAgentModsRequest{
+		Eid:       externalID,
+		AgentId:   agentId,
+		Page:      page,
+		Sort:      sort,
+		Direction: direction,
+		Search:    search,
+	})
+	return pbModsRes, err
+}
+
+func InstallAgentModGRPC(ctx context.Context, externalID string, agentId string, modReference string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.InstallAgentMod(ctx, &pb.InstallAgentModRequest{
+		Eid:          externalID,
+		AgentId:      agentId,
+		ModReference: modReference,
+	})
+
+	return err
+}
+
+func UninstallAgentModGRPC(ctx context.Context, externalID string, agentId string, modReference string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.UninstallAgentMod(ctx, &pb.UninstallAgentModRequest{
+		Eid:          externalID,
+		AgentId:      agentId,
+		ModReference: modReference,
+	})
+
+	return err
+}
+
+func UpdateAgentSettingsGRPC(ctx context.Context, externalID string, agentId string, settings APIUpdateServerSettings) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbSettings := &pb.ServerSettings{
+		ConfigSetting:        settings.ConfigSetting,
+		UpdateOnStart:        settings.UpdateOnStart,
+		AutoRestart:          settings.AutoRestart,
+		AutoPause:            settings.AutoPause,
+		AutoSaveOnDisconnect: settings.AutoSaveOnDisconnect,
+		AutoSaveInterval:     int32(settings.AutoSaveInterval),
+		SeasonalEvents:       settings.SeasonalEvents,
+		MaxPlayers:           int32(settings.MaxPlayers),
+		WorkerThreads:        int32(settings.WorkerThreads),
+		Branch:               settings.Branch,
+		BackupInterval:       settings.BackupInterval, // proto float = Go float32
+		BackupKeep:           int32(settings.BackupKeep),
+		ModReference:         settings.ModReference,
+		ModConfig:            settings.ModConfig,
+	}
+
+	_, err = frontendServiceClient.UpdateAgentSettings(ctx, &pb.UpdateAgentSettingsRequest{
+		Eid:      externalID,
+		AgentId:  agentId,
+		Settings: pbSettings,
+	})
+	return err
+}
+
+func UploadSaveFileGRPC(ctx context.Context, externalID string, agentId string, file io.Reader, filename, contentType string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	stream, err := frontendServiceClient.UploadSaveFile(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create upload save file stream: %w", err)
+	}
+
+	// Send metadata first
+	err = stream.Send(&pb.UploadSaveFileRequest{
+		Data: &pb.UploadSaveFileRequest_Metadata{
+			Metadata: &pb.FileMetadata{
+				Eid:         externalID,
+				AgentId:     agentId,
+				Filename:    filename,
+				ContentType: contentType,
+			},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("error sending metadata with error: %s", err.Error())
+	}
+
+	buffer := make([]byte, 32*1024) // 32KB chunks
+
+	for {
+		n, err := file.Read(buffer)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("error reading file chunk with error: %s", err.Error())
+		}
+
+		err = stream.Send(&pb.UploadSaveFileRequest{
+			Data: &pb.UploadSaveFileRequest_Chunk{
+				Chunk: buffer[:n],
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("error sending chunk with error: %s", err.Error())
+		}
+	}
+
+	resp, err := stream.CloseAndRecv()
+	if err != nil {
+		fmt.Println(resp)
+		return err
+	}
+
+	fmt.Println(resp)
+
+	return nil
+}
+
+func GetMyUserActiveAccountUsersGRPC(ctx context.Context, externalID string) ([]*pbModels.User, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbModsRes, err := frontendServiceClient.GetMyUserActiveAccountUsers(ctx, &pb.GetMyUserActiveAccountUsersRequest{
+		Eid: externalID,
+	})
+	return pbModsRes.Users, err
+}
+
+func GetMyUserActiveAccountAuditsGRPC(ctx context.Context, externalID string, auditType string) ([]*pbModels.AccountAudit, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	pbModsRes, err := frontendServiceClient.GetMyUserActiveAccountAudits(ctx, &pb.GetMyUserActiveAccountAuditsRequest{
+		Eid:  externalID,
+		Type: auditType,
+	})
+	return pbModsRes.Audits, err
 }

@@ -128,7 +128,7 @@
                                 id="inp_updateonstart"
                                 type="checkbox"
                                 {{if
-                                .agent.ServerConfig.UpdateOnStart}}
+                                .agent.ServerConfig.UpdateOnStart.Value}}
                                 checked
                                 {{end}}
                                 data-on="Enabled"
@@ -157,7 +157,7 @@
                                 id="inp_autorestart"
                                 type="checkbox"
                                 {{if
-                                .agent.ServerConfig.AutoRestart}}
+                                .agent.ServerConfig.AutoRestart.Value}}
                                 checked
                                 {{end}}
                                 data-on="Enabled"
@@ -186,7 +186,7 @@
                                 id="inp_autoPause"
                                 type="checkbox"
                                 {{if
-                                .agent.ServerConfig.AutoPause}}
+                                .agent.ServerConfig.AutoPause.Value}}
                                 checked
                                 {{end}}
                                 data-on="Enabled"
@@ -215,7 +215,7 @@
                                 id="inp_autoSaveOnDisconnect"
                                 type="checkbox"
                                 {{if
-                                .agent.ServerConfig.AutoSaveOnDisconnect}}
+                                .agent.ServerConfig.AutoSaveOnDisconnect.Value}}
                                 checked
                                 {{end}}
                                 data-on="Enabled"
@@ -328,7 +328,7 @@
                                 type="checkbox"
                                 {{if
                                 not
-                                .agent.ServerConfig.DisableSeasonalEvents}}checked{{end}}
+                                .agent.ServerConfig.DisableSeasonalEvents.Value}}checked{{end}}
                                 data-on="Enabled"
                                 data-off="Disabled"
                                 data-onstyle="success"
@@ -426,19 +426,15 @@
                         </span>
                     </div>
                     <div class="col-12 col-md-8">
-                        <a
-                            href="/dashboard/serveraction/install?id={{
-                                .agent.Id
-                            }}"
+                        <button
+                            class="btn btn-danger server-action-btn"
+                            id="settings-dangerarea-installsf"
+                            data-server-action="install"
+                            data-agent-id="{{.agent.Id}}"
                         >
-                            <button
-                                class="btn btn-danger"
-                                id="settings-dangerarea-installsf"
-                            >
-                                <i class="fas fa-download"></i> Install
-                                / Reinstall
-                            </button>
-                        </a>
+                            <i class="fas fa-download"></i>
+                            Install / Reinstall
+                        </button>
                     </div>
                 </div>
                 <div class="row settings-row">
@@ -449,18 +445,13 @@
                         </span>
                     </div>
                     <div class="col-12 col-md-8">
-                        <a
-                            href="/dashboard/serveraction/update?id={{
-                                .agent.Id
-                            }}"
+                        <button class="btn btn-warning server-action-btn"
+                            data-server-action="update"
+                            data-agent-id="{{.agent.Id}}"
                         >
-                            <button class="btn btn-warning">
-                                <i
-                                    class="fa-solid fa-circle-arrow-up"
-                                ></i>
-                                Update Server
-                            </button>
-                        </a>
+                            <i class="fa-solid fa-circle-arrow-up"></i>
+                            Update Server
+                        </button>
                     </div>
                 </div>
             </div>

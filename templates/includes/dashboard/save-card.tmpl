@@ -4,7 +4,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-12">
-        <a target="_blank" href="/dashboard/download/save?agentid={{.agent.Id}}&uuid={{.save.UUID}}" class="btn btn-primary float-end">
+        <a target="_blank" href="/dashboard/download/save?agentid={{.agent.Id}}&uuid={{.save.Uuid}}" class="btn btn-primary float-end">
           <i class="fas fa-download"></i>
         </a>
         <h6>{{.save.FileName}}</h6>
@@ -12,7 +12,7 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <small>{{toBytes .save.Size}} - {{formatDate .save.CreatedAt}}</small>
+        <small>{{toBytes .save.Size}} - {{formatDatePb .save.CreatedAt}}</small>
       </div>
     </div>
   </div>

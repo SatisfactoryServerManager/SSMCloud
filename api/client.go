@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -262,42 +261,6 @@ func DownloadFile(c *gin.Context, request *APIDownloadFileRequest) {
 	io.Copy(c.Writer, resp.Body)
 }
 
-func postFile(endpoint string, accessToken string, fileBytes bytes.Buffer, contentType string, resData APIResult) error {
-	if client == nil {
-		initClient()
-	}
-
-	url := BuildURL(endpoint, nil)
-	req, err := http.NewRequest("POST", url, &fileBytes)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("apikey", os.Getenv("BACKEND_SECRET_KEY"))
-	req.Header.Set("Content-Type", contentType)
-
-	if accessToken != "" {
-		req.Header.Add("x-ssm-auth-token", accessToken)
-	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {
-		return err
-	}
-
-	if !resData.IsSuccess() {
-		return fmt.Errorf("api returned error: %s", resData.GetError())
-	}
-
-	return nil
-}
-
 func PingBackend() error {
 	resData := &APIResponse{}
 	if err := get("ping", "", nil, resData); err != nil {
@@ -380,75 +343,6 @@ func DeleteAgent(request *APIDeleteAgentRequest) error {
 	return nil
 }
 
-func UpdateServerSettings(request *APIUpdateServerSettingsRequest) error {
-
-	res := &APIResponse{}
-	if err := post("frontend/users/me/account/agents/settings", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func GetAccountAudit(request *APIGetAccountAuditRequest) (*APIGetAccountAuditResponse, error) {
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &APIGetAccountAuditResponse{}
-
-	if err := get("frontend/users/me/account/audit", request.AccessToken, &values, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func GetAccountUsers(request *APIRequest) (*APIGetAccountUsersResponse, error) {
-	res := &APIGetAccountUsersResponse{}
-
-	if err := get("frontend/users/me/account/users", request.AccessToken, nil, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func GetMods(request *APIGetModsRequest) (*APIGetModsResponse, error) {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-	res := &APIGetModsResponse{}
-
-	if err := get("frontend/users/me/account/agents/mods", request.AccessToken, &values, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-
-}
-
-func InstallMod(request *APIInstallModRequest) error {
-	res := &APIResponse{}
-	if err := post("frontend/users/me/account/agents/installmod", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func UninstallMod(request *APIUninstallModRequest) error {
-	res := &APIResponse{}
-	if err := post("frontend/users/me/account/agents/uninstallmod", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func GetAccountIntegrations(request *APIRequest) (*APIGetAccountIntegrationsResponse, error) {
 	res := &APIGetAccountIntegrationsResponse{}
 
@@ -509,38 +403,6 @@ func GetAccountIntegrationEvents(request *APIGetAccountIntegrationEventsRequest)
 	}
 
 	return res, nil
-}
-
-func SendSaveFile(request *APIPostAgentSaveFile) error {
-	filename := request.Header.Filename
-
-	// Prepare multipart form to send to another backend
-	var buf bytes.Buffer
-	writer := multipart.NewWriter(&buf)
-
-	// Create the form field "file"
-	part, err := writer.CreateFormFile("file", filename)
-	if err != nil {
-		return err
-	}
-
-	// Copy file data into multipart form
-	if _, err := io.Copy(part, request.File); err != nil {
-		return err
-	}
-
-	// Close writer to finalize the form
-	writer.Close()
-
-	contentType := writer.FormDataContentType()
-
-	endpoint := fmt.Sprintf("frontend/users/me/account/agents/upload/%s/save", request.AgentId)
-	res := &APIResponse{}
-	if err := postFile(endpoint, request.AccessToken, buf, contentType, res); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func DeleteAccount(request *APIDeleteAccountRequest) error {
