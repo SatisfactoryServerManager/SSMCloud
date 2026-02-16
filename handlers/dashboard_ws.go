@@ -92,7 +92,7 @@ func (handler *DashboardWSHandler) WS_ServerAction(conn *websocket.Conn, userEid
 }
 
 func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
-	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
+	theAgent, err := api.GetUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
 
 	if err != nil {
 		fmt.Println("Error getting agent status:", err)

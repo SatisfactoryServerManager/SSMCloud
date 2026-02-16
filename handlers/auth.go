@@ -77,7 +77,7 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 		return
 	}
 
-	linkedAccounts, err := api.GetMyUserLinkedAccountsGRPC(context.Background(), subject)
+	linkedAccounts, err := api.GetUserLinkedAccountsGRPC(context.Background(), subject)
 
 	if err != nil {
 		c.String(500, "cant get linked accounts: %v", err)

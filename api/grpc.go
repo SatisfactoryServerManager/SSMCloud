@@ -111,7 +111,7 @@ func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, usernam
 	return nil
 }
 
-func GetMyUserGRPC(ctx context.Context, externalID string) (*pbModels.User, error) {
+func GetUserGRPC(ctx context.Context, externalID string) (*pbModels.User, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -119,7 +119,7 @@ func GetMyUserGRPC(ctx context.Context, externalID string) (*pbModels.User, erro
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	userpbres, err := frontendServiceClient.GetMyUser(ctx, &pb.GetMyUserRequest{
+	userpbres, err := frontendServiceClient.GetUser(ctx, &pb.GetUserRequest{
 		Eid: externalID,
 	})
 
@@ -130,7 +130,7 @@ func GetMyUserGRPC(ctx context.Context, externalID string) (*pbModels.User, erro
 	return userpbres.User, nil
 }
 
-func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pbModels.Account, error) {
+func GetUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pbModels.Account, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -138,7 +138,7 @@ func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pbM
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbLinkedAccountsRes, err := frontendServiceClient.GetMyUserLinkedAccounts(ctx, &pb.GetMyUserLinkedAccountsRequest{
+	pbLinkedAccountsRes, err := frontendServiceClient.GetUserLinkedAccounts(ctx, &pb.GetUserLinkedAccountsRequest{
 		Eid: externalID,
 	})
 
@@ -149,7 +149,7 @@ func GetMyUserLinkedAccountsGRPC(ctx context.Context, externalID string) ([]*pbM
 	return pbLinkedAccountsRes.LinkedAccounts, nil
 }
 
-func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pbModels.Account, error) {
+func GetUserActiveAccountGRPC(ctx context.Context, externalID string) (*pbModels.Account, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -157,7 +157,7 @@ func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pbMode
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbActiveAccountRes, err := frontendServiceClient.GetMyUserActiveAccount(ctx, &pb.GetMyUserActiveAccountRequest{
+	pbActiveAccountRes, err := frontendServiceClient.GetUserActiveAccount(ctx, &pb.GetUserActiveAccountRequest{
 		Eid: externalID,
 	})
 
@@ -168,7 +168,7 @@ func GetMyUserActiveAccountGRPC(ctx context.Context, externalID string) (*pbMode
 	return pbActiveAccountRes.ActiveAccount, nil
 }
 
-func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([]*pbModels.Agent, error) {
+func GetUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([]*pbModels.Agent, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -176,7 +176,7 @@ func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbAgentsRes, err := frontendServiceClient.GetMyUserActiveAccountAgents(ctx, &pb.GetMyUserActiveAccountAgentsRequest{
+	pbAgentsRes, err := frontendServiceClient.GetUserActiveAccountAgents(ctx, &pb.GetUserActiveAccountAgentsRequest{
 		Eid: externalID,
 	})
 
@@ -187,7 +187,7 @@ func GetMyUserActiveAccountAgentsGRPC(ctx context.Context, externalID string) ([
 	return pbAgentsRes.Agents, nil
 }
 
-func GetMyUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID string, agentId string) (*pbModels.Agent, error) {
+func GetUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID string, agentId string) (*pbModels.Agent, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -195,7 +195,7 @@ func GetMyUserActiveAccountSingleAgentGRPC(ctx context.Context, externalID strin
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbAgentsRes, err := frontendServiceClient.GetMyUserActiveAccountSingleAgent(ctx, &pb.GetMyUserActiveAccountSingleAgentRequest{
+	pbAgentsRes, err := frontendServiceClient.GetAgent(ctx, &pb.GetAgentRequest{
 		Eid:     externalID,
 		AgentId: agentId,
 	})
@@ -414,7 +414,7 @@ func UploadSaveFileGRPC(ctx context.Context, externalID string, agentId string, 
 	return nil
 }
 
-func GetMyUserActiveAccountUsersGRPC(ctx context.Context, externalID string) ([]*pbModels.User, error) {
+func GetUserActiveAccountUsersGRPC(ctx context.Context, externalID string) ([]*pbModels.User, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -422,13 +422,13 @@ func GetMyUserActiveAccountUsersGRPC(ctx context.Context, externalID string) ([]
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbModsRes, err := frontendServiceClient.GetMyUserActiveAccountUsers(ctx, &pb.GetMyUserActiveAccountUsersRequest{
+	pbModsRes, err := frontendServiceClient.GetUserActiveAccountUsers(ctx, &pb.GetUserActiveAccountUsersRequest{
 		Eid: externalID,
 	})
 	return pbModsRes.Users, err
 }
 
-func GetMyUserActiveAccountAuditsGRPC(ctx context.Context, externalID string, auditType string) ([]*pbModels.AccountAudit, error) {
+func GetUserActiveAccountAuditsGRPC(ctx context.Context, externalID string, auditType string) ([]*pbModels.AccountAudit, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -436,9 +436,194 @@ func GetMyUserActiveAccountAuditsGRPC(ctx context.Context, externalID string, au
 		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	pbModsRes, err := frontendServiceClient.GetMyUserActiveAccountAudits(ctx, &pb.GetMyUserActiveAccountAuditsRequest{
+	pbModsRes, err := frontendServiceClient.GetUserActiveAccountAudits(ctx, &pb.GetUserActiveAccountAuditsRequest{
 		Eid:  externalID,
 		Type: auditType,
 	})
 	return pbModsRes.Audits, err
+}
+
+func SwitchActiveAccountGRPC(ctx context.Context, externalId string, accountId string) error {
+
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.SwitchActiveAccount(ctx, &pb.SwitchActiveAccountRequest{
+		Eid:       externalId,
+		AccountId: accountId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateAccountGRPC(ctx context.Context, externalId string, accountName string) error {
+
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.CreateAccount(ctx, &pb.CreateAccountRequest{
+		Eid:         externalId,
+		AccountName: accountName,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func JoinAccountGRPC(ctx context.Context, externalId string, joinCode string) error {
+
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.JoinAccount(ctx, &pb.JoinAccountRequest{
+		Eid:      externalId,
+		JoinCode: joinCode,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateAgentGRPC(ctx context.Context, externalId string, agentName, apiKey, adminPass, clientPass string, port int32, memory float32) (string, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return "", fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	createRes, err := frontendServiceClient.CreateAgent(ctx, &pb.CreateAgentRequest{
+		Eid:        externalId,
+		AgentName:  agentName,
+		ApiKey:     apiKey,
+		AdminPass:  adminPass,
+		ClientPass: clientPass,
+		Port:       port,
+		Memory:     memory,
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return createRes.WorkflowId, nil
+}
+
+func DeleteAgentGRPC(ctx context.Context, externalId string, agentId string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.DeleteAgent(ctx, &pb.DeleteAgentRequest{
+		Eid:     externalId,
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAgentWorkflowGRPC(ctx context.Context, workflowId string) (*pbModels.Workflow, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	workflowRes, err := frontendServiceClient.GetAgentWorkflow(ctx, &pb.GetAgentWorkflowRequest{
+		WorkflowId: workflowId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return workflowRes.Workflow, nil
+}
+
+func DeleteAccountGRPC(ctx context.Context, externalId, accountId string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.DeleteAccount(ctx, &pb.DeleteAccountRequest{
+		Eid:       externalId,
+		AccountId: accountId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAccountIntegrationsGRPC(ctx context.Context, externalId string) ([]*pbModels.AccountIntegration, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	integrationsRes, err := frontendServiceClient.GetUserActiveAccountIntegrations(ctx, &pb.GetUserActiveAccountIntegrationsRequest{
+		Eid: externalId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return integrationsRes.Integrations, nil
+}
+
+func GetAccountIntegrationEventsGRPC(ctx context.Context, integrationId string) ([]*pbModels.IntegrationEvent, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	integrationsRes, err := frontendServiceClient.GetAccountIntegrationEvents(ctx, &pb.GetAccountIntegrationEventsRequest{
+		IntegrationId: integrationId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return integrationsRes.Events, nil
 }

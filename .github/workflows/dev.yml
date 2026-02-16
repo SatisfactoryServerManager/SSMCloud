@@ -9,12 +9,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - name: "Remove replace from go mod file"
+              run: sed -i '/^replace.*ssmcloud-resources/d' go.mod
             - name: Setup Go
               uses: actions/setup-go@v5
               with:
                   go-version-file: "go.mod"
             - name: Install dependencies
-              run: go get .
+              run: go mod tidy
             - name: Build
               run: go build -o ./release/linux/ssmcloud-frontend .
             - run: if [ ! -f ./release/linux/ssmcloud-frontend ]; then exit 1; fi
@@ -50,12 +52,14 @@ jobs:
         runs-on: self-hosted
         steps:
             - uses: actions/checkout@v4
+            - name: "Remove replace from go mod file"
+              run: (Get-Content go.mod) | Where-Object { $_ -notmatch '^replace.*ssmcloud-resources' } | Set-Content go.mod
             - name: Setup Go
               uses: actions/setup-go@v5
               with:
                   go-version-file: "go.mod"
             - name: Install dependencies
-              run: go get .
+              run: go mod tidy
             - name: Build
               run: go build -o ./release/windows/ssmcloud-frontend.exe .
             - uses: vimtor/action-zip@v1

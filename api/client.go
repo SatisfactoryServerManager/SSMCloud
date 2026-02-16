@@ -268,90 +268,6 @@ func PingBackend() error {
 	}
 	return nil
 }
-func CreateAccount(request *APICreateAccountRequest) error {
-
-	res := &APIResponse{}
-	if err := post("frontend/users/me/accounts", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func JoinAccount(request *APIJoinAccountRequest) error {
-
-	res := &APIResponse{}
-	if err := post("frontend/users/me/accounts/join", request.AccessToken, nil, request, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func SwitchAccount(request *APISwitchAccountRequest) error {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return err
-	}
-
-	res := &APIResponse{}
-	if err := get("frontend/users/me/accounts/switch", request.AccessToken, &values, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func CreateServer(request *APICreateServerRequest) (*APICreateServerResponse, error) {
-	res := &APICreateServerResponse{}
-	if err := post("frontend/users/me/account/agents", request.AccessToken, nil, request, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func GetServerWorkflow(request *APIGetServerWorkflowRequest) (*APIGetServerWorkflowResponse, error) {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	accountsRes := &APIGetServerWorkflowResponse{}
-	if err := get("frontend/workflows", request.AccessToken, &values, accountsRes); err != nil {
-		return nil, err
-	}
-
-	return accountsRes, nil
-}
-
-func DeleteAgent(request *APIDeleteAgentRequest) error {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return err
-	}
-
-	res := &APIResponse{}
-
-	if err := delete("frontend/users/me/account/agents", request.AccessToken, &values, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func GetAccountIntegrations(request *APIRequest) (*APIGetAccountIntegrationsResponse, error) {
-	res := &APIGetAccountIntegrationsResponse{}
-
-	if err := get("frontend/users/me/account/integrations", request.AccessToken, nil, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
 
 func AddAccountIntegration(request *APIPostAccountIntegrationsRequest) error {
 	res := &APIResponse{}
@@ -383,32 +299,6 @@ func DeleteAccountIntegration(request *APIDeleteAccountIntegrationsRequest) erro
 	res := &APIResponse{}
 
 	if err := delete("frontend/users/me/account/integrations/delete", request.AccessToken, &values, res); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func GetAccountIntegrationEvents(request *APIGetAccountIntegrationEventsRequest) (*APIGetAccountIntegrationEventsResponse, error) {
-
-	values, err := encoder.Values(request)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &APIGetAccountIntegrationEventsResponse{}
-
-	if err := get("frontend/users/me/account/integrations/events", request.AccessToken, &values, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func DeleteAccount(request *APIDeleteAccountRequest) error {
-
-	res := &APIResponse{}
-	if err := delete("frontend/users/me/account", request.AccessToken, nil, res); err != nil {
 		return err
 	}
 

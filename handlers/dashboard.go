@@ -9,6 +9,7 @@ import (
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
+	"github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/csrf"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -46,10 +47,7 @@ func (handler *DashboardHandler) GET_Dashboard(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 
-	integrationRes, err := api.GetAccountIntegrations(&api.APIRequest{
-		AccessToken: c.GetString("access_token"),
-	})
-
+	integrationRes, err := api.GetAccountIntegrationsGRPC(context.Background(), c.GetString("user_eid"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
@@ -59,7 +57,7 @@ func (handler *DashboardHandler) GET_DashboardIntegrations(c *gin.Context) {
 	RenderTemplate(c, "pages/dashboard/integrations", gin.H{
 		"pageTitle":        "Integrations",
 		"globalEventTypes": eventTypes,
-		"integrations":     integrationRes.Integrations,
+		"integrations":     integrationRes,
 		"csrfField":        csrf.TemplateField(c.Request),
 	})
 }
@@ -114,9 +112,7 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 		return
 	}
 
-	integrationRes, err := api.GetAccountIntegrations(&api.APIRequest{
-		AccessToken: c.GetString("access_token"),
-	})
+	integrationRes, err := api.GetAccountIntegrationsGRPC(context.Background(), c.GetString("user_eid"))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -124,12 +120,7 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 		return
 	}
 
-	integrationEventsRes, err := api.GetAccountIntegrationEvents(&api.APIGetAccountIntegrationEventsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		IntegrationId: integrationId.Hex(),
-	})
+	integrationEventsRes, err := api.GetAccountIntegrationEventsGRPC(context.Background(), integrationId.Hex())
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -137,10 +128,10 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 		return
 	}
 
-	var theIntegration *v2.AccountIntegrationSchema
-	for idx := range integrationRes.Integrations {
-		integration := &integrationRes.Integrations[idx]
-		if integration.ID == integrationId {
+	var theIntegration *models.AccountIntegration
+	for idx := range integrationRes {
+		integration := integrationRes[idx]
+		if integration.Id == integrationId.Hex() {
 			theIntegration = integration
 		}
 	}
@@ -155,7 +146,7 @@ func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
 		"pageTitle":         "Integrations",
 		"globalEventTypes":  eventTypes,
 		"integration":       theIntegration,
-		"integrationEvents": integrationEventsRes.IntegrationEvents,
+		"integrationEvents": integrationEventsRes,
 	})
 }
 
@@ -256,7 +247,7 @@ func (handler *DashboardHandler) GET_DashboardServer(c *gin.Context) {
 
 	userEid := c.GetString("user_eid")
 
-	theAgent, err := api.GetMyUserActiveAccountSingleAgentGRPC(context.Background(), userEid, agentId)
+	theAgent, err := api.GetUserActiveAccountSingleAgentGRPC(context.Background(), userEid, agentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -356,7 +347,7 @@ func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 
 	userEid := c.GetString("user_eid")
 
-	agentsRes, err := api.GetMyUserActiveAccountAgentsGRPC(context.Background(), userEid)
+	agentsRes, err := api.GetUserActiveAccountAgentsGRPC(context.Background(), userEid)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -372,13 +363,16 @@ func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 		}
 	}
 
-	res, err := api.CreateServer(&api.APICreateServerRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-
-		APINewServerData: PostData,
-	})
+	workflowId, err := api.CreateAgentGRPC(
+		context.Background(),
+		c.GetString("user_eid"),
+		PostData.ServerName,
+		PostData.ServerAPIKey,
+		PostData.ServerAdminPass,
+		PostData.ServerClientPass,
+		int32(PostData.ServerPort),
+		float32(PostData.ServerMemory),
+	)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -386,19 +380,14 @@ func (handler *DashboardHandler) POST_DashboardServers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "workflow_id": res.WorkflowId})
+	c.JSON(http.StatusOK, gin.H{"success": true, "workflow_id": workflowId})
 
 }
 
 func (handler *DashboardHandler) GET_DashboardServerWorkflow(c *gin.Context) {
 	workflowId := c.Param("workflowId")
 
-	res, err := api.GetServerWorkflow(&api.APIGetServerWorkflowRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		WorkflowId: workflowId,
-	})
+	res, err := api.GetAgentWorkflowGRPC(context.Background(), workflowId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -406,18 +395,13 @@ func (handler *DashboardHandler) GET_DashboardServerWorkflow(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "workflow": res.Workflow})
+	c.JSON(http.StatusOK, gin.H{"success": true, "workflow": res})
 }
 
 func (handler *DashboardHandler) GET_DashboardDeleteServer(c *gin.Context) {
 	agentId := c.Query("id")
 
-	err := api.DeleteAgent(&api.APIDeleteAgentRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID: agentId,
-	})
+	err := api.DeleteAgentGRPC(context.Background(), c.GetString("user_eid"), agentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -436,7 +420,7 @@ func (handler *DashboardHandler) GET_DashboardAccountAudit(c *gin.Context) {
 
 	auditType := c.Query("type")
 
-	auditRes, err := api.GetMyUserActiveAccountAuditsGRPC(context.Background(), c.GetString("user_eid"), auditType)
+	auditRes, err := api.GetUserActiveAccountAuditsGRPC(context.Background(), c.GetString("user_eid"), auditType)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -448,7 +432,7 @@ func (handler *DashboardHandler) GET_DashboardAccountAudit(c *gin.Context) {
 }
 
 func (handler *DashboardHandler) GET_DashboardAccountUsers(c *gin.Context) {
-	usersRes, err := api.GetMyUserActiveAccountUsersGRPC(context.Background(), c.GetString("user_eid"))
+	usersRes, err := api.GetUserActiveAccountUsersGRPC(context.Background(), c.GetString("user_eid"))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -481,12 +465,7 @@ func (handler *DashboardHandler) POST_DashboardCreateAccount(c *gin.Context) {
 		return
 	}
 
-	err := api.CreateAccount(&api.APICreateAccountRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APINewAccountData: PostData,
-	})
+	err := api.CreateAccountGRPC(context.Background(), c.GetString("user_eid"), PostData.AccountName)
 
 	if err != nil {
 		resData["errorMessage"] = err.Error()
@@ -500,12 +479,7 @@ func (handler *DashboardHandler) POST_DashboardCreateAccount(c *gin.Context) {
 func (handler *DashboardHandler) GET_DashboardDeleteAccount(c *gin.Context) {
 	accountId := c.Query("id")
 
-	err := api.DeleteAccount(&api.APIDeleteAccountRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		AccountID: accountId,
-	})
+	err := api.DeleteAccountGRPC(context.Background(), c.GetString("user_eid"), accountId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
@@ -539,12 +513,7 @@ func (handler *DashboardHandler) POST_DashboardJoinAccount(c *gin.Context) {
 		return
 	}
 
-	err := api.JoinAccount(&api.APIJoinAccountRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIJoinAccountData: PostData,
-	})
+	err := api.JoinAccountGRPC(context.Background(), c.GetString("user_eid"), PostData.JoinCode)
 
 	if err != nil {
 		resData["errorMessage"] = err.Error()
@@ -559,12 +528,7 @@ func (handler *DashboardHandler) GET_DashboardSwitchAccount(c *gin.Context) {
 
 	accountId := c.Query("id")
 
-	err := api.SwitchAccount(&api.APISwitchAccountRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		ID: accountId,
-	})
+	err := api.SwitchActiveAccountGRPC(context.Background(), c.GetString("user_eid"), accountId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})

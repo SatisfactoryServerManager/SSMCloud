@@ -34,7 +34,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 
 		userEid := c.GetString("user_eid")
 
-		userRes, err := api.GetMyUserGRPC(context.Background(), userEid)
+		userRes, err := api.GetUserGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -42,7 +42,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		account, err := api.GetMyUserActiveAccountGRPC(context.Background(), userEid)
+		account, err := api.GetUserActiveAccountGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -50,7 +50,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		accountAgentsRes, err := api.GetMyUserActiveAccountAgentsGRPC(context.Background(), userEid)
+		accountAgentsRes, err := api.GetUserActiveAccountAgentsGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
@@ -58,7 +58,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data gin.H) {
 			return
 		}
 
-		linkedAccounts, err := api.GetMyUserLinkedAccountsGRPC(context.Background(), userEid)
+		linkedAccounts, err := api.GetUserLinkedAccountsGRPC(context.Background(), userEid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
