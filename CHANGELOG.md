@@ -1,3 +1,11 @@
+## 1.0.173 (March 16, 2026)
+  - feat: More updated to adding grpc functions
+  - feat: More gRPC functions
+  - feat: more grpc functions
+  - feat: More updates to grpc frontend functions
+  - feat: more grpc functions
+  - feat: move to use grpc to backend functions
+
 ## 1.0.172 (February 09, 2026)
 
 
