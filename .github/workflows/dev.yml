@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: "Remove replace from go mod file"
-        run: go mod edit -dropreplace=github.com/SatisfactoryServerManager/ssmcloud-resources || true
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+      - name: "Remove replace from go mod file"
+        run: go mod edit -dropreplace=github.com/SatisfactoryServerManager/ssmcloud-resources || true
       - name: Install dependencies
         run: go mod tidy
       - name: Build
@@ -52,12 +52,12 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      - name: "Remove replace from go mod file"
-        run: go mod edit -dropreplace="github.com/SatisfactoryServerManager/ssmcloud-resources" || $true
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
+      - name: "Remove replace from go mod file"
+        run: go mod edit -dropreplace="github.com/SatisfactoryServerManager/ssmcloud-resources" || $true
       - name: Install dependencies
         run: go mod tidy
       - name: Build
