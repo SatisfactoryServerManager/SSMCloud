@@ -23,7 +23,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/csrf"
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -77,7 +77,7 @@ func main() {
 			}
 			return t.AsTime().Format("January 2, 2006 03:04:05 PM")
 		},
-		"OIDtoString": func(id primitive.ObjectID) string {
+		"OIDtoString": func(id bson.ObjectID) string {
 			return id.Hex()
 		},
 		"dict": func(values ...interface{}) (map[string]interface{}, error) {

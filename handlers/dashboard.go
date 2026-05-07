@@ -12,7 +12,7 @@ import (
 	"github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/csrf"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 var (
@@ -104,7 +104,7 @@ func (handler *DashboardHandler) POST_DashboardIntegrations(c *gin.Context) {
 }
 
 func (handler *DashboardHandler) GET_DashboardIntegration(c *gin.Context) {
-	integrationId, err := primitive.ObjectIDFromHex(c.Param("id"))
+	integrationId, err := bson.ObjectIDFromHex(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
