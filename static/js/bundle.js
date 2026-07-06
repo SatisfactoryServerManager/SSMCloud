@@ -609,7 +609,7 @@ function main() {
             });
 
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -649,7 +649,7 @@ function main() {
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             const data = {
                 name: $form.find("#name").val(),
@@ -737,7 +737,7 @@ function main() {
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -763,7 +763,7 @@ function main() {
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -976,9 +976,7 @@ function main() {
                             // Submit Create Task
                             if (currentIndex == 1) {
                                 let csrfToken =
-                                    document.getElementsByName(
-                                        "gorilla.csrf.Token",
-                                    )[0].value;
+                                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
                                 const postData = {
                                     serverName: ServerName,
@@ -1670,7 +1668,9 @@ class ModsPage {
         }
 
         window.openModal("/public/modals", "mod-settings", (modal) => {
-            modal.find(".modal-title").text(`${selectedMod.mod.name} Settings`);
+            modal
+                .find(".modal-title")
+                .text(`${selectedMod.mod.mod_name} Settings`);
             modal
                 .find("#mod-settings-config")
                 .val(JSON.stringify(modConfig, null, 4));
@@ -1679,7 +1679,7 @@ class ModsPage {
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();
                 let csrfToken =
-                    document.getElementsByName("gorilla.csrf.Token")[0].value;
+                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
                 const postData = {
                     configSetting: "modsettings",

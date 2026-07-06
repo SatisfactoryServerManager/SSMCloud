@@ -271,7 +271,7 @@ class ModsPage {
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();
                 let csrfToken =
-                    document.getElementsByName("gorilla.csrf.Token")[0].value;
+                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
                 const postData = {
                     configSetting: "modsettings",
