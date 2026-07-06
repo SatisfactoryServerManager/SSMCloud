@@ -51,7 +51,7 @@ func main() {
 	}
 
 	fmt.Println("Testing connection to backend")
-	if err := api.PingBackend(); err != nil {
+	if _, err := api.GetGRPCConnection(); err != nil {
 		fmt.Printf("test backend connection failed with error: %s\n", err.Error())
 		panic(err)
 	}
