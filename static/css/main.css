@@ -167,7 +167,6 @@ a.disabled {
 }
 
 /* Sidebar Styles */
-
 #sidebar {
     z-index: 1000;
     position: fixed;
@@ -176,124 +175,61 @@ a.disabled {
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: var(--ssm-sidebar-bg-colour);
+    background: var(--rail);
+    border-right: 1px solid var(--line);
 }
-
-#sidebar .navbar {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-}
-
+#sidebar .navbar { padding: 0; margin: 0; height: 100%; }
 #sidebar .navbar-header {
-    line-height: 52px;
     text-align: center;
-    font-family: "hemihead";
     display: block;
     width: 100%;
-    color: #fff;
-    display: block;
-    text-decoration: none;
-    margin: 0;
-    position: relative;
-    height: 140px;
+    padding: 20px 12px 16px;
+    height: auto;
+    border-bottom: 1px solid var(--line);
 }
-
-#sidebar .navbar-brand {
-    color: #fff;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-#sidebar .navbar-brand:hover {
-    color: #fff;
-}
-
-#sidebar .navbar-brand img {
-    width: 180px;
-}
-
+#sidebar .navbar-brand { margin: 0; padding: 0; width: 100%; }
+#sidebar .navbar-brand img { width: 170px; max-width: 82%; height: auto; }
 #sidebar .navbar-toggler {
-    position: absolute;
-    top: 11px;
-    right: 12px;
-    border-color: var(--ssm-btn-border-colour);
-    background-color: var(--ssm-btn-bg-colour);
+    position: absolute; top: 18px; right: 12px;
+    border-color: var(--line); background-color: var(--panel-2); color: var(--ink);
 }
-
-#sidebar .navbar-toggler:hover {
-    background-color: var(--ssm-btn-bg-hover-colour);
-}
-
-#sidebar .navbar-collapse {
-    width: 100%;
-}
-
-#sidebar .navbar-nav {
-    width: 100%;
-    height: 100%;
-    padding: 0 8px 8px 8px;
-}
-
-#sidebar .nav-item {
-    display: block;
-    width: 100%;
-    border-radius: 5px;
-    margin: 2px 0;
-}
-
+#sidebar .navbar-collapse { width: 100%; }
+#sidebar .navbar-nav { width: 100%; height: 100%; padding: 12px 10px; }
+#sidebar .nav-item { display: block; width: 100%; border-radius: 4px; margin: 2px 0; position: relative; }
 #sidebar .nav-item.active,
-#sidebar .nav-item.active:hover {
-    border-right: 5px solid var(--ssm-btn-bg-colour);
-    background: var(--ssm-sidebar-item-active-bg-colour);
+#sidebar .nav-item.active:hover { background: var(--panel-2); }
+#sidebar .nav-item.active::before {
+    content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
+    background: var(--brand); border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--brand) 65%, transparent);
 }
-
 #sidebar .nav-item.active a,
-#sidebar .nav-item.active:hover a {
-    color: var(--ssm-btn-bg-colour);
-}
-
-#sidebar .nav-item:hover {
-    background-color: var(--ssm-btn-bg-colour);
-}
-
+#sidebar .nav-item.active:hover a { color: var(--ink); }
+#sidebar .nav-item.active a svg,
+#sidebar .nav-item.active a i { color: var(--brand); }
+#sidebar .nav-item:hover { background-color: var(--panel-2); }
 #sidebar .nav-item a {
-    color: var(--ssm-sidebar-item-text-color);
-    font-size: 25px;
-    padding: 10px 20px;
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 11px 14px;
     font-weight: 600;
     transition: none !important;
 }
-
-#sidebar .nav-item:hover a {
-    color: var(--ssm-sidebar-item-text-hover-color);
-}
-
-#sidebar .nav-item.nav-item-bottom a {
-    border: 0;
-}
-
+#sidebar .nav-item:hover a { color: var(--ink); }
+#sidebar .nav-item.nav-item-bottom a { border: 0; }
 #sidebar .nav-item a svg,
 #sidebar .nav-item a i {
-    margin-right: 10px;
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
-    float: left;
+    margin-right: 12px; font-size: 17px; width: 17px; height: 17px; float: left; color: inherit;
 }
-
-#sidebar .nav-item .nav-link {
-    display: flex;
-    align-items: center;
-}
-
-#viewport #sidebar .nav-item a span {
-    font-size: 16px;
-    line-height: 22px;
-    display: inline-block;
-    height: 22px;
+#sidebar .nav-item .nav-link { display: flex; align-items: center; }
+#viewport #sidebar .nav-item a span { font-size: 13px; line-height: 17px; display: inline-block; height: 17px; }
+#sidebar .sidebar-status {
+    padding: 12px 18px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--steel); display: flex; align-items: center; gap: 8px;
 }
 
 #content .container-fluid {
