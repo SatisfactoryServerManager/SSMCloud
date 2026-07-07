@@ -4,11 +4,30 @@ body {
 }
 
 body {
-    color: var(--ssm-text-colour);
+    color: var(--ink);
     font-size: 16px;
-    background: var(--ssm-bg-colour) url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp") fixed 0 0;
-    background-size: cover;
-    background-repeat: no-repeat;
+    font-family: var(--sans);
+    /* Layered ground, top → bottom:
+       1-2. blueprint grid
+       3.   theme veil (high-alpha scrim, denser at the bottom) sinks the photo into the palette
+       4.   the Satisfactory presskit, fixed, as faint atmospheric texture */
+    background-color: var(--void);
+    background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(180deg, var(--ground-veil-top), var(--ground-veil-bot)),
+        url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp");
+    background-size: 34px 34px, 34px 34px, cover, cover;
+    background-position: 0 0, 0 0, center, center;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
+    background-attachment: fixed, fixed, fixed, fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--display);
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 h5 {
