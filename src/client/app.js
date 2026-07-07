@@ -3,6 +3,7 @@ const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
+const ssmTheme = require("./theme");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -990,4 +991,5 @@ function detectColorScheme() {
 
 $(document).ready(() => {
     main();
+    ssmTheme.init();
 });

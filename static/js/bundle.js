@@ -416,6 +416,7 @@ const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
+const ssmTheme = require("./theme");
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -1403,9 +1404,10 @@ function detectColorScheme() {
 
 $(document).ready(() => {
     main();
+    ssmTheme.init();
 });
 
-},{"./account-page":1,"./agentmap":2,"./mods-page":4,"./server-console":5,"./ws":6}],4:[function(require,module,exports){
+},{"./account-page":1,"./agentmap":2,"./mods-page":4,"./server-console":5,"./theme":6,"./ws":7}],4:[function(require,module,exports){
 class ModsPage {
     constructor() {
         this.page = 0;
@@ -2167,7 +2169,49 @@ class ServerConsole extends EventTarget {
 serverConsole = new ServerConsole();
 module.exports = serverConsole;
 
-},{"./ws":6}],6:[function(require,module,exports){
+},{"./ws":7}],6:[function(require,module,exports){
+// Manual light/dark theme toggle, persisted to localStorage.
+// data-theme on <html> overrides the OS prefers-color-scheme.
+const KEY = "ssm-theme";
+
+function apply(mode) {
+    if (mode === "light" || mode === "dark") {
+        document.documentElement.setAttribute("data-theme", mode);
+    } else {
+        document.documentElement.removeAttribute("data-theme");
+    }
+}
+
+function current() {
+    const attr = document.documentElement.getAttribute("data-theme");
+    if (attr) return attr;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function set(mode) {
+    apply(mode);
+    try { localStorage.setItem(KEY, mode); } catch (e) { /* ignore */ }
+}
+
+function toggle() {
+    set(current() === "dark" ? "light" : "dark");
+}
+
+function init() {
+    try {
+        const saved = localStorage.getItem(KEY);
+        if (saved) apply(saved);
+    } catch (e) { /* ignore */ }
+    document.addEventListener("click", function (e) {
+        const btn = e.target.closest("[data-ssm-theme-toggle]");
+        if (btn) { e.preventDefault(); toggle(); }
+    });
+}
+
+window.SSMTheme = { set: set, toggle: toggle, current: current };
+module.exports = { init: init };
+
+},{}],7:[function(require,module,exports){
 class WS extends EventTarget {
     constructor() {
         super();
