@@ -21,7 +21,8 @@ class ModsPage {
         this.pages = res.pages;
 
         this.totalMods = res.totalMods;
-        this.installedMods = res.agentModConfig.selectedMods;
+        this.installedMods =
+            (res.agentModConfig && res.agentModConfig.selectedMods) || [];
 
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
