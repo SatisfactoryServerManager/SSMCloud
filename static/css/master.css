@@ -162,6 +162,72 @@ h1, h2, h3, h4, h5, .display-5, .display-6 {
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/></svg>");
 }
 
+/* ---- Bootstrap variable bridge ---- */
+:root {
+    --bs-body-bg: var(--void);
+    --bs-body-color: var(--ink);
+    --bs-emphasis-color: var(--ink);
+    --bs-secondary-bg: var(--panel);
+    --bs-tertiary-bg: var(--panel-2);
+    --bs-border-color: var(--line);
+    --bs-border-color-translucent: var(--line);
+
+    --bs-primary: var(--brand);
+    --bs-primary-rgb: 0, 170, 221;
+    --bs-link-color: var(--brand);
+    --bs-link-color-rgb: 0, 170, 221;
+    --bs-link-hover-color: var(--brand-bright);
+
+    --bs-body-font-family: var(--sans);
+}
+.card {
+    --bs-card-bg: var(--panel);
+    --bs-card-cap-bg: var(--panel-2);
+    --bs-card-border-color: var(--line);
+    --bs-card-color: var(--ink);
+}
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--ink);
+    --bs-table-border-color: var(--line);
+    --bs-table-striped-bg: color-mix(in srgb, var(--panel-2) 60%, transparent);
+    --bs-table-striped-color: var(--ink);
+}
+.nav-tabs {
+    --bs-nav-tabs-border-color: var(--line);
+    --bs-nav-tabs-link-active-bg: var(--panel);
+    --bs-nav-tabs-link-active-color: var(--brand);
+    --bs-nav-tabs-link-active-border-color: var(--line) var(--line) var(--panel);
+}
+.form-control, .form-select {
+    background-color: var(--panel-2);
+    color: var(--ink);
+    border-color: var(--line);
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--panel-2);
+    color: var(--ink);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 0.2rem var(--focus);
+}
+.dropdown-menu {
+    --bs-dropdown-bg: var(--panel);
+    --bs-dropdown-color: var(--ink);
+    --bs-dropdown-border-color: var(--line);
+    --bs-dropdown-link-color: var(--ink);
+    --bs-dropdown-link-hover-bg: var(--panel-2);
+    --bs-dropdown-link-hover-color: var(--ink);
+}
+.btn-primary {
+    --bs-btn-bg: var(--brand);
+    --bs-btn-border-color: var(--brand-deep);
+    --bs-btn-hover-bg: var(--brand-bright);
+    --bs-btn-hover-border-color: var(--brand);
+    --bs-btn-active-bg: var(--brand-deep);
+    --bs-btn-color: #04222E;
+    --bs-btn-hover-color: #04222E;
+}
+
 @media (min-width: 1199.98px) {
     .offcanvas.offcanvas-end,
     .offcanvas.offcanvas-start {
