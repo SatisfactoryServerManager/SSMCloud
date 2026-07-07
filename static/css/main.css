@@ -390,8 +390,7 @@ a.disabled {
 }
 
 .form-control,
-.form-control:focus,
-.page-header .server-count-wrapper {
+.form-control:focus {
     font-size: 15px;
     background: var(--ssm-input-bg-colour);
     border: 1px solid var(--ssm-input-border-colour);
