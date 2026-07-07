@@ -4,7 +4,7 @@
 
 **Goal:** Restyle the three shared dashboard-shell includes — sidebar (`nav.tmpl`), topbar (`page-header.tmpl`), footer (`footer.tmpl`) — plus the app-frame CSS, into the cyan control-console language, and wire the theme-toggle control into the topbar. This reskins the frame that wraps every authenticated page.
 
-**Architecture:** The shell layout stays as-is (`#viewport` padding-left 250px, fixed `#sidebar`, `#content`, fixed `.page-footer`). We restyle it through the Phase 0 tokens/primitives, neutralize the leftover Satisfactory background image on `body`, and add a topbar toggle button carrying the `data-ssm-theme-toggle` hook from Phase 0.
+**Architecture:** The shell layout stays as-is (`#viewport` padding-left 250px, fixed `#sidebar`, `#content`, fixed `.page-footer`). We restyle it through the Phase 0 tokens/primitives, keep the Satisfactory presskit background but sink it behind a theme veil so it blends, and add a topbar toggle button carrying the `data-ssm-theme-toggle` hook from Phase 0.
 
 **Tech Stack:** Go html/template, Bootstrap 5.3, plain CSS, FontAwesome icons, the `Makefile` build.
 
@@ -25,8 +25,8 @@
 - Modify: `static/css/main.css:6-16` (the `body` rule that sets the presskit background, and the `h5` rule)
 
 **Interfaces:**
-- Consumes: `--void`, `--grid`, `--display`, `--sans` from Phase 0.
-- Produces: a flat gunmetal (or light) app ground with the faint blueprint grid; display font on headings.
+- Consumes: `--void`, `--grid`, `--ground-veil-top`, `--ground-veil-bot`, `--display`, `--sans` from Phase 0.
+- Produces: a veiled-presskit app ground (Satisfactory photo sunk behind a theme scrim) with the faint blueprint grid on top; display font on headings.
 
 - [ ] **Step 1: Replace the `body` background rule (main.css lines 6–12)**
 
@@ -46,14 +46,24 @@ body {
     color: var(--ink);
     font-size: 16px;
     font-family: var(--sans);
+    /* Layered ground, top → bottom:
+       1-2. blueprint grid
+       3.   theme veil (high-alpha scrim, denser at the bottom) sinks the photo into the palette
+       4.   the Satisfactory presskit, fixed, as faint atmospheric texture */
     background-color: var(--void);
     background-image:
         linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 34px 34px;
-    background-attachment: fixed;
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(180deg, var(--ground-veil-top), var(--ground-veil-bot)),
+        url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp");
+    background-size: 34px 34px, 34px 34px, cover, cover;
+    background-position: 0 0, 0 0, center, center;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
+    background-attachment: fixed, fixed, fixed, fixed;
 }
 ```
+
+The veil tokens (`--ground-veil-top/-bot`, defined per theme in Phase 0) are the single tuning point: raise the alphas to sink the photo further into the palette, lower them to let more of the landscape through. Both themes use the same rule; only the veil color/alpha differs.
 
 - [ ] **Step 2: Add a display-font rule for headings after the `body` rule**
 
@@ -75,7 +85,7 @@ Expected: succeeds.
 
 - [ ] **Step 4: Verify**
 
-`make run` → open `/dashboard` in dark mode. Expected: no Satisfactory photo background; flat near-black ground with a faint grid; page/card headings render in Exo 2 italic uppercase.
+`make run` → open `/dashboard`. Expected (dark): the Satisfactory presskit shows as a faint, near-black-tinted texture behind the panels — no bright/photographic patch competing with the UI — with the blueprint grid over it; page/card headings in Exo 2 italic uppercase. Toggle to light: same photo now sunk behind a pale paper scrim. In both, the background sits still while content scrolls (fixed). If the photo reads too strong or too washed, adjust `--ground-veil-*` in `master.css` and re-verify.
 
 - [ ] **Step 5: Commit**
 ```bash
@@ -347,7 +357,7 @@ git commit -m "feat(ui): restyle fixed footer"
 
 ## Self-Review
 
-**Spec coverage (spec §5 Phase 1):** sidebar with logo + mono items + active rail + footer lamp → Task 2 ✓; page-header → topbar with account/count/profile/logout/**theme toggle** → Task 3 ✓; footer restyle → Task 4 ✓; body-ground/presskit removal (discovered in main.css) → Task 1 ✓.
+**Spec coverage (spec §5 Phase 1):** sidebar with logo + mono items + active rail + footer lamp → Task 2 ✓; page-header → topbar with account/count/profile/logout/**theme toggle** → Task 3 ✓; footer restyle → Task 4 ✓; body-ground/veiled-presskit (discovered in main.css) → Task 1 ✓.
 
 **Placeholder scan:** no TBD/TODO; all CSS/HTML given in full.
 

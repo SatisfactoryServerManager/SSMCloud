@@ -141,6 +141,9 @@ git commit -m "feat(ui): self-host Exo 2 display font"
     --danger: #C43A32;
     --grid: rgba(16, 26, 40, 0.035);
     --focus: color-mix(in srgb, var(--brand) 30%, transparent);
+    /* presskit veil — high-alpha paper scrim, denser at the bottom, sinks the photo into the palette */
+    --ground-veil-top: rgba(230, 236, 239, 0.88);
+    --ground-veil-bot: rgba(230, 236, 239, 0.97);
 
     /* legacy --ssm-* bridge (keeps existing templates working) */
     --ssm-bg-colour: var(--void);
@@ -209,6 +212,8 @@ Replace the entire existing `@media (prefers-color-scheme: dark) { ... }` block 
         --hazard: #FF5A24;
         --danger: #E5544B;
         --grid: rgba(120, 190, 230, 0.028);
+        --ground-veil-top: rgba(12, 16, 21, 0.86);
+        --ground-veil-bot: rgba(12, 16, 21, 0.96);
         --ssm-text-inverted-colour: #04222E;
     }
 }
@@ -230,15 +235,17 @@ Replace the entire existing `@media (prefers-color-scheme: dark) { ... }` block 
     --hazard: #FF5A24;
     --danger: #E5544B;
     --grid: rgba(120, 190, 230, 0.028);
+    --ground-veil-top: rgba(12, 16, 21, 0.86);
+    --ground-veil-bot: rgba(12, 16, 21, 0.96);
     --ssm-text-inverted-colour: #04222E;
 }
 ```
 
 (The `:root[data-theme="light"]` case needs no override block — light is the `:root` default from Step 1, and `:not([data-theme="light"])` stops the OS-dark rule from fighting an explicit light choice.)
 
-- [ ] **Step 3: Remove the old dark-mode body background image**
+- [ ] **Step 3: Confirm the old dark-mode `body` background rule is gone from master.css**
 
-The old dark block set a Satisfactory presskit `background-image` on `body`. The redesign uses a flat gunmetal ground, so it must not return. Confirm the replacement in Step 2 contains no `background-image` rule. Leave the `.offcanvas` and `.badge` rules (old lines 103–114) intact below.
+The old dark block set the Satisfactory presskit `background-image` directly on `body`. The redesign keeps the presskit but moves it to a single token-driven rule in `main.css` (Phase 1, Task 1) so it is shared by both themes and layered under the veil + grid. Confirm the replacement in Step 2 contains no `body { background-image }` rule — it must not compete with the Phase 1 ground. Leave the `.offcanvas` and `.badge` rules (old lines 103–114) intact below.
 
 - [ ] **Step 4: Rebuild and verify dark theme**
 

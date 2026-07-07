@@ -43,6 +43,11 @@ regressions.
 - **Signature components:** lit **status rail** on cards, **segmented LED meters** for
   CPU/RAM, **status lamps**, mono **readout tiles**, **hazard-striped** destructive
   actions, mono **section eyebrows** (`// Needs attention`).
+- **Ground:** the existing Satisfactory presskit image is **kept** in both themes, but sunk
+  behind a high-alpha, theme-colored veil (denser toward the bottom) so it reads as faint
+  atmospheric texture behind the panels rather than a competing photo. The blueprint grid
+  layers on top. One tunable token pair per theme (`--ground-veil-top/-bot`) sets how much
+  of the landscape shows through; the background is `fixed` while content scrolls.
 - **Motion (restrained):** meters fill on load, running lamp soft pulse, hover lift.
   Everything gated behind `prefers-reduced-motion`.
 
