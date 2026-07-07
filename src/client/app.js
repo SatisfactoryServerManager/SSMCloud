@@ -196,7 +196,7 @@ function main() {
             });
 
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -236,7 +236,7 @@ function main() {
             const $form = $(e.currentTarget);
             const action = $form.attr("action");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             const data = {
                 name: $form.find("#name").val(),
@@ -324,7 +324,7 @@ function main() {
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -350,7 +350,7 @@ function main() {
             const agentId = $this.attr("data-agentid");
             const modReference = $this.attr("data-mod-reference");
             let csrfToken =
-                document.getElementsByName("gorilla.csrf.Token")[0].value;
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
             try {
                 const res = await $.ajax({
@@ -563,9 +563,7 @@ function main() {
                             // Submit Create Task
                             if (currentIndex == 1) {
                                 let csrfToken =
-                                    document.getElementsByName(
-                                        "gorilla.csrf.Token",
-                                    )[0].value;
+                                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
                                 const postData = {
                                     serverName: ServerName,

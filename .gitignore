@@ -24,3 +24,5 @@ go.work
 
 docker/releases*
 bin
+
+docs/superpowers

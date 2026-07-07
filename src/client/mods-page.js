@@ -21,7 +21,8 @@ class ModsPage {
         this.pages = res.pages;
 
         this.totalMods = res.totalMods;
-        this.installedMods = res.agentModConfig.selectedMods;
+        this.installedMods =
+            (res.agentModConfig && res.agentModConfig.selectedMods) || [];
 
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
@@ -271,7 +272,7 @@ class ModsPage {
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();
                 let csrfToken =
-                    document.getElementsByName("gorilla.csrf.Token")[0].value;
+                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
 
                 const postData = {
                     configSetting: "modsettings",

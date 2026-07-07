@@ -9,11 +9,20 @@ import (
 	"github.com/SatisfactoryServerManager/SSMCloud/api"
 	"github.com/SatisfactoryServerManager/SSMCloud/services"
 	v2 "github.com/SatisfactoryServerManager/ssmcloud-resources/models/v2"
+	pb "github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated"
 	"github.com/SatisfactoryServerManager/ssmcloud-resources/proto/generated/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/csrf"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+func eventTypesToStrings(in []v2.IntegrationEventType) []string {
+	out := make([]string, 0, len(in))
+	for _, e := range in {
+		out = append(out, string(e))
+	}
+	return out
+}
 
 var (
 	eventTypes = []v2.IntegrationEventType{
@@ -83,12 +92,7 @@ func (handler *DashboardHandler) POST_DashboardIntegrations(c *gin.Context) {
 		return
 	}
 
-	if err := api.AddAccountIntegration(&api.APIPostAccountIntegrationsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIPostAccountIntegrationsData: PostData,
-	}); err != nil {
+	if err := api.AddAccountIntegrationGRPC(context.Background(), c.GetString("user_eid"), PostData.Name, int32(PostData.Type), PostData.URL, eventTypesToStrings(PostData.EventTypes)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
 		return
@@ -173,13 +177,7 @@ func (handler *DashboardHandler) POST_DashboardUpdateIntegration(c *gin.Context)
 		return
 	}
 
-	if err := api.UpdateAccountIntegration(&api.APIUpdateAccountIntegrationsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		APIPostAccountIntegrationsData: PostData,
-		IntegrationId:                  id,
-	}); err != nil {
+	if err := api.UpdateAccountIntegrationGRPC(context.Background(), id, PostData.Name, int32(PostData.Type), PostData.URL, eventTypesToStrings(PostData.EventTypes)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
 		return
@@ -198,12 +196,7 @@ func (handler *DashboardHandler) GET_DashboardDeleteIntegration(c *gin.Context) 
 
 	id := c.Param("id")
 
-	if err := api.DeleteAccountIntegration(&api.APIDeleteAccountIntegrationsRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		IntegrationId: id,
-	}); err != nil {
+	if err := api.DeleteAccountIntegrationGRPC(context.Background(), c.GetString("user_eid"), id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		c.Abort()
 		return
@@ -541,41 +534,17 @@ func (handler *DashboardHandler) GET_DashboardSwitchAccount(c *gin.Context) {
 
 func (handler *DashboardHandler) GET_DashboardDownloadBackup(c *gin.Context) {
 
-	request := &api.APIDownloadFileRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		Type:    "backup",
-		AgentId: c.Query("agentid"),
-		UUID:    c.Query("uuid"),
-	}
-	api.DownloadFile(c, request)
+	api.DownloadFileGRPC(c, c.GetString("user_eid"), c.Query("agentid"), pb.FrontendDownloadKind_FRONTEND_DOWNLOAD_BACKUP, c.Query("uuid"), "")
 }
 
 func (handler *DashboardHandler) GET_DashboardDownloadSave(c *gin.Context) {
 
-	request := &api.APIDownloadFileRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		Type:    "save",
-		AgentId: c.Query("agentid"),
-		UUID:    c.Query("uuid"),
-	}
-	api.DownloadFile(c, request)
+	api.DownloadFileGRPC(c, c.GetString("user_eid"), c.Query("agentid"), pb.FrontendDownloadKind_FRONTEND_DOWNLOAD_SAVE, c.Query("uuid"), "")
 }
 
 func (handler *DashboardHandler) GET_DashboardDownloadLog(c *gin.Context) {
 
-	request := &api.APIDownloadFileRequest{
-		APIRequest: api.APIRequest{
-			AccessToken: c.GetString("access_token"),
-		},
-		Type:    "log",
-		AgentId: c.Query("agentid"),
-		LogType: c.Query("logtype"),
-	}
-	api.DownloadFile(c, request)
+	api.DownloadFileGRPC(c, c.GetString("user_eid"), c.Query("agentid"), pb.FrontendDownloadKind_FRONTEND_DOWNLOAD_LOG, "", c.Query("logtype"))
 }
 
 func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
