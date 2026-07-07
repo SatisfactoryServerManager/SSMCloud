@@ -1,40 +1,29 @@
 {{define "includes/dashboard/page-header"}}
 
 <div class="row page-header">
-    <div class="d-flex flex-column flex-lg-row align-items-center">
-        <div class="flex-grow-1">
-            <h3 class="m-0">{{.account.AccountName}} - {{ .pageTitle }}</h3>
+    <div class="d-flex flex-row align-items-center">
+        <div class="crumb flex-grow-1">
+            <span class="acct-eyebrow">{{.account.AccountName}}</span>
+            <h3 class="crumb-title m-0">{{ .pageTitle }}</h3>
         </div>
-        <div class="d-flex flex-row align-items-center">
-            <div
-                class="server-count-wrapper d-flex align-items-center text-default my-0 me-3"
-            >
+        <div class="topbar-actions d-flex flex-row align-items-center">
+            <div class="server-count-wrapper d-flex align-items-center me-2">
                 <i class="fas fa-server me-2"></i>
                 <span id="server-count">{{ len .agents }}</span>
             </div>
-
-            <a href="/auth/logout" class="btn btn-light text-dark me-3 logout-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Log Out">
+            <button type="button" class="topbar-icon me-2" data-ssm-theme-toggle aria-label="Toggle light/dark theme" title="Toggle theme">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+            <a href="/auth/logout" class="topbar-icon me-2 logout-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Log Out" aria-label="Log out">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </a>
-
-            <div
-                class="btn-group mt-0 profile-btn-group"
-                role="group"
-                aria-label="Button group with nested dropdown"
-            >
+            <div class="btn-group profile-btn-group" role="group" aria-label="Account menu">
                 <a href="/dashboard/profile" class="btn w-100 d-flex align-items-center">
                     <img class="profile-image me-1" src="{{.user.ProfileImageUrl}}"/>
                     {{.user.Username}}
                 </a>
                 <div class="btn-group" role="group">
-                    <button
-                        id="btnGroupDrop1"
-                        type="button"
-                        class="btn dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                    ></button>
+                    <button id="btnGroupDrop1" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                     <ul class="dropdown-menu">
                         {{range .linkedAccounts}}
                             <li><a class="dropdown-item" href="/dashboard/account/switch?id={{.Id}}"><i class="fa-solid fa-building-shield me-2"></i> {{.AccountName}}</a></li>
