@@ -292,33 +292,18 @@ a.disabled {
 }
 
 .page-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: var(--ssm-sidebar-bg-colour);
-    color: var(--ssm-text-colour);
-    border-top: 5px solid var(--ssm-btn-bg-colour) !important;
-    font-weight: bold;
-    height: 56px;
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background: var(--rail); color: var(--steel);
+    border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    font-weight: 400; height: 44px;
 }
-
 .page-footer .footer-copyright {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 100%;
+    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+    width: 100%; line-height: 44px; padding: 0 !important;
 }
-
-.page-footer .footer-copyright a,
-.page-footer .footer-copyright a:hover {
-    color: var(--ssm-link-text-colour) !important;
-}
-
-.page-footer .footer-copyright a:hover {
-    color: var(--ssm-link-text-hover-colour) !important;
-}
+.page-footer .footer-copyright a { color: var(--brand) !important; text-decoration: none; }
+.page-footer .footer-copyright a:hover { color: var(--brand-bright) !important; }
 
 .custom-range {
     border: 1px solid transparent;
