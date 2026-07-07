@@ -1067,3 +1067,54 @@ pre {
         width: 50px;
     }
 }
+
+/* ============================================================
+   Design-system primitives (Phase 0)
+   ============================================================ */
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.display { font-family: var(--display); font-style: italic; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700; }
+
+/* section eyebrow: mono // label + hairline rule + optional right meta */
+.section-head { display: flex; align-items: center; gap: 14px; margin: 26px 0 14px; }
+.section-head .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); white-space: nowrap; }
+.section-head .rule { flex: 1; height: 1px; background: var(--line); }
+.section-head .meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--steel); }
+
+/* status lamp */
+.status-lamp { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; background: var(--steel); }
+.status-lamp.on  { background: var(--online); box-shadow: 0 0 8px color-mix(in srgb, var(--online) 75%, transparent); }
+.status-lamp.run { background: var(--brand-bright); box-shadow: 0 0 8px color-mix(in srgb, var(--brand-bright) 75%, transparent); }
+.status-lamp.off { background: var(--danger); opacity: 0.8; }
+
+/* segmented LED meter */
+.seg-meter { position: relative; height: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+.seg-meter .seg-fill { height: 100%; width: 0; background: var(--online); transition: width 1s cubic-bezier(.2,.7,.2,1); }
+.seg-meter .seg-fill.warn { background: var(--warn); }
+.seg-meter .seg-fill.crit { background: var(--hazard); }
+.seg-meter::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(90deg, transparent 0 8px, var(--panel) 8px 10px); }
+
+/* readout tile */
+.readout { background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; padding: 9px 11px; }
+.readout .k { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
+.readout .v { font-family: var(--mono); font-size: 15px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+/* left status rail on a card-like host */
+.status-rail { position: relative; }
+.status-rail::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 3px 0 0 3px; background: var(--steel); }
+.status-rail.online::before  { background: var(--online); box-shadow: 0 0 14px color-mix(in srgb, var(--online) 55%, transparent); }
+.status-rail.offline::before { background: var(--danger); opacity: 0.55; }
+
+/* mono tag chip */
+.tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); background: var(--panel-2); border: 1px solid var(--line); border-radius: 2px; padding: 4px 9px; display: inline-flex; align-items: center; gap: 6px; }
+.tag.ok  { color: var(--online); border-color: color-mix(in srgb, var(--online) 30%, var(--line)); }
+.tag.no  { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 30%, var(--line)); }
+.tag.upd { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.tag.exp { color: var(--warn); }
+
+@keyframes ssm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.status-lamp.pulse { animation: ssm-pulse 1.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+    .status-lamp.pulse { animation: none; }
+    .seg-meter .seg-fill { transition: none; }
+}
