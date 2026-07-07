@@ -2,34 +2,38 @@
 name: Build SSM Cloud Frontend
 on:
   push:
+    branches:
+      - "**"
     tags:
       - "*"
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    outputs:
+      deploy_tag: ${{ steps.imagetag.outputs.deploy_tag }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - name: "Remove replace from go mod file"
-        run: go mod edit -dropreplace=github.com/SatisfactoryServerManager/ssmcloud-resources || true
       - name: Install dependencies
-        run: go mod tidy
+        run: |
+          go mod edit -dropreplace=github.com/SatisfactoryServerManager/ssmcloud-resources || true
+          go mod tidy
       - name: Build
-        run: go build -o ./release/linux/ssmcloud-frontend .
+        run: go build -o ./release/linux/ssmcloud-frontend main.go
       - run: if [ ! -f ./release/linux/ssmcloud-frontend ]; then exit 1; fi
       - run: mkdir -p ./docker/release >/dev/null && cp ./release/linux/* ./docker/release/.
       - uses: vimtor/action-zip@v1
         with:
           files: release/linux/ssmcloud-frontend
           recursive: false
-          dest: SSMCloud-frontend-Linux-amd64.zip
+          dest: SSMCloud-Frontend-Linux-amd64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: ssm-build-linux
-          path: ${{ github.workspace }}/SSMCloud-frontend-Linux-amd64.zip
+          path: ${{ github.workspace }}/SSMCloud-Frontend-Linux-amd64.zip
       - name: Get version
         id: versionnum
         run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -42,12 +46,35 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Determine image tags
+        id: imagetag
+        run: |
+          IMAGE=mrhid6/ssmcloud-frontend
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            DEPLOY_TAG="v${{ steps.versionnum.outputs.version }}"
+            echo "deploy_tag=$DEPLOY_TAG" >> "$GITHUB_OUTPUT"
+            {
+              echo "push_tags<<EOF"
+              echo "$IMAGE:latest"
+              echo "$IMAGE:$DEPLOY_TAG"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            DEPLOY_TAG="dev-${{ github.run_number }}"
+            echo "deploy_tag=$DEPLOY_TAG" >> "$GITHUB_OUTPUT"
+            {
+              echo "push_tags<<EOF"
+              echo "$IMAGE:dev"
+              echo "$IMAGE:$DEPLOY_TAG"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: ./docker
           push: true
-          tags: mrhid6/ssmcloud-frontend:latest , mrhid6/ssmcloud-frontend:dev , mrhid6/ssmcloud-frontend:v${{ steps.versionnum.outputs.version }}
+          tags: ${{ steps.imagetag.outputs.push_tags }}
   build-windows:
     runs-on: self-hosted
     steps:
@@ -56,46 +83,95 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - name: "Remove replace from go mod file"
-        run: go mod edit -dropreplace="github.com/SatisfactoryServerManager/ssmcloud-resources" || $true
       - name: Install dependencies
-        run: go mod tidy
+        run: |
+          go mod edit -dropreplace="github.com/SatisfactoryServerManager/ssmcloud-resources" || $true
+          go mod tidy
       - name: Build
-        run: go build -o ./release/windows/ssmcloud-frontend.exe .
+        run: go build -o ./release/windows/ssmcloud-frontend.exe main.go
       - uses: vimtor/action-zip@v1
         with:
           files: release/windows/ssmcloud-frontend.exe
           recursive: false
-          dest: SSMCloud-frontend-Windows-x64.zip
+          dest: SSMCloud-Frontend-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
           name: ssm-build-win64
-          path: ${{ github.workspace }}/SSMCloud-frontend-Windows-x64.zip
+          path: ${{ github.workspace }}/SSMCloud-Frontend-Windows-x64.zip
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - build-linux
+      - build-windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download a Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ssm-build-linux
+      - name: Download a Win64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ssm-build-win64
+      - run: ls -l
+      - name: Get version
+        id: versionnum
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.versionnum.outputs.version }}
+          release_name: Release v${{ steps.versionnum.outputs.version }}
+          draft: false
+          prerelease: false
+      - name: Upload Linux Release Asset
+        id: upload-linux-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SSMCloud-Frontend-Linux-amd64.zip
+          asset_name: SSMCloud-Frontend-Linux-amd64.zip
+          asset_content_type: application/zip
+      - name: Upload Windows Release Asset
+        id: upload-win-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SSMCloud-Frontend-Windows-x64.zip
+          asset_name: SSMCloud-Frontend-Windows-x64.zip
+          asset_content_type: application/zip
   deploy:
     needs:
       - build-linux
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Get version
-        id: versionnum
-        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-      - name: Create and deploy release
-        uses: OctopusDeploy/create-release-action@v3
+      - name: Install Octopus CLI
+        uses: OctopusDeploy/install-octopus-cli-action@v3
         with:
-          api_key: ${{ secrets.OCTOPUSSERVERAPIKEY }}
-          server: ${{ secrets.OCTOPUSSERVERURL }}
-          space: ${{ secrets.OCTOPUSSERVER_SPACE }}
-          project: ssmcloud-frontend
-          release_number: ${{ steps.versionnum.outputs.version }}
-          ignore_existing: true
-      - name: Deploy Release
-        uses: OctopusDeploy/deploy-release-action@v3
-        with:
-          api_key: ${{ secrets.OCTOPUSSERVERAPIKEY }}
-          server: ${{ secrets.OCTOPUSSERVERURL }}
-          space: ${{ secrets.OCTOPUSSERVER_SPACE }}
-          project: "ssmcloud-frontend"
-          release_number: ${{ steps.versionnum.outputs.version }}
-          environments: |
-            Dev
+          version: latest
+      - name: Deploy Frontend
+        id: run_a_runbook_in_octopus_deploy
+        env:
+          OCTOPUS_API_KEY: ${{ secrets.OCTOPUSSERVERAPIKEY }}
+          OCTOPUS_URL: ${{ secrets.OCTOPUSSERVERURL }}
+          OCTOPUS_SPACE: ${{ secrets.OCTOPUSSERVER_SPACE }}
+          ENVIRONMENT: ${{ startsWith(github.ref, 'refs/tags/') && 'Prod' || 'Dev' }}
+          IMAGE_TAG: ${{ needs.build-linux.outputs.deploy_tag }}
+        run: |
+          octopus runbook run \
+            --space "$OCTOPUS_SPACE" \
+            --project 'ssmcloud' \
+            --git-ref 'refs/heads/main' \
+            --name 'Deploy SSM Frontend' \
+            --environment "$ENVIRONMENT" \
+            --package-version "$IMAGE_TAG" \
+            --package "*:$IMAGE_TAG" \
+            --no-prompt
