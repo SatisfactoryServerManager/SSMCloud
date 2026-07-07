@@ -1,3 +1,33 @@
+/* ---- Display face: Exo 2 (self-hosted, SIL OFL) ---- */
+@font-face {
+    font-family: "Exo 2";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/public/fonts/exo2-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Exo 2";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/public/fonts/exo2-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Exo 2";
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/public/fonts/exo2-latin-600-italic.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Exo 2";
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/public/fonts/exo2-latin-700-italic.woff2") format("woff2");
+}
+
 :root {
     --ssm-bg-colour: #f7f7f7;
     --ssm-text-colour: #000;
