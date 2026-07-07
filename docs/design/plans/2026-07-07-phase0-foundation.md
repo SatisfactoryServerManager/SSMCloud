@@ -31,9 +31,9 @@
 **Interfaces:**
 - Produces: font family name `"Exo 2"` available to CSS, referenced later as the `--display` token in Task 2.
 
-- [ ] **Step 1: Download the four woff2 files**
+- [x] **Step 1: Download the four woff2 files** — DONE (committed in `d1d906f`)
 
-Download Exo 2 (SIL OFL 1.1, by Natanael Gama) Latin subset woff2 files into `static/fonts/`. Source: https://gwfh.mranftl.com/fonts/exo-2?subsets=latin (or the Google Fonts GitHub `apache/exo-2` / `google/fonts` repo). Save exactly these filenames:
+The four Exo 2 (SIL OFL 1.1) Latin-subset woff2 files are already present in `static/fonts/` and committed:
 - `exo2-latin-600-normal.woff2`
 - `exo2-latin-700-normal.woff2`
 - `exo2-latin-600-italic.woff2`
