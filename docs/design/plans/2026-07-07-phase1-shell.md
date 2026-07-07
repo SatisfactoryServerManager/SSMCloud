@@ -184,7 +184,7 @@ Note: the old `font-family: "hemihead"` on `.navbar-header` is intentionally dro
 In `templates/includes/dashboard/nav.tmpl`, immediately before the closing `</ul>` of `.navbar-nav` (after the Docs `nav-item-bottom` `<li>`), add:
 
 ```html
-                <li class="sidebar-status mt-auto">
+                <li class="sidebar-status">
                     <span class="status-lamp on"></span> All systems nominal
                 </li>
 ```
