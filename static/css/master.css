@@ -56,6 +56,7 @@
     /* presskit veil — high-alpha paper scrim, denser at the bottom, sinks the photo into the palette */
     --ground-veil-top: rgba(230, 236, 239, 0.88);
     --ground-veil-bot: rgba(230, 236, 239, 0.97);
+    --ground-image: url("/public/images/bgs/Presskit_1920x1080_NoLogo.webp");
 
     /* legacy --ssm-* bridge (keeps existing templates working) */
     --ssm-bg-colour: var(--void);
@@ -120,6 +121,7 @@ h1, h2, h3, h4, h5, .display-5, .display-6 {
         --grid: rgba(120, 190, 230, 0.028);
         --ground-veil-top: rgba(12, 16, 21, 0.86);
         --ground-veil-bot: rgba(12, 16, 21, 0.96);
+        --ground-image: url("/public/images/bgs/Presskit_1920x1080_NoLogo_Dark.webp");
         --ssm-text-inverted-colour: #04222E;
     }
 }
@@ -143,6 +145,7 @@ h1, h2, h3, h4, h5, .display-5, .display-6 {
     --grid: rgba(120, 190, 230, 0.028);
     --ground-veil-top: rgba(12, 16, 21, 0.86);
     --ground-veil-bot: rgba(12, 16, 21, 0.96);
+    --ground-image: url("/public/images/bgs/Presskit_1920x1080_NoLogo_Dark.webp");
     --ssm-text-inverted-colour: #04222E;
 }
 
