@@ -1018,3 +1018,17 @@ pre {
 
 .unit-actions { display: flex; gap: 6px; flex: 0 0 auto; }
 .unit-cog.danger:hover { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
+
+/* ---- Servers controls ---- */
+.controls-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
+.ssm-search { flex: 1 1 100%; display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 14px; height: 44px; }
+.ssm-search:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--focus); }
+.ssm-search i { color: var(--steel); }
+.ssm-search input { flex: 1; background: none; border: 0; outline: none; color: var(--ink); font-family: var(--mono); font-size: 13px; }
+.ssm-search input::placeholder { color: var(--steel); }
+.ssm-filters .chip { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; height: 42px; padding: 0 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.ssm-filters .chip::after { margin-left: 4px; }
+.deploy-btn { margin-left: auto; height: 42px; padding: 0 18px; border: 0; background: var(--brand); color: #04222E; font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; border-radius: 3px; display: inline-flex; align-items: center; gap: 9px; text-decoration: none; }
+.deploy-btn:hover { background: var(--brand-bright); color: #04222E; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.grid .unit { margin-bottom: 0; }
