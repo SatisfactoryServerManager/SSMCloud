@@ -1,20 +1,13 @@
 {{define "includes/dashboard/backup-card"}}
 
-<div class="card card-inner backup-card" data-backupname="{{.backup.FileName}}">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-12">
-        <a target="_blank" href="/dashboard/download/backup?agentid={{.agent.Id}}&uuid={{.backup.Uuid}}" class="btn btn-primary float-end">
-          <i class="fas fa-download"></i>
-        </a>
-        <h6>{{.backup.FileName}}</h6>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <small>{{toBytes .backup.Size}} Bytes - {{formatDatePb .backup.CreatedAt}}</small>
-      </div>
-    </div>
+<div class="mini backup-card" data-backupname="{{.backup.FileName}}">
+  <h6>{{.backup.FileName}}</h6>
+  <div class="rows">
+    <span><b>Size:</b> {{toBytes .backup.Size}} Bytes</span>
+    <span><b>Created:</b> {{formatDatePb .backup.CreatedAt}}</span>
+  </div>
+  <div class="acts">
+    <a class="icobtn" target="_blank" href="/dashboard/download/backup?agentid={{.agent.Id}}&uuid={{.backup.Uuid}}" aria-label="Download backup"><i class="fas fa-download"></i></a>
   </div>
 </div>
 

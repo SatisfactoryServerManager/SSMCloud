@@ -794,7 +794,7 @@ function main() {
         })
         .on("keyup", ".backup-search", (e) => {
             const $this = $(e.currentTarget);
-            const $backupCard = $this.parent().parent().parent().parent();
+            const $backupCard = $this.closest(".card2");
 
             const search = $this.val().toLowerCase();
             $backupCard.find(".backup-card").each((index, ele) => {
@@ -802,9 +802,9 @@ function main() {
                 if (
                     !$ele.attr("data-backupname").toLowerCase().includes(search)
                 ) {
-                    $ele.parent().addClass("hidden");
+                    $ele.addClass("hidden");
                 } else {
-                    $ele.parent().removeClass("hidden");
+                    $ele.removeClass("hidden");
                 }
             });
         })

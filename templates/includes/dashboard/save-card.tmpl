@@ -1,20 +1,13 @@
 {{define "includes/dashboard/save-card"}}
 
-<div class="card card-inner save-card" data-savename="{{.save.FileName}}">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-12">
-        <a target="_blank" href="/dashboard/download/save?agentid={{.agent.Id}}&uuid={{.save.Uuid}}" class="btn btn-primary float-end">
-          <i class="fas fa-download"></i>
-        </a>
-        <h6>{{.save.FileName}}</h6>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <small>{{toBytes .save.Size}} - {{formatDatePb .save.CreatedAt}}</small>
-      </div>
-    </div>
+<div class="mini save-card" data-savename="{{.save.FileName}}">
+  <h6>{{.save.FileName}}</h6>
+  <div class="rows">
+    <span><b>Size:</b> {{toBytes .save.Size}}</span>
+    <span><b>Saved:</b> {{formatDatePb .save.CreatedAt}}</span>
+  </div>
+  <div class="acts">
+    <a class="icobtn" target="_blank" href="/dashboard/download/save?agentid={{.agent.Id}}&uuid={{.save.Uuid}}" aria-label="Download save"><i class="fas fa-download"></i></a>
   </div>
 </div>
 
