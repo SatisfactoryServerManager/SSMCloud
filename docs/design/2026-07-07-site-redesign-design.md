@@ -114,7 +114,9 @@ Each phase is self-contained and independently shippable, all on one branch.
   `main.css`.
 
 ### Phase 3 — Single-server detail (most complex)
-- `server.tmpl` tab strip (`nav-tabs`) restyled to the console tab language.
+- `server.tmpl`: persistent **command header** (status + Start/Stop/Kill) + a **vertical
+  control sidebar** for the 8 sections. The sidebar is the existing Bootstrap `nav-tabs`
+  restyled vertical (same anchors/pane ids) — the tab mechanism is untouched.
 - Reskin each include: `console`, `settings`, `installcommand`, `map`, `saves`, `backups`,
   `logs`, `mods`. Console/logs as terminal readouts; `save-card`/`backup-card` as readout
   panels.
