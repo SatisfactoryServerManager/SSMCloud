@@ -1015,3 +1015,6 @@ pre {
 .op.kill::before { content: ""; position: absolute; inset: 0; opacity: 0.16; background: repeating-linear-gradient(-45deg, var(--hazard) 0 9px, transparent 9px 18px); }
 .op.kill span { position: relative; display: inline-flex; align-items: center; gap: 7px; }
 .op.kill:hover:not(:disabled) { border-color: var(--hazard); }
+
+.unit-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+.unit-cog.danger:hover { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
