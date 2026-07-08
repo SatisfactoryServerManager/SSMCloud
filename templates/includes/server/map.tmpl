@@ -1,20 +1,10 @@
 {{define "includes/server/map"}}
 
-<div class="row">
-  <div class="col-12">
-    <div class="card border-secondary mb-3 bg-glass">
-      <div class="card-header d-flex flex-col align-items-center">
-        <h5 class="flex-grow-1">Map</h5>
-        <div class="badge bg-light text-black"></div>
-        <a href="/map/{{.agent.Id}}" class="btn btn-light ms-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Public Map">
-          <i class="fa-solid fa-earth-americas"></i>
-        </a>
-      </div>
-      <div class="card-body">
-        <div id="playerMap" style="height:calc(100vh - 200px)"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="section-head"><span class="eyebrow">// Map</span><span class="rule"></span><span class="meta">player positions</span></div>
 
+<div class="card2"><div class="hd"><h5>Live Map</h5><div class="right">
+    <a href="/map/{{.agent.Id}}" class="icobtn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Public Map" aria-label="View public map"><i class="fa-solid fa-earth-americas"></i></a>
+</div></div><div class="bd" style="padding: 0;">
+    <div id="playerMap" class="map-frame"></div>
+</div></div>
 {{end}}

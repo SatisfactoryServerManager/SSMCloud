@@ -67,6 +67,9 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		if msg.Action == "console.agent.logs" {
 			handler.WS_GetAgentLogs(conn, userEid, msg)
 		}
+		if msg.Action == "console.agent.map" {
+			handler.WS_GetAgentMap(conn, userEid, msg)
+		}
 	}
 }
 
@@ -103,6 +106,25 @@ func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userE
 	res := api.WSResponse{
 		Action: msg.Action,
 		Data:   theAgent.Status,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_GetAgentMap(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	theAgent, err := api.GetUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
+
+	if err != nil {
+		fmt.Println("Error getting agent map:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data:   theAgent.MapData,
 	}
 
 	if err := conn.WriteJSON(res); err != nil {
