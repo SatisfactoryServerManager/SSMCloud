@@ -1,3 +1,17 @@
+## 1.0.180 (July 08, 2026)
+
+
+## 1.0.179 (July 08, 2026)
+
+
+## 1.0.178 (July 08, 2026)
+  - Merge pull request #21 from SatisfactoryServerManager/feature/rest-to-grpc-migration
+  - feat: Updated frontend js
+  - fix: handle empty selectedMods on mods page
+  - fix: tolerate missing CSRF token input in JS
+  - refactor: frontend uses gRPC for downloads and integrations, remove REST client
+  - feat: frontend gRPC clients for download + integration add/update/delete
+
 ## 1.0.177 (May 27, 2026)
 
 
