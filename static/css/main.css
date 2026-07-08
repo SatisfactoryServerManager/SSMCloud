@@ -1994,6 +1994,11 @@ pre {
 .set-row .lab span { display: block; font-size: 11.5px; color: var(--steel); margin-top: 2px; }
 .set-row .ctl { justify-self: end; }
 .set-row .range-ctl { display: flex; align-items: center; gap: 12px; }
+.range-ctl input[type="range"] { -webkit-appearance: none; appearance: none; width: 180px; height: 6px; padding: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+.range-ctl input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 3px; background: var(--brand); border: 1px solid var(--brand-deep); cursor: pointer; }
+.range-ctl input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 3px; background: var(--brand); border: 1px solid var(--brand-deep); cursor: pointer; }
+.range-ctl input[type="range"]:focus { outline: none; border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+.range-ctl #max-players-value { min-width: 66px; text-align: center; padding: 5px 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; color: var(--brand-bright); font-size: 13px; font-weight: 700; }
 .field { height: 36px; padding: 0 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; color: var(--ink); font-family: var(--mono); font-size: 13px; min-width: 140px; }
 select.field { cursor: pointer; }
 .form-foot { text-align: right; margin-top: 14px; }
@@ -2013,11 +2018,12 @@ select.field { cursor: pointer; }
 .ssm-alert.warn { background: color-mix(in srgb, var(--warn) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--line)); color: var(--ink); }
 .ssm-alert.warn i { color: var(--warn); }
 
-/* theme bootstrap-toggle to the console palette */
-.toggle.btn { border-radius: 3px !important; border: 1px solid var(--line) !important; font-family: var(--mono); font-size: 10px !important; letter-spacing: 0.08em; text-transform: uppercase; min-height: 32px; }
-.toggle.btn .toggle-handle { background: var(--panel) !important; border-color: var(--line) !important; }
+/* theme bootstrap-toggle to the console palette (flat, hairline, mono — matches .tag / .seg-meter) */
+.toggle.btn { border-radius: 2px !important; border: 1px solid var(--line) !important; background: var(--panel-2) !important; font-family: var(--mono); font-size: 10px !important; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; min-height: 32px; overflow: hidden; transition: border-color 0.15s, background 0.15s; }
+.toggle.btn .toggle-on, .toggle.btn .toggle-off { font-family: var(--mono); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.toggle.btn .toggle-handle { width: 16px !important; background: var(--panel) !important; border: 0 !important; border-left: 1px solid var(--line-strong) !important; border-right: 1px solid var(--line-strong) !important; box-shadow: none !important; }
 .toggle.off { background: var(--panel-2) !important; color: var(--steel) !important; }
-.toggle.btn.btn-success { background: color-mix(in srgb, var(--online) 22%, var(--panel)) !important; color: var(--online) !important; }
-.toggle.btn.btn-danger { background: color-mix(in srgb, var(--danger) 20%, var(--panel)) !important; color: var(--danger) !important; }
+.toggle.btn.btn-success { background: color-mix(in srgb, var(--online) 16%, var(--panel)) !important; color: var(--online) !important; border-color: color-mix(in srgb, var(--online) 40%, var(--line)) !important; }
+.toggle.btn.btn-danger { background: color-mix(in srgb, var(--danger) 16%, var(--panel)) !important; color: var(--danger) !important; border-color: color-mix(in srgb, var(--danger) 40%, var(--line)) !important; }
 
 @media (max-width: 860px) { .settings-cols { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: 1fr 1fr; } }
