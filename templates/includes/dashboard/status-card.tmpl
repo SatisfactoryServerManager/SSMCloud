@@ -1,12 +1,6 @@
 {{define "includes/dashboard/status-card"}}
-
-<div class="status-info-card {{.ClassColour}} info-card-{{.ClassID}} shadow">
-    {{ if .Title }}
-        <div class="status-info-card-main">{{.Title}}:</div>
-    {{end}}
-    <div class="status-info-card-secondary">{{.Data}}</div>
-    <div class="status-info-card-icon">
-        <i class="fas {{.Icon}}"></i>
-    </div>
+<div class="readout info-card-{{.ClassID}} {{.ClassColour}}">
+    <div class="k">{{ if .Title }}{{.Title}}{{else}}Status{{end}}</div>
+    <div class="v"><i class="fas {{.Icon}} me-1"></i>{{.Data}}</div>
 </div>
 {{end}}

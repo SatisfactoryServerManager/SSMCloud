@@ -428,76 +428,11 @@ a.disabled {
 
 /* Dashboard Page*/
 
-.status-info-card {
-    background: #eee;
-    width: 100%;
-    height: 45px;
-    display: block;
-    border-radius: 5px;
-    -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
-    border: 1px solid #cccccc;
-    color: var(--ssm-text-colour);
-    padding: 8px 12px;
-    position: relative;
-    margin-bottom: 8px;
-    margin-top: 0;
-}
-
-.status-info-card.blue {
-    background: var(--ssm-btn-bg-colour);
-    border-color: var(--ssm-btn-border-colour);
-    color: #fff;
-}
-
-.status-info-card.orange {
-    background: #e99002;
-    border-color: #d18202;
-    color: #fff;
-}
-
-.status-info-card.green {
-    background: #28a745;
-    border-color: #24963e;
-    color: #fff;
-}
-
-.status-info-card .status-info-card-main {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 29px;
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.status-info-card .status-info-card-secondary {
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 29px;
-    display: inline-block;
-}
-
-.status-info-card .status-info-card-icon {
-    position: absolute;
-    right: 20px;
-    top: 8px;
-    font-size: 20px;
-    line-height: 29px;
-    color: rgba(0, 0, 0, 0.25);
-}
-.page-header .status-info-card {
-    width: auto !important;
-}
-.page-header .status-info-card .status-info-card-icon {
-    right: unset;
-    left: 12px;
-}
-
-.page-header .status-info-card .status-info-card-secondary {
-    margin-left: 30px;
-    font-weight: bold;
-    font-size: 15px;
-}
+/* readout colour accents (status-card variants) */
+.readout.blue   .v { color: var(--brand-bright); }
+.readout.orange .v { color: var(--warn); }
+.readout.green  .v { color: var(--online); }
+.readout .v i { color: inherit; opacity: 0.9; }
 
 .server-tabs-header,
 .account-tabs-header {
