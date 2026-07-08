@@ -2027,3 +2027,15 @@ select.field { cursor: pointer; }
 .toggle.btn.btn-danger { background: color-mix(in srgb, var(--danger) 16%, var(--panel)) !important; color: var(--danger) !important; border-color: color-mix(in srgb, var(--danger) 40%, var(--line)) !important; }
 
 @media (max-width: 860px) { .settings-cols { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: 1fr 1fr; } }
+
+/* horizontal sub-tabs (install command, and reused elsewhere) */
+.subtabs.nav-tabs { border: 0; gap: 6px; margin-bottom: 14px; }
+.subtabs .nav-item { margin: 0; }
+.subtab.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; padding: 7px 13px; display: inline-flex; align-items: center; gap: 8px; }
+.subtab.nav-link.active { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); background: color-mix(in srgb, var(--brand) 10%, var(--panel)); }
+h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); margin: 4px 0 8px; }
+.cmdbox { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+.cmdbox .glyph { display: grid; place-items: center; width: 42px; background: var(--panel-2); color: var(--steel); border-right: 1px solid var(--line); }
+.cmdbox textarea { flex: 1; border: 0; outline: none; resize: none; background: var(--panel); color: var(--ink); font-family: var(--mono); font-size: 12px; padding: 10px 12px; line-height: 1.5; }
+.cmdbox .copy { width: 46px; border: 0; border-left: 1px solid var(--line); background: var(--brand); color: #04222E; cursor: pointer; }
+.cmdbox .copy:hover { background: var(--brand-bright); }
