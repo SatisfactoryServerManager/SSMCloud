@@ -260,7 +260,7 @@ class ServerConsole extends EventTarget {
             if (!stat.running) {
                 runningBgColor.push("rgba(255, 99, 132, 0.7)");
             } else {
-                runningBgColor.push("rgba(75, 192, 192, 0.7)");
+                runningBgColor.push("rgba(63,208,122,0.7)");
             }
 
             count++;
@@ -278,7 +278,6 @@ class ServerConsole extends EventTarget {
 
     BuildAgentCPUStats(data) {
         const textColour = $("body").hasClass("dark") ? "white" : "black";
-        const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
 
         if (this.cpuChart != null) {
             this.cpuChart.data.datasets[0].data = data.map((row) => row.value);
@@ -295,6 +294,8 @@ class ServerConsole extends EventTarget {
                     {
                         label: "Percent",
                         data: data.map((row) => row.value),
+                        borderColor: "#29CBF2",
+                        backgroundColor: "rgba(41,203,242,0.15)",
                     },
                 ],
             },
@@ -311,19 +312,19 @@ class ServerConsole extends EventTarget {
                         beginAtZero: true,
                         max: 100,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                         grid: {
-                            color: gridColour,
+                            color: "rgba(255,255,255,0.06)",
                         },
                     },
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                         grid: {
-                            color: gridColour,
+                            color: "rgba(255,255,255,0.06)",
                         },
                     },
                 },
@@ -349,6 +350,8 @@ class ServerConsole extends EventTarget {
                     {
                         label: "Percent",
                         data: data.map((row) => row.value),
+                        borderColor: "#F2B33A",
+                        backgroundColor: "rgba(242,179,58,0.15)",
                     },
                 ],
             },
@@ -365,13 +368,13 @@ class ServerConsole extends EventTarget {
                         beginAtZero: true,
                         max: 100,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                 },
@@ -401,6 +404,7 @@ class ServerConsole extends EventTarget {
                         label: "Running",
                         data: data.map((row) => row.value),
                         backgroundColor,
+                        borderColor: "#3FD07A",
                     },
                 ],
             },
@@ -417,13 +421,13 @@ class ServerConsole extends EventTarget {
                         min: -1,
                         max: 1,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                             stepSize: 1,
                         },
                     },
                     x: {
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                 },
