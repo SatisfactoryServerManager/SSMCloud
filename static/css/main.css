@@ -128,18 +128,34 @@ a.disabled {
 }
 
 .dropdown-menu {
-    background-color: #eee;
-    color: #313131;
-    font-size: 15px !important;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 12px !important;
+    padding: 4px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
 .dropdown-menu .dropdown-item {
-    color: #313131;
-    font-weight: 700;
+    color: var(--ink-dim);
+    font-weight: 600;
+    border-radius: 3px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
 }
 
-.dropdown-menu .dropdown-item:hover {
-    background-color: #aaa;
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+    background-color: var(--panel-2);
+    color: var(--brand-bright);
+}
+
+.dropdown-menu .dropdown-divider {
+    border-top-color: var(--line);
+    margin: 4px 2px;
 }
 
 /* Toggle Styles */
@@ -282,8 +298,9 @@ a.disabled {
     background-color: var(--panel-2);
     border: 1px solid var(--line);
     border-radius: 4px;
-    overflow: hidden;
 }
+.profile-btn-group > .btn:first-child { border-radius: 4px 0 0 4px; }
+.profile-btn-group .dropdown-toggle { border-radius: 0 4px 4px 0; }
 .profile-btn-group .profile-image { width: 28px; height: 28px; border-radius: 4px; }
 .page-header .profile-btn-group .btn {
     background-color: transparent; color: var(--ink);
@@ -1026,8 +1043,14 @@ pre {
 .ssm-search i { color: var(--steel); }
 .ssm-search input { flex: 1; background: none; border: 0; outline: none; color: var(--ink); font-family: var(--mono); font-size: 13px; }
 .ssm-search input::placeholder { color: var(--steel); }
-.ssm-filters .chip { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; height: 42px; padding: 0 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-.ssm-filters .chip::after { margin-left: 4px; }
+.ssm-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-toggle { margin: 0; cursor: pointer; }
+.filter-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.filter-toggle span { display: inline-flex; align-items: center; gap: 7px; height: 42px; padding: 0 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; transition: color 0.12s, border-color 0.12s, background 0.12s; }
+.filter-toggle span i { opacity: 0.6; }
+.filter-toggle input:checked + span { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); background: color-mix(in srgb, var(--brand) 10%, var(--panel)); }
+.filter-toggle input:checked + span i { opacity: 1; }
+.filter-toggle input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
 .deploy-btn { margin-left: auto; height: 42px; padding: 0 18px; border: 0; background: var(--brand); color: #04222E; font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; border-radius: 3px; display: inline-flex; align-items: center; gap: 9px; text-decoration: none; }
 .deploy-btn:hover { background: var(--brand-bright); color: #04222E; }
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
@@ -1045,3 +1068,15 @@ pre {
 .alert-row.warn { border-left-color: var(--warn); }
 .alert-row .am { font-weight: 700; font-size: 14px; font-family: var(--sans); }
 .alert-row .as { font-family: var(--mono); font-size: 11px; color: var(--steel); margin-top: 2px; }
+
+/* ---- Card tag row alignment ---- */
+.tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* ---- Mobile top bar: stack actions below the page title ---- */
+@media (max-width: 640px) {
+    .page-header > .d-flex { flex-wrap: wrap; width: 100%; row-gap: 12px; }
+    .page-header .crumb { flex: 1 1 100%; }
+    .page-header .topbar-actions { flex: 1 1 100%; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .page-header .topbar-actions > * { margin-right: 0 !important; }
+    .profile-btn-group .btn { max-width: 42vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

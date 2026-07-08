@@ -12,7 +12,7 @@
           <span class="status-lamp {{if .Status.Online}}{{if .Status.Running}}run pulse{{else}}on{{end}}{{else}}off{{end}}"></span>
           {{.AgentName}}
         </h5>
-        <span class="unit-code mono">unit {{.Id}}</span>
+        <span class="unit-code mono">server {{.Id}}</span>
       </div>
       <a class="unit-cog" href="/dashboard/servers/{{.Id}}" aria-label="Configure {{.AgentName}}"><i class="fas fa-cog"></i></a>
     </div>

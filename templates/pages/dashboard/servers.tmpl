@@ -13,21 +13,18 @@
                     <div class="controls-bar">
                         <label class="ssm-search">
                             <i class="fas fa-magnifying-glass"></i>
-                            <input type="text" class="server-search" placeholder="Search fleet…" aria-label="Search servers">
+                            <input type="text" class="server-search" placeholder="Search servers…" aria-label="Search servers">
                         </label>
                         <div class="ssm-filters" id="server-filter">
-                            <button type="button" class="chip dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-filter"></i> Filter</button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li class="dropdown-item"><div class="form-check form-switch"><input class="form-check-input server-filter-checkbox" role="switch" type="checkbox" id="server-filter-online" checked><label class="form-check-label" for="server-filter-online">Online</label></div></li>
-                                <li class="dropdown-item"><div class="form-check form-switch"><input class="form-check-input server-filter-checkbox" role="switch" type="checkbox" id="server-filter-installed" checked><label class="form-check-label" for="server-filter-installed">Installed</label></div></li>
-                                <li class="dropdown-item"><div class="form-check form-switch"><input class="form-check-input server-filter-checkbox" role="switch" type="checkbox" id="server-filter-running" checked><label class="form-check-label" for="server-filter-running">Running</label></div></li>
-                            </ul>
+                            <label class="filter-toggle"><input class="server-filter-checkbox" type="checkbox" id="server-filter-online" checked><span><i class="fas fa-signal"></i> Online</span></label>
+                            <label class="filter-toggle"><input class="server-filter-checkbox" type="checkbox" id="server-filter-installed" checked><span><i class="fas fa-box"></i> Installed</span></label>
+                            <label class="filter-toggle"><input class="server-filter-checkbox" type="checkbox" id="server-filter-running" checked><span><i class="fas fa-play"></i> Running</span></label>
                         </div>
                         <a href="" class="deploy-btn" id="add-server-btn"><i class="fas fa-plus"></i> Deploy Server</a>
                     </div>
 
                     {{if not .agents}}
-                        <div class="alert alert-info">No servers yet — deploy your first server to bring a unit online.</div>
+                        <div class="alert alert-info">No servers yet — deploy your first server to bring one online.</div>
                     {{end}}
                     {{if .agents}}
                     <div class="grid" id="serverlist-wrapper">
