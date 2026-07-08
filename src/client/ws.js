@@ -1,6 +1,7 @@
 class WS extends EventTarget {
     constructor() {
         super();
+        this.pending = [];
     }
 
     init() {
@@ -22,7 +23,12 @@ class WS extends EventTarget {
             this.ws = new WebSocket(`wss://${hostname}${port}/dashboard/ws`);
         }
 
-        this.ws.onopen = () => console.log("Connected to WebSocket");
+        this.ws.onopen = () => {
+            console.log("Connected to WebSocket");
+            const queued = this.pending;
+            this.pending = [];
+            queued.forEach((data) => this.ws.send(data));
+        };
         this.ws.onclose = (event) => {
             console.log("Connection closed", event.code, event.reason);
             console.log("Reconnecting..");
@@ -44,7 +50,12 @@ class WS extends EventTarget {
     }
 
     send(data) {
-        this.ws.send(JSON.stringify(data));
+        const payload = JSON.stringify(data);
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.pending.push(payload);
+            return;
+        }
+        this.ws.send(payload);
     }
 
     sendServerAction(agentId, serverAction) {
