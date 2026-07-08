@@ -279,6 +279,7 @@ type WSMessage struct {
 	Action       string `json:"action"`
 	AgentId      string `json:"agentId"`
 	LastLogIndex int    `json:"lastLogIndex"`
+	LogType      string `json:"logType"`
 	ServerAction string `json:"serverAction"`
 }
 

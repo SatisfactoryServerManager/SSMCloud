@@ -6,7 +6,7 @@
     <div class="card2"><div class="hd"><h5>SSM Log</h5><div class="right">
         <a href="/dashboard/download/log?agentid={{.agent.Id}}&logtype=Agent" class="btn2 outline"><i class="fas fa-download"></i> Download</a>
     </div></div><div class="bd">
-        <div class="term log-viewer">
+        <div class="term log-viewer" data-logtype="Agent">
         {{if eq .agentLog.Type ""}}<p>No log entries for this log type.</p>
         {{else}}{{range displayLogLines .agentLog.LogLines}}<p>{{.}}</p>{{end}}{{end}}
         </div>
@@ -14,7 +14,7 @@
     <div class="card2"><div class="hd"><h5>Satisfactory Log</h5><div class="right">
         <a href="/dashboard/download/log?agentid={{.agent.Id}}&logtype=FactoryGame" class="btn2 outline"><i class="fas fa-download"></i> Download</a>
     </div></div><div class="bd">
-        <div class="term log-viewer">
+        <div class="term log-viewer" data-logtype="FactoryGame">
         {{if eq .gameLog.Type ""}}<p>No log entries for this log type.</p>
         {{else}}{{range displayLogLines .gameLog.LogLines}}<p>{{.}}</p>{{end}}{{end}}
         </div>

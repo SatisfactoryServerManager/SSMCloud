@@ -13,7 +13,9 @@
     </form>
 </div></div>
 
-<div class="card2"><div class="hd"><h5>Save Files</h5></div><div class="bd">
+<div class="card2"><div class="hd"><h5>Save Files</h5><div class="right">
+    <label class="search"><i class="fas fa-magnifying-glass"></i><input type="text" placeholder="Search saves…" class="save-search" aria-label="Search saves"></label>
+</div></div><div class="bd">
     {{if eq (len .agent.Saves) 0}}<p class="empty-note">There are currently no saves for this server yet.</p>{{end}}
     <div class="grid3">
         {{ range .agent.Saves}}

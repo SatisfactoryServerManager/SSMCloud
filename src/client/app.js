@@ -3,6 +3,7 @@ const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
+const ServerLogs = require("./server-logs");
 const ssmTheme = require("./theme");
 require("./dashboard-overview").init();
 
@@ -24,6 +25,7 @@ function main() {
     WS.init();
     AccountPage.init();
     ServerConsole.init();
+    ServerLogs.init();
 
     window.displayFlashes();
 
@@ -384,6 +386,20 @@ function main() {
                 if (
                     !$ele.attr("data-backupname").toLowerCase().includes(search)
                 ) {
+                    $ele.addClass("hidden");
+                } else {
+                    $ele.removeClass("hidden");
+                }
+            });
+        })
+        .on("keyup", ".save-search", (e) => {
+            const $this = $(e.currentTarget);
+            const $saveCard = $this.closest(".card2");
+
+            const search = $this.val().toLowerCase();
+            $saveCard.find(".save-card").each((index, ele) => {
+                const $ele = $(ele);
+                if (!$ele.attr("data-savename").toLowerCase().includes(search)) {
                     $ele.addClass("hidden");
                 } else {
                     $ele.removeClass("hidden");
@@ -814,16 +830,15 @@ function FilterServerList() {
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
-        if (
-            $el.attr("data-agentname").toLowerCase().includes(search) &&
-            ($el.attr("data-online") == FilterOnline ||
-                $el.attr("data-installed") == FilterInstalled ||
-                $el.attr("data-running") == FilterRunning)
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        const nameMatch = $el
+            .attr("data-agentname")
+            .toLowerCase()
+            .includes(search);
+        const onlineOk = !FilterOnline || $el.attr("data-online") == 1;
+        const installedOk = !FilterInstalled || $el.attr("data-installed") == 1;
+        const runningOk = !FilterRunning || $el.attr("data-running") == 1;
+
+        return nameMatch && onlineOk && installedOk && runningOk;
     }
 
     $wrapper.find(".server-card").each((index, ele) => {
