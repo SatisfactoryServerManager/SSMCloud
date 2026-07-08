@@ -1242,9 +1242,9 @@ function FilterServerList() {
     $wrapper.find(".server-card").each((index, ele) => {
         const $ele = $(ele);
         if (!doesMatch($ele)) {
-            $ele.parent().addClass("hidden");
+            $ele.addClass("hidden");
         } else {
-            $ele.parent().removeClass("hidden");
+            $ele.removeClass("hidden");
         }
     });
 }
