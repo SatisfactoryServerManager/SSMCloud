@@ -963,11 +963,9 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
     $("#windows-install-agent .docker").val(WindowsInstallCommand);
-    $("#windows-install-agent .standalone").text(
-        WindowsStandaloneInstallCommand,
-    );
-    $("#linux-install-agent .docker").text(LinuxInstallCommand);
-    $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
+    $("#windows-install-agent .standalone").val(WindowsStandaloneInstallCommand);
+    $("#linux-install-agent .docker").val(LinuxInstallCommand);
+    $("#linux-install-agent .standalone").val(LinuxStandaloneInstallCommand);
 }
 
 window.BuildAgentInstallCommands = BuildAgentInstallCommands;
