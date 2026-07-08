@@ -447,6 +447,8 @@ function main() {
 
     const lastServerTab = localStorage.getItem("ServerActiveTab");
 
+    window.agentMap = new AgentMap(window.agent);
+
     if ($(".server-tabs-header").length > 0) {
         if (lastServerTab) {
             $(
@@ -1206,8 +1208,6 @@ function main() {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-
-    window.agentMap = new AgentMap(window.agent);
 
     $('a[data-bs-toggle="tab"]').on("shown.bs.tab", (e) => {
         var target = $(e.target).attr("href"); // activated tab
