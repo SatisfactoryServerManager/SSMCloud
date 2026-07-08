@@ -2052,3 +2052,7 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .search input { background: none; border: 0; outline: none; color: var(--ink); font-family: var(--mono); font-size: 12px; }
 .search input::placeholder { color: var(--steel); }
 .empty-note { color: var(--steel); font-family: var(--mono); font-size: 12px; margin: 0; }
+
+.log-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.log-grid .term.log-viewer { height: 380px; }
+@media (max-width: 860px) { .log-grid { grid-template-columns: 1fr; } }
