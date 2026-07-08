@@ -417,6 +417,7 @@ const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
 const ssmTheme = require("./theme");
+require("./dashboard-overview").init();
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -1407,7 +1408,74 @@ $(document).ready(() => {
     ssmTheme.init();
 });
 
-},{"./account-page":1,"./agentmap":2,"./mods-page":4,"./server-console":5,"./theme":6,"./ws":7}],4:[function(require,module,exports){
+},{"./account-page":1,"./agentmap":2,"./dashboard-overview":4,"./mods-page":5,"./server-console":6,"./theme":7,"./ws":8}],4:[function(require,module,exports){
+// Derives fleet summary tiles + a "needs attention" list from the rendered
+// server-card DOM. Display-only; no server round-trip.
+function num(el) { return el ? parseFloat(el.textContent) || 0 : 0; }
+
+function readCards() {
+    return Array.prototype.map.call(document.querySelectorAll("#agents-wrapper .unit"), function (card) {
+        const rail = card.classList.contains("online");
+        const running = !!card.querySelector(".status-lamp.run");
+        const cpuEl = card.querySelector(".meter-row .val");
+        const vals = card.querySelectorAll(".meter-row .val");
+        const name = (card.querySelector(".unit-name") || {}).textContent || "";
+        return {
+            name: name.trim(),
+            online: rail,
+            running: running,
+            cpu: vals[0] ? num(vals[0]) : 0,
+            ram: vals[1] ? num(vals[1]) : 0,
+        };
+    });
+}
+
+function tile(n, label, lamp) {
+    return '<div class="ftile"><div class="ftile-top">' +
+        (lamp ? '<span class="status-lamp ' + lamp + '"></span>' : "") +
+        '<span class="ftile-n">' + n + '</span></div><span class="ftile-k">' + label + '</span></div>';
+}
+
+function render() {
+    const wrap = document.getElementById("fleet-summary");
+    if (!wrap) return;
+    const cards = readCards();
+    const online = cards.filter(function (c) { return c.online; });
+    const running = cards.filter(function (c) { return c.running; });
+    const offline = cards.length - online.length;
+
+    wrap.innerHTML =
+        tile(cards.length, "Servers", "") +
+        tile(online.length, "Online", "on") +
+        tile(running.length, "Running", "run") +
+        tile(offline, "Offline", offline ? "off" : "");
+
+    // attention
+    const alerts = [];
+    cards.forEach(function (c) {
+        if (!c.online) alerts.push({ sev: "crit", m: c.name + " is offline", s: "Agent not reporting" });
+        else if (c.ram >= 90 || c.cpu >= 90) alerts.push({ sev: "crit", m: c.name + " — " + (c.ram >= 90 ? "memory" : "CPU") + " at " + Math.max(c.ram, c.cpu) + "%", s: "Critical load" });
+        else if (c.ram >= 75 || c.cpu >= 75) alerts.push({ sev: "warn", m: c.name + " under heavy load", s: "CPU " + c.cpu + "% · RAM " + c.ram + "%" });
+    });
+    const rank = { crit: 0, warn: 1, info: 2 };
+    alerts.sort(function (a, b) { return rank[a.sev] - rank[b.sev]; });
+    const att = document.getElementById("attention");
+    const head = document.getElementById("attention-head");
+    if (alerts.length) {
+        head.classList.remove("hidden");
+        document.getElementById("attention-meta").textContent = alerts.length + (alerts.length === 1 ? " item" : " items");
+        att.innerHTML = alerts.map(function (a) {
+            return '<div class="alert-row ' + a.sev + '"><div class="atxt"><div class="am">' + a.m + '</div><div class="as">' + a.s + '</div></div></div>';
+        }).join("");
+    } else {
+        head.classList.add("hidden");
+        att.innerHTML = "";
+    }
+}
+
+module.exports = { init: function () { document.addEventListener("DOMContentLoaded", render); } };
+
+},{}],5:[function(require,module,exports){
 class ModsPage {
     constructor() {
         this.page = 0;
@@ -1731,7 +1799,7 @@ const modsPage = new ModsPage();
 
 module.exports = modsPage;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 const ws = require("./ws");
 
 class ServerConsole extends EventTarget {
@@ -2169,7 +2237,7 @@ class ServerConsole extends EventTarget {
 serverConsole = new ServerConsole();
 module.exports = serverConsole;
 
-},{"./ws":7}],6:[function(require,module,exports){
+},{"./ws":8}],7:[function(require,module,exports){
 // Manual light/dark theme toggle, persisted to localStorage.
 // data-theme on <html> overrides the OS prefers-color-scheme.
 const KEY = "ssm-theme";
@@ -2211,7 +2279,7 @@ function init() {
 window.SSMTheme = { set: set, toggle: toggle, current: current };
 module.exports = { init: init };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 class WS extends EventTarget {
     constructor() {
         super();

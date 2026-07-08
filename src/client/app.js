@@ -4,6 +4,7 @@ const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
 const ssmTheme = require("./theme");
+require("./dashboard-overview").init();
 
 function main() {
     const currentScheme = detectColorScheme();

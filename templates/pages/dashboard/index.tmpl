@@ -12,17 +12,22 @@
                     {{template "includes/dashboard/page-header" .}}
 
                     {{if not .agents}}
-                        <div class="alert alert-info">
-                            It looks there is no servers set up yet! Go to the <b><a href="/dashboard/servers">Servers</a></b> page to set up your first server.
-                        </div>
+                        <div class="alert alert-info">No servers yet — head to <a href="/dashboard/servers">Servers</a> to deploy your first one.</div>
                     {{end}}
-                    <div id="agents-wrapper" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
                     {{if .agents}}
-                        {{range .agents}}  
+                    <div class="section-head"><span class="eyebrow">// Fleet overview</span><span class="rule"></span><span class="meta">{{len .agents}} units</span></div>
+                    <div id="fleet-summary" class="fleet-summary"></div>
+
+                    <div id="attention-head" class="section-head hidden"><span class="eyebrow">// Needs attention</span><span class="rule"></span><span class="meta" id="attention-meta"></span></div>
+                    <div id="attention" class="attention"></div>
+
+                    <div class="section-head"><span class="eyebrow">// All servers</span><span class="rule"></span></div>
+                    <div id="agents-wrapper" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+                        {{range .agents}}
                             {{template "includes/dashboard/server-card" .}}
-                        {{end}}                        
-                    {{end}}
+                        {{end}}
                     </div>
+                    {{end}}
                 </div>
             </div>
         </div>
