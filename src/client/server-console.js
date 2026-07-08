@@ -300,6 +300,8 @@ class ServerConsole extends EventTarget {
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
@@ -356,6 +358,8 @@ class ServerConsole extends EventTarget {
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
@@ -409,6 +413,8 @@ class ServerConsole extends EventTarget {
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
