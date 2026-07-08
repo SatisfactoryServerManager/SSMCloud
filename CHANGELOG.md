@@ -1,3 +1,6 @@
+## 1.0.179 (July 08, 2026)
+
+
 ## 1.0.178 (July 08, 2026)
   - Merge pull request #21 from SatisfactoryServerManager/feature/rest-to-grpc-migration
   - feat: Updated frontend js
