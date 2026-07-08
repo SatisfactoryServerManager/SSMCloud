@@ -79,58 +79,72 @@
                         </div>
                     </div>
                     {{else}}
-                        <div class="row server-tabs-header">
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#console" aria-selected="true" role="tab">Console</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#settings" aria-selected="true" role="tab">Settings</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#installcommand" aria-selected="false" role="tab">Install Command</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#map" aria-selected="false" role="tab" tabindex="-1">Map</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#saves" aria-selected="false" role="tab" tabindex="-1">Saves</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#backups" aria-selected="false" tabindex="-1" role="tab">Backups</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#logs" aria-selected="false" tabindex="-1" role="tab">Logs</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#mods" aria-selected="false" tabindex="-1" role="tab">Mods</a>
-                                </li>
-                            </ul>
+                        <div class="cmd-head {{if not .agent.Status.Online}}is-offline{{end}}">
+                            <div class="cmd-top">
+                                <div class="cmd-id">
+                                    <h5 class="cmd-name">
+                                        <span class="status-lamp {{if .agent.Status.Online}}{{if .agent.Status.Running}}run pulse{{else}}on{{end}}{{else}}off{{end}}"></span>
+                                        {{.agent.AgentName}}
+                                    </h5>
+                                    <span class="cmd-code mono">server {{.agent.Id}}</span>
+                                </div>
+                                <div class="ops">
+                                    <a id="server-console-start-btn" href="/dashboard/serveraction/start?id={{.agent.Id}}"><button class="op start server-action-btn" {{if .agent.Status.Running}}disabled{{end}}><i class="fas fa-play"></i> Start</button></a>
+                                    <a id="server-console-stop-btn" href="/dashboard/serveraction/stop?id={{.agent.Id}}"><button class="op stop server-action-btn" {{if not .agent.Status.Running}}disabled{{end}}><i class="fas fa-stop"></i> Stop</button></a>
+                                    <a id="server-console-kill-btn" href="/dashboard/serveraction/kill?id={{.agent.Id}}"><button class="op kill server-action-btn" {{if not .agent.Status.Running}}disabled{{end}}><span><i class="fas fa-skull-crossbones"></i> Kill</span></button></a>
+                                </div>
+                            </div>
+                            <div class="cmd-readouts">
+                                <div class="readout green"><div class="k">Status</div><div class="v">{{if .agent.Status.Running}}Running{{else if .agent.Status.Online}}Online{{else}}Offline{{end}}</div></div>
+                                <div class="readout blue"><div class="k">Connection</div><div class="v">{{.agent.Config.IpAddress}}:{{.agent.Config.Port}}</div></div>
+                                <div class="readout"><div class="k">Version</div><div class="v">{{.agent.Config.Version}}</div></div>
+                                <div class="readout orange"><div class="k">SF Server</div><div class="v">{{.agent.Status.InstalledSfVersion}}</div></div>
+                            </div>
                         </div>
-                        <div id="myTabContent" class="tab-content">
-                            <div class="tab-pane fade" id="console" role="tabpanel">
-                                {{template "includes/server/console" .}}
-                            </div>
-                            <div class="tab-pane fade" id="settings" role="tabpanel">
-                                {{template "includes/server/settings" .}}
-                            </div>
-                            <div class="tab-pane fade" id="installcommand">
-                                {{template "includes/server/installcommand" .}}
-                            </div>
-                            <div class="tab-pane fade" id="map" role="tabpanel">
-                                {{template "includes/server/map" .}}
-                            </div>
-                            <div class="tab-pane fade" id="saves" role="tabpanel">
-                                {{template "includes/server/saves" .}}
-                            </div>
-                            <div class="tab-pane fade" id="backups">
-                                {{template "includes/server/backups" .}}
-                            </div>
-                            <div class="tab-pane fade" id="logs">
-                                {{template "includes/server/logs" .}}
-                            </div>
-                            <div class="tab-pane fade" id="mods">
-                                {{template "includes/server/mods" .}}
+
+                        <div class="console-grid">
+                            <aside class="rack">
+                                <div class="rack-label">// Sections</div>
+                                <div class="server-tabs-header">
+                                    <ul class="nav nav-tabs rack-nav" role="tablist">
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#console" role="tab"><span class="gl"><i class="fas fa-terminal"></i></span> Console</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#settings" role="tab"><span class="gl"><i class="fas fa-cog"></i></span> Settings {{if ne .agent.Config.Version .agent.LatestAgentVersion}}<span class="dot warn" title="Update available"></span>{{end}}</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#installcommand" role="tab"><span class="gl"><i class="fas fa-download"></i></span> Install</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#map" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-map-location-dot"></i></span> Map</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#saves" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-floppy-disk"></i></span> Saves <span class="count">{{len .agent.Saves}}</span></a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#backups" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-clock-rotate-left"></i></span> Backups <span class="count">{{len .agent.Backups}}</span></a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#logs" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-list"></i></span> Logs</a></li>
+                                        <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#mods" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-puzzle-piece"></i></span> Mods</a></li>
+                                    </ul>
+                                </div>
+                            </aside>
+                            <div class="pane">
+                                <div id="myTabContent" class="tab-content">
+                                    <div class="tab-pane fade" id="console" role="tabpanel">
+                                        {{template "includes/server/console" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="settings" role="tabpanel">
+                                        {{template "includes/server/settings" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="installcommand">
+                                        {{template "includes/server/installcommand" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="map" role="tabpanel">
+                                        {{template "includes/server/map" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="saves" role="tabpanel">
+                                        {{template "includes/server/saves" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="backups">
+                                        {{template "includes/server/backups" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="logs">
+                                        {{template "includes/server/logs" .}}
+                                    </div>
+                                    <div class="tab-pane fade" id="mods">
+                                        {{template "includes/server/mods" .}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {{end}}
