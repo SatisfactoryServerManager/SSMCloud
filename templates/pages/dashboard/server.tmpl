@@ -95,10 +95,10 @@
                                 </div>
                             </div>
                             <div class="cmd-readouts">
-                                <div class="readout green"><div class="k">Status</div><div class="v">{{if .agent.Status.Running}}Running{{else if .agent.Status.Online}}Online{{else}}Offline{{end}}</div></div>
+                                <div class="readout"><div class="k">Status</div><div class="v">{{if .agent.Status.Running}}Running{{else if .agent.Status.Online}}Online{{else}}Offline{{end}}</div></div>
                                 <div class="readout blue"><div class="k">Connection</div><div class="v">{{.agent.Config.IpAddress}}:{{.agent.Config.Port}}</div></div>
-                                <div class="readout"><div class="k">Version</div><div class="v">{{.agent.Config.Version}}</div></div>
-                                <div class="readout orange"><div class="k">SF Server</div><div class="v">{{.agent.Status.InstalledSfVersion}}</div></div>
+                                <div class="readout blue"><div class="k">Version</div><div class="v">{{.agent.Config.Version}}</div></div>
+                                <div class="readout blue"><div class="k">SF Server</div><div class="v">{{.agent.Status.InstalledSfVersion}}</div></div>
                             </div>
                         </div>
 
