@@ -1,44 +1,32 @@
 {{define "includes/dashboard/small-server-card"}}
-<div class="card card-inner server-card" data-agentname="{{.AgentName}}" data-online="{{ if .Status.Online}}1{{else}}0{{end}}" data-installed="{{ if .Status.Installed}}1{{else}}0{{end}}" data-running="{{ if .Status.Running}}1{{else}}0{{end}}">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-12 d-flex align-items-center">
-         <h5 class="flex-grow-1">
-          {{if .Status.Online}}
-          <i class="fas fa-circle-check text-success pe-2"></i>
-          {{else}}
-          <i class="fas fa-circle-xmark text-danger pe-2"></i>
-          {{end}}
+<article class="unit status-rail {{if .Status.Online}}online{{else}}offline{{end}} server-card"
+  data-agentname="{{.AgentName}}"
+  data-online="{{if .Status.Online}}1{{else}}0{{end}}"
+  data-installed="{{if .Status.Installed}}1{{else}}0{{end}}"
+  data-running="{{if .Status.Running}}1{{else}}0{{end}}">
+  <div class="unit-head">
+    <div class="unit-id">
+      <h5 class="unit-name">
+        <span class="status-lamp {{if .Status.Online}}{{if .Status.Running}}run pulse{{else}}on{{end}}{{else}}off{{end}}"></span>
         {{.AgentName}}
-        </h5>
-        <a href="/dashboard/servers/{{.Id}}" class="btn btn-primary me-2" style="height:40px">
-          <i class="fas fa-cog"></i>
-        </a>
-                <a href="/dashboard/servers/delete?id={{.Id}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Agent Confirmation">
-          <i class="fas fa-trash"></i>
-        </a>
-      </div>
+      </h5>
+      <span class="unit-code mono">server {{.Id}}</span>
     </div>
-    <hr>
-    <div class="row">
-      <div class="col-12">
-        <span class="badge bg-dark border-dark p-2">
-          {{if .Status.Installed}}
-          <i class="fas fa-circle-check text-success pe-2"></i> Installed
-          {{else}}
-          <i class="fas fa-circle-xmark text-danger pe-2"></i> Not Installed
-          {{end}}
-        </span>
-        {{if .Config.Version}}
-          <span class="badge bg-dark border-dark p-2">
-            {{.Config.Version}} / {{.LatestAgentVersion}}
-          </span>
-          <span class="badge bg-dark border-dark p-2">
-            {{.ServerConfig.Branch}}
-          </span>
-          {{end}}
-      </div>
+    <div class="unit-actions">
+      <a href="/dashboard/servers/{{.Id}}" class="unit-cog" aria-label="Configure {{.AgentName}}"><i class="fas fa-cog"></i></a>
+      <a href="/dashboard/servers/delete?id={{.Id}}" class="unit-cog danger should-confirm-btn" aria-label="Delete {{.AgentName}}" data-confirm-title="Delete Agent Confirmation"><i class="fas fa-trash"></i></a>
     </div>
   </div>
-</div>
+  <div class="tags">
+    {{if .Status.Installed}}
+      <span class="tag ok"><i class="fas fa-circle-check"></i> Installed</span>
+    {{else}}
+      <span class="tag no"><i class="fas fa-circle-xmark"></i> Not installed</span>
+    {{end}}
+    {{if .Config.Version}}
+      <span class="tag {{if ne .Config.Version .LatestAgentVersion}}upd{{end}}">{{.Config.Version}} / {{.LatestAgentVersion}}</span>
+      <span class="tag {{if eq .ServerConfig.Branch "experimental"}}exp{{end}}">{{.ServerConfig.Branch}}</span>
+    {{end}}
+  </div>
+</article>
 {{end}}

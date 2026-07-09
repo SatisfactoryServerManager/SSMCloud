@@ -49,13 +49,21 @@ class AccountPage {
     };
 
     BuildAuditList() {
-        const $wrapper = $("#account-audit-wrapper .row");
+        const $wrapper = $("#account-audit-wrapper .grid");
         $wrapper.empty();
 
         if (this._AuditList.length == 0) {
-            $wrapper.append(`<div class="col-12"><div class="alert alert-info">No Audit Events recorded</div></div>`);
+            $wrapper.append(`<div class="ssm-alert warn" style="grid-column:1/-1;"><i class="fas fa-circle-info"></i> No Audit Events recorded</div>`);
             return;
         }
+
+        this._AuditList = this._AuditList.sort((a, b) => {
+            if (a.created_at.seconds < b.created_at.seconds) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
 
         for (let i = 0; i < this._AuditList.length; i++) {
             const audit = this._AuditList[i];
@@ -64,8 +72,7 @@ class AccountPage {
     }
 
     BuildAuditUI(audit) {
-        const $col = $("<div/>").addClass("col-12 col-md-6 col-lg-4 col-xl-3");
-        const $div = $("<div/>").addClass("rounded account-audit-item mb-3 p-3");
+        const $div = $("<div/>").addClass("account-audit-item");
 
         let auditTypeString = "";
         switch (audit.type) {
@@ -92,7 +99,7 @@ class AccountPage {
                 break;
         }
 
-        const date = new Date(audit.createdAt);
+        const date = new Date(audit.created_at.seconds * 1000);
 
         const formatted = date.toLocaleString("en-US", {
             month: "long", // "October"
@@ -107,8 +114,7 @@ class AccountPage {
         $div.append(`<h5 class="m-0">${auditTypeString}</h5>`);
         $div.append(`<div>${formatted}</div>`);
         $div.append(`<div>${audit.message}</div>`);
-        $col.append($div);
-        return $col;
+        return $div;
     }
 
     PollAccountUsers = async () => {
@@ -135,12 +141,12 @@ class AccountPage {
     }
 
     BuildUserUI(User) {
-        const $div = $("<div/>").addClass("account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center");
+        const $div = $("<div/>").addClass("account-user d-flex flex-md-row flex-column align-items-center");
 
         const $title = $(`<div class="mb-2 m-md-0"></div>`);
         const $icon = $(`<i class="fas fa-user me-2 fa-lg"></i>`);
 
-        const $deleteBtn = $(`<button class="btn btn-danger delete-user-btn ms-md-auto"></button>`);
+        const $deleteBtn = $(`<button class="btn2 outline danger delete-user-btn ms-md-auto"></button>`);
 
         $deleteBtn.append(`<i class="fas fa-trash"></i>`);
         $deleteBtn.append(`<span class="ms-2 d-md-none d-inline-block">Delete User</span>`);
@@ -174,6 +180,8 @@ const accountPage = new AccountPage();
 module.exports = accountPage;
 
 },{}],2:[function(require,module,exports){
+const ws = require("./ws");
+
 class AgentMap {
     constructor(agent) {
         this.agent = agent;
@@ -260,10 +268,14 @@ class AgentMap {
         this.AddMapPlayers();
         this.AddBuildingMarkers();
 
+        ws.addEventListener("console.agent.map", (event) => {
+            this.onMapReceived(event);
+        });
+
         setInterval(() => {
-            this.pollAgent();
+            this.requestAgentMap();
         }, 10000);
-        this.pollAgent();
+        this.requestAgentMap();
     };
 
     AddMapPlayers = () => {
@@ -394,28 +406,30 @@ class AgentMap {
         return [-y, x];
     };
 
-    pollAgent = async () => {
+    requestAgentMap = () => {
         const agentId = window.location.href.substring(
             window.location.href.lastIndexOf("/") + 1
         );
-        try {
-            const res = await $.get("/map/" + agentId + "/data");
+        ws.send({ action: "console.agent.map", agentId });
+    };
 
-            this.Update(res.players, res.buildings);
-        } catch (err) {
-            console.log(err);
-        }
+    onMapReceived = (event) => {
+        const data = event.detail || {};
+        this.Update(data.players || [], data.buildings || []);
     };
 }
 
 module.exports = AgentMap;
 
-},{}],3:[function(require,module,exports){
+},{"./ws":9}],3:[function(require,module,exports){
 const AgentMap = require("./agentmap");
 const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
+const ServerLogs = require("./server-logs");
+const ssmTheme = require("./theme");
+require("./dashboard-overview").init();
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -435,10 +449,13 @@ function main() {
     WS.init();
     AccountPage.init();
     ServerConsole.init();
+    ServerLogs.init();
 
     window.displayFlashes();
 
     const lastServerTab = localStorage.getItem("ServerActiveTab");
+
+    window.agentMap = new AgentMap(window.agent);
 
     if ($(".server-tabs-header").length > 0) {
         if (lastServerTab) {
@@ -461,16 +478,41 @@ function main() {
             window.agentPort,
             window.agentAPIKey,
         );
+
+        // Set the mobile dropdown trigger to the section restored above
+        const $activeRackBtn = $(".rack-nav .rack-btn.active").first();
+        if ($activeRackBtn.length) {
+            $(".rack-current").text(RackSectionLabel($activeRackBtn));
+        }
     }
 
-    // When a tab is clicked (and shown), save it
+    // When a tab is clicked (and shown), save it and sync the mobile dropdown
     $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on(
         "shown.bs.tab",
         function (e) {
             const activeTab = $(e.target).attr("href"); // e.g. "#profile"
             localStorage.setItem("ServerActiveTab", activeTab);
+            $(".rack-current").text(RackSectionLabel($(e.target)));
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
         },
     );
+
+    // Mobile: toggle the section dropdown open/closed
+    $("body").on("click", ".rack-toggle", (e) => {
+        e.stopPropagation();
+        const $rack = $(e.currentTarget).closest(".rack");
+        const open = $rack.toggleClass("open").hasClass("open");
+        $(e.currentTarget).attr("aria-expanded", open ? "true" : "false");
+    });
+
+    // Mobile: click outside the rack closes the dropdown
+    $(document).on("click", (e) => {
+        if ($(e.target).closest(".rack").length === 0) {
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
+        }
+    });
 
     // Try to get the last active tab from localStorage
     const lastAccountTab = localStorage.getItem("AccountActiveTab");
@@ -581,9 +623,9 @@ function main() {
                 .find(".event-types-pills");
 
             $pillWrapper.append(`
-            <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
+            <span class="tag" data-event-type="${$select.val()}">
                 ${$select.find("option:selected").text()}
-                <i class="fas fa-times ms-1 float-end" ></i>
+                <i class="fas fa-times ms-1"></i>
             </span>
             `);
 
@@ -731,6 +773,16 @@ function main() {
             ModsPage.search = $this.val().toLowerCase();
             SortMods();
         })
+        .on(
+            "change",
+            "#check-available, #check-installed, #check-only-updatable, #check-show-hidden",
+            () => {
+                // Filtering is server-side — refetch from page 0 so the result
+                // set and pagination stay consistent.
+                ModsPage.page = 0;
+                ModsPage.UpdateView();
+            },
+        )
         .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
             const $this = $(e.currentTarget);
 
@@ -785,7 +837,7 @@ function main() {
         })
         .on("keyup", ".backup-search", (e) => {
             const $this = $(e.currentTarget);
-            const $backupCard = $this.parent().parent().parent().parent();
+            const $backupCard = $this.closest(".card2");
 
             const search = $this.val().toLowerCase();
             $backupCard.find(".backup-card").each((index, ele) => {
@@ -793,9 +845,23 @@ function main() {
                 if (
                     !$ele.attr("data-backupname").toLowerCase().includes(search)
                 ) {
-                    $ele.parent().addClass("hidden");
+                    $ele.addClass("hidden");
                 } else {
-                    $ele.parent().removeClass("hidden");
+                    $ele.removeClass("hidden");
+                }
+            });
+        })
+        .on("keyup", ".save-search", (e) => {
+            const $this = $(e.currentTarget);
+            const $saveCard = $this.closest(".card2");
+
+            const search = $this.val().toLowerCase();
+            $saveCard.find(".save-card").each((index, ele) => {
+                const $ele = $(ele);
+                if (!$ele.attr("data-savename").toLowerCase().includes(search)) {
+                    $ele.addClass("hidden");
+                } else {
+                    $ele.removeClass("hidden");
                 }
             });
         })
@@ -1060,9 +1126,14 @@ function main() {
             WS.sendServerAction(agentId, action);
         });
 
-    SortMods();
+    if ($(".mod-list").length > 0) {
+        ApplyModSort();
+        ModsPage.init();
+    }
 
-    function SortMods() {
+    // Set ModsPage.sort/direction from the sort <select> without triggering a
+    // fetch — used to seed state before ModsPage.init() makes the first request.
+    function ApplyModSort() {
         const sortBy = $("#mods-sortby").val();
 
         if (sortBy == "az") {
@@ -1078,7 +1149,12 @@ function main() {
             ModsPage.sort = "downloads";
             ModsPage.direction = "asc";
         }
+    }
 
+    function SortMods() {
+        ApplyModSort();
+        // Sort/search change the result set — restart at page 0.
+        ModsPage.page = 0;
         ModsPage.UpdateView();
     }
 
@@ -1200,8 +1276,6 @@ function main() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    window.agentMap = new AgentMap(window.agent);
-
     $('a[data-bs-toggle="tab"]').on("shown.bs.tab", (e) => {
         var target = $(e.target).attr("href"); // activated tab
         if (target == "#map") {
@@ -1225,24 +1299,23 @@ function FilterServerList() {
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
-        if (
-            $el.attr("data-agentname").toLowerCase().includes(search) &&
-            ($el.attr("data-online") == FilterOnline ||
-                $el.attr("data-installed") == FilterInstalled ||
-                $el.attr("data-running") == FilterRunning)
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        const nameMatch = $el
+            .attr("data-agentname")
+            .toLowerCase()
+            .includes(search);
+        const onlineOk = !FilterOnline || $el.attr("data-online") == 1;
+        const installedOk = !FilterInstalled || $el.attr("data-installed") == 1;
+        const runningOk = !FilterRunning || $el.attr("data-running") == 1;
+
+        return nameMatch && onlineOk && installedOk && runningOk;
     }
 
     $wrapper.find(".server-card").each((index, ele) => {
         const $ele = $(ele);
         if (!doesMatch($ele)) {
-            $ele.parent().addClass("hidden");
+            $ele.addClass("hidden");
         } else {
-            $ele.parent().removeClass("hidden");
+            $ele.removeClass("hidden");
         }
     });
 }
@@ -1374,14 +1447,19 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
     $("#windows-install-agent .docker").val(WindowsInstallCommand);
-    $("#windows-install-agent .standalone").text(
-        WindowsStandaloneInstallCommand,
-    );
-    $("#linux-install-agent .docker").text(LinuxInstallCommand);
-    $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
+    $("#windows-install-agent .standalone").val(WindowsStandaloneInstallCommand);
+    $("#linux-install-agent .docker").val(LinuxInstallCommand);
+    $("#linux-install-agent .standalone").val(LinuxStandaloneInstallCommand);
 }
 
 window.BuildAgentInstallCommands = BuildAgentInstallCommands;
+
+// Extract the plain section name from a rack tab (strips icon, count badge, update dot)
+function RackSectionLabel($a) {
+    const $clone = $a.clone();
+    $clone.find(".gl, .count, .dot").remove();
+    return $clone.text().trim();
+}
 
 Number.prototype.pad = function (width, z) {
     let n = this;
@@ -1403,9 +1481,84 @@ function detectColorScheme() {
 
 $(document).ready(() => {
     main();
+    ssmTheme.init();
 });
 
-},{"./account-page":1,"./agentmap":2,"./mods-page":4,"./server-console":5,"./ws":6}],4:[function(require,module,exports){
+},{"./account-page":1,"./agentmap":2,"./dashboard-overview":4,"./mods-page":5,"./server-console":6,"./server-logs":7,"./theme":8,"./ws":9}],4:[function(require,module,exports){
+// Derives fleet summary tiles + a "needs attention" list from the rendered
+// server-card DOM. Display-only; no server round-trip.
+function num(el) { return el ? parseFloat(el.textContent) || 0 : 0; }
+
+function readCards() {
+    return Array.prototype.map.call(document.querySelectorAll("#agents-wrapper .unit"), function (card) {
+        const rail = card.classList.contains("online");
+        const running = !!card.querySelector(".status-lamp.run");
+        const cpuEl = card.querySelector(".meter-row .val");
+        const vals = card.querySelectorAll(".meter-row .val");
+        const name = (card.querySelector(".unit-name") || {}).textContent || "";
+        return {
+            name: name.trim(),
+            online: rail,
+            running: running,
+            cpu: vals[0] ? num(vals[0]) : 0,
+            ram: vals[1] ? num(vals[1]) : 0,
+        };
+    });
+}
+
+function tile(n, label, lamp) {
+    return '<div class="ftile"><div class="ftile-top">' +
+        (lamp ? '<span class="status-lamp ' + lamp + '"></span>' : "") +
+        '<span class="ftile-n">' + n + '</span></div><span class="ftile-k">' + label + '</span></div>';
+}
+
+function render() {
+    const wrap = document.getElementById("fleet-summary");
+    if (!wrap) return;
+    const cards = readCards();
+    const online = cards.filter(function (c) { return c.online; });
+    const running = cards.filter(function (c) { return c.running; });
+    const offline = cards.length - online.length;
+
+    wrap.innerHTML =
+        tile(cards.length, "Servers", "") +
+        tile(online.length, "Online", "on") +
+        tile(running.length, "Running", "run") +
+        tile(offline, "Offline", offline ? "off" : "");
+
+    // attention
+    const alerts = [];
+    cards.forEach(function (c) {
+        if (!c.online) alerts.push({ sev: "crit", m: c.name + " is offline", s: "Agent not reporting" });
+        else if (c.ram >= 90 || c.cpu >= 90) alerts.push({ sev: "crit", m: c.name + " — " + (c.ram >= 90 ? "memory" : "CPU") + " at " + Math.max(c.ram, c.cpu) + "%", s: "Critical load" });
+        else if (c.ram >= 75 || c.cpu >= 75) alerts.push({ sev: "warn", m: c.name + " under heavy load", s: "CPU " + c.cpu + "% · RAM " + c.ram + "%" });
+    });
+    const rank = { crit: 0, warn: 1, info: 2 };
+    alerts.sort(function (a, b) { return rank[a.sev] - rank[b.sev]; });
+    const att = document.getElementById("attention");
+    const head = document.getElementById("attention-head");
+    if (alerts.length) {
+        head.classList.remove("hidden");
+        document.getElementById("attention-meta").textContent = alerts.length + (alerts.length === 1 ? " item" : " items");
+        att.innerHTML = alerts.map(function (a) {
+            return '<div class="alert-row ' + a.sev + '"><div class="atxt"><div class="am">' + a.m + '</div><div class="as">' + a.s + '</div></div></div>';
+        }).join("");
+    } else {
+        head.classList.add("hidden");
+        att.innerHTML = "";
+    }
+}
+
+module.exports = { init: function () { document.addEventListener("DOMContentLoaded", render); } };
+
+},{}],5:[function(require,module,exports){
+const ws = require("./ws");
+
+// Mods manager for the server-detail "Mods" tab. Mod data is fetched over the
+// dashboard websocket (action "console.agent.mods") instead of a REST poll, so
+// the installed/pending state of each mod can be refreshed live — the list is
+// re-requested every 5s, so a mod that finishes installing on the agent flips
+// its buttons/tags without a page reload.
 class ModsPage {
     constructor() {
         this.page = 0;
@@ -1414,23 +1567,93 @@ class ModsPage {
         this.direction = "asc";
 
         this.search = "";
+
+        this.mods = [];
+        this.installedMods = [];
+        this.totalMods = 0;
+        this.pages = 0;
+
+        this.pollInterval = 5000;
     }
 
-    GetMods = async () => {
+    init() {
+        if ($(".mod-list").length === 0) {
+            return;
+        }
+
         this.agentId = window.location.href.substring(
             window.location.href.lastIndexOf("/") + 1,
         );
 
-        const res = await $.get(
-            `/dashboard/mods?page=${this.page}&sort=${this.sort}&direction=${this.direction}&search=${this.search}&agentid=${this.agentId}`,
-        );
+        ws.addEventListener("console.agent.mods", (event) => {
+            this.onModsReceived(event);
+        });
 
-        this.mods = res.mods;
-        this.pages = res.pages;
+        this.timer = setInterval(() => {
+            this.RequestMods();
+        }, this.pollInterval);
 
-        this.totalMods = res.totalMods;
+        this.RequestMods();
+    }
+
+    // Ask the backend for the current page/sort/search over the websocket.
+    // The response arrives asynchronously via onModsReceived.
+    RequestMods = () => {
+        if (!this.agentId) {
+            this.agentId = window.location.href.substring(
+                window.location.href.lastIndexOf("/") + 1,
+            );
+        }
+
+        const f = this.FilterState();
+
+        ws.send({
+            action: "console.agent.mods",
+            agentId: this.agentId,
+            page: this.page,
+            sort: this.sort,
+            direction: this.direction,
+            search: this.search,
+            filterAvailable: f.available,
+            filterInstalled: f.installed,
+            onlyUpdatable: f.onlyUpdatable,
+            includeHidden: f.includeHidden,
+        });
+    };
+
+    // Read the offcanvas filter checkboxes. Filtering is done server-side, so
+    // these values are sent with every request. Missing checkboxes fall back to
+    // the defaults (show available + installed, no update-only, hide hidden).
+    FilterState() {
+        const checked = (id, def) => {
+            const $el = $(id);
+            return $el.length === 0 ? def : $el.prop("checked");
+        };
+
+        return {
+            available: checked("#check-available", true),
+            installed: checked("#check-installed", true),
+            onlyUpdatable: checked("#check-only-updatable", false),
+            includeHidden: checked("#check-show-hidden", false),
+        };
+    }
+
+    // Kept as the public entry point used by app.js (sort/search/install/
+    // uninstall/settings-save) — a view update is now a fresh websocket request.
+    UpdateView = () => {
+        this.RequestMods();
+    };
+
+    onModsReceived = (event) => {
+        if ($(".mod-list").length === 0) return;
+
+        const detail = event.detail || {};
+
+        this.mods = detail.mods || [];
+        this.pages = detail.pages || 0;
+        this.totalMods = detail.totalMods || 0;
         this.installedMods =
-            (res.agentModConfig && res.agentModConfig.selectedMods) || [];
+            (detail.agentModConfig && detail.agentModConfig.selectedMods) || [];
 
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
@@ -1453,29 +1676,69 @@ class ModsPage {
             mod.pendingInstall =
                 selectedMod.desiredVersion != selectedMod.installedVersion;
         }
-    };
 
-    UpdateView = async () => {
-        if ($(".mod-list").length == 0) return;
-
-        await this.GetMods();
-        await this.BuildPagination();
-
-        const $wrapper = $(".mod-list .row");
-        $wrapper.empty();
-
-        for (let i = 0; i < this.mods.length; i++) {
-            const mod = this.mods[i];
-            const $modCard = this.BuildModCard(mod);
-            $wrapper.append($modCard);
-        }
+        this.BuildPagination();
+        this.RenderMods();
 
         $("#mod-count").text(
             `${this.installedMods.length} / ${this.totalMods}`,
         );
     };
 
-    BuildPagination = async () => {
+    // A compact fingerprint of everything BuildModCard renders for a mod. Used
+    // to decide whether a already-rendered card can be reused as-is.
+    ModSignature(mod) {
+        const latest =
+            (mod.versions && mod.versions[0] && mod.versions[0].version) || "";
+        return [
+            mod.mod_name || "",
+            mod.installed ? 1 : 0,
+            mod.needsUpdate ? 1 : 0,
+            mod.pendingInstall ? 1 : 0,
+            mod.installedVersion,
+            mod.desiredVersion,
+            latest,
+            mod.logo_url || "",
+        ].join("|");
+    }
+
+    // Reconcile the rendered mod cards against the current data. Cards whose
+    // fingerprint is unchanged are reused in place (their <img> is never
+    // re-fetched), so the 5s live poll doesn't flicker or re-download images.
+    RenderMods = () => {
+        const $wrapper = $(".mod-list .row");
+        if ($wrapper.length === 0) return;
+        const wrapperEl = $wrapper[0];
+
+        // Index currently-rendered cards by mod reference.
+        const prev = {};
+        wrapperEl.querySelectorAll(".mod[data-mod-reference]").forEach((el) => {
+            prev[el.getAttribute("data-mod-reference")] = el;
+        });
+
+        // Build the new ordered set, reusing unchanged nodes.
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < this.mods.length; i++) {
+            const mod = this.mods[i];
+            const sig = this.ModSignature(mod);
+            const existing = prev[mod.mod_reference];
+
+            let node;
+            if (existing && existing.getAttribute("data-sig") === sig) {
+                node = existing; // reuse untouched -> no image reload
+            } else {
+                node = this.BuildModCard(mod)[0];
+            }
+            delete prev[mod.mod_reference];
+            frag.appendChild(node); // moves reused nodes out of the DOM
+        }
+
+        // replaceChildren drops any stale cards left in the wrapper and inserts
+        // the freshly ordered set (reused nodes carried over via the fragment).
+        wrapperEl.replaceChildren(frag);
+    };
+
+    BuildPagination = () => {
         const $pagination = $("#mods-pagination");
         $pagination.empty();
 
@@ -1571,85 +1834,59 @@ class ModsPage {
         this.UpdateView();
     }
 
+    // Console-native mod row. Preserves every hook app.js delegates on:
+    // .install-mod-btn / .update-mod-btn / .uninstall-mod-btn / .settings-mod-btn
+    // each with data-agentid + data-mod-reference.
     BuildModCard(mod) {
-        const $col = $(
-            `<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"></div>`,
+        const $row = $(
+            `<div class="mod" data-mod-reference="${mod.mod_reference}" data-sig="${this.ModSignature(mod)}"></div>`,
         );
 
-        const $card = $(`<div class="card card-inner mod-card"></div>`);
+        const logo =
+            mod.logo_url == "" || mod.logo_url == null
+                ? "https://ficsit.app/images/no_image.webp"
+                : mod.logo_url;
+        $row.append(`<div class="thumb"><img src="${logo}" alt=""/></div>`);
 
-        const $logo = $("<div/>").addClass("mod-image");
-        $logo.append(
-            `<img src="${mod.logo_url == "" || mod.logo_url == null ? "https://ficsit.app/images/no_image.webp" : mod.logo_url}" alt=""/>`,
-        );
-        $card.append($logo);
-
-        const $modInfo = $(
-            `<div class="mod-info flex-shrink-1"><div class="d-flex flex-column"></div></div>`,
-        );
-        const $innerInfo = $modInfo.find("div");
-
-        $innerInfo.append(`
-        <a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank">
-            <h4>${mod.mod_name}</h4>
-        </a>`);
-
-        const $badgeWrapper = $(
-            `<div class="d-flex flex-column flex-xl-row"></div>`,
-        );
-        $innerInfo.append($badgeWrapper);
-
-        $badgeWrapper.append(
-            `<span class="badge bg-light border-light text-black mb-1 mb-xl-0 p-2">Latest Version: ${mod.versions[0].version}</span>`,
+        const $info = $(`<div class="info"></div>`);
+        $info.append(
+            `<b><a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank" rel="noopener">${mod.mod_name}</a></b>`,
         );
 
+        let tags = `<span class="tag">v${mod.versions[0].version}</span>`;
         if (mod.installed) {
             if (mod.pendingInstall) {
-                $badgeWrapper.append(
-                    `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`,
-                );
+                tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
             } else {
-                $badgeWrapper.append(
-                    `<span class="badge bg-success border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Installed Version: ${mod.installedVersion}</span>`,
-                );
+                tags += `<span class="tag ok">v${mod.installedVersion}</span>`;
             }
         } else if (mod.pendingInstall) {
-            $badgeWrapper.append(
-                `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`,
-            );
+            tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
         }
+        $info.append(`<span class="mod-tags">${tags}</span>`);
+        $row.append($info);
 
-        const $ButtonsWrapper = $(
-            `<div class="mod-buttons ms-auto d-flex flex-column"></div>`,
-        );
-
+        const $acts = $(`<div class="acts"></div>`);
         if (!mod.installed) {
-            $ButtonsWrapper.append(
-                `<button class="btn btn-primary flex-grow-1 install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-                <i class="fas fa-download"></i>
-                </button>`,
+            $acts.append(
+                `<button class="icobtn install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Install mod"><i class="fas fa-download"></i></button>`,
             );
         } else {
-            $ButtonsWrapper.append(`<button class="btn btn-light flex-grow-1 settings-mod-btn rounded-top rounded-bottom-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-            <i class="fas fa-cog"></i>
-            </button>`);
-
+            $acts.append(
+                `<button class="icobtn settings-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Mod settings"><i class="fas fa-cog"></i></button>`,
+            );
             if (mod.needsUpdate) {
-                $ButtonsWrapper.append(`<button class="btn btn-warning update-mod-btn flex-grow-1 rounded-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-                <i class="fas fa-upload"></i>
-                </button>`);
+                $acts.append(
+                    `<button class="icobtn warn update-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Update mod"><i class="fas fa-upload"></i></button>`,
+                );
             }
-
-            $ButtonsWrapper.append(` <button class="btn btn-danger flex-grow-1 uninstall-mod-btn rounded-top-0 rounded-bottom" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-            <i class="fas fa-trash"></i>
-            </button>`);
+            $acts.append(
+                `<button class="icobtn danger uninstall-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Uninstall mod"><i class="fas fa-trash"></i></button>`,
+            );
         }
+        $row.append($acts);
 
-        $card.append($modInfo);
-        $card.append($ButtonsWrapper);
-        $col.append($card);
-
-        return $col;
+        return $row;
     }
 
     OpenModSettings(modReference) {
@@ -1729,7 +1966,7 @@ const modsPage = new ModsPage();
 
 module.exports = modsPage;
 
-},{}],5:[function(require,module,exports){
+},{"./ws":9}],6:[function(require,module,exports){
 const ws = require("./ws");
 
 class ServerConsole extends EventTarget {
@@ -1992,7 +2229,7 @@ class ServerConsole extends EventTarget {
             if (!stat.running) {
                 runningBgColor.push("rgba(255, 99, 132, 0.7)");
             } else {
-                runningBgColor.push("rgba(75, 192, 192, 0.7)");
+                runningBgColor.push("rgba(63,208,122,0.7)");
             }
 
             count++;
@@ -2010,7 +2247,6 @@ class ServerConsole extends EventTarget {
 
     BuildAgentCPUStats(data) {
         const textColour = $("body").hasClass("dark") ? "white" : "black";
-        const gridColour = $("body").hasClass("dark") ? "#253a4b" : "black";
 
         if (this.cpuChart != null) {
             this.cpuChart.data.datasets[0].data = data.map((row) => row.value);
@@ -2027,10 +2263,14 @@ class ServerConsole extends EventTarget {
                     {
                         label: "Percent",
                         data: data.map((row) => row.value),
+                        borderColor: "#29CBF2",
+                        backgroundColor: "rgba(41,203,242,0.15)",
                     },
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
@@ -2043,19 +2283,19 @@ class ServerConsole extends EventTarget {
                         beginAtZero: true,
                         max: 100,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                         grid: {
-                            color: gridColour,
+                            color: "rgba(255,255,255,0.06)",
                         },
                     },
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                         grid: {
-                            color: gridColour,
+                            color: "rgba(255,255,255,0.06)",
                         },
                     },
                 },
@@ -2081,10 +2321,14 @@ class ServerConsole extends EventTarget {
                     {
                         label: "Percent",
                         data: data.map((row) => row.value),
+                        borderColor: "#F2B33A",
+                        backgroundColor: "rgba(242,179,58,0.15)",
                     },
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
@@ -2097,13 +2341,13 @@ class ServerConsole extends EventTarget {
                         beginAtZero: true,
                         max: 100,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                 },
@@ -2133,10 +2377,13 @@ class ServerConsole extends EventTarget {
                         label: "Running",
                         data: data.map((row) => row.value),
                         backgroundColor,
+                        borderColor: "#3FD07A",
                     },
                 ],
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
@@ -2149,13 +2396,13 @@ class ServerConsole extends EventTarget {
                         min: -1,
                         max: 1,
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                             stepSize: 1,
                         },
                     },
                     x: {
                         ticks: {
-                            color: textColour,
+                            color: "#647085",
                         },
                     },
                 },
@@ -2167,10 +2414,152 @@ class ServerConsole extends EventTarget {
 serverConsole = new ServerConsole();
 module.exports = serverConsole;
 
-},{"./ws":6}],6:[function(require,module,exports){
+},{"./ws":9}],7:[function(require,module,exports){
+const ws = require("./ws");
+
+// Live log viewer for the server detail "Logs" tab. Streams both the SSM
+// (Agent) and Satisfactory (FactoryGame) logs over the websocket, appending
+// new lines as they arrive so the terminals update in real time.
+class ServerLogs {
+    constructor() {
+        this.agentId = window.location.href.substring(
+            window.location.href.lastIndexOf("/") + 1,
+        );
+        this.logTypes = ["Agent", "FactoryGame"];
+        this.lastIndex = {};
+        this.viewers = {};
+        this.maxLines = 2000;
+    }
+
+    init() {
+        if ($(".log-viewer[data-logtype]").length === 0) {
+            return;
+        }
+
+        this.logTypes.forEach((type) => {
+            this.lastIndex[type] = 0;
+            this.viewers[type] = $(`.log-viewer[data-logtype="${type}"]`);
+            // The websocket is the source of truth for the live view, so clear
+            // the server-rendered snapshot before streaming from the start.
+            this.viewers[type].empty();
+        });
+
+        ws.addEventListener("console.agent.logfile", (event) => {
+            this.onLogsReceived(event);
+        });
+
+        this.startTimer();
+    }
+
+    startTimer() {
+        this.timer = setInterval(() => {
+            this.logTypes.forEach((type) => this.requestLog(type));
+        }, 2000);
+    }
+
+    requestLog(type) {
+        ws.send({
+            action: "console.agent.logfile",
+            agentId: this.agentId,
+            logType: type,
+            lastLogIndex: this.lastIndex[type],
+        });
+    }
+
+    onLogsReceived(event) {
+        const detail = event.detail || {};
+        const type = detail.logType;
+        const $viewer = this.viewers[type];
+        if (!$viewer || $viewer.length === 0) {
+            return;
+        }
+
+        const logLines = (detail.logLines || []).filter(Boolean);
+        if (logLines.length === 0) {
+            return;
+        }
+
+        this.lastIndex[type] += logLines.length;
+
+        let html = "";
+        for (const line of logLines) {
+            const lower = line.toLowerCase();
+            if (lower.includes("warning:")) {
+                html += `<p class="text-warning">${line}</p>`;
+            } else if (lower.includes("error:")) {
+                html += `<p class="text-danger">${line}</p>`;
+            } else {
+                html += `<p>${line}</p>`;
+            }
+        }
+        if (html === "") {
+            return;
+        }
+
+        $viewer.append(html);
+
+        // Bound memory: keep only the most recent lines in the DOM.
+        const $lines = $viewer.children("p");
+        if ($lines.length > this.maxLines) {
+            $lines.slice(0, $lines.length - this.maxLines).remove();
+        }
+
+        requestAnimationFrame(() => {
+            $viewer.scrollTop($viewer.prop("scrollHeight"));
+        });
+    }
+}
+
+const serverLogs = new ServerLogs();
+module.exports = serverLogs;
+
+},{"./ws":9}],8:[function(require,module,exports){
+// Manual light/dark theme toggle, persisted to localStorage.
+// data-theme on <html> overrides the OS prefers-color-scheme.
+const KEY = "ssm-theme";
+
+function apply(mode) {
+    if (mode === "light" || mode === "dark") {
+        document.documentElement.setAttribute("data-theme", mode);
+    } else {
+        document.documentElement.removeAttribute("data-theme");
+    }
+}
+
+function current() {
+    const attr = document.documentElement.getAttribute("data-theme");
+    if (attr) return attr;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function set(mode) {
+    apply(mode);
+    try { localStorage.setItem(KEY, mode); } catch (e) { /* ignore */ }
+}
+
+function toggle() {
+    set(current() === "dark" ? "light" : "dark");
+}
+
+function init() {
+    try {
+        const saved = localStorage.getItem(KEY);
+        if (saved) apply(saved);
+    } catch (e) { /* ignore */ }
+    document.addEventListener("click", function (e) {
+        const btn = e.target.closest("[data-ssm-theme-toggle]");
+        if (btn) { e.preventDefault(); toggle(); }
+    });
+}
+
+window.SSMTheme = { set: set, toggle: toggle, current: current };
+module.exports = { init: init };
+
+},{}],9:[function(require,module,exports){
 class WS extends EventTarget {
     constructor() {
         super();
+        this.pending = [];
     }
 
     init() {
@@ -2192,7 +2581,12 @@ class WS extends EventTarget {
             this.ws = new WebSocket(`wss://${hostname}${port}/dashboard/ws`);
         }
 
-        this.ws.onopen = () => console.log("Connected to WebSocket");
+        this.ws.onopen = () => {
+            console.log("Connected to WebSocket");
+            const queued = this.pending;
+            this.pending = [];
+            queued.forEach((data) => this.ws.send(data));
+        };
         this.ws.onclose = (event) => {
             console.log("Connection closed", event.code, event.reason);
             console.log("Reconnecting..");
@@ -2214,7 +2608,12 @@ class WS extends EventTarget {
     }
 
     send(data) {
-        this.ws.send(JSON.stringify(data));
+        const payload = JSON.stringify(data);
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.pending.push(payload);
+            return;
+        }
+        this.ws.send(payload);
     }
 
     sendServerAction(agentId, serverAction) {

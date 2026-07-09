@@ -1,34 +1,15 @@
 {{define "includes/server/backups"}}
 
-<div class="card border-secondary mb-3 shadow bg-glass">
-  <div class="card-header">
-    <div class="row">
-      <div class="col-12 col-md-6 col-lg-7 col-xl-8">
-        <h5>Backups</h5>
-      </div>
-      <div class="col-12 col-md-6 col-lg-5 col-xl-4">
-        <input type="text" name="" id="" placeholder="Search Backups" class="form-control backup-search">
-      </div>
-    </div>
+<div class="section-head"><span class="eyebrow">// Backups</span><span class="rule"></span><span class="meta">{{len .agent.Backups}} archives</span></div>
 
-  </div>
-  <div class="card-body">
-
-    <div style="overflow-x: hidden;">
-      <div class="row pe-3">
-
-        {{if eq (len .agent.Backups) 0}}
-        <p>There are currently no backup for this server yet.</p>
-        {{end}}
-
+<div class="card2"><div class="hd"><h5>Backups</h5><div class="right">
+    <label class="search"><i class="fas fa-magnifying-glass"></i><input type="text" placeholder="Search backups…" class="backup-search" aria-label="Search backups"></label>
+</div></div><div class="bd">
+    {{if eq (len .agent.Backups) 0}}<p class="empty-note">There are currently no backups for this server yet.</p>{{end}}
+    <div class="grid3">
         {{ range .agent.Backups}}
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
-                {{template "includes/dashboard/backup-card" (dict "backup" . "agent" $.agent)}}
-            </div>
+            {{template "includes/dashboard/backup-card" (dict "backup" . "agent" $.agent)}}
         {{end}}
-      </div>
     </div>
-  </div>
-</div>
-
+</div></div>
 {{end}}

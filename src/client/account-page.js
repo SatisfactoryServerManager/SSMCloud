@@ -48,13 +48,21 @@ class AccountPage {
     };
 
     BuildAuditList() {
-        const $wrapper = $("#account-audit-wrapper .row");
+        const $wrapper = $("#account-audit-wrapper .grid");
         $wrapper.empty();
 
         if (this._AuditList.length == 0) {
-            $wrapper.append(`<div class="col-12"><div class="alert alert-info">No Audit Events recorded</div></div>`);
+            $wrapper.append(`<div class="ssm-alert warn" style="grid-column:1/-1;"><i class="fas fa-circle-info"></i> No Audit Events recorded</div>`);
             return;
         }
+
+        this._AuditList = this._AuditList.sort((a, b) => {
+            if (a.created_at.seconds < b.created_at.seconds) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
 
         for (let i = 0; i < this._AuditList.length; i++) {
             const audit = this._AuditList[i];
@@ -63,8 +71,7 @@ class AccountPage {
     }
 
     BuildAuditUI(audit) {
-        const $col = $("<div/>").addClass("col-12 col-md-6 col-lg-4 col-xl-3");
-        const $div = $("<div/>").addClass("rounded account-audit-item mb-3 p-3");
+        const $div = $("<div/>").addClass("account-audit-item");
 
         let auditTypeString = "";
         switch (audit.type) {
@@ -91,7 +98,7 @@ class AccountPage {
                 break;
         }
 
-        const date = new Date(audit.createdAt);
+        const date = new Date(audit.created_at.seconds * 1000);
 
         const formatted = date.toLocaleString("en-US", {
             month: "long", // "October"
@@ -106,8 +113,7 @@ class AccountPage {
         $div.append(`<h5 class="m-0">${auditTypeString}</h5>`);
         $div.append(`<div>${formatted}</div>`);
         $div.append(`<div>${audit.message}</div>`);
-        $col.append($div);
-        return $col;
+        return $div;
     }
 
     PollAccountUsers = async () => {
@@ -134,12 +140,12 @@ class AccountPage {
     }
 
     BuildUserUI(User) {
-        const $div = $("<div/>").addClass("account-user rounded mb-3 p-3 d-flex flex-md-row flex-column align-items-center");
+        const $div = $("<div/>").addClass("account-user d-flex flex-md-row flex-column align-items-center");
 
         const $title = $(`<div class="mb-2 m-md-0"></div>`);
         const $icon = $(`<i class="fas fa-user me-2 fa-lg"></i>`);
 
-        const $deleteBtn = $(`<button class="btn btn-danger delete-user-btn ms-md-auto"></button>`);
+        const $deleteBtn = $(`<button class="btn2 outline danger delete-user-btn ms-md-auto"></button>`);
 
         $deleteBtn.append(`<i class="fas fa-trash"></i>`);
         $deleteBtn.append(`<span class="ms-2 d-md-none d-inline-block">Delete User</span>`);

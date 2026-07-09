@@ -3,6 +3,9 @@ const WS = require("./ws");
 const ModsPage = require("./mods-page");
 const AccountPage = require("./account-page");
 const ServerConsole = require("./server-console");
+const ServerLogs = require("./server-logs");
+const ssmTheme = require("./theme");
+require("./dashboard-overview").init();
 
 function main() {
     const currentScheme = detectColorScheme();
@@ -22,10 +25,13 @@ function main() {
     WS.init();
     AccountPage.init();
     ServerConsole.init();
+    ServerLogs.init();
 
     window.displayFlashes();
 
     const lastServerTab = localStorage.getItem("ServerActiveTab");
+
+    window.agentMap = new AgentMap(window.agent);
 
     if ($(".server-tabs-header").length > 0) {
         if (lastServerTab) {
@@ -48,16 +54,41 @@ function main() {
             window.agentPort,
             window.agentAPIKey,
         );
+
+        // Set the mobile dropdown trigger to the section restored above
+        const $activeRackBtn = $(".rack-nav .rack-btn.active").first();
+        if ($activeRackBtn.length) {
+            $(".rack-current").text(RackSectionLabel($activeRackBtn));
+        }
     }
 
-    // When a tab is clicked (and shown), save it
+    // When a tab is clicked (and shown), save it and sync the mobile dropdown
     $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on(
         "shown.bs.tab",
         function (e) {
             const activeTab = $(e.target).attr("href"); // e.g. "#profile"
             localStorage.setItem("ServerActiveTab", activeTab);
+            $(".rack-current").text(RackSectionLabel($(e.target)));
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
         },
     );
+
+    // Mobile: toggle the section dropdown open/closed
+    $("body").on("click", ".rack-toggle", (e) => {
+        e.stopPropagation();
+        const $rack = $(e.currentTarget).closest(".rack");
+        const open = $rack.toggleClass("open").hasClass("open");
+        $(e.currentTarget).attr("aria-expanded", open ? "true" : "false");
+    });
+
+    // Mobile: click outside the rack closes the dropdown
+    $(document).on("click", (e) => {
+        if ($(e.target).closest(".rack").length === 0) {
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
+        }
+    });
 
     // Try to get the last active tab from localStorage
     const lastAccountTab = localStorage.getItem("AccountActiveTab");
@@ -168,9 +199,9 @@ function main() {
                 .find(".event-types-pills");
 
             $pillWrapper.append(`
-            <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
+            <span class="tag" data-event-type="${$select.val()}">
                 ${$select.find("option:selected").text()}
-                <i class="fas fa-times ms-1 float-end" ></i>
+                <i class="fas fa-times ms-1"></i>
             </span>
             `);
 
@@ -318,6 +349,16 @@ function main() {
             ModsPage.search = $this.val().toLowerCase();
             SortMods();
         })
+        .on(
+            "change",
+            "#check-available, #check-installed, #check-only-updatable, #check-show-hidden",
+            () => {
+                // Filtering is server-side — refetch from page 0 so the result
+                // set and pagination stay consistent.
+                ModsPage.page = 0;
+                ModsPage.UpdateView();
+            },
+        )
         .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
             const $this = $(e.currentTarget);
 
@@ -372,7 +413,7 @@ function main() {
         })
         .on("keyup", ".backup-search", (e) => {
             const $this = $(e.currentTarget);
-            const $backupCard = $this.parent().parent().parent().parent();
+            const $backupCard = $this.closest(".card2");
 
             const search = $this.val().toLowerCase();
             $backupCard.find(".backup-card").each((index, ele) => {
@@ -380,9 +421,23 @@ function main() {
                 if (
                     !$ele.attr("data-backupname").toLowerCase().includes(search)
                 ) {
-                    $ele.parent().addClass("hidden");
+                    $ele.addClass("hidden");
                 } else {
-                    $ele.parent().removeClass("hidden");
+                    $ele.removeClass("hidden");
+                }
+            });
+        })
+        .on("keyup", ".save-search", (e) => {
+            const $this = $(e.currentTarget);
+            const $saveCard = $this.closest(".card2");
+
+            const search = $this.val().toLowerCase();
+            $saveCard.find(".save-card").each((index, ele) => {
+                const $ele = $(ele);
+                if (!$ele.attr("data-savename").toLowerCase().includes(search)) {
+                    $ele.addClass("hidden");
+                } else {
+                    $ele.removeClass("hidden");
                 }
             });
         })
@@ -647,9 +702,14 @@ function main() {
             WS.sendServerAction(agentId, action);
         });
 
-    SortMods();
+    if ($(".mod-list").length > 0) {
+        ApplyModSort();
+        ModsPage.init();
+    }
 
-    function SortMods() {
+    // Set ModsPage.sort/direction from the sort <select> without triggering a
+    // fetch — used to seed state before ModsPage.init() makes the first request.
+    function ApplyModSort() {
         const sortBy = $("#mods-sortby").val();
 
         if (sortBy == "az") {
@@ -665,7 +725,12 @@ function main() {
             ModsPage.sort = "downloads";
             ModsPage.direction = "asc";
         }
+    }
 
+    function SortMods() {
+        ApplyModSort();
+        // Sort/search change the result set — restart at page 0.
+        ModsPage.page = 0;
         ModsPage.UpdateView();
     }
 
@@ -787,8 +852,6 @@ function main() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    window.agentMap = new AgentMap(window.agent);
-
     $('a[data-bs-toggle="tab"]').on("shown.bs.tab", (e) => {
         var target = $(e.target).attr("href"); // activated tab
         if (target == "#map") {
@@ -812,24 +875,23 @@ function FilterServerList() {
     const FilterRunning = $("#server-filter-running").prop("checked") ? 1 : 0;
 
     function doesMatch($el) {
-        if (
-            $el.attr("data-agentname").toLowerCase().includes(search) &&
-            ($el.attr("data-online") == FilterOnline ||
-                $el.attr("data-installed") == FilterInstalled ||
-                $el.attr("data-running") == FilterRunning)
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        const nameMatch = $el
+            .attr("data-agentname")
+            .toLowerCase()
+            .includes(search);
+        const onlineOk = !FilterOnline || $el.attr("data-online") == 1;
+        const installedOk = !FilterInstalled || $el.attr("data-installed") == 1;
+        const runningOk = !FilterRunning || $el.attr("data-running") == 1;
+
+        return nameMatch && onlineOk && installedOk && runningOk;
     }
 
     $wrapper.find(".server-card").each((index, ele) => {
         const $ele = $(ele);
         if (!doesMatch($ele)) {
-            $ele.parent().addClass("hidden");
+            $ele.addClass("hidden");
         } else {
-            $ele.parent().removeClass("hidden");
+            $ele.removeClass("hidden");
         }
     });
 }
@@ -961,14 +1023,19 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
     LinuxStandaloneInstallCommand += ` --portoffset ${portOffset}`;
 
     $("#windows-install-agent .docker").val(WindowsInstallCommand);
-    $("#windows-install-agent .standalone").text(
-        WindowsStandaloneInstallCommand,
-    );
-    $("#linux-install-agent .docker").text(LinuxInstallCommand);
-    $("#linux-install-agent .standalone").text(LinuxStandaloneInstallCommand);
+    $("#windows-install-agent .standalone").val(WindowsStandaloneInstallCommand);
+    $("#linux-install-agent .docker").val(LinuxInstallCommand);
+    $("#linux-install-agent .standalone").val(LinuxStandaloneInstallCommand);
 }
 
 window.BuildAgentInstallCommands = BuildAgentInstallCommands;
+
+// Extract the plain section name from a rack tab (strips icon, count badge, update dot)
+function RackSectionLabel($a) {
+    const $clone = $a.clone();
+    $clone.find(".gl, .count, .dot").remove();
+    return $clone.text().trim();
+}
 
 Number.prototype.pad = function (width, z) {
     let n = this;
@@ -990,4 +1057,5 @@ function detectColorScheme() {
 
 $(document).ready(() => {
     main();
+    ssmTheme.init();
 });

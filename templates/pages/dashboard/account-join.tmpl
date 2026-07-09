@@ -4,28 +4,19 @@
 <body>
      <div class="container py-lg-5 py-3 h-100">
         <!-- BODY -->
-        <div class="card mx-auto my-auto " style="max-width:650px;">
-            <div class="card-header">
-                <h5>Join Existing Account</h5>
-            </div>
-            <div class="card-body">
-                <p>Ready to join an account. If not you can create new account by going here: <a href="/dashboard/account/create">Create Account</a></p>
-                <p>To join an account please provide the join code in the form below.</p>
+        <div class="card2 mx-auto my-auto" style="max-width:650px;width:100%;">
+            <div class="hd"><h5>Join Existing Account</h5></div>
+            <div class="bd">
+                <p>Ready to join an account? If not, you can create a new account here: <a href="/dashboard/account/create">Create Account</a></p>
+                <p>To join an account please provide the join code below.</p>
                 {{if .errorMessage}}
-                    <div class="alert alert-danger">
-                        {{.errorMessage}}
-                    </div>
+                    <div class="ssm-alert warn"><i class="fas fa-triangle-exclamation"></i> {{.errorMessage}}</div>
                 {{end}}
                 <form method="post" action="/dashboard/account/join">
                     {{ .csrfField }}
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control {{if .errorMessage}}is-invalid{{end}}" name="inp_joincode" id="inp_joincode" placeholder="Join Code">
-                        <label for="inp_joincode">Join Code</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">
-                        <i class="fa-solid fa-link"></i> Join Account
-                    </button>
+                    <label for="inp_joincode" class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px;">Join Code</label>
+                    <input type="text" class="field mono" name="inp_joincode" id="inp_joincode" placeholder="Join Code" style="width:100%;margin-bottom:16px;">
+                    <button type="submit" class="btn2"><i class="fa-solid fa-link"></i> Join Account</button>
                 </form>
             </div>
         </div>

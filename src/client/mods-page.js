@@ -1,3 +1,10 @@
+const ws = require("./ws");
+
+// Mods manager for the server-detail "Mods" tab. Mod data is fetched over the
+// dashboard websocket (action "console.agent.mods") instead of a REST poll, so
+// the installed/pending state of each mod can be refreshed live — the list is
+// re-requested every 5s, so a mod that finishes installing on the agent flips
+// its buttons/tags without a page reload.
 class ModsPage {
     constructor() {
         this.page = 0;
@@ -6,23 +13,93 @@ class ModsPage {
         this.direction = "asc";
 
         this.search = "";
+
+        this.mods = [];
+        this.installedMods = [];
+        this.totalMods = 0;
+        this.pages = 0;
+
+        this.pollInterval = 5000;
     }
 
-    GetMods = async () => {
+    init() {
+        if ($(".mod-list").length === 0) {
+            return;
+        }
+
         this.agentId = window.location.href.substring(
             window.location.href.lastIndexOf("/") + 1,
         );
 
-        const res = await $.get(
-            `/dashboard/mods?page=${this.page}&sort=${this.sort}&direction=${this.direction}&search=${this.search}&agentid=${this.agentId}`,
-        );
+        ws.addEventListener("console.agent.mods", (event) => {
+            this.onModsReceived(event);
+        });
 
-        this.mods = res.mods;
-        this.pages = res.pages;
+        this.timer = setInterval(() => {
+            this.RequestMods();
+        }, this.pollInterval);
 
-        this.totalMods = res.totalMods;
+        this.RequestMods();
+    }
+
+    // Ask the backend for the current page/sort/search over the websocket.
+    // The response arrives asynchronously via onModsReceived.
+    RequestMods = () => {
+        if (!this.agentId) {
+            this.agentId = window.location.href.substring(
+                window.location.href.lastIndexOf("/") + 1,
+            );
+        }
+
+        const f = this.FilterState();
+
+        ws.send({
+            action: "console.agent.mods",
+            agentId: this.agentId,
+            page: this.page,
+            sort: this.sort,
+            direction: this.direction,
+            search: this.search,
+            filterAvailable: f.available,
+            filterInstalled: f.installed,
+            onlyUpdatable: f.onlyUpdatable,
+            includeHidden: f.includeHidden,
+        });
+    };
+
+    // Read the offcanvas filter checkboxes. Filtering is done server-side, so
+    // these values are sent with every request. Missing checkboxes fall back to
+    // the defaults (show available + installed, no update-only, hide hidden).
+    FilterState() {
+        const checked = (id, def) => {
+            const $el = $(id);
+            return $el.length === 0 ? def : $el.prop("checked");
+        };
+
+        return {
+            available: checked("#check-available", true),
+            installed: checked("#check-installed", true),
+            onlyUpdatable: checked("#check-only-updatable", false),
+            includeHidden: checked("#check-show-hidden", false),
+        };
+    }
+
+    // Kept as the public entry point used by app.js (sort/search/install/
+    // uninstall/settings-save) — a view update is now a fresh websocket request.
+    UpdateView = () => {
+        this.RequestMods();
+    };
+
+    onModsReceived = (event) => {
+        if ($(".mod-list").length === 0) return;
+
+        const detail = event.detail || {};
+
+        this.mods = detail.mods || [];
+        this.pages = detail.pages || 0;
+        this.totalMods = detail.totalMods || 0;
         this.installedMods =
-            (res.agentModConfig && res.agentModConfig.selectedMods) || [];
+            (detail.agentModConfig && detail.agentModConfig.selectedMods) || [];
 
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
@@ -45,29 +122,69 @@ class ModsPage {
             mod.pendingInstall =
                 selectedMod.desiredVersion != selectedMod.installedVersion;
         }
-    };
 
-    UpdateView = async () => {
-        if ($(".mod-list").length == 0) return;
-
-        await this.GetMods();
-        await this.BuildPagination();
-
-        const $wrapper = $(".mod-list .row");
-        $wrapper.empty();
-
-        for (let i = 0; i < this.mods.length; i++) {
-            const mod = this.mods[i];
-            const $modCard = this.BuildModCard(mod);
-            $wrapper.append($modCard);
-        }
+        this.BuildPagination();
+        this.RenderMods();
 
         $("#mod-count").text(
             `${this.installedMods.length} / ${this.totalMods}`,
         );
     };
 
-    BuildPagination = async () => {
+    // A compact fingerprint of everything BuildModCard renders for a mod. Used
+    // to decide whether a already-rendered card can be reused as-is.
+    ModSignature(mod) {
+        const latest =
+            (mod.versions && mod.versions[0] && mod.versions[0].version) || "";
+        return [
+            mod.mod_name || "",
+            mod.installed ? 1 : 0,
+            mod.needsUpdate ? 1 : 0,
+            mod.pendingInstall ? 1 : 0,
+            mod.installedVersion,
+            mod.desiredVersion,
+            latest,
+            mod.logo_url || "",
+        ].join("|");
+    }
+
+    // Reconcile the rendered mod cards against the current data. Cards whose
+    // fingerprint is unchanged are reused in place (their <img> is never
+    // re-fetched), so the 5s live poll doesn't flicker or re-download images.
+    RenderMods = () => {
+        const $wrapper = $(".mod-list .row");
+        if ($wrapper.length === 0) return;
+        const wrapperEl = $wrapper[0];
+
+        // Index currently-rendered cards by mod reference.
+        const prev = {};
+        wrapperEl.querySelectorAll(".mod[data-mod-reference]").forEach((el) => {
+            prev[el.getAttribute("data-mod-reference")] = el;
+        });
+
+        // Build the new ordered set, reusing unchanged nodes.
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < this.mods.length; i++) {
+            const mod = this.mods[i];
+            const sig = this.ModSignature(mod);
+            const existing = prev[mod.mod_reference];
+
+            let node;
+            if (existing && existing.getAttribute("data-sig") === sig) {
+                node = existing; // reuse untouched -> no image reload
+            } else {
+                node = this.BuildModCard(mod)[0];
+            }
+            delete prev[mod.mod_reference];
+            frag.appendChild(node); // moves reused nodes out of the DOM
+        }
+
+        // replaceChildren drops any stale cards left in the wrapper and inserts
+        // the freshly ordered set (reused nodes carried over via the fragment).
+        wrapperEl.replaceChildren(frag);
+    };
+
+    BuildPagination = () => {
         const $pagination = $("#mods-pagination");
         $pagination.empty();
 
@@ -163,85 +280,59 @@ class ModsPage {
         this.UpdateView();
     }
 
+    // Console-native mod row. Preserves every hook app.js delegates on:
+    // .install-mod-btn / .update-mod-btn / .uninstall-mod-btn / .settings-mod-btn
+    // each with data-agentid + data-mod-reference.
     BuildModCard(mod) {
-        const $col = $(
-            `<div class="col-12 col-md-6 col-xl-6 col-xxl-4 mb-3"></div>`,
+        const $row = $(
+            `<div class="mod" data-mod-reference="${mod.mod_reference}" data-sig="${this.ModSignature(mod)}"></div>`,
         );
 
-        const $card = $(`<div class="card card-inner mod-card"></div>`);
+        const logo =
+            mod.logo_url == "" || mod.logo_url == null
+                ? "https://ficsit.app/images/no_image.webp"
+                : mod.logo_url;
+        $row.append(`<div class="thumb"><img src="${logo}" alt=""/></div>`);
 
-        const $logo = $("<div/>").addClass("mod-image");
-        $logo.append(
-            `<img src="${mod.logo_url == "" || mod.logo_url == null ? "https://ficsit.app/images/no_image.webp" : mod.logo_url}" alt=""/>`,
-        );
-        $card.append($logo);
-
-        const $modInfo = $(
-            `<div class="mod-info flex-shrink-1"><div class="d-flex flex-column"></div></div>`,
-        );
-        const $innerInfo = $modInfo.find("div");
-
-        $innerInfo.append(`
-        <a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank">
-            <h4>${mod.mod_name}</h4>
-        </a>`);
-
-        const $badgeWrapper = $(
-            `<div class="d-flex flex-column flex-xl-row"></div>`,
-        );
-        $innerInfo.append($badgeWrapper);
-
-        $badgeWrapper.append(
-            `<span class="badge bg-light border-light text-black mb-1 mb-xl-0 p-2">Latest Version: ${mod.versions[0].version}</span>`,
+        const $info = $(`<div class="info"></div>`);
+        $info.append(
+            `<b><a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank" rel="noopener">${mod.mod_name}</a></b>`,
         );
 
+        let tags = `<span class="tag">v${mod.versions[0].version}</span>`;
         if (mod.installed) {
             if (mod.pendingInstall) {
-                $badgeWrapper.append(
-                    `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`,
-                );
+                tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
             } else {
-                $badgeWrapper.append(
-                    `<span class="badge bg-success border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Installed Version: ${mod.installedVersion}</span>`,
-                );
+                tags += `<span class="tag ok">v${mod.installedVersion}</span>`;
             }
         } else if (mod.pendingInstall) {
-            $badgeWrapper.append(
-                `<span class="badge bg-warning border-success text-black p-2 mb-1 mb-xl-0 ms-xl-2">Pending Version: ${mod.desiredVersion}</span>`,
-            );
+            tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
         }
+        $info.append(`<span class="mod-tags">${tags}</span>`);
+        $row.append($info);
 
-        const $ButtonsWrapper = $(
-            `<div class="mod-buttons ms-auto d-flex flex-column"></div>`,
-        );
-
+        const $acts = $(`<div class="acts"></div>`);
         if (!mod.installed) {
-            $ButtonsWrapper.append(
-                `<button class="btn btn-primary flex-grow-1 install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-                <i class="fas fa-download"></i>
-                </button>`,
+            $acts.append(
+                `<button class="icobtn install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Install mod"><i class="fas fa-download"></i></button>`,
             );
         } else {
-            $ButtonsWrapper.append(`<button class="btn btn-light flex-grow-1 settings-mod-btn rounded-top rounded-bottom-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-            <i class="fas fa-cog"></i>
-            </button>`);
-
+            $acts.append(
+                `<button class="icobtn settings-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Mod settings"><i class="fas fa-cog"></i></button>`,
+            );
             if (mod.needsUpdate) {
-                $ButtonsWrapper.append(`<button class="btn btn-warning update-mod-btn flex-grow-1 rounded-0" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-                <i class="fas fa-upload"></i>
-                </button>`);
+                $acts.append(
+                    `<button class="icobtn warn update-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Update mod"><i class="fas fa-upload"></i></button>`,
+                );
             }
-
-            $ButtonsWrapper.append(` <button class="btn btn-danger flex-grow-1 uninstall-mod-btn rounded-top-0 rounded-bottom" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}">
-            <i class="fas fa-trash"></i>
-            </button>`);
+            $acts.append(
+                `<button class="icobtn danger uninstall-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Uninstall mod"><i class="fas fa-trash"></i></button>`,
+            );
         }
+        $row.append($acts);
 
-        $card.append($modInfo);
-        $card.append($ButtonsWrapper);
-        $col.append($card);
-
-        return $col;
+        return $row;
     }
 
     OpenModSettings(modReference) {

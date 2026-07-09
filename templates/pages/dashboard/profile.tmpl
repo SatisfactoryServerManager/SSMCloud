@@ -9,101 +9,57 @@
                 <div class="page-container" data-page="dashboard">
                     {{template "includes/dashboard/page-header" .}}
 
-                    <div class="row">
-                        <div class="col-12 col-md-4 col-lg-3 mb-2">
-                        <div class="card bg-glass">
-                            <div class="card-body">
-                            <div class="text-center">
-                                <span class=" bg-light rounded-4 shadow d-inline-block">
-                                <img src="/dashboard/profile/image" alt="" class="p-3 rounded-5" width="200px" height="200px">
-                                </span>
-                            </div>
-                            <hr>
-                            <form action="/profile/update" method="post">
-                                {{ .csrfField }}
-                                <div class="input-group">
-                                <span class="input-group-text">Email:</span>
-                                <input type="text" class="form-control" value="<%=user.email%>" name="inp_email">
-                                </div>
-                                <hr>
-                                <div class="input-group mb-3">
-                                <span class="input-group-text" style="width:160px">Password:</span>
-                                <input type="password" class="form-control" value="" name="inp_password">
-                                </div>
-                                <div class="input-group">
-                                <span class="input-group-text" style="width:160px">Confirm Password:</span>
-                                <input type="password" class="form-control" value="" name="inp_confirmpassword">
-                                </div>
-                                <hr>
-
-                                <div class="form-group">
-                                <h5 class="text-center">Enter Your 2FA Code:</h5>
-                                <input class="form-control mt-3 text-center" type="text" name="token" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456" />
-                                </div>
-
-                                <button type="submit" class="btn btn-primary w-100 mt-3">
-                                <i class="fas fa-save me-1"></i>
-                                Update Settings
-                                </button>
-
-                            </form>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="col-12 col-md-8 col-lg-9 mb-2">
-                        <div class="card">
-                            <div class="card-header">
-                            <h5>API Keys</h5>
-                            </div>
-                            <div class="card-body">
-                            <h6>Add Api Key</h6>
-
-                            <form action="/dashboard/profile/apikey" method="post">
-                                {{ .csrfField }}
-                                <div class="input-group">
-                                    <div class="input-group-text">
-                                        <i class="fas fa-key"></i>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4 col-lg-3">
+                            <div class="card2">
+                                <div class="hd"><h5>Profile</h5></div>
+                                <div class="bd">
+                                    <div class="text-center mb-3">
+                                        <img src="/dashboard/profile/image" alt="Profile image" class="profile-avatar" width="180" height="180">
                                     </div>
-                                    <input type="text" class="form-control" name="inp_new_apikey" id="inp_new_apikey" value="">
-                                    <a class="btn btn-primary ">
-                                        <i class="fas fa-refresh mt-1" id="refresh-new-api-key"></i>
-                                    </a>
-                                    <button class="btn btn-success" type="submit">
-                                        <i class="fas fa-plus"></i>
-                                        Add Key
-                                    </button>
+                                    <form action="/profile/update" method="post">
+                                        {{ .csrfField }}
+                                        <label for="inp_email" class="fld-lab">Email</label>
+                                        <input id="inp_email" type="text" class="field w-100 mb-3" value="{{.user.Email}}" name="inp_email">
+                                        <label for="inp_password" class="fld-lab">Password</label>
+                                        <input id="inp_password" type="password" class="field w-100 mb-3" value="" name="inp_password">
+                                        <label for="inp_confirmpassword" class="fld-lab">Confirm Password</label>
+                                        <input id="inp_confirmpassword" type="password" class="field w-100 mb-3" value="" name="inp_confirmpassword">
+                                        <label for="token" class="fld-lab">2FA Code</label>
+                                        <input id="token" class="field mono w-100 mb-3 text-center" type="text" name="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456">
+                                        <button type="submit" class="btn2 w-100"><i class="fas fa-save"></i> Update Settings</button>
+                                    </form>
                                 </div>
-                            </form>
-
-                            <p>
-                                If you are happy with the current api key, please copy the key <b>BEFORE</b> clicking the Add Key button.
-                            </p>
-
-                            <hr />
-
-                            {{if not .user.APIKeys }}
-                            <div class="alert alert-info">
-                                There are currently no api keys setup on your account.
                             </div>
-                            {{end}}
-
-                            {{range .user.APIKeys }}
-                                <div class="card card-inner mb-2">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fas fa-key me-2"></i>
-                                            <span class="flex-grow-1">API-••••{{.ShortKey}}</span>
-                                            <a href="/dashboard/profile/deletekey/{{.ShortKey}}">
-                                            <button class="btn btn-danger">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            </a>
+                        </div>
+                        <div class="col-12 col-md-8 col-lg-9">
+                            <div class="card2">
+                                <div class="hd"><h5>API Keys</h5></div>
+                                <div class="bd">
+                                    <label for="inp_new_apikey" class="fld-lab">Add API Key</label>
+                                    <form action="/dashboard/profile/apikey" method="post">
+                                        {{ .csrfField }}
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="field mono flex-grow-1" name="inp_new_apikey" id="inp_new_apikey" value="">
+                                            <button type="button" class="icobtn" aria-label="Generate a new key"><i class="fas fa-refresh" id="refresh-new-api-key"></i></button>
+                                            <button class="btn2" type="submit"><i class="fas fa-plus"></i> Add Key</button>
                                         </div>
-                                    </div>
+                                    </form>
+                                    <p class="empty-note">If you are happy with the current API key, copy it <b>BEFORE</b> clicking Add Key.</p>
+
+                                    {{if not .user.APIKeys }}
+                                        <div class="ssm-alert warn"><i class="fas fa-circle-info"></i> There are currently no API keys set up on your account.</div>
+                                    {{end}}
+
+                                    {{range .user.APIKeys }}
+                                        <div class="readout apikey-row">
+                                            <div class="k"><i class="fas fa-key me-1"></i> API Key</div>
+                                            <div class="v mono">API-••••{{.ShortKey}}</div>
+                                            <a href="/dashboard/profile/deletekey/{{.ShortKey}}" class="icobtn danger" aria-label="Delete API key"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    {{end}}
                                 </div>
-                            {{end}}
                             </div>
-                        </div>
                         </div>
                     </div>
                     </div>

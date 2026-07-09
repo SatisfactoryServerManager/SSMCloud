@@ -1,3 +1,5 @@
+const ws = require("./ws");
+
 class AgentMap {
     constructor(agent) {
         this.agent = agent;
@@ -84,10 +86,14 @@ class AgentMap {
         this.AddMapPlayers();
         this.AddBuildingMarkers();
 
+        ws.addEventListener("console.agent.map", (event) => {
+            this.onMapReceived(event);
+        });
+
         setInterval(() => {
-            this.pollAgent();
+            this.requestAgentMap();
         }, 10000);
-        this.pollAgent();
+        this.requestAgentMap();
     };
 
     AddMapPlayers = () => {
@@ -218,17 +224,16 @@ class AgentMap {
         return [-y, x];
     };
 
-    pollAgent = async () => {
+    requestAgentMap = () => {
         const agentId = window.location.href.substring(
             window.location.href.lastIndexOf("/") + 1
         );
-        try {
-            const res = await $.get("/map/" + agentId + "/data");
+        ws.send({ action: "console.agent.map", agentId });
+    };
 
-            this.Update(res.players, res.buildings);
-        } catch (err) {
-            console.log(err);
-        }
+    onMapReceived = (event) => {
+        const data = event.detail || {};
+        this.Update(data.players || [], data.buildings || []);
     };
 }
 

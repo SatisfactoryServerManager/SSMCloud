@@ -39,6 +39,7 @@ cleancss:
 bundle:
 	browserify src/client/app.js -o static/js/bundle.js
 	browserify src/client/map.js -o static/js/map.bundle.js
+	browserify src/client/public.js -o static/js/public.bundle.js
 
 watch:
 	watchify src/client/app.js -o static/js/bundle.js

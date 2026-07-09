@@ -1,4 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const ws = require("./ws");
+
 class AgentMap {
     constructor(agent) {
         this.agent = agent;
@@ -85,10 +87,14 @@ class AgentMap {
         this.AddMapPlayers();
         this.AddBuildingMarkers();
 
+        ws.addEventListener("console.agent.map", (event) => {
+            this.onMapReceived(event);
+        });
+
         setInterval(() => {
-            this.pollAgent();
+            this.requestAgentMap();
         }, 10000);
-        this.pollAgent();
+        this.requestAgentMap();
     };
 
     AddMapPlayers = () => {
@@ -219,23 +225,22 @@ class AgentMap {
         return [-y, x];
     };
 
-    pollAgent = async () => {
+    requestAgentMap = () => {
         const agentId = window.location.href.substring(
             window.location.href.lastIndexOf("/") + 1
         );
-        try {
-            const res = await $.get("/map/" + agentId + "/data");
+        ws.send({ action: "console.agent.map", agentId });
+    };
 
-            this.Update(res.players, res.buildings);
-        } catch (err) {
-            console.log(err);
-        }
+    onMapReceived = (event) => {
+        const data = event.detail || {};
+        this.Update(data.players || [], data.buildings || []);
     };
 }
 
 module.exports = AgentMap;
 
-},{}],2:[function(require,module,exports){
+},{"./ws":3}],2:[function(require,module,exports){
 const AgentMap = require("./agentmap");
 
 window.agentMap = new AgentMap(window.agent);
@@ -248,4 +253,88 @@ $(document).ready(() => {
     main();
 });
 
-},{"./agentmap":1}]},{},[2]);
+},{"./agentmap":1}],3:[function(require,module,exports){
+class WS extends EventTarget {
+    constructor() {
+        super();
+        this.pending = [];
+    }
+
+    init() {
+        this.reconnect();
+
+        this.addEventListener("error", this.onError);
+        this.addEventListener(
+            "global.agent.action",
+            this.onServerActionReceived,
+        );
+    }
+
+    reconnect() {
+        const hostname = window.location.hostname;
+        const port = window.location.port ? `:${window.location.port}` : "";
+        if (hostname === "localhost") {
+            this.ws = new WebSocket(`ws://${hostname}${port}/dashboard/ws`);
+        } else {
+            this.ws = new WebSocket(`wss://${hostname}${port}/dashboard/ws`);
+        }
+
+        this.ws.onopen = () => {
+            console.log("Connected to WebSocket");
+            const queued = this.pending;
+            this.pending = [];
+            queued.forEach((data) => this.ws.send(data));
+        };
+        this.ws.onclose = (event) => {
+            console.log("Connection closed", event.code, event.reason);
+            console.log("Reconnecting..");
+            this.reconnect();
+        };
+        this.ws.onerror = (err) => console.error(`Error: ${err.message}`);
+        this.ws.onmessage = (event) => {
+            const eventData = JSON.parse(event.data);
+            const action = eventData.action;
+            const data = eventData.data;
+
+            const e = new CustomEvent(action, { detail: data });
+            this.dispatchEvent(e);
+        };
+    }
+
+    onError(event) {
+        console.log("WS Error:", event.detail);
+    }
+
+    send(data) {
+        const payload = JSON.stringify(data);
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.pending.push(payload);
+            return;
+        }
+        this.ws.send(payload);
+    }
+
+    sendServerAction(agentId, serverAction) {
+        const data = {
+            action: "global.agent.action",
+            agentId: agentId,
+            serverAction: serverAction,
+        };
+        this.send(data);
+    }
+
+    onServerActionReceived(event) {
+        let ToastMessage = "Starting server in the background";
+        if (event.detail.serverAction == "stopsfserver") {
+            ToastMessage = "Stopping server in the background";
+        } else if (event.detail.serverAction == "killsfserver") {
+            ToastMessage = "Killing server in the background";
+        }
+        toastr.success("", ToastMessage, { timeOut: 5000 });
+    }
+}
+
+const ws = new WS();
+module.exports = ws;
+
+},{}]},{},[2]);

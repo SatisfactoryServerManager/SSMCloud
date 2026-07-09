@@ -67,6 +67,15 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		if msg.Action == "console.agent.logs" {
 			handler.WS_GetAgentLogs(conn, userEid, msg)
 		}
+		if msg.Action == "console.agent.logfile" {
+			handler.WS_GetAgentLogFile(conn, userEid, msg)
+		}
+		if msg.Action == "console.agent.map" {
+			handler.WS_GetAgentMap(conn, userEid, msg)
+		}
+		if msg.Action == "console.agent.mods" {
+			handler.WS_GetAgentMods(conn, userEid, msg)
+		}
 	}
 }
 
@@ -110,6 +119,25 @@ func (handler *DashboardWSHandler) WS_GetAgentStatus(conn *websocket.Conn, userE
 	}
 }
 
+func (handler *DashboardWSHandler) WS_GetAgentMap(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	theAgent, err := api.GetUserActiveAccountSingleAgentGRPC(context.Background(), userEid, msg.AgentId)
+
+	if err != nil {
+		fmt.Println("Error getting agent map:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data:   theAgent.MapData,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
 func (handler *DashboardWSHandler) WS_GetAgentStats(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
 	statsRes, err := api.GetAgentStatsGRPC(context.Background(), userEid, msg.AgentId)
 
@@ -140,6 +168,55 @@ func (handler *DashboardWSHandler) WS_GetAgentLogs(conn *websocket.Conn, userEid
 	res := api.WSResponse{
 		Action: msg.Action,
 		Data:   gameLogRes.LogLines,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_GetAgentMods(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	modsRes, err := api.GetAgentModsGRPC(context.Background(), userEid, msg.AgentId, int32(msg.Page), msg.Sort, msg.Direction, msg.Search, msg.FilterAvailable, msg.FilterInstalled, msg.OnlyUpdatable, msg.IncludeHidden)
+
+	if err != nil {
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data: map[string]interface{}{
+			"mods":           modsRes.Mods,
+			"pages":          modsRes.Pages,
+			"totalMods":      modsRes.TotalMods,
+			"agentModConfig": modsRes.AgentModConfig,
+		},
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_GetAgentLogFile(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	logType := msg.LogType
+	if logType == "" {
+		logType = "FactoryGame"
+	}
+
+	logRes, err := api.GetAgentLogGRPC(context.Background(), userEid, msg.AgentId, logType, int32(msg.LastLogIndex))
+
+	if err != nil {
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data: map[string]interface{}{
+			"logType":  logType,
+			"logLines": logRes.LogLines,
+		},
 	}
 
 	if err := conn.WriteJSON(res); err != nil {
