@@ -324,6 +324,14 @@ function main() {
             ModsPage.search = $this.val().toLowerCase();
             SortMods();
         })
+        .on(
+            "change",
+            "#check-installed, #check-not-installed, #check-needs-update",
+            () => {
+                // Filter the mods already in memory — no refetch needed.
+                ModsPage.RenderMods();
+            },
+        )
         .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
             const $this = $(e.currentTarget);
 
@@ -667,9 +675,14 @@ function main() {
             WS.sendServerAction(agentId, action);
         });
 
-    SortMods();
+    if ($(".mod-list").length > 0) {
+        ApplyModSort();
+        ModsPage.init();
+    }
 
-    function SortMods() {
+    // Set ModsPage.sort/direction from the sort <select> without triggering a
+    // fetch — used to seed state before ModsPage.init() makes the first request.
+    function ApplyModSort() {
         const sortBy = $("#mods-sortby").val();
 
         if (sortBy == "az") {
@@ -685,7 +698,10 @@ function main() {
             ModsPage.sort = "downloads";
             ModsPage.direction = "asc";
         }
+    }
 
+    function SortMods() {
+        ApplyModSort();
         ModsPage.UpdateView();
     }
 

@@ -281,6 +281,10 @@ type WSMessage struct {
 	LastLogIndex int    `json:"lastLogIndex"`
 	LogType      string `json:"logType"`
 	ServerAction string `json:"serverAction"`
+	Page         int    `json:"page"`
+	Sort         string `json:"sort"`
+	Direction    string `json:"direction"`
+	Search       string `json:"search"`
 }
 
 type WSResponse struct {

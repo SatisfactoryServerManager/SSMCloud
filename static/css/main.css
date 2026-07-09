@@ -2056,3 +2056,26 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .log-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .log-grid .term.log-viewer { height: 380px; }
 @media (max-width: 860px) { .log-grid { grid-template-columns: 1fr; } }
+
+/* mods manager */
+.drop { display: flex; align-items: center; gap: 9px; background: var(--panel-2); border: 1px dashed var(--line-strong); border-radius: 3px; height: 42px; padding: 0 14px; color: var(--ink-dim); font-family: var(--mono); font-size: 12px; margin: 0; }
+.drop:hover { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+.drop i { color: var(--steel); }
+.check-row { display: flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 12px; color: var(--ink-dim); padding: 7px 0; }
+.mod-list .row { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.mod { display: grid; grid-template-columns: 44px 1fr auto; gap: 13px; align-items: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 11px 13px; }
+.mod .thumb { width: 44px; height: 44px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--brand) 16%, var(--panel)); }
+.mod .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mod .info { min-width: 0; }
+.mod .info b { font-size: 13px; display: block; }
+.mod .info b a { color: var(--ink); text-decoration: none; }
+.mod .info b a:hover { color: var(--brand-bright); }
+.mod .info .mod-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.mod .acts { display: flex; gap: 6px; }
+.icobtn.warn:hover { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+.pagination#mods-pagination { display: flex; gap: 5px; margin: 0; }
+#mods-pagination .page-item { list-style: none; }
+#mods-pagination .page-link, #mods-pagination .mod-page, #mods-pagination .mod-page-prev, #mods-pagination .mod-page-next { min-width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: var(--panel); color: var(--ink-dim); border-radius: 3px; font-family: var(--mono); font-size: 12px; cursor: pointer; text-decoration: none; }
+#mods-pagination .page-item.active .page-link, #mods-pagination .page-item.active .mod-page { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); background: color-mix(in srgb, var(--brand) 10%, var(--panel)); }
+#mods-pagination .page-item.disabled .page-link { opacity: 0.4; pointer-events: none; }
+@media (max-width: 620px) { .bar { flex-wrap: wrap; } .drop { flex-basis: 100%; } }
