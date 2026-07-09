@@ -199,9 +199,9 @@ function main() {
                 .find(".event-types-pills");
 
             $pillWrapper.append(`
-            <span class="badge rounded-pill bg-info mb-1" data-event-type="${$select.val()}" style="font-size:12px">
+            <span class="tag" data-event-type="${$select.val()}">
                 ${$select.find("option:selected").text()}
-                <i class="fas fa-times ms-1 float-end" ></i>
+                <i class="fas fa-times ms-1"></i>
             </span>
             `);
 

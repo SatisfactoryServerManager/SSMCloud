@@ -12,27 +12,22 @@
                 <div class="page-container" data-page="dashboard">
                     {{template "includes/dashboard/page-header" .}}
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card mb-3 bg-glass">
-                                <div class="card-header d-flex align-items-center">
-                                    <h5 class="m-0 flex-grow-1">Integrations</h5>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvas-add-integration" aria-controls="canvas-add-integration">
-                                        <span class="d-none d-md-inline-block me-2">Add Integraion</span>
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    {{if not .integrations}}
-                                        <div class="alert alert-info">It looks like you have no integrations setup yet!</div>
-                                    {{end}}
+                    <div class="section-head">
+                        <span class="eyebrow">// Integrations</span>
+                        <span class="rule"></span>
+                        <button class="btn2" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvas-add-integration" aria-controls="canvas-add-integration">
+                            <i class="fa-solid fa-plus"></i> Add Integration
+                        </button>
+                    </div>
 
-                                    {{range $integration := .integrations}}
-                                        {{template "includes/components/integration-card" (dict "integration" $integration) }}
-                                    {{end}}
-                                </div>
-                            </div>
-                        </div>
+                    {{if not .integrations}}
+                        <div class="ssm-alert warn"><i class="fas fa-circle-info"></i> It looks like you have no integrations set up yet!</div>
+                    {{end}}
+
+                    <div class="int-list">
+                        {{range $integration := .integrations}}
+                            {{template "includes/components/integration-card" (dict "integration" $integration) }}
+                        {{end}}
                     </div>
                 </div>
             </div>

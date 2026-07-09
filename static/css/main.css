@@ -2165,3 +2165,24 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .card2 .input-group .field { border-radius: 3px 0 0 3px; }
 .card2 .input-group .icobtn { border-radius: 0; height: 36px; margin-left: -1px; }
 .card2 .input-group .btn2 { border-radius: 0 3px 3px 0; margin-left: -1px; height: 36px; }
+/* ---- Phase 4: integrations ---- */
+.int-list { display: flex; flex-direction: column; gap: 10px; }
+.int-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; text-decoration: none; color: var(--ink); transition: border-color .15s, transform .15s; }
+.int-row:hover { border-color: var(--line-strong); transform: translateY(-1px); color: var(--ink); }
+.int-icon { width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; color: var(--brand-bright); }
+.int-name { font-family: var(--display); font-style: italic; text-transform: uppercase; font-size: 14px; font-weight: 800; letter-spacing: 0.02em; flex: 0 0 auto; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.int-url { color: var(--steel); font-size: 12px; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.int-go { color: var(--ink-dim); flex: 0 0 auto; }
+.int-form .input-group { flex-wrap: nowrap; }
+.int-form .input-group .field { border-radius: 3px 0 0 3px; }
+.int-form .input-group .icobtn { border-radius: 0 3px 3px 0; height: 36px; margin-left: -1px; }
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px; }
+.tag-wrap .tag { cursor: default; }
+.tag-wrap .tag i { cursor: pointer; opacity: 0.7; }
+.tag-wrap .tag i:hover { opacity: 1; color: var(--danger); }
+/* offcanvas → console panel */
+.offcanvas { background: var(--panel) !important; color: var(--ink) !important; border-left: 1px solid var(--line) !important; }
+.offcanvas .offcanvas-header { border-bottom: 1px solid var(--line); }
+.offcanvas .offcanvas-title { font-family: var(--display); font-style: italic; text-transform: uppercase; font-size: 15px; letter-spacing: 0.03em; }
+.offcanvas .btn-close { filter: invert(1) grayscale(1); opacity: 0.6; }
+.offcanvas .btn-close:hover { opacity: 1; }
