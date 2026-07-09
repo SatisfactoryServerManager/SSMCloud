@@ -1860,17 +1860,69 @@ pre {
 .pane {
     min-width: 0;
 }
+/* mobile section dropdown trigger — hidden on desktop, shown in the mobile media query below */
+.rack-toggle {
+    display: none;
+    width: 100%;
+    align-items: center;
+    gap: 11px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 11px 12px;
+    cursor: pointer;
+}
+.rack-toggle .rack-current {
+    flex: 1;
+    text-align: left;
+}
+.rack-toggle i {
+    color: var(--brand-bright);
+    transition: transform 0.15s ease;
+}
+.rack.open .rack-toggle i {
+    transform: rotate(180deg);
+}
 
 @media (max-width: 860px) {
     .console-grid {
         grid-template-columns: 1fr;
     }
     .rack {
-        position: static;
+        position: relative;
+    }
+    .rack-label {
+        display: none;
+    }
+    .rack-toggle {
+        display: flex;
+    }
+    /* the tab list becomes a floating dropdown panel, revealed by .rack.open */
+    .server-tabs-header {
+        display: none;
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        top: calc(100% - 4px);
+        z-index: 30;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 6px;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    }
+    .rack.open .server-tabs-header {
+        display: block;
     }
     .rack .nav-tabs.rack-nav {
-        flex-direction: row;
-        overflow-x: auto;
+        flex-direction: column;
+        overflow-x: visible;
     }
     .rack-btn.nav-link {
         white-space: nowrap;

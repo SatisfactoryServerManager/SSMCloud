@@ -54,16 +54,41 @@ function main() {
             window.agentPort,
             window.agentAPIKey,
         );
+
+        // Set the mobile dropdown trigger to the section restored above
+        const $activeRackBtn = $(".rack-nav .rack-btn.active").first();
+        if ($activeRackBtn.length) {
+            $(".rack-current").text(RackSectionLabel($activeRackBtn));
+        }
     }
 
-    // When a tab is clicked (and shown), save it
+    // When a tab is clicked (and shown), save it and sync the mobile dropdown
     $('.server-tabs-header .nav-tabs a[data-bs-toggle="tab"]').on(
         "shown.bs.tab",
         function (e) {
             const activeTab = $(e.target).attr("href"); // e.g. "#profile"
             localStorage.setItem("ServerActiveTab", activeTab);
+            $(".rack-current").text(RackSectionLabel($(e.target)));
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
         },
     );
+
+    // Mobile: toggle the section dropdown open/closed
+    $("body").on("click", ".rack-toggle", (e) => {
+        e.stopPropagation();
+        const $rack = $(e.currentTarget).closest(".rack");
+        const open = $rack.toggleClass("open").hasClass("open");
+        $(e.currentTarget).attr("aria-expanded", open ? "true" : "false");
+    });
+
+    // Mobile: click outside the rack closes the dropdown
+    $(document).on("click", (e) => {
+        if ($(e.target).closest(".rack").length === 0) {
+            $(".rack").removeClass("open");
+            $(".rack-toggle").attr("aria-expanded", "false");
+        }
+    });
 
     // Try to get the last active tab from localStorage
     const lastAccountTab = localStorage.getItem("AccountActiveTab");
@@ -1004,6 +1029,13 @@ function BuildAgentInstallCommands(agentName, smallmemory, serverport, apikey) {
 }
 
 window.BuildAgentInstallCommands = BuildAgentInstallCommands;
+
+// Extract the plain section name from a rack tab (strips icon, count badge, update dot)
+function RackSectionLabel($a) {
+    const $clone = $a.clone();
+    $clone.find(".gl, .count, .dot").remove();
+    return $clone.text().trim();
+}
 
 Number.prototype.pad = function (width, z) {
     let n = this;

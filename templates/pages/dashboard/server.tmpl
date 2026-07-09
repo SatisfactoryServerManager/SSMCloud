@@ -76,7 +76,8 @@
                         <div class="console-grid">
                             <aside class="rack">
                                 <div class="rack-label">// Sections</div>
-                                <div class="server-tabs-header">
+                                <button type="button" class="rack-toggle" aria-expanded="false" aria-controls="server-sections-panel" aria-label="Select section"><span class="rack-current">Sections</span><i class="fas fa-chevron-down"></i></button>
+                                <div class="server-tabs-header" id="server-sections-panel">
                                     <ul class="nav nav-tabs rack-nav" role="tablist">
                                         <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#console" role="tab"><span class="gl"><i class="fas fa-terminal"></i></span> Console</a></li>
                                         <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#settings" role="tab"><span class="gl"><i class="fas fa-cog"></i></span> Settings {{if ne .agent.Config.Version .agent.LatestAgentVersion}}<span class="dot warn" title="Update available"></span>{{end}}</a></li>
