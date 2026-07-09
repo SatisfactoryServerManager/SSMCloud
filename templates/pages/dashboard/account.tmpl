@@ -10,27 +10,31 @@
                 <!-- BODY -->
                 <div class="page-container" data-page="dashboard">
                     {{template "includes/dashboard/page-header" .}}
-                    <div class="section-head"><span class="eyebrow">// Account</span><span class="rule"></span></div>
-                    <ul class="nav nav-tabs account-tabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" href="#settings" aria-selected="false" role="tab" tabindex="-1"><i class="fas fa-sliders me-1"></i> Settings</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" href="#users" aria-selected="false" role="tab"><i class="fas fa-users me-1"></i> Users</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#audit" aria-selected="true" role="tab"><i class="fas fa-clock-rotate-left me-1"></i> Audit</a>
-                        </li>
-                    </ul>
-                    <div id="myTabContent" class="tab-content">
-                        <div class="tab-pane fade" id="settings" role="tabpanel">
-                            {{template "includes/account/settings" .}}
-                        </div>
-                        <div class="tab-pane fade" id="users" role="tabpanel">
-                            {{template "includes/account/users" .}}
-                        </div>
-                        <div class="tab-pane fade show active" id="audit" role="tabpanel">
-                            {{template "includes/account/audit" .}}
+
+                    <div class="console-grid">
+                        <aside class="rack">
+                            <div class="rack-label">// Sections</div>
+                            <button type="button" class="rack-toggle" aria-expanded="false" aria-controls="server-sections-panel" aria-label="Select section"><span class="rack-current">Sections</span><i class="fas fa-chevron-down"></i></button>
+                            <div class="server-tabs-header" id="server-sections-panel">
+                                <ul class="nav nav-tabs rack-nav" role="tablist">
+                                    <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#settings" role="tab"><span class="gl"><i class="fas fa-cog"></i></span> Settings</a></li>
+                                    <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#users" role="tab"><span class="gl"><i class="fas fa-user"></i></span> Users</a></li>
+                                    <li class="nav-item" role="presentation"><a class="nav-link rack-btn" data-bs-toggle="tab" href="#audit" role="tab" tabindex="-1"><span class="gl"><i class="fas fa-book"></i></span> Audit</a></li>
+                                </ul>
+                            </div>
+                        </aside>
+                        <div class="pane">
+                            <div id="myTabContent" class="tab-content">
+                                <div class="tab-pane fade" id="settings" role="tabpanel">
+                                    {{template "includes/account/settings" .}}
+                                </div>
+                                <div class="tab-pane fade" id="users" role="tabpanel">
+                                    {{template "includes/account/users" .}}
+                                </div>
+                                <div class="tab-pane fade" id="audit">
+                                    {{template "includes/account/audit" .}}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

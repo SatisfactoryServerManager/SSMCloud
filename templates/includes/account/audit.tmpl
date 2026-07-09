@@ -1,24 +1,20 @@
 {{define "includes/account/audit"}}
-<div class="card2">
-    <div class="hd">
-        <h5>Audit</h5>
-        <div class="right">
-            <label for="account-audit-types" class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);">Type</label>
-            <select id="account-audit-types" class="field">
-                <option value="">All</option>
-                <option value="added-user">Users Added</option>
-                <option value="removed-user">Users Removed</option>
-                <option value="added-integration">Integrations Added</option>
-                <option value="removed-integration">Integrations Removed</option>
-                <option value="added-agent">Servers Added</option>
-                <option value="removed-agent">Servers Removed</option>
-            </select>
-        </div>
-    </div>
-    <div class="bd">
-        <div id="account-audit-wrapper">
-            <div class="acct-list row"></div>
-        </div>
-    </div>
+<div class="section-head">
+    <span class="eyebrow">// Audit</span>
+    <span class="rule"></span>
+    <select id="account-audit-types" class="field">
+        <option value="">All</option>
+        <option value="added-user">Users Added</option>
+        <option value="removed-user">Users Removed</option>
+        <option value="added-integration">Integrations Added</option>
+        <option value="removed-integration">Integrations Removed</option>
+        <option value="added-agent">Servers Added</option>
+        <option value="removed-agent">Servers Removed</option>
+    </select>
 </div>
+
+<div id="account-audit-wrapper">
+    <div class="acct-list grid"></div>
+</div>
+
 {{end}}

@@ -48,13 +48,21 @@ class AccountPage {
     };
 
     BuildAuditList() {
-        const $wrapper = $("#account-audit-wrapper .row");
+        const $wrapper = $("#account-audit-wrapper .grid");
         $wrapper.empty();
 
         if (this._AuditList.length == 0) {
             $wrapper.append(`<div class="ssm-alert warn" style="grid-column:1/-1;"><i class="fas fa-circle-info"></i> No Audit Events recorded</div>`);
             return;
         }
+
+        this._AuditList = this._AuditList.sort((a, b) => {
+            if (a.created_at.seconds < b.created_at.seconds) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
 
         for (let i = 0; i < this._AuditList.length; i++) {
             const audit = this._AuditList[i];
@@ -90,7 +98,7 @@ class AccountPage {
                 break;
         }
 
-        const date = new Date(audit.createdAt);
+        const date = new Date(audit.created_at.seconds * 1000);
 
         const formatted = date.toLocaleString("en-US", {
             month: "long", // "October"
