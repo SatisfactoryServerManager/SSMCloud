@@ -268,7 +268,7 @@ func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string,
 	return err
 }
 
-func GetAgentModsGRPC(ctx context.Context, externalID string, agentId string, page int32, sort string, direction string, search string) (*pb.GetAgentModsResponse, error) {
+func GetAgentModsGRPC(ctx context.Context, externalID string, agentId string, page int32, sort string, direction string, search string, filterAvailable bool, filterInstalled bool, onlyUpdatable bool, includeHidden bool) (*pb.GetAgentModsResponse, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -277,12 +277,16 @@ func GetAgentModsGRPC(ctx context.Context, externalID string, agentId string, pa
 	}
 
 	pbModsRes, err := frontendServiceClient.GetAgentMods(ctx, &pb.GetAgentModsRequest{
-		Eid:       externalID,
-		AgentId:   agentId,
-		Page:      page,
-		Sort:      sort,
-		Direction: direction,
-		Search:    search,
+		Eid:             externalID,
+		AgentId:         agentId,
+		Page:            page,
+		Sort:            sort,
+		Direction:       direction,
+		Search:          search,
+		FilterAvailable: filterAvailable,
+		FilterInstalled: filterInstalled,
+		OnlyUpdatable:   onlyUpdatable,
+		IncludeHidden:   includeHidden,
 	})
 	return pbModsRes, err
 }

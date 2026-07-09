@@ -326,10 +326,12 @@ function main() {
         })
         .on(
             "change",
-            "#check-installed, #check-not-installed, #check-needs-update",
+            "#check-available, #check-installed, #check-only-updatable, #check-show-hidden",
             () => {
-                // Filter the mods already in memory — no refetch needed.
-                ModsPage.RenderMods();
+                // Filtering is server-side — refetch from page 0 so the result
+                // set and pagination stay consistent.
+                ModsPage.page = 0;
+                ModsPage.UpdateView();
             },
         )
         .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
@@ -702,6 +704,8 @@ function main() {
 
     function SortMods() {
         ApplyModSort();
+        // Sort/search change the result set — restart at page 0.
+        ModsPage.page = 0;
         ModsPage.UpdateView();
     }
 

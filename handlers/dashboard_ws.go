@@ -176,7 +176,7 @@ func (handler *DashboardWSHandler) WS_GetAgentLogs(conn *websocket.Conn, userEid
 }
 
 func (handler *DashboardWSHandler) WS_GetAgentMods(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
-	modsRes, err := api.GetAgentModsGRPC(context.Background(), userEid, msg.AgentId, int32(msg.Page), msg.Sort, msg.Direction, msg.Search)
+	modsRes, err := api.GetAgentModsGRPC(context.Background(), userEid, msg.AgentId, int32(msg.Page), msg.Sort, msg.Direction, msg.Search, msg.FilterAvailable, msg.FilterInstalled, msg.OnlyUpdatable, msg.IncludeHidden)
 
 	if err != nil {
 		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})

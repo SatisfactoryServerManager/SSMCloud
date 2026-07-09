@@ -744,10 +744,12 @@ function main() {
         })
         .on(
             "change",
-            "#check-installed, #check-not-installed, #check-needs-update",
+            "#check-available, #check-installed, #check-only-updatable, #check-show-hidden",
             () => {
-                // Filter the mods already in memory — no refetch needed.
-                ModsPage.RenderMods();
+                // Filtering is server-side — refetch from page 0 so the result
+                // set and pagination stay consistent.
+                ModsPage.page = 0;
+                ModsPage.UpdateView();
             },
         )
         .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
@@ -1120,6 +1122,8 @@ function main() {
 
     function SortMods() {
         ApplyModSort();
+        // Sort/search change the result set — restart at page 0.
+        ModsPage.page = 0;
         ModsPage.UpdateView();
     }
 
@@ -1563,6 +1567,8 @@ class ModsPage {
             );
         }
 
+        const f = this.FilterState();
+
         ws.send({
             action: "console.agent.mods",
             agentId: this.agentId,
@@ -1570,8 +1576,29 @@ class ModsPage {
             sort: this.sort,
             direction: this.direction,
             search: this.search,
+            filterAvailable: f.available,
+            filterInstalled: f.installed,
+            onlyUpdatable: f.onlyUpdatable,
+            includeHidden: f.includeHidden,
         });
     };
+
+    // Read the offcanvas filter checkboxes. Filtering is done server-side, so
+    // these values are sent with every request. Missing checkboxes fall back to
+    // the defaults (show available + installed, no update-only, hide hidden).
+    FilterState() {
+        const checked = (id, def) => {
+            const $el = $(id);
+            return $el.length === 0 ? def : $el.prop("checked");
+        };
+
+        return {
+            available: checked("#check-available", true),
+            installed: checked("#check-installed", true),
+            onlyUpdatable: checked("#check-only-updatable", false),
+            includeHidden: checked("#check-show-hidden", false),
+        };
+    }
 
     // Kept as the public entry point used by app.js (sort/search/install/
     // uninstall/settings-save) — a view update is now a fresh websocket request.
@@ -1620,40 +1647,57 @@ class ModsPage {
         );
     };
 
-    // Whether a mod passes the offcanvas filter checkboxes. A missing checkbox
-    // (e.g. filter markup not present) is treated as "show". Semantics are AND:
-    // the mod's install state must be enabled, and update-only mods are hidden
-    // when the "Update Available" box is unchecked.
-    MatchesFilter(mod) {
-        const checked = (id) => {
-            const $el = $(id);
-            return $el.length === 0 ? true : $el.prop("checked");
-        };
-
-        const showInstalled = checked("#check-installed");
-        const showNotInstalled = checked("#check-not-installed");
-        const showNeedsUpdate = checked("#check-needs-update");
-
-        const stateOk = mod.installed ? showInstalled : showNotInstalled;
-        const updateOk = mod.needsUpdate ? showNeedsUpdate : true;
-
-        return stateOk && updateOk;
+    // A compact fingerprint of everything BuildModCard renders for a mod. Used
+    // to decide whether a already-rendered card can be reused as-is.
+    ModSignature(mod) {
+        const latest =
+            (mod.versions && mod.versions[0] && mod.versions[0].version) || "";
+        return [
+            mod.mod_name || "",
+            mod.installed ? 1 : 0,
+            mod.needsUpdate ? 1 : 0,
+            mod.pendingInstall ? 1 : 0,
+            mod.installedVersion,
+            mod.desiredVersion,
+            latest,
+            mod.logo_url || "",
+        ].join("|");
     }
 
-    // Re-render the currently-held page of mods, applying the filter checkboxes.
-    // Called from onModsReceived and directly by the checkbox change handlers in
-    // app.js (no refetch needed — it filters the data already in memory).
+    // Reconcile the rendered mod cards against the current data. Cards whose
+    // fingerprint is unchanged are reused in place (their <img> is never
+    // re-fetched), so the 5s live poll doesn't flicker or re-download images.
     RenderMods = () => {
         const $wrapper = $(".mod-list .row");
         if ($wrapper.length === 0) return;
+        const wrapperEl = $wrapper[0];
 
-        $wrapper.empty();
+        // Index currently-rendered cards by mod reference.
+        const prev = {};
+        wrapperEl.querySelectorAll(".mod[data-mod-reference]").forEach((el) => {
+            prev[el.getAttribute("data-mod-reference")] = el;
+        });
 
+        // Build the new ordered set, reusing unchanged nodes.
+        const frag = document.createDocumentFragment();
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
-            if (!this.MatchesFilter(mod)) continue;
-            $wrapper.append(this.BuildModCard(mod));
+            const sig = this.ModSignature(mod);
+            const existing = prev[mod.mod_reference];
+
+            let node;
+            if (existing && existing.getAttribute("data-sig") === sig) {
+                node = existing; // reuse untouched -> no image reload
+            } else {
+                node = this.BuildModCard(mod)[0];
+            }
+            delete prev[mod.mod_reference];
+            frag.appendChild(node); // moves reused nodes out of the DOM
         }
+
+        // replaceChildren drops any stale cards left in the wrapper and inserts
+        // the freshly ordered set (reused nodes carried over via the fragment).
+        wrapperEl.replaceChildren(frag);
     };
 
     BuildPagination = () => {
@@ -1756,7 +1800,9 @@ class ModsPage {
     // .install-mod-btn / .update-mod-btn / .uninstall-mod-btn / .settings-mod-btn
     // each with data-agentid + data-mod-reference.
     BuildModCard(mod) {
-        const $row = $(`<div class="mod" data-mod-reference="${mod.mod_reference}"></div>`);
+        const $row = $(
+            `<div class="mod" data-mod-reference="${mod.mod_reference}" data-sig="${this.ModSignature(mod)}"></div>`,
+        );
 
         const logo =
             mod.logo_url == "" || mod.logo_url == null

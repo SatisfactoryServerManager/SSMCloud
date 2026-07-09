@@ -216,7 +216,12 @@ func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {
 
 	pageInt, _ := strconv.Atoi(page)
 
-	modsRes, err := api.GetAgentModsGRPC(context.Background(), c.GetString("user_eid"), agentId, int32(pageInt), sort, direction, search)
+	filterAvailable, _ := strconv.ParseBool(c.DefaultQuery("filterAvailable", "true"))
+	filterInstalled, _ := strconv.ParseBool(c.DefaultQuery("filterInstalled", "true"))
+	onlyUpdatable, _ := strconv.ParseBool(c.DefaultQuery("onlyUpdatable", "false"))
+	includeHidden, _ := strconv.ParseBool(c.DefaultQuery("includeHidden", "false"))
+
+	modsRes, err := api.GetAgentModsGRPC(context.Background(), c.GetString("user_eid"), agentId, int32(pageInt), sort, direction, search, filterAvailable, filterInstalled, onlyUpdatable, includeHidden)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})

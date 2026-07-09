@@ -276,15 +276,19 @@ type APIGetAccountIntegrationEventsResponse struct {
 }
 
 type WSMessage struct {
-	Action       string `json:"action"`
-	AgentId      string `json:"agentId"`
-	LastLogIndex int    `json:"lastLogIndex"`
-	LogType      string `json:"logType"`
-	ServerAction string `json:"serverAction"`
-	Page         int    `json:"page"`
-	Sort         string `json:"sort"`
-	Direction    string `json:"direction"`
-	Search       string `json:"search"`
+	Action          string `json:"action"`
+	AgentId         string `json:"agentId"`
+	LastLogIndex    int    `json:"lastLogIndex"`
+	LogType         string `json:"logType"`
+	ServerAction    string `json:"serverAction"`
+	Page            int    `json:"page"`
+	Sort            string `json:"sort"`
+	Direction       string `json:"direction"`
+	Search          string `json:"search"`
+	FilterAvailable bool   `json:"filterAvailable"`
+	FilterInstalled bool   `json:"filterInstalled"`
+	OnlyUpdatable   bool   `json:"onlyUpdatable"`
+	IncludeHidden   bool   `json:"includeHidden"`
 }
 
 type WSResponse struct {
@@ -292,8 +296,7 @@ type WSResponse struct {
 	Data   interface{} `json:"data"`
 }
 
-
-type APIDeleteAccountRequest struct{
+type APIDeleteAccountRequest struct {
 	APIRequest
 	AccountID string `json:"id"`
 }
