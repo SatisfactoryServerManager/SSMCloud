@@ -1,40 +1,34 @@
 {{define "includes/account/settings"}}
 
-<div class="card mb-3">
-    <div class="card-header">
-        <h5>Settings</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-12 col-md-6 col-xl-3">
-                <b class="settings-prop">Account Name:</b>
-                <span class="settings-info">
-                    The name for this account
-                </span>
+<div class="card2">
+    <div class="hd"><h5>Settings</h5></div>
+    <div class="bd">
+        <div class="set-row">
+            <div class="lab">
+                <b>Account Name</b>
+                <span>The name for this account</span>
             </div>
-            <div class="col-12 col-md-6 col-xl-9">
-                <div class="input-group mb-3">
-                    <input id="inp-account-name" type="text" class="form-control" value="{{.account.AccountName}}">
-                    <button class="btn btn-primary" data-save-for="inp-account-name" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Save">
+            <div class="ctl">
+                <div class="input-group">
+                    <input id="inp-account-name" type="text" class="field" value="{{.account.AccountName}}">
+                    <button class="icobtn" data-save-for="inp-account-name" aria-label="Save account name" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Save">
                         <i class="fa-solid fa-save"></i>
                     </button>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 col-md-6 col-xl-3">
-                <b class="settings-prop">Account Join Code:</b>
-                <span class="settings-info">
-                    Use this code to join the account
-                </span>
+        <div class="set-row">
+            <div class="lab">
+                <b>Account Join Code</b>
+                <span>Use this code to join the account</span>
             </div>
-            <div class="col-12 col-md-6 col-xl-9">
-                <div class="input-group mb-3">
-                    <input id="join-code" type="text" readonly class="form-control" value="{{.account.JoinCode}}">
-                    <button class="btn btn-secondary" id="regen-join-code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Generate a new join code">
+            <div class="ctl">
+                <div class="input-group">
+                    <input id="join-code" type="text" readonly class="field mono" value="{{.account.JoinCode}}">
+                    <button class="icobtn" id="regen-join-code" aria-label="Generate a new join code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Generate a new join code">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
-                    <button class="btn btn-primary" id="copy-join-code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copy the join code">
+                    <button class="icobtn" id="copy-join-code" aria-label="Copy the join code" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copy the join code">
                         <i class="fa-solid fa-copy"></i>
                     </button>
                 </div>
@@ -43,22 +37,17 @@
     </div>
 </div>
 
-<div class="card border-danger mb-3">
-    <div class="card-header">
-        <h5>Danger Area</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-12 col-md-6 col-xl-3">
-                <b class="settings-prop">Delete Account:</b>
-                <span class="settings-info">
-                    This will delete the account, servers & integrations.
-                    <b>This action is irreversible and all data is lost!</b>
-                </span>
+<div class="card2 danger">
+    <div class="hd"><h5>Danger Area</h5></div>
+    <div class="bd">
+        <div class="set-row">
+            <div class="lab">
+                <b>Delete Account</b>
+                <span>This will delete the account, servers &amp; integrations. <b>This action is irreversible and all data is lost!</b></span>
             </div>
-            <div class="col-12 col-md-6 col-xl-9">
-                <a href="/dashboard/account/delete?id={{.account.Id}}" class="btn btn-danger should-confirm-btn" style="height:40px" data-confirm-title="Delete Account Confirmation">
-                    <i class="fas fa-trash me-1"></i> Delete Account
+            <div class="ctl">
+                <a href="/dashboard/account/delete?id={{.account.Id}}" class="btn2 outline danger should-confirm-btn" data-confirm-title="Delete Account Confirmation">
+                    <i class="fas fa-trash"></i> Delete Account
                 </a>
             </div>
         </div>
