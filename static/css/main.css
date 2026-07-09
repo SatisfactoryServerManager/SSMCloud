@@ -1910,7 +1910,7 @@ pre {
         left: 8px;
         right: 8px;
         top: calc(100% - 4px);
-        z-index: 30;
+        z-index: 1001; /* above Leaflet panes/controls (max ~1000) */
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 4px;
