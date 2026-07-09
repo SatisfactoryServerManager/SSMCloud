@@ -1,3 +1,71 @@
+## 1.0.181 (July 09, 2026)
+  - Merge pull request #22 from SatisfactoryServerManager/feature/ui-redesign
+  - chore: Cleanup design plans
+  - feat(ui): Updated public images
+  - feat(ui): playable hero console simulation
+  - feat(ui): public bundle with scene reveals + hero video guards
+  - feat(ui): six-scene public landing over generated backdrops
+  - feat(ui): public tokens + console nav (phase 5)
+  - feat(ui): generated Satisfactory-style backdrops for public landing
+  - docs: Phase 5 public landing implementation plan
+  - docs: Phase 5 public landing design spec
+  - feat(ui): Updates to account page
+  - fix: Fixed integrations ID error
+  - feat(ui): integration detail + events console restyle
+  - feat(ui): integrations list + add-form console restyle
+  - feat(ui): profile page console restyle
+  - feat(ui): account create + join console restyle
+  - feat(ui): account users + audit console restyle
+  - feat(ui): account shell + settings console restyle
+  - fix(ui): raise mobile sections dropdown above leaflet map
+  - feat(ui): collapse server sections rack into a dropdown on mobile
+  - feat(ui): never-started server empty state
+  - chore: updated deps
+  - feat(ui): server-side mod filters, hidden toggle, flicker-free live poll
+  - feat(ui): mods tab console redesign + live websocket mod list
+  - fix(ui): live logs over websocket, saves search, AND server filters
+  - feat(ui): logs tab dual terminal viewers
+  - fix(ui): queue websocket sends until connection is open
+  - fix(ui): populate install command textareas with .val()
+  - feat(ui): saves + backups tabs console mini-cards
+  - fix(ui): assign window.agentMap before restoring #map tab on load
+  - feat(ui): map tab framed container + websocket data source
+  - feat(ui): install-command tab console copy blocks
+  - fix(ui): redesign settings toggles + max-players slider to console style
+  - feat(ui): settings tab console redesign
+  - style(ui): recolor command-header readouts; drop legacy tabs-header bg; reformat main.css
+  - Merge branch 'main' into feature/ui-redesign
+  - fix(ui): constrain console charts to container height
+  - feat(ui): console tab terminal + semantic-colored charts
+  - feat(ui): server-detail command header + vertical control sidebar
+  - docs: Phase 3 server-detail plan (command header + vertical sidebar)
+  - fix(ui): dashboard/servers copy + mobile top bar, dropdown, filter toggles
+  - fix(ui): filter/search toggles the server card itself, not its parent
+  - feat(ui): dashboard overview with fleet summary + attention
+  - feat(ui): servers page console controls + grid
+  - feat(ui): compact unit panel for servers grid
+  - feat(ui): server-card unit panel with segmented meters
+  - feat(ui): status-card renders as readout tile
+  - feat(ui): theme-aware presskit ground (dark variant in dark mode)
+  - fix(ui): stop legacy form-control rule shadowing server-count chip
+  - feat(ui): restyle fixed footer
+  - feat(ui): control-console topbar with theme toggle
+  - fix(ui): pin sidebar status strip to bottom (drop redundant mt-auto)
+  - feat(ui): control-console sidebar
+  - feat(ui): flat token ground + display-font headings
+  - feat(ui): theme toggle module with persisted no-flash init
+  - feat(ui): add design-system component primitives
+  - feat(ui): bridge Bootstrap variables to design tokens
+  - feat(ui): cyan/gunmetal palette tokens with data-theme support
+  - feat(ui): self-host Exo 2 display font
+  - docs(ui): keep presskit ground, veil it into the design
+  - fix: Fixed ci workflow
+  - feat: Updated CI
+  - docs: add Phase 1 (shell) and Phase 2 (dashboard+servers) plans
+  - chore(ui): add self-hosted Exo 2 woff2 font files
+  - docs: add Phase 0 foundation implementation plan
+  - docs: add site-wide UI redesign design spec
+
 ## 1.0.180 (July 08, 2026)
 
 
