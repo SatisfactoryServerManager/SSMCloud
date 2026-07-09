@@ -1,7 +1,7 @@
 {{define "includes/components/integration-event-card"}}
 {{$event:=.event}}
 
-<a class="int-row event-row" data-bs-toggle="offcanvas" data-bs-target="#canvas-view-integration-event-{{OIDtoString $event.ID}}" aria-controls="canvas-view-integration-event-{{OIDtoString $event.ID}}">
+<a class="int-row event-row" data-bs-toggle="offcanvas" data-bs-target="#canvas-view-integration-event-{{$event.Id}}" aria-controls="canvas-view-integration-event-{{$event.Id}}">
     <span class="int-name">{{$event.EventType}}</span>
     {{if eq $event.Status "pending"}}<span class="tag"><i class="fa-solid fa-clock"></i> Pending</span>
     {{else if eq $event.Status "processing"}}<span class="tag upd"><i class="fa-solid fa-rotate fa-spin-pulse"></i> Processing</span>
@@ -12,9 +12,9 @@
     <span class="int-go"><i class="fa-solid fa-chevron-right"></i></span>
 </a>
 
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="canvas-view-integration-event-{{OIDtoString $event.ID}}" aria-labelledby="canvas-view-integration-event-{{OIDtoString $event.ID}}-label">
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="canvas-view-integration-event-{{$event.Id}}" aria-labelledby="canvas-view-integration-event-{{$event.Id}}-label">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="canvas-view-integration-event-{{OIDtoString $event.ID}}-label">Event Details</h5>
+        <h5 class="offcanvas-title" id="canvas-view-integration-event-{{$event.Id}}-label">Event Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">

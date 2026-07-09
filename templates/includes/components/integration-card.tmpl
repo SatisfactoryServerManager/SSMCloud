@@ -1,7 +1,7 @@
 {{define "includes/components/integration-card"}}
 {{$integration:=.integration}}
 
-<a class="int-row" href="/dashboard/integrations/{{OIDtoString $integration.ID}}">
+<a class="int-row" href="/dashboard/integrations/{{ $integration.Id}}">
     <span class="int-icon">
         {{if eq $integration.Type 0}}<i class="fa-solid fa-plug"></i>
         {{else if eq $integration.Type 1}}<i class="fa-brands fa-discord"></i>{{end}}

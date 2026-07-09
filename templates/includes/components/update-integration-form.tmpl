@@ -6,7 +6,7 @@
 <div class="card2">
     <div class="hd"><h5>Update Integration</h5></div>
     <div class="bd">
-        <form action="/dashboard/integrations/{{OIDtoString $integration.ID}}/update" method="post" class="edit-notification-form int-form">
+        <form action="/dashboard/integrations/{{$integration.Id}}/update" method="post" class="edit-notification-form int-form">
             {{ .csrfField }}
             <div class="row g-3">
                 <div class="col-12 col-lg-6">
@@ -47,7 +47,7 @@
             </div>
             <div class="form-foot" style="display:flex;justify-content:space-between;">
                 <button class="btn2"><i class="fas fa-save"></i> Update Integration</button>
-                <a href="/dashboard/integrations/{{OIDtoString $integration.ID}}/delete" class="btn2 outline danger should-confirm-btn" data-confirm-title="Delete Integration"><i class="fas fa-trash"></i> Delete Integration</a>
+                <a href="/dashboard/integrations/{{ $integration.Id}}/delete" class="btn2 outline danger should-confirm-btn" data-confirm-title="Delete Integration"><i class="fas fa-trash"></i> Delete Integration</a>
             </div>
         </form>
     </div>
