@@ -1,51 +1,24 @@
 {{define "includes/components/integration-event-details"}}
 {{$event:=.event}}
 
-<div class="container">
-    <div class="row">
+<div class="row g-3">
     <div class="col-12 col-md-6">
-        <h6>Request Data</h6>
-        <hr />
-        <div><b>Request URL:</b> {{$event.URL}}</div>
-        <hr />
-        <div>
-            <b class="me-1">Status:</b>
-
-            {{if eq $event.Status "pending"}}
-                <span class="badge text-bg-primary mb-2 mb-xl-0">
-                    <i class="fa-solid fa-clock"></i>
-                    Pending
-                </span>
-            {{else if eq $event.Status "processing"}}
-                <span class="badge text-bg-primary mb-2 mb-xl-0">
-                <i class="fa-solid fa-rotate fa-spinner fa-spin-pulse me-1"></i>
-                Processing
-            </span>
-            {{else if eq $event.Status "sent"}}
-                <span class="badge text-bg-success mb-2 mb-xl-0">
-                    <i class="fa-solid fa-circle-check me-1"></i>
-                    Succeeded
-                </span>
-            {{else if eq $event.Status "failed"}}
-                <span class="badge text-bg-light mb-2 mb-xl-0 text-black">
-                    <i class="fa-solid fa-circle-xmark me-1 text-danger"></i>
-                    Failed
-                </span>
-            {{end}}
-        </div>
-        <div><b class="me-1">Date:</b> {{formatDate $event.CreatedAt}}</div>
-        <div><b class="me-1">Attempts:</b> {{$event.Attempts}} / 5</div>
-        <hr />
-
-        <pre>{{toJsonPretty $event.Payload}}</pre>
+        <div class="section-head"><span class="eyebrow">// Request</span><span class="rule"></span></div>
+        <div class="readout mb-2"><div class="k">Request URL</div><div class="v mono">{{$event.URL}}</div></div>
+        <div class="readout mb-2"><div class="k">Status</div><div class="v">
+            {{if eq $event.Status "pending"}}<span class="tag"><i class="fa-solid fa-clock"></i> Pending</span>
+            {{else if eq $event.Status "processing"}}<span class="tag upd"><i class="fa-solid fa-rotate fa-spin-pulse"></i> Processing</span>
+            {{else if eq $event.Status "sent"}}<span class="tag ok"><i class="fa-solid fa-circle-check"></i> Succeeded</span>
+            {{else if eq $event.Status "failed"}}<span class="tag no"><i class="fa-solid fa-circle-xmark"></i> Failed</span>{{end}}
+        </div></div>
+        <div class="readout mb-2"><div class="k">Date</div><div class="v mono">{{formatDate $event.CreatedAt}}</div></div>
+        <div class="readout mb-3"><div class="k">Attempts</div><div class="v mono">{{$event.Attempts}} / 5</div></div>
+        <pre class="term">{{toJsonPretty $event.Payload}}</pre>
     </div>
     <div class="col-12 col-md-6">
-        <h6>Response Data</h6>
-        <hr />
-        <div><b class="me-1">Status Code:</b> {{$event.ResponseCode}}</div>
-        <hr />
-        <pre>{{toJsonPretty $event.Response}}</pre>
-    </div>
+        <div class="section-head"><span class="eyebrow">// Response</span><span class="rule"></span></div>
+        <div class="readout mb-3"><div class="k">Status Code</div><div class="v mono">{{$event.ResponseCode}}</div></div>
+        <pre class="term">{{toJsonPretty $event.Response}}</pre>
     </div>
 </div>
 {{end}}

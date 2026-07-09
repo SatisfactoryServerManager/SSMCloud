@@ -2186,3 +2186,8 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .offcanvas .offcanvas-title { font-family: var(--display); font-style: italic; text-transform: uppercase; font-size: 15px; letter-spacing: 0.03em; }
 .offcanvas .btn-close { filter: invert(1) grayscale(1); opacity: 0.6; }
 .offcanvas .btn-close:hover { opacity: 1; }
+
+.int-row.event-row .int-name { max-width: 200px; }
+.int-row.event-row .tag { flex: 0 0 auto; }
+.offcanvas-bottom { height: 60vh; }
+.offcanvas-bottom .term { height: auto; max-height: 34vh; }
