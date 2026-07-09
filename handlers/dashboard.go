@@ -236,6 +236,7 @@ func (handler *DashboardHandler) GET_DashboardServers(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/servers", gin.H{
 		"pageTitle": "Servers",
+		"csrfField": csrf.TemplateField(c.Request),
 	})
 }
 

@@ -1,3 +1,6 @@
+## 1.0.182 (July 09, 2026)
+
+
 ## 1.0.181 (July 09, 2026)
   - Merge pull request #22 from SatisfactoryServerManager/feature/ui-redesign
   - chore: Cleanup design plans
