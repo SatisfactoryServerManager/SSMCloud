@@ -4,13 +4,6 @@
     <head>
         <title>SSM Cloud</title>
 
-        <script
-            async
-            src="/public/libs/fontawesome/js/fontawesome.min.js"
-        ></script>
-        <script async src="/public/libs/fontawesome/js/brands.min.js"></script>
-        <script async src="/public/libs/fontawesome/js/solid.min.js"></script>
-
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
@@ -18,209 +11,209 @@
             crossorigin="anonymous"
         />
 
-        <link
-            rel="preload"
-            href="/public/libs/fontawesome/css/fontawesome.min.css"
-            as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <link
-            rel="preload"
-            href="/public/libs/fontawesome/css/brands.min.css"
-            as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <link
-            rel="preload"
-            href="/public/libs/fontawesome/css/solid.min.css"
-            as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <link
-            rel="preload"
-            href="/public/css/bootswatch.min.css"
-            as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <noscript>
-            <link rel="stylesheet" href="/public/css/bootswatch.min.css" />
-            <link
-                rel="stylesheet"
-                href="/public/libs/fontawesome/css/fontawesome.min.css"
-            />
-            <link
-                rel="stylesheet"
-                href="/public/libs/fontawesome/css/brands.min.css"
-            />
-            <link
-                rel="stylesheet"
-                href="/public/libs/fontawesome/css/solid.min.css"
-            />
-        </noscript>
-
-        <link rel="preload" href="/public/images/logonbg.webp" as="image" />
-        <link
-            rel="preload"
-            href="/public/images/home_dashboard_preview.webp"
-            as="image"
-        />
-        <link
-            rel="preload"
-            href="/public/images/home_responsive.webp"
-            as="image"
-        />
-        <link
-            rel="preload"
-            href="/public/images/home_notifications.webp"
-            as="image"
-        />
+        <link rel="preload" href="/public/fonts/exo2-latin-700-italic.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/public/images/public/scene-hero.webp" as="image" />
 
         <meta
             name="description"
             content="Satisfactory Server Manager (SSM) offers a cloud solution to manage all your Satisfactory server in one place"
         />
-
         <link rel="canonical" href="https://ssmcloud.hostxtra.co.uk" />
         <link rel="stylesheet" href="/public/css/public.min.css" />
-
         <meta name="HandheldFriendly" content="True" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     </head>
 
     <body>
         {{ template "includes/public/nav" .}}
 
-        <div class="px-4 pt-5 text-center border-bottom bg-glass">
-            <img
-                src="/public/images/ssm_logo_new_256.svg"
-                alt="ssm logo"
-                class="ssm-logo"
-                loading="lazy"
-                width="256px"
-                height="160px"
-            />
-            <div class="col-lg-6 mt-3 mx-auto">
-                <p class="lead mb-4">
-                    Easily manage and monitor multiple Satisfactory servers with
-                    SSM Cloud's user-friendly interface. View player
-                    information, access performance metrics, and manage server
-                    settings all in one place, whether you're a small community
-                    or a large hosting provider
+        <!-- S1 · Hero -->
+        <header class="scene hero" id="s-hero">
+            <video id="hero-video" muted loop playsinline preload="none" poster="/public/images/public/scene-hero.webp" aria-hidden="true" tabindex="-1"></video>
+            <div class="hero-veil"></div>
+            <div class="wrap hero-grid">
+                <div class="reveal">
+                    <span class="eyebrow">// Satisfactory Server Manager</span>
+                    <h1 class="display">Mission control for your <span class="hl">Satisfactory</span> servers.</h1>
+                    <p class="lead-p">
+                        Manage and monitor every Satisfactory server from one console. Player counts,
+                        performance meters, saves, backups, and mods — whether you run one server for
+                        friends or a fleet for a hosting provider.
+                    </p>
+                    <div class="hero-ctas">
+                        <a class="btn2p lg" href="/auth/login">Sign up for free</a>
+                        <a class="btn2p ghost lg" href="/docs">Read the docs</a>
+                    </div>
+                    <div class="trust">
+                        <span><span class="lamp on"></span>Free to use</span>
+                        <span><span class="lamp run"></span>Open source · MIT</span>
+                        <span><span class="lamp on"></span>Discord community</span>
+                    </div>
+                </div>
+
+                <div class="win reveal" id="sim">
+                    <div class="win-bar">
+                        <span class="win-dot"></span><span class="win-dot"></span><span class="win-dot"></span>
+                        <span class="win-title">ssmcloud — dashboard</span>
+                        <span class="win-sim mono">SIM</span>
+                    </div>
+                    <div class="win-bd">
+                        <div class="fleet">
+                            <div class="ftile"><div class="n" id="f-servers">2</div><div class="k">Servers</div></div>
+                            <div class="ftile"><div class="n"><span class="lamp on"></span><span id="f-online">1</span></div><div class="k">Online</div></div>
+                            <div class="ftile"><div class="n"><span class="lamp run pulse"></span><span id="f-running">1</span></div><div class="k">Running</div></div>
+                            <div class="ftile"><div class="n"><span class="lamp off"></span><span id="f-offline">1</span></div><div class="k">Offline</div></div>
+                        </div>
+                        <div class="units">
+                            <article class="unit" data-unit="alpha">
+                                <div>
+                                    <h3 class="unit-name"><span class="lamp run pulse"></span>EU-Alpha</h3>
+                                    <span class="unit-code mono">unit 6839f2 · v1.0.180</span>
+                                </div>
+                                <div class="ro-row">
+                                    <div class="ro ro-status"><div class="k">Status</div><div class="v cy">Running</div></div>
+                                    <div class="ro ro-players"><div class="k">Players</div><div class="v">12</div></div>
+                                    <div class="ro"><div class="k">Mods</div><div class="v gr">8</div></div>
+                                </div>
+                                <div class="meter" data-m="cpu"><span class="lbl mono">CPU</span><div class="track"><div class="fill" style="width:42%"></div></div><span class="val mono">42%</span></div>
+                                <div class="meter" data-m="ram"><span class="lbl mono">RAM</span><div class="track"><div class="fill warn" style="width:78%"></div></div><span class="val mono warn">78%</span></div>
+                                <div class="ops">
+                                    <button type="button" class="op start" data-act="start" disabled>Start</button>
+                                    <button type="button" class="op stop" data-act="stop">Stop</button>
+                                    <button type="button" class="op kill" data-act="kill"><span>Kill</span></button>
+                                </div>
+                            </article>
+                            <article class="unit offline" data-unit="bravo">
+                                <div>
+                                    <h3 class="unit-name"><span class="lamp off"></span>US-Bravo</h3>
+                                    <span class="unit-code mono">unit 92c4d1 · v1.0.179</span>
+                                </div>
+                                <div class="ro-row">
+                                    <div class="ro ro-status"><div class="k">Status</div><div class="v">Offline</div></div>
+                                    <div class="ro ro-players"><div class="k">Players</div><div class="v">0</div></div>
+                                    <div class="ro"><div class="k">Mods</div><div class="v gr">3</div></div>
+                                </div>
+                                <div class="meter" data-m="cpu"><span class="lbl mono">CPU</span><div class="track"><div class="fill" style="width:0%"></div></div><span class="val mono">0%</span></div>
+                                <div class="meter" data-m="ram"><span class="lbl mono">RAM</span><div class="track"><div class="fill" style="width:0%"></div></div><span class="val mono">0%</span></div>
+                                <div class="ops">
+                                    <button type="button" class="op start" data-act="start">Start</button>
+                                    <button type="button" class="op stop" data-act="stop" disabled>Stop</button>
+                                    <button type="button" class="op kill" data-act="kill" disabled><span>Kill</span></button>
+                                </div>
+                            </article>
+                        </div>
+                        <div class="sim-feed mono" id="sim-feed" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- S2 · Fleet -->
+        <section class="scene band" id="s-fleet" style="--bg: url('/public/images/public/scene-fleet.webp')">
+            <div class="wrap band-grid">
+                <div class="reveal">
+                    <span class="eyebrow">// Fleet</span>
+                    <h2 class="display">Your whole fleet on one screen.</h2>
+                    <p>
+                        Every server renders as a unit panel — status lamp, player count, mod count,
+                        and live CPU/RAM meters. Search, filter, and deploy new servers from one place.
+                    </p>
+                </div>
+                <div class="reveal vis">
+                    <div class="fleet">
+                        <div class="ftile"><div class="n">6</div><div class="k">Servers</div></div>
+                        <div class="ftile"><div class="n"><span class="lamp on"></span>5</div><div class="k">Online</div></div>
+                        <div class="ftile"><div class="n"><span class="lamp run pulse"></span>4</div><div class="k">Running</div></div>
+                        <div class="ftile"><div class="n"><span class="lamp off"></span>1</div><div class="k">Offline</div></div>
+                    </div>
+                    <article class="unit">
+                        <div>
+                            <h3 class="unit-name"><span class="lamp run pulse"></span>AU-Delta</h3>
+                            <span class="unit-code mono">unit 41ab77 · v1.0.180</span>
+                        </div>
+                        <div class="meter"><span class="lbl mono">CPU</span><div class="track"><div class="fill m1"></div></div><span class="val mono">64%</span></div>
+                        <div class="meter"><span class="lbl mono">RAM</span><div class="track"><div class="fill warn m2"></div></div><span class="val mono warn">81%</span></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- S3 · Control -->
+        <section class="scene band" id="s-control" style="--bg: url('/public/images/public/scene-control.webp')">
+            <div class="wrap band-grid rev">
+                <div class="reveal vis">
+                    <div class="minis">
+                        <div class="ro mini"><div class="k">Save · latest</div><div class="v cy">CoolIsland_autosave_0.sav</div><div class="k">Today 11:42 · 4.2 MB</div></div>
+                        <div class="ro mini"><div class="k">Backup</div><div class="v">backup-2026-07-09.tar.gz</div><div class="k">Nightly · kept 14 days</div></div>
+                        <div class="ro mini"><div class="k">Mods</div><div class="v"><span class="ptag ok">Ficsit Farming</span> <span class="ptag ok">Refined Power</span> <span class="ptag upd">Daisy Chains</span></div><div class="k">1 update available</div></div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <span class="eyebrow">// Control</span>
+                    <h2 class="display">Saves, backups, and mods — handled.</h2>
+                    <p>
+                        Upload and download save files, schedule backups, and install or update mods
+                        from the Satisfactory Mod Repository, per server, without touching a shell.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- S4 · Signals -->
+        <section class="scene band" id="s-signals" style="--bg: url('/public/images/public/scene-signals.webp')">
+            <div class="wrap band-grid rev2">
+                <div class="reveal vis">
+                    <div class="term">
+                        <p><span class="t">[12:01:44]</span> <span class="ev">player.joined</span>   EU-Alpha · xXPioneerXx        <span class="ok">→ discord sent</span></p>
+                        <p><span class="t">[12:02:10]</span> <span class="ev">server.started</span>  US-Charlie                    <span class="ok">→ webhook 200</span></p>
+                        <p><span class="t">[12:03:31]</span> <span class="ev">mod.updated</span>     EU-Alpha · Ficsit Farming     <span class="ok">→ discord sent</span></p>
+                        <p><span class="t">[12:04:02]</span> <span class="ev">server.offline</span>  US-Bravo                      <span class="wr">→ email queued</span></p>
+                        <p><span class="t">[12:04:11]</span> <span class="ev">player.left</span>     EU-Alpha · SpaceGiraffe       <span class="ok">→ webhook 200</span></p>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <span class="eyebrow">// Integrations</span>
+                    <h2 class="display">Know the moment it matters.</h2>
+                    <p>
+                        Stay informed about server updates, player activity, and shutdowns as they
+                        happen. SSM Cloud sends real-time events to the services you already use —
+                        no dashboard-watching required.
+                    </p>
+                    <div class="ptags">
+                        <span class="ptag ok">Discord</span>
+                        <span class="ptag ok">Webhooks</span>
+                        <span class="ptag ok">Email</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- S5 · CTA -->
+        <section class="scene cta" id="s-cta">
+            <div class="wrap reveal">
+                <span class="eyebrow">// Open source</span>
+                <h2 class="display">Built in the open. Free to run.</h2>
+                <p>
+                    SSM Cloud is MIT-licensed and built by the community, for the community.
+                    Bring your first server online in minutes.
                 </p>
-                <div
-                    class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5"
-                >
-                    <a href="/auth/login">
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-lg px-4 me-sm-3 shadow"
-                        >
-                            Sign Up For Free
-                        </button>
-                    </a>
+                <div class="hero-ctas cta-ctas">
+                    <a class="btn2p lg" href="/auth/login">Sign up for free</a>
+                    <a class="btn2p ghost lg" href="https://discord.gg/Vt8Rt2Vsqf">Join the Discord</a>
                 </div>
             </div>
-            <div class="overflow-hidden" style="max-height: 35vh">
-                <div class="container px-5">
-                    <img
-                        src="/public/images/home_dashboard_preview.webp"
-                        class="img-fluid border border-dark rounded-3 shadow-lg mb-4"
-                        alt="Example image"
-                        width="700"
-                        height="600"
-                    />
-                </div>
-            </div>
-        </div>
-        <div class="b-divider"></div>
-        <div class="px-4 border-bottom border-top bg-glass bg-glass-blue">
-            <div class="container col-xxl-8 px-4 py-5">
-                <div
-                    class="row flex-lg-row-reverse align-items-center g-5 py-5"
-                >
-                    <div class="col-10 col-sm-8 col-lg-6">
-                        <img
-                            src="/public/images/home_responsive.webp"
-                            class="d-block mx-lg-auto img-fluid"
-                            alt="Bootstrap Themes"
-                            width="600"
-                            height="400"
-                        />
-                    </div>
-                    <div class="col-lg-6">
-                        <h1 class="display-5 fw-bold lh-1 mb-3">
-                            Manage Satisfactory Servers On The Go!
-                        </h1>
-                        <p class="lead">
-                            SSM Cloud is a versatile platform that works
-                            seamlessly on multiple devices, including desktops,
-                            laptops, tablets, and smartphones. It automatically
-                            adapts to the device's screen, allowing you to
-                            manage servers and monitor performance on the go.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <div class="b-divider"></div>
-        <div class="px-4 border-bottom border-top bg-glass">
-            <div class="container col-xxl-8 px-4 py-5">
-                <div class="row flex-lg-row align-items-center g-5 py-5">
-                    <div class="col-10 col-sm-8 col-lg-6">
-                        <img
-                            src="/public/images/home_notifications.webp"
-                            class="d-block mx-lg-auto img-fluid"
-                            alt="Notifications"
-                            width="600"
-                            height="400"
-                            loading="lazy"
-                        />
-                    </div>
-                    <div class="col-lg-6">
-                        <h1 class="display-5 fw-bold lh-1 mb-3">
-                            Get Notifications On Your Servers.
-                        </h1>
-                        <p class="lead">
-                            SSM Cloud offers a comprehensive notification system
-                            that enables users to stay informed about server
-                            updates, player activity, and other important
-                            events. It provides integration with external
-                            services like email, webhooks, and Discord which
-                            allows real-time notifications to be sent to you.
-                        </p>
-                        <p class="lead">
-                            This ensures that you are informed about server
-                            updates, player activity, or when the server has
-                            shut down or a new player joins the server. With
-                            these integrations, SSM Cloud can provide a
-                            convenient and efficient way for you to stay
-                            updated.
-                        </p>
-                    </div>
-                </div>
+        <footer class="pfoot">
+            <div class="wrap pfoot-in mono">
+                <span>© 2020 - 2025 Copyright:
+                    <a href="https://github.com/SatisfactoryServerManager/SSMCloud">Refined R&amp;D</a>
+                    MIT License.
+                </span>
+                <span><a href="https://github.com/SatisfactoryServerManager/SSMCloud">GitHub</a> · <a href="https://discord.gg/Vt8Rt2Vsqf">Discord</a> · <a href="/docs">Docs</a></span>
             </div>
-        </div>
-
-        <footer class="page-footer font-small">
-            <!-- Copyright -->
-            <div class="footer-copyright text-center py-3">
-                © 2020 - 2025 Copyright:
-                <a href="https://github.com/SatisfactoryServerManager/SSMCloud">
-                    Refined R&D</a
-                >
-                MIT License.
-            </div>
-            <!-- Copyright -->
         </footer>
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-            crossorigin="anonymous"
-        ></script>
+
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
