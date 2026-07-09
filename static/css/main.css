@@ -2153,3 +2153,15 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .account-audit-item h5 { font-family: var(--display); font-style: italic; text-transform: uppercase; font-size: 13px; letter-spacing: 0.03em; margin: 0 0 4px; color: var(--brand-bright); }
 .account-audit-item > div { font-family: var(--mono); font-size: 11.5px; color: var(--steel); }
 .account-audit-item > div:last-child { color: var(--ink-dim); margin-top: 4px; }
+/* ---- Phase 4: profile ---- */
+.fld-lab { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); margin-bottom: 6px; }
+.profile-avatar { border-radius: 4px; border: 1px solid var(--line); background: var(--panel-2); padding: 10px; object-fit: contain; }
+.profile-avatar-wrap { display: inline-block; }
+#refresh-new-api-key { cursor: pointer; }
+.apikey-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; margin-bottom: 8px; }
+.apikey-row .v { justify-self: start; }
+.apikey-row .icobtn { grid-column: 3; }
+.profile-avatar + form { margin-top: 4px; }
+.card2 .input-group .field { border-radius: 3px 0 0 3px; }
+.card2 .input-group .icobtn { border-radius: 0; height: 36px; margin-left: -1px; }
+.card2 .input-group .btn2 { border-radius: 0 3px 3px 0; margin-left: -1px; height: 36px; }
