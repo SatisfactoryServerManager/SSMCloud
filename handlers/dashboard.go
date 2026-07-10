@@ -397,6 +397,20 @@ func (handler *DashboardHandler) GET_DashboardServerWorkflow(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "workflow": res})
 }
 
+func (handler *DashboardHandler) GET_DashboardServerAgentWorkflow(c *gin.Context) {
+	agentId := c.Param("agentId")
+
+	res, err := api.GetAgentWorkflowByAgentGRPC(context.Background(), agentId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "workflow": res})
+}
+
 func (handler *DashboardHandler) GET_DashboardDeleteServer(c *gin.Context) {
 	agentId := c.Query("id")
 

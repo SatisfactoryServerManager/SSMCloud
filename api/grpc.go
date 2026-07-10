@@ -574,6 +574,27 @@ func GetAgentWorkflowGRPC(ctx context.Context, workflowId string) (*pbModels.Wor
 	return workflowRes.Workflow, nil
 }
 
+// GetAgentWorkflowByAgentGRPC returns a nil workflow when the agent was not
+// created by one.
+func GetAgentWorkflowByAgentGRPC(ctx context.Context, agentId string) (*pbModels.Workflow, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	workflowRes, err := frontendServiceClient.GetAgentWorkflowByAgent(ctx, &pb.GetAgentWorkflowByAgentRequest{
+		AgentId: agentId,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return workflowRes.Workflow, nil
+}
+
 func DeleteAccountGRPC(ctx context.Context, externalId, accountId string) error {
 	ctx = CreategRPCContext(ctx)
 

@@ -48,18 +48,39 @@ function main() {
             BuildAgentStats();
         }
 
+        // Set the mobile dropdown trigger to the section restored above
+        const $activeRackBtn = $(".rack-nav .rack-btn.active").first();
+        if ($activeRackBtn.length) {
+            $(".rack-current").text(RackSectionLabel($activeRackBtn));
+        }
+    }
+
+    // Both the configured and the not-configured server page show the commands.
+    if (window.agentName) {
         window.BuildAgentInstallCommands(
             window.agentName,
             window.agentMemory,
             window.agentPort,
             window.agentAPIKey,
         );
+    }
 
-        // Set the mobile dropdown trigger to the section restored above
-        const $activeRackBtn = $(".rack-nav .rack-btn.active").first();
-        if ($activeRackBtn.length) {
-            $(".rack-current").text(RackSectionLabel($activeRackBtn));
-        }
+    // A server may still be mid-way through the create-agent workflow it was
+    // started by, whether or not it has reported a config version yet.
+    const $serverWorkflow = $("#server-workflow-wrapper");
+    if ($serverWorkflow.length > 0) {
+        const agentId = $("#inp_agent_id").val();
+
+        PollWorkflow(
+            `/dashboard/servers/${agentId}/workflow`,
+            $serverWorkflow,
+            (status, sawPending) => {
+                // Reloading on an already-completed workflow would loop.
+                if (status == "completed" && sawPending) {
+                    window.location.reload();
+                }
+            },
+        );
     }
 
     // When a tab is clicked (and shown), save it and sync the mobile dropdown
@@ -112,20 +133,12 @@ function main() {
     );
 
     $("body")
-        .on("change", "#inp_servermemory", (e) => {
+        .on("input change", "#inp_servermemory", (e) => {
             const $this = $(e.currentTarget);
 
             $("#inp_servermemory_value").text(
                 `${parseFloat($this.val()).toFixed(1)}G`,
             );
-
-            BuildAgentInstallCommands();
-        })
-        .on("change", "#inp_servername", (e) => {
-            BuildAgentInstallCommands();
-        })
-        .on("change", "#inp_serverport", (e) => {
-            BuildAgentInstallCommands();
         })
         .on("click", ".should-confirm-btn", (e) => {
             e.preventDefault();
@@ -513,155 +526,7 @@ function main() {
                 "/public/modals",
                 "create-server-modal",
                 (modal) => {
-                    let ServerName,
-                        ServerPort,
-                        ServerMemory,
-                        ServerAdminPass,
-                        ServerClientPass,
-                        ServerAPIKey;
-
-                    let workflowFinished = false;
-
-                    const wizard = modal.find("#wizard");
-
-                    wizard.on("change", "#inp_servermemory", (e) => {
-                        const $this = $(e.currentTarget);
-
-                        wizard
-                            .find("#inp_servermemory_value")
-                            .text(`${parseFloat($this.val()).toFixed(1)}G`);
-                    });
-
-                    wizard.steps({
-                        onStepChanging: async (
-                            event,
-                            currentIndex,
-                            newIndex,
-                        ) => {
-                            // if current index is on configuration page
-
-                            if (currentIndex > newIndex) {
-                                return false;
-                            }
-
-                            if (currentIndex == 0) {
-                                ServerName = wizard
-                                    .find("#inp_servername")
-                                    .val();
-                                ServerPort = wizard
-                                    .find("#inp_serverport")
-                                    .val();
-                                ServerMemory = wizard
-                                    .find("#inp_servermemory")
-                                    .val();
-                                ServerAdminPass = wizard
-                                    .find("#inp_serveradminpass")
-                                    .val();
-                                ServerClientPass = wizard
-                                    .find("#inp_serverclientpass")
-                                    .val();
-
-                                if (
-                                    ServerName == "" ||
-                                    ServerMemory < 3 ||
-                                    ServerAdminPass == ""
-                                ) {
-                                    const errorBox = $(
-                                        "#create-server-modal-config-error",
-                                    );
-                                    errorBox.removeClass("hidden");
-
-                                    if (ServerName == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server name!</ol>",
-                                            );
-                                    }
-
-                                    if (ServerPort < 7000) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server port must be greater or equal than 7000</ol>",
-                                            );
-                                    }
-
-                                    if (ServerMemory < 3) {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Server must have more than 3GB of memory</ol>",
-                                            );
-                                    }
-                                    if (ServerAdminPass == "") {
-                                        errorBox
-                                            .find("ul")
-                                            .append(
-                                                "<ol>Please provide a server admin password!</ol>",
-                                            );
-                                    }
-                                    return false;
-                                }
-
-                                ServerAPIKey =
-                                    "AGT-API-" + makeapikey(32).toUpperCase();
-
-                                BuildAgentInstallCommands(
-                                    ServerName,
-                                    ServerMemory,
-                                    ServerPort,
-                                    ServerAPIKey,
-                                );
-                            }
-
-                            // Submit Create Task
-                            if (currentIndex == 1) {
-                                let csrfToken =
-                                    document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
-
-                                const postData = {
-                                    serverName: ServerName,
-                                    serverPort: parseInt(ServerPort),
-                                    serverMemory:
-                                        parseFloat(ServerMemory) *
-                                        1024 *
-                                        1024 *
-                                        1024,
-                                    serverAdminPass: ServerAdminPass,
-                                    serverClientPass: ServerClientPass,
-                                    serverApiKey: ServerAPIKey,
-                                };
-                                try {
-                                    const res = await $.ajax({
-                                        method: "post",
-                                        url: "/dashboard/servers",
-                                        contentType:
-                                            "application/json; charset=utf-8",
-                                        dataType: "json",
-                                        data: JSON.stringify(postData),
-                                        headers: { "X-CSRF-Token": csrfToken },
-                                    }).promise();
-
-                                    const workflowId = res.workflow_id;
-
-                                    workflowFinished =
-                                        BuildWorkflowActions(workflowId);
-                                    setInterval(async () => {
-                                        workflowFinished =
-                                            BuildWorkflowActions(workflowId);
-                                    }, 2000);
-                                } catch (err) {
-                                    console.error(err);
-                                }
-                            }
-
-                            if (currentIndex == 2) {
-                                return workflowFinished;
-                            }
-                            return true;
-                        },
-                    });
+                    InitCreateServerWizard(modal.find("#wizard"));
                 },
             );
         })
@@ -749,86 +614,267 @@ function main() {
         return result;
     }
 
-    async function BuildWorkflowActions(workflowId) {
-        const workflowRes = await $.get(
-            `/dashboard/servers/workflows/${workflowId}`,
-        ).promise();
+    const WORKFLOW_ACTION_LABELS = {
+        "create-agent": "Create new SSM server",
+        "wait-for-online": "Waiting for new server to come online",
+        "install-server": "Sending install SF server task",
+        "wait-for-installed": "Waiting for SF server to install",
+        "start-server": "Sending start SF server task",
+        "wait-for-running": "Waiting for SF server to start",
+        "claim-server": "Sending claim server task",
+    };
 
-        const workflowData = workflowRes.workflow;
+    // The workflow is serialised from protobuf, which omits empty strings, so a
+    // pending status arrives as undefined rather than "".
+    function WorkflowStatus(obj) {
+        return (obj && obj.status) || "";
+    }
 
-        const $wrapper = $("#create-agent-workflow-wrapper");
-
-        if ($wrapper.length == 0) {
-            return;
-        }
-
+    function RenderWorkflowActions($wrapper, workflow) {
         $wrapper.empty();
+
+        const actions = workflow.actions || [];
         let hasReachedRunning = false;
 
-        for (let i = 0; i < workflowData.actions.length; i++) {
-            const action = workflowData.actions[i];
+        // On the server page the steps live in a card. Keep it hidden unless the
+        // agent has a workflow that is still running, or one that failed.
+        const settled = WorkflowStatus(workflow) == "completed";
+        $wrapper
+            .closest(".card2")
+            .toggleClass("hidden", actions.length == 0 || settled);
 
-            const $card = $("<div/>").addClass("card card-inner mb-2");
-            $wrapper.append($card);
-            const $cardBody = $("<div/>").addClass("card-body");
-            $card.append($cardBody);
+        for (let i = 0; i < actions.length; i++) {
+            const action = actions[i];
+            const status = WorkflowStatus(action);
 
+            let stepClass = "";
             let iconClass = "fa-regular fa-circle";
 
-            if (action.status == "") {
-                if (!hasReachedRunning) {
-                    iconClass = "fas fa-spinner fa-spin";
-                    hasReachedRunning = true;
-                }
-            } else if (action.status == "completed") {
-                iconClass = "fa-regular fa-circle-check text-success";
-            } else if (action.status == "failed") {
-                iconClass = "fa-solid fa-triangle-exclamation text-danger";
+            if (status == "completed") {
+                stepClass = "done";
+                iconClass = "fa-regular fa-circle-check";
+            } else if (status == "failed") {
+                stepClass = "failed";
+                iconClass = "fa-solid fa-triangle-exclamation";
+            } else if (!hasReachedRunning) {
+                stepClass = "active";
+                iconClass = "fas fa-spinner fa-spin";
+                hasReachedRunning = true;
             }
 
-            let actionTypeString;
-            switch (action.type) {
-                case "create-agent":
-                    actionTypeString = "Create new SSM server";
-                    break;
-                case "wait-for-online":
-                    actionTypeString = "Waiting for new server to come online";
-                    break;
-                case "install-server":
-                    actionTypeString = "Sending install SF server task";
-                    break;
-                case "wait-for-installed":
-                    actionTypeString = "Waiting for SF server to install";
-                    break;
-                case "start-server":
-                    actionTypeString = "Sending start SF server task";
-                    break;
-                case "wait-for-running":
-                    actionTypeString = "Waiting for SF server to start";
-                    break;
-                case "claim-server":
-                    actionTypeString = "Sending claim server Task";
-                    break;
-                default:
-                    actionTypeString = action.type;
-            }
-
-            $cardBody.append(
-                `<div class="d-flex align-items-center gap-2"><i class="${iconClass}"></i><h6 class="m-0 p-0">${actionTypeString}</h6></div>`,
+            const $step = $("<div/>").addClass(`workflow-step ${stepClass}`);
+            $step.append(`<span class="glyph"><i class="${iconClass}"></i></span>`);
+            $step.append(
+                $("<span/>")
+                    .addClass("lbl")
+                    .text(WORKFLOW_ACTION_LABELS[action.type] || action.type),
             );
-        }
 
-        let workflowFinished = true;
-
-        for (let i = 0; i < workflowData.actions.length; i++) {
-            const action = workflowData.actions[i];
-            if (action.status == "") {
-                workflowFinished = false;
-                break;
+            if (status == "failed" && action.error_message) {
+                $step.append($("<span/>").addClass("err").text(action.error_message));
             }
+
+            $wrapper.append($step);
+        }
+    }
+
+    // Polls until the workflow reaches a terminal status, then calls
+    // onFinished(status, sawPending). sawPending is false when the workflow had
+    // already finished before the first poll, which lets callers tell "it just
+    // completed" apart from "it completed some time ago".
+    // Returns a function that stops polling early.
+    function PollWorkflow(url, $wrapper, onFinished) {
+        let timer = null;
+        let sawPending = false;
+
+        const stop = () => {
+            if (timer !== null) {
+                clearInterval(timer);
+                timer = null;
+            }
+        };
+
+        const tick = async () => {
+            let res;
+            try {
+                res = await $.get(url).promise();
+            } catch (err) {
+                console.error(err);
+                return;
+            }
+
+            const workflow = res.workflow;
+
+            if (!workflow) {
+                stop();
+                return;
+            }
+
+            RenderWorkflowActions($wrapper, workflow);
+
+            const status = WorkflowStatus(workflow);
+
+            if (status == "") {
+                sawPending = true;
+                return;
+            }
+
+            stop();
+            if (onFinished) onFinished(status, sawPending);
+        };
+
+        tick();
+        timer = setInterval(tick, 2000);
+
+        return stop;
+    }
+
+    function InitCreateServerWizard($wizard) {
+        const $tabs = $wizard.find(".wiz-tab");
+        const $panes = $wizard.find(".wiz-pane");
+        const $next = $wizard.find(".wiz-next");
+        const $finish = $wizard.find(".wiz-finish");
+        const $errorBox = $wizard.find("#create-server-modal-config-error");
+
+        let index = 0;
+        let busy = false;
+        let server = {};
+
+        function Render() {
+            $tabs.each((i, el) => {
+                $(el)
+                    .toggleClass("current", i == index)
+                    .toggleClass("done", i < index);
+            });
+            $panes.each((i, el) => $(el).toggleClass("current", i == index));
+
+            const onLastStep = index == $panes.length - 1;
+            $next.toggleClass("hidden", onLastStep);
+            $finish.toggleClass("hidden", !onLastStep);
         }
 
-        return workflowFinished;
+        function GoTo(newIndex) {
+            index = newIndex;
+            Render();
+        }
+
+        function ShowErrors(errors) {
+            const $list = $errorBox.find("ul").empty();
+            errors.forEach((msg) => $list.append($("<li/>").text(msg)));
+            $errorBox.removeClass("hidden");
+        }
+
+        // Reads + validates the configuration step. Returns false on failure.
+        function ReadConfigStep() {
+            server = {
+                name: $wizard.find("#inp_servername").val(),
+                port: $wizard.find("#inp_serverport").val(),
+                memory: $wizard.find("#inp_servermemory").val(),
+                adminPass: $wizard.find("#inp_serveradminpass").val(),
+                clientPass: $wizard.find("#inp_serverclientpass").val(),
+            };
+
+            const errors = [];
+
+            if (server.name == "") errors.push("Please provide a server name!");
+            if (server.port < 7000)
+                errors.push("Server port must be greater or equal than 7000");
+            if (server.memory < 3)
+                errors.push("Server must have more than 3GB of memory");
+            if (server.adminPass == "")
+                errors.push("Please provide a server admin password!");
+
+            if (errors.length > 0) {
+                ShowErrors(errors);
+                return false;
+            }
+
+            $errorBox.addClass("hidden");
+            server.apiKey = "AGT-API-" + makeapikey(32).toUpperCase();
+
+            BuildAgentInstallCommands(
+                server.name,
+                server.memory,
+                server.port,
+                server.apiKey,
+            );
+
+            return true;
+        }
+
+        async function CreateServer() {
+            const csrfToken =
+                document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
+
+            const postData = {
+                serverName: server.name,
+                serverPort: parseInt(server.port),
+                serverMemory: parseFloat(server.memory) * 1024 * 1024 * 1024,
+                serverAdminPass: server.adminPass,
+                serverClientPass: server.clientPass,
+                serverApiKey: server.apiKey,
+            };
+
+            const res = await $.ajax({
+                method: "post",
+                url: "/dashboard/servers",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                headers: { "X-CSRF-Token": csrfToken },
+            }).promise();
+
+            return res.workflow_id;
+        }
+
+        $next.on("click", async (e) => {
+            e.preventDefault();
+
+            if (busy) return;
+
+            if (index == 0) {
+                if (!ReadConfigStep()) return;
+                GoTo(1);
+                return;
+            }
+
+            if (index == 1) {
+                busy = true;
+                $next.prop("disabled", true);
+
+                let workflowId;
+                try {
+                    workflowId = await CreateServer();
+                } catch (err) {
+                    console.error(err);
+                    busy = false;
+                    $next.prop("disabled", false);
+                    ShowErrors([
+                        err.responseJSON?.error ?? "Failed to create server",
+                    ]);
+                    return;
+                }
+
+                $errorBox.addClass("hidden");
+                GoTo(2);
+
+                // The Progress step advances itself once the workflow lands.
+                // Closing the modal here is safe: the server page shows the
+                // same progress for an agent that is not configured yet.
+                $next.addClass("hidden");
+
+                PollWorkflow(
+                    `/dashboard/servers/workflows/${workflowId}`,
+                    $wizard.find("#create-agent-workflow-wrapper"),
+                    (status) => {
+                        busy = false;
+                        if (status == "completed") GoTo(3);
+                    },
+                );
+            }
+        });
+
+        Render();
     }
 
     $("#inp_maxplayers").on("input change", () => {

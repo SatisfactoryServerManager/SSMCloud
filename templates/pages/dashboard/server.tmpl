@@ -13,6 +13,12 @@
 
                     <input type="hidden" id="inp_agent_id" value="{{.agent.Id}}"/>
 
+                    <!-- Revealed by app.js only while the create-agent workflow is still running or has failed. -->
+                    <div class="card2 hidden" id="server-workflow-card"><div class="hd"><h5>Setup Progress</h5></div><div class="bd">
+                        <p class="empty-note" style="margin-bottom:14px;">This server is still being set up. The page reloads once it is ready.</p>
+                        <div class="workflow-steps" id="server-workflow-wrapper"></div>
+                    </div></div>
+
                     {{if not .agent.Config.Version}}
                     <div class="cmd-head is-offline">
                         <div class="cmd-top">

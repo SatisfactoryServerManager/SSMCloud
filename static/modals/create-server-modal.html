@@ -9,132 +9,115 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="wizard">
-                    <h1>Configuration</h1>
-                    <div>
-                        <div class="alert alert-danger hidden error-box" id="create-server-modal-config-error">
-                            Failed to progress to next steps with the following errors:
-                            <ul></ul>
-                        </div>
-                        <div class="form-group">
-                            <label for="inp_servername" class="form-label">Server Name:</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"><i class="fas fa-server"></i></span>
-                                <input id="inp_servername" name="inp_servername" type="text" class="form-control" placeholder="Server Name" value="" />
-                            </div>
-                        </div>
+                <div class="wiz" id="wizard">
+                    <ol class="wiz-nav">
+                        <li class="wiz-tab current" data-step="0"><span class="num">1</span><span class="lbl">Configuration</span></li>
+                        <li class="wiz-tab" data-step="1"><span class="num">2</span><span class="lbl">Install Command</span></li>
+                        <li class="wiz-tab" data-step="2"><span class="num">3</span><span class="lbl">Progress</span></li>
+                        <li class="wiz-tab" data-step="3"><span class="num">4</span><span class="lbl">Finished</span></li>
+                    </ol>
 
-                        <div class="form-group">
-                            <label for="inp_serverport" class="form-label">Server Port:</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"><i class="fas fa-network-wired"></i></span>
-                                <input id="inp_serverport" name="inp_serverport" type="number" class="form-control" placeholder="Server Port" value="7777" />
+                    <div class="wiz-body">
+                        <section class="wiz-pane current" data-step="0">
+                            <div class="ssm-alert danger hidden error-box" id="create-server-modal-config-error">
+                                <i class="fas fa-triangle-exclamation"></i>
+                                <div>
+                                    Failed to progress to next step:
+                                    <ul></ul>
+                                </div>
                             </div>
-                        </div>
 
-                        <fieldset class="form-group">
-                            <label for="inp_servermemory" class="form-label"> Server Memory: </label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"><i class="fa-solid fa-memory"></i></span>
-                                <input type="range" class="form-range custom-range" min="3" max="12" step="0.5" id="inp_servermemory" name="inp_servermemory" value="6" />
-                                <span class="input-group-text" id="inp_servermemory_value">6.0G</span>
+                            <div class="wiz-field">
+                                <label for="inp_servername" class="fld-lab">Server Name</label>
+                                <div class="input-group">
+                                    <span class="glyph"><i class="fas fa-server"></i></span>
+                                    <input id="inp_servername" name="inp_servername" type="text" class="field" placeholder="Server Name" value="" />
+                                </div>
                             </div>
-                        </fieldset>
-                        <div class="form-group">
-                            <label for="inp_serverport" class="form-label">Admin Password</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                <input id="inp_serveradminpass" name="inp_serveradminpass" type="password" class="form-control" placeholder="Admin Password" value="" />
+
+                            <div class="wiz-field">
+                                <label for="inp_serverport" class="fld-lab">Server Port</label>
+                                <div class="input-group">
+                                    <span class="glyph"><i class="fas fa-network-wired"></i></span>
+                                    <input id="inp_serverport" name="inp_serverport" type="number" class="field" placeholder="Server Port" value="7777" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="inp_serverport" class="form-label">Client Password <small>(optional)</small></label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                <input id="inp_serverclientpass" name="inp_serverclientpass" type="password" class="form-control" placeholder="Client Password" value="" />
+
+                            <div class="wiz-field">
+                                <label for="inp_servermemory" class="fld-lab">Server Memory</label>
+                                <div class="input-group">
+                                    <span class="glyph"><i class="fa-solid fa-memory"></i></span>
+                                    <input type="range" class="form-range custom-range" min="3" max="12" step="0.5" id="inp_servermemory" name="inp_servermemory" value="6" />
+                                    <span class="glyph val mono" id="inp_servermemory_value">6.0G</span>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="wiz-field">
+                                <label for="inp_serveradminpass" class="fld-lab">Admin Password</label>
+                                <div class="input-group">
+                                    <span class="glyph"><i class="fas fa-key"></i></span>
+                                    <input id="inp_serveradminpass" name="inp_serveradminpass" type="password" class="field" placeholder="Admin Password" value="" />
+                                </div>
+                            </div>
+
+                            <div class="wiz-field">
+                                <label for="inp_serverclientpass" class="fld-lab">Client Password <small>(optional)</small></label>
+                                <div class="input-group">
+                                    <span class="glyph"><i class="fas fa-key"></i></span>
+                                    <input id="inp_serverclientpass" name="inp_serverclientpass" type="password" class="field" placeholder="Client Password" value="" />
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="wiz-pane" data-step="1">
+                            <p class="empty-note">Run the install script for your operating system, then click next. You will be prompted for:</p>
+                            <ul class="wiz-list">
+                                <li><b>SSM Url</b> — the url the agent connects to. Defaults to SSM Cloud; enter your own hosted url/ip if needed.</li>
+                                <li><b>API Key</b> — the secure api key used for sending data to SSM Cloud.</li>
+                            </ul>
+                            <ul class="nav nav-tabs subtabs server-install-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link subtab active" data-bs-toggle="tab" href="#windows-install-agent" aria-selected="true" role="tab"><i class="fa-brands fa-windows"></i> Windows</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link subtab" data-bs-toggle="tab" href="#linux-install-agent" aria-selected="false" role="tab" tabindex="-1"><i class="fa-brands fa-ubuntu"></i> Ubuntu / Debian</a>
+                                </li>
+                            </ul>
+                            <div id="myTabContent" class="tab-content server-install-command">
+                                <div class="tab-pane fade active show" id="windows-install-agent" role="tabpanel">
+                                    <h6 class="blk">Install agent using docker containers (default)</h6>
+                                    <div class="cmdbox"><div class="glyph"><i class="fa-solid fa-terminal"></i></div><textarea class="docker" rows="3" readonly></textarea><button class="copy copy-btn" aria-label="Copy"><i class="fa-solid fa-copy"></i></button></div>
+                                    <h6 class="blk">Install agent instance on local machine</h6>
+                                    <div class="cmdbox"><div class="glyph"><i class="fa-solid fa-terminal"></i></div><textarea class="standalone" rows="3" readonly></textarea><button class="copy copy-btn" aria-label="Copy"><i class="fa-solid fa-copy"></i></button></div>
+                                </div>
+                                <div class="tab-pane fade" id="linux-install-agent" role="tabpanel">
+                                    <h6 class="blk">Install agent using docker containers (default)</h6>
+                                    <div class="cmdbox"><div class="glyph"><i class="fa-solid fa-terminal"></i></div><textarea class="docker" rows="3" readonly></textarea><button class="copy copy-btn" aria-label="Copy"><i class="fa-solid fa-copy"></i></button></div>
+                                    <h6 class="blk">Install agent instance on local machine</h6>
+                                    <div class="cmdbox"><div class="glyph"><i class="fa-solid fa-terminal"></i></div><textarea class="standalone" rows="3" readonly></textarea><button class="copy copy-btn" aria-label="Copy"><i class="fa-solid fa-copy"></i></button></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="wiz-pane" data-step="2">
+                            <p class="empty-note">You can close this window at any time — progress keeps running and is shown on the server page.</p>
+                            <div class="workflow-steps" id="create-agent-workflow-wrapper"></div>
+                        </section>
+
+                        <section class="wiz-pane" data-step="3">
+                            <div class="wiz-done">
+                                <i class="fa-regular fa-circle-check"></i>
+                                <h5>Server Created</h5>
+                                <p>Your new server is ready. Find it on the <a href="/dashboard/servers">Servers</a> page.</p>
+                                <p class="empty-note">The SF server was automatically claimed and the admin &amp; client passwords set from the previous steps.</p>
+                            </div>
+                        </section>
                     </div>
 
-                    <h1>Install Command</h1>
-                    <div>
-                        <p>Run the following install script for your desired operating system and then click next.</p>
-                        <p>When running this install script, you will be prompted for the following information:</p>
-                        <ul>
-                            <li>SSM Url - This is the url that the agent will connect to. By default this will be SSM Cloud, you can enter your hosted SSM cloud url/ip address if needed.</li>
-                            <li>API Key: This is the secure api key used for sending data to SSM Cloud</li>
-                        </ul>
-                        <ul class="nav nav-tabs server-install-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#windows-install-agent" aria-selected="true" role="tab"> <i class="fa-brands fa-windows me-2"></i> Windows </a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" data-bs-toggle="tab" href="#linux-install-agent" aria-selected="false" role="tab" tabindex="-1">
-                                    <i class="fa-brands fa-ubuntu me-2"></i> Ubuntu / Debian
-                                </a>
-                            </li>
-                        </ul>
-                        <div id="myTabContent" class="tab-content server-install-command">
-                            <div class="tab-pane fade active show" id="windows-install-agent" role="tabpanel">
-                                <h6>Install agent using docker containers (default)</h6>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-terminal"></i>
-                                    </span>
-                                    <textarea class="form-control docker" rows="4" readonly></textarea>
-                                    <button class="btn btn-primary copy-btn">
-                                        <i class="fa-solid fa-copy"></i>
-                                    </button>
-                                </div>
-
-                                <h6>Install agent instance on local machine</h6>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-terminal"></i>
-                                    </span>
-                                    <textarea class="form-control standalone" rows="4" readonly></textarea>
-                                    <button class="btn btn-primary copy-btn">
-                                        <i class="fa-solid fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="linux-install-agent" role="tabpanel">
-                                <h6>Install agent using docker containers (default)</h6>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-terminal"></i>
-                                    </span>
-                                    <textarea class="form-control docker" rows="4" readonly></textarea>
-                                    <button class="btn btn-primary copy-btn">
-                                        <i class="fa-solid fa-copy"></i>
-                                    </button>
-                                </div>
-
-                                <h6>Install agent instance on local machine</h6>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-terminal"></i>
-                                    </span>
-                                    <textarea class="form-control standalone" rows="4" readonly></textarea>
-                                    <button class="btn btn-primary copy-btn">
-                                        <i class="fa-solid fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h1>Progress</h1>
-                    <div>
-                        <div id="create-agent-workflow-wrapper"></div>
-                    </div>
-                    <h1>Finished</h1>
-                    <div>
-                        <h3>Hurray - Server Created</h3>
-                        <p>
-                            You have successfully created a new server. Access the new server in the SSM Servers page here:
-                            <a href="/dashboard/servers">Servers</a>
-                        </p>
-                        <p>The SF Server has also been automatically claimd and the admin & client password has been set using the passwords set in the previoud steps.</p>
+                    <div class="wiz-actions">
+                        <button type="button" class="btn2 outline wiz-prev" disabled><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button type="button" class="btn2 wiz-next">Next <i class="fa-solid fa-arrow-right"></i></button>
+                        <a href="/dashboard/servers" class="btn2 wiz-finish hidden">Finish</a>
                     </div>
                 </div>
             </div>

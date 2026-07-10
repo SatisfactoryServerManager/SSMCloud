@@ -88,8 +88,7 @@ a.disabled {
 }
 
 .card .card-header .form-control,
-.card.card-inner .form-control,
-.ssm-modal .wizard .form-control {
+.card.card-inner .form-control {
     background-color: var(--ssm-input-alt-bg-colour);
 }
 
@@ -884,30 +883,6 @@ pre {
     background-color: var(--ssm-card-bg-colour);
 }
 
-.ssm-modal .wizard .body input {
-    border: 1px solid var(--ssm-input-border-colour);
-}
-
-.ssm-modal .wizard .body {
-    width: 100%;
-}
-
-.ssm-modal .wizard .number {
-    font-size: unset;
-}
-
-.ssm-modal .wizard .steps a {
-    padding: 8px 12px;
-}
-
-.ssm-modal .wizard .steps .current a,
-.ssm-modal .wizard .steps .current a:hover {
-    background: var(--ssm-btn-bg-colour);
-}
-
-.ssm-modal .wizard .content {
-    background-color: var(--ssm-log-viewer-bg-colour);
-}
 .ssm-modal .error-box ul {
     padding: 0;
 }
@@ -2191,3 +2166,56 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .int-row.event-row .tag { flex: 0 0 auto; }
 .offcanvas-bottom { height: 60vh; }
 .offcanvas-bottom .term { height: auto; max-height: 34vh; }
+
+/* ---- create-server wizard + workflow progress ---- */
+.ssm-alert.danger { background: color-mix(in srgb, var(--danger) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--line)); color: var(--ink); align-items: flex-start; }
+.ssm-alert.danger i { color: var(--danger); margin-top: 3px; }
+.ssm-alert.ok { background: color-mix(in srgb, var(--online) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--online) 40%, var(--line)); color: var(--ink); }
+.ssm-alert.ok i { color: var(--online); }
+.ssm-alert .error-box ul, .ssm-modal .error-box ul { list-style: none; margin: 6px 0 0; }
+
+.wiz-nav { display: flex; gap: 6px; list-style: none; margin: 0 0 18px; padding: 0; flex-wrap: wrap; }
+.wiz-tab { flex: 1 1 0; min-width: 120px; display: flex; align-items: center; gap: 9px; padding: 9px 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; color: var(--steel); }
+.wiz-tab .num { width: 20px; height: 20px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); font-family: var(--mono); font-size: 10.5px; }
+.wiz-tab .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wiz-tab.current { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); background: color-mix(in srgb, var(--brand) 10%, var(--panel)); }
+.wiz-tab.current .num { border-color: color-mix(in srgb, var(--brand) 55%, var(--line)); }
+.wiz-tab.done { color: var(--ink-dim); }
+.wiz-tab.done .num { background: var(--online); border-color: var(--online); color: #04222E; }
+
+.wiz-pane { display: none; }
+.wiz-pane.current { display: block; }
+.wiz-field { margin-bottom: 14px; }
+.wiz-field .input-group { flex-wrap: nowrap; align-items: stretch; }
+.wiz-field .input-group .glyph { display: grid; place-items: center; width: 42px; flex: 0 0 auto; background: var(--panel-2); color: var(--steel); border: 1px solid var(--line); border-right: 0; border-radius: 3px 0 0 3px; }
+.wiz-field .input-group .glyph.val { width: auto; min-width: 60px; padding: 0 10px; border: 1px solid var(--line); border-left: 0; border-radius: 0 3px 3px 0; color: var(--ink-dim); font-size: 12px; }
+.wiz-field .field { flex: 1 1 auto; min-width: 0; border-radius: 0 3px 3px 0; }
+.wiz-field .form-range { flex: 1 1 auto; min-width: 0; padding: 0 12px; background: var(--panel-2); border: 1px solid var(--line); border-left: 0; border-right: 0; }
+.wiz-list { color: var(--steel); font-size: 12.5px; padding-left: 18px; margin: 10px 0 16px; }
+.wiz-list b { color: var(--ink-dim); }
+
+.wiz-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.wiz-actions .btn2 { text-decoration: none; }
+.wiz-actions .btn2:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.wiz-done { text-align: center; padding: 22px 0; }
+.wiz-done i { font-size: 42px; color: var(--online); }
+.wiz-done h5 { font-family: var(--display); font-style: italic; text-transform: uppercase; font-size: 17px; font-weight: 800; letter-spacing: 0.03em; margin: 14px 0 8px; }
+.wiz-done p { font-size: 13px; margin: 0 0 6px; }
+
+.workflow-steps { display: flex; flex-direction: column; gap: 8px; }
+.workflow-step { display: flex; align-items: center; gap: 11px; padding: 11px 14px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; }
+.workflow-step .glyph { width: 18px; flex: 0 0 auto; text-align: center; color: var(--steel); }
+.workflow-step .lbl { font-size: 13px; color: var(--ink-dim); }
+.workflow-step.active { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.workflow-step.active .glyph { color: var(--brand-bright); }
+.workflow-step.active .lbl { color: var(--ink); }
+.workflow-step.done .glyph { color: var(--online); }
+.workflow-step.failed { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+.workflow-step.failed .glyph { color: var(--danger); }
+.workflow-step .err { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--danger); }
+
+/* .hidden is declared before these components, so it loses on equal specificity. */
+.ssm-alert.hidden,
+.card2.hidden,
+.btn2.hidden { display: none !important; }
