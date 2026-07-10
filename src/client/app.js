@@ -617,12 +617,25 @@ function main() {
     const WORKFLOW_ACTION_LABELS = {
         "create-agent": "Create new SSM server",
         "wait-for-online": "Waiting for new server to come online",
-        "install-server": "Sending install SF server task",
-        "wait-for-installed": "Waiting for SF server to install",
-        "start-server": "Sending start SF server task",
-        "wait-for-running": "Waiting for SF server to start",
-        "claim-server": "Sending claim server task",
     };
+
+    // Every agent-facing step is now the one "agent-task" type, so the step's
+    // taskAction is what tells the steps apart.
+    const WORKFLOW_TASK_LABELS = {
+        installsfserver: "Installing SF server",
+        startsfserver: "Starting SF server",
+        claimserver: "Claiming SF server",
+    };
+
+    function WorkflowActionLabel(action) {
+        if (action.type == "agent-task") {
+            return (
+                WORKFLOW_TASK_LABELS[action.taskAction] ||
+                `Running ${action.taskAction}`
+            );
+        }
+        return WORKFLOW_ACTION_LABELS[action.type] || action.type;
+    }
 
     // The workflow is serialised from protobuf, which omits empty strings, so a
     // pending status arrives as undefined rather than "".
@@ -667,7 +680,7 @@ function main() {
             $step.append(
                 $("<span/>")
                     .addClass("lbl")
-                    .text(WORKFLOW_ACTION_LABELS[action.type] || action.type),
+                    .text(WorkflowActionLabel(action)),
             );
 
             if (status == "failed" && action.error_message) {
