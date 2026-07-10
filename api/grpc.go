@@ -250,7 +250,50 @@ func GetAgentStatsGRPC(ctx context.Context, externalID string, agentId string) (
 
 }
 
-func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string, action string, taskData interface{}) error {
+func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string, action string, taskData interface{}) (string, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return "", fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	res, err := frontendServiceClient.CreateAgentTask(ctx, &pb.CreateAgentTaskRequest{
+		Eid:     externalID,
+		AgentId: agentId,
+		Action:  action,
+		//TaskData: taskData,
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return res.TaskId, nil
+}
+
+func GetAgentTasksGRPC(ctx context.Context, externalID string, agentId string) ([]*pb.AgentTaskView, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	res, err := frontendServiceClient.GetAgentTasks(ctx, &pb.GetAgentTasksRequest{
+		Eid:     externalID,
+		AgentId: agentId,
+		Limit:   50,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Tasks, nil
+}
+
+func CancelAgentTaskGRPC(ctx context.Context, externalID string, taskId string) error {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -258,11 +301,25 @@ func CreateAgentTaskGPRC(ctx context.Context, externalID string, agentId string,
 		return fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	_, err = frontendServiceClient.CreateAgentTask(ctx, &pb.CreateAgentTaskRequest{
-		Eid:     externalID,
-		AgentId: agentId,
-		Action:  action,
-		//TaskData: taskData,
+	_, err = frontendServiceClient.CancelAgentTask(ctx, &pb.CancelAgentTaskRequest{
+		Eid:    externalID,
+		TaskId: taskId,
+	})
+
+	return err
+}
+
+func RetryAgentTaskGRPC(ctx context.Context, externalID string, taskId string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	_, err = frontendServiceClient.RetryAgentTask(ctx, &pb.RetryAgentTaskRequest{
+		Eid:    externalID,
+		TaskId: taskId,
 	})
 
 	return err

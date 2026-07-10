@@ -2066,6 +2066,24 @@ class ServerConsole extends EventTarget {
             .on("click", "#server-console-kill-btn", (e) => {
                 e.preventDefault();
                 ws.sendServerAction(this.agentId, "killsfserver");
+            })
+            .on("click", ".agent-task-cancel-btn", (e) => {
+                e.preventDefault();
+                const taskId = $(e.currentTarget).attr("data-task-id");
+                ws.send({
+                    action: "console.agent.task.cancel",
+                    agentId: this.agentId,
+                    taskId: taskId,
+                });
+            })
+            .on("click", ".agent-task-retry-btn", (e) => {
+                e.preventDefault();
+                const taskId = $(e.currentTarget).attr("data-task-id");
+                ws.send({
+                    action: "console.agent.task.retry",
+                    agentId: this.agentId,
+                    taskId: taskId,
+                });
             });
 
         ws.addEventListener("console.agent.status", (event) => {
@@ -2079,6 +2097,19 @@ class ServerConsole extends EventTarget {
             this.onStatsRecieved(event);
         });
 
+        ws.addEventListener("console.agent.tasks", (event) => {
+            this.onTasksRecieved(event);
+        });
+
+        // A cancel/retry acknowledgement means the queue changed, so refresh
+        // the list straight away instead of waiting for the next poll tick.
+        ws.addEventListener("console.agent.task.cancel", () => {
+            this.getAgentTasks();
+        });
+        ws.addEventListener("console.agent.task.retry", () => {
+            this.getAgentTasks();
+        });
+
         this.addEventListener("statusUpdated", this.onStatusUpdated);
 
         this.startTimer();
@@ -2089,6 +2120,7 @@ class ServerConsole extends EventTarget {
             this.getAgentStatus();
             this.getAgentLogs();
             this.getAgentStats();
+            this.getAgentTasks();
         }, 1000);
     }
 
@@ -2140,6 +2172,103 @@ class ServerConsole extends EventTarget {
             agentId: this.agentId,
         };
         ws.send(requestData);
+    }
+
+    getAgentTasks() {
+        const requestData = {
+            action: "console.agent.tasks",
+            agentId: this.agentId,
+        };
+        ws.send(requestData);
+    }
+
+    onTasksRecieved(event) {
+        try {
+            this.renderAgentTasks(event.detail || []);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    renderAgentTasks(tasks) {
+        const $card = $("#server-tasks-card");
+        const $wrapper = $("#agent-tasks-wrapper");
+
+        if ($wrapper.length == 0) {
+            return;
+        }
+
+        // Empty responses arrive as null because protobuf omits empty repeated
+        // fields, so guard before reading length.
+        tasks = tasks || [];
+
+        $card.toggleClass("hidden", tasks.length == 0);
+        $wrapper.empty();
+
+        for (let i = 0; i < tasks.length; i++) {
+            const t = tasks[i];
+
+            // omitempty drops zero-valued numbers, so they arrive as undefined.
+            const attempts = t.attempts || 0;
+            const maxAttempts = t.max_attempts || 0;
+            const progress = t.progress || 0;
+            const status = t.status || "";
+
+            const $row = $("<div/>").addClass(`agent-task agent-task-${status}`);
+
+            $row.append($("<span/>").addClass("task-action").text(t.action || ""));
+
+            $row.append(
+                $("<span/>")
+                    .addClass("task-status")
+                    .text(`${status} (${attempts}/${maxAttempts})`),
+            );
+
+            if (status == "running") {
+                const $bar = $("<div/>").addClass("task-progress");
+                $bar.append(
+                    $("<div/>")
+                        .addClass("task-progress-bar")
+                        .css("width", `${progress}%`)
+                        .text(`${progress}%`),
+                );
+                $row.append($bar);
+            }
+
+            if (status == "dead" && t.last_error) {
+                $row.append(
+                    $("<span/>").addClass("task-message err").text(t.last_error),
+                );
+            } else if (t.message) {
+                $row.append(
+                    $("<span/>").addClass("task-message").text(t.message),
+                );
+            }
+
+            $row.append(
+                $("<span/>")
+                    .addClass("task-trigger")
+                    .text(t.triggered_by_type || ""),
+            );
+
+            if (status == "pending" || status == "running") {
+                $row.append(
+                    $("<button/>")
+                        .addClass("op agent-task-cancel-btn")
+                        .attr("data-task-id", t.id)
+                        .text("Cancel"),
+                );
+            } else if (status == "dead") {
+                $row.append(
+                    $("<button/>")
+                        .addClass("op agent-task-retry-btn")
+                        .attr("data-task-id", t.id)
+                        .text("Retry"),
+                );
+            }
+
+            $wrapper.append($row);
+        }
     }
 
     onStatusRecieved(event) {

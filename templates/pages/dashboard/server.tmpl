@@ -19,6 +19,11 @@
                         <div class="workflow-steps" id="server-workflow-wrapper"></div>
                     </div></div>
 
+                    <!-- Populated by app.js from the console.agent.tasks poll; hidden while there are no tasks. -->
+                    <div class="card2 hidden" id="server-tasks-card"><div class="hd"><h5>Agent Tasks</h5></div><div class="bd">
+                        <div class="agent-tasks" id="agent-tasks-wrapper"></div>
+                    </div></div>
+
                     {{if not .agent.Config.Version}}
                     <div class="cmd-head is-offline">
                         <div class="cmd-top">

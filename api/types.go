@@ -281,6 +281,7 @@ type WSMessage struct {
 	LastLogIndex    int    `json:"lastLogIndex"`
 	LogType         string `json:"logType"`
 	ServerAction    string `json:"serverAction"`
+	TaskId          string `json:"taskId"`
 	Page            int    `json:"page"`
 	Sort            string `json:"sort"`
 	Direction       string `json:"direction"`

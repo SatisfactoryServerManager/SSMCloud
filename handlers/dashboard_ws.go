@@ -76,11 +76,20 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		if msg.Action == "console.agent.mods" {
 			handler.WS_GetAgentMods(conn, userEid, msg)
 		}
+		if msg.Action == "console.agent.tasks" {
+			handler.WS_GetAgentTasks(conn, userEid, msg)
+		}
+		if msg.Action == "console.agent.task.cancel" {
+			handler.WS_CancelAgentTask(conn, userEid, msg)
+		}
+		if msg.Action == "console.agent.task.retry" {
+			handler.WS_RetryAgentTask(conn, userEid, msg)
+		}
 	}
 }
 
 func (handler *DashboardWSHandler) WS_ServerAction(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
-	err := api.CreateAgentTaskGPRC(context.Background(), userEid, msg.AgentId, msg.ServerAction, nil)
+	_, err := api.CreateAgentTaskGPRC(context.Background(), userEid, msg.AgentId, msg.ServerAction, nil)
 
 	if err != nil {
 		fmt.Println("Error posting server task:", err)
@@ -150,6 +159,67 @@ func (handler *DashboardWSHandler) WS_GetAgentStats(conn *websocket.Conn, userEi
 	res := api.WSResponse{
 		Action: msg.Action,
 		Data:   statsRes,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_GetAgentTasks(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	tasks, err := api.GetAgentTasksGRPC(context.Background(), userEid, msg.AgentId)
+
+	if err != nil {
+		fmt.Println("Error getting agent tasks:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data:   tasks,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_CancelAgentTask(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	err := api.CancelAgentTaskGRPC(context.Background(), userEid, msg.TaskId)
+
+	if err != nil {
+		fmt.Println("Error cancelling agent task:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data: map[string]string{
+			"taskId": msg.TaskId,
+		},
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_RetryAgentTask(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	err := api.RetryAgentTaskGRPC(context.Background(), userEid, msg.TaskId)
+
+	if err != nil {
+		fmt.Println("Error retrying agent task:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data: map[string]string{
+			"taskId": msg.TaskId,
+		},
 	}
 
 	if err := conn.WriteJSON(res); err != nil {
