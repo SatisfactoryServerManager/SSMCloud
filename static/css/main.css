@@ -2215,6 +2215,40 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .workflow-step.failed .glyph { color: var(--danger); }
 .workflow-step .err { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--danger); }
 
+.agent-tasks { display: flex; flex-direction: column; gap: 8px; }
+.agent-task { display: flex; align-items: center; gap: 11px; padding: 9px 14px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; }
+.agent-task .task-action { flex: 0 0 auto; min-width: 148px; font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--ink); }
+.agent-task .task-status { flex: 0 0 auto; min-width: 132px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--steel); }
+.agent-task .task-message { flex: 1 1 auto; min-width: 0; font-size: 12px; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-task .task-message.err { font-family: var(--mono); font-size: 11px; color: var(--danger); }
+.agent-task .task-trigger { flex: 0 0 auto; margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); }
+
+/* The progress bar is the only element that may grow, so it claims the free space
+   the message would otherwise take. */
+.agent-task .task-progress { flex: 1 1 auto; min-width: 120px; height: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.agent-task .task-progress-bar { height: 100%; background: var(--brand); transition: width 0.3s ease; }
+.agent-task .task-pct { flex: 0 0 auto; min-width: 34px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); text-align: right; }
+
+.agent-task-running { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.agent-task-running .task-status { color: var(--brand-bright); }
+.agent-task-completed .task-status { color: var(--online); }
+.agent-task-dead { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+.agent-task-dead .task-status { color: var(--danger); }
+.agent-task-cancelled .task-status { color: var(--warn); }
+
+/* .op is sized for the console's full-width control strip: it would stretch to fill
+   the row and stand 40px tall here. */
+.agent-task .op { flex: 0 0 auto; height: 28px; padding: 0 12px; font-size: 10px; }
+.agent-task .agent-task-retry-btn { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 32%, var(--line)); }
+.agent-task .agent-task-cancel-btn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 30%, var(--line)); }
+
+@media (max-width: 720px) {
+    .agent-task { flex-wrap: wrap; gap: 7px 11px; }
+    .agent-task .task-action,
+    .agent-task .task-status { min-width: 0; }
+    .agent-task .task-message { flex-basis: 100%; white-space: normal; }
+}
+
 /* .hidden is declared before these components, so it loses on equal specificity. */
 .ssm-alert.hidden,
 .card2.hidden,

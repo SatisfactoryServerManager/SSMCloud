@@ -197,14 +197,19 @@ class ServerConsole extends EventTarget {
             );
 
             if (status == "running") {
+                // The label sits beside the bar rather than on the fill: at this size
+                // it has no readable contrast against the brand colour.
                 const $bar = $("<div/>").addClass("task-progress");
                 $bar.append(
                     $("<div/>")
                         .addClass("task-progress-bar")
-                        .css("width", `${progress}%`)
-                        .text(`${progress}%`),
+                        .css("width", `${progress}%`),
                 );
+
                 $row.append($bar);
+                $row.append(
+                    $("<span/>").addClass("task-pct").text(`${progress}%`),
+                );
             }
 
             if (status == "dead" && t.last_error) {
