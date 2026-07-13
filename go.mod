@@ -3,7 +3,7 @@ module github.com/SatisfactoryServerManager/SSMCloud
 go 1.26
 
 require (
-	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.92
+	github.com/SatisfactoryServerManager/ssmcloud-resources v0.0.93
 	github.com/boj/redistore v1.4.2
 	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/gin-gonic/gin v1.12.0
