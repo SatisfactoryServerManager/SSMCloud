@@ -2215,38 +2215,94 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .workflow-step.failed .glyph { color: var(--danger); }
 .workflow-step .err { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--danger); }
 
-.agent-tasks { display: flex; flex-direction: column; gap: 8px; }
-.agent-task { display: flex; align-items: center; gap: 11px; padding: 9px 14px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; }
-.agent-task .task-action { flex: 0 0 auto; min-width: 148px; font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--ink); }
-.agent-task .task-status { flex: 0 0 auto; min-width: 132px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--steel); }
-.agent-task .task-message { flex: 1 1 auto; min-width: 0; font-size: 12px; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The task list is a log, so the rows are ruled like one: a single hairline
+   between entries and a state rail down the left edge, rather than five detached
+   cards. The grid template is shared by every row so the columns line up as a
+   scannable table without the weight of one. */
+.agent-tasks { display: flex; flex-direction: column; }
+.agent-task {
+    display: grid;
+    grid-template-columns: 3px minmax(210px, auto) minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    gap: 0 14px;
+    padding: 0;
+    border-top: 1px solid var(--line);
+}
+.agent-task:first-child { border-top: 0; }
+.agent-task > * { padding: 11px 0; }
+
+.agent-task .task-rail { padding: 0; align-self: stretch; background: var(--line); border-radius: 999px; }
+
+.agent-task .task-head { display: flex; align-items: baseline; gap: 10px; }
+.agent-task .task-action { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--ink); }
+.agent-task .task-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); }
+.agent-task .task-attempts {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--warn);
+    border: 1px solid color-mix(in srgb, var(--warn) 34%, transparent);
+    border-radius: 999px;
+    padding: 1px 6px;
+}
+
+.agent-task .task-detail { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.agent-task .task-message { min-width: 0; font-size: 12px; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .agent-task .task-message.err { font-family: var(--mono); font-size: 11px; color: var(--danger); }
-.agent-task .task-trigger { flex: 0 0 auto; margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); }
+.agent-task .task-progress { flex: 1 1 auto; min-width: 90px; max-width: 260px; height: 4px; background: var(--line-strong); border-radius: 999px; overflow: hidden; }
+.agent-task .task-progress-bar { height: 100%; background: var(--brand-bright); transition: width 0.3s ease; }
+.agent-task .task-pct { flex: 0 0 auto; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
 
-/* The progress bar is the only element that may grow, so it claims the free space
-   the message would otherwise take. */
-.agent-task .task-progress { flex: 1 1 auto; min-width: 120px; height: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-.agent-task .task-progress-bar { height: 100%; background: var(--brand); transition: width 0.3s ease; }
-.agent-task .task-pct { flex: 0 0 auto; min-width: 34px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); text-align: right; }
+/* Times are the log's spine: right-aligned and tabular so they scan as a column. */
+.agent-task .task-time { font-family: var(--mono); font-size: 11px; color: var(--steel); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.agent-task .task-trigger { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); opacity: 0.75; min-width: 62px; text-align: right; }
 
-.agent-task-running { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
-.agent-task-running .task-status { color: var(--brand-bright); }
-.agent-task-completed .task-status { color: var(--online); }
-.agent-task-dead { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
-.agent-task-dead .task-status { color: var(--danger); }
-.agent-task-cancelled .task-status { color: var(--warn); }
-
-/* .op is sized for the console's full-width control strip: it would stretch to fill
-   the row and stand 40px tall here. */
-.agent-task .op { flex: 0 0 auto; height: 28px; padding: 0 12px; font-size: 10px; }
+.agent-task .task-act { display: flex; justify-content: flex-end; min-width: 74px; }
+/* .op is sized for the console's full-width control strip: left alone it stretches
+   to fill the cell and stands 40px tall. */
+.agent-task .op { flex: 0 0 auto; height: 26px; padding: 0 11px; font-size: 10px; }
 .agent-task .agent-task-retry-btn { color: var(--brand-bright); border-color: color-mix(in srgb, var(--brand) 32%, var(--line)); }
 .agent-task .agent-task-cancel-btn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 30%, var(--line)); }
 
-@media (max-width: 720px) {
-    .agent-task { flex-wrap: wrap; gap: 7px 11px; }
-    .agent-task .task-action,
-    .agent-task .task-status { min-width: 0; }
-    .agent-task .task-message { flex-basis: 100%; white-space: normal; }
+.agent-task-running .task-rail { background: var(--brand-bright); }
+.agent-task-running .task-status { color: var(--brand-bright); }
+.agent-task-running .task-action { color: var(--ink); }
+.agent-task-completed .task-rail { background: var(--online); }
+.agent-task-completed .task-status { color: var(--online); }
+.agent-task-dead .task-rail { background: var(--danger); }
+.agent-task-dead .task-status { color: var(--danger); }
+.agent-task-cancelled .task-rail { background: var(--warn); }
+.agent-task-cancelled .task-status { color: var(--warn); }
+/* A cancellation is a choice someone made, not a failure. Red would read as one. */
+.agent-task-cancelled .task-message.err { color: var(--steel); }
+.agent-task-pending .task-rail { background: var(--steel); }
+
+/* Settled work is history: it stays legible but stops competing with the task
+   that is actually running. */
+.agent-task-completed .task-action,
+.agent-task-cancelled .task-action { color: var(--ink-dim); font-weight: 400; }
+
+/* The running row is the one thing on this panel worth looking at, so it is the
+   only one that moves. */
+.agent-task-running .task-rail { animation: task-rail-pulse 1.8s ease-in-out infinite; }
+@keyframes task-rail-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .agent-task-running .task-rail { animation: none; }
+    .agent-task .task-progress-bar { transition: none; }
+}
+
+@media (max-width: 860px) {
+    .agent-task { grid-template-columns: 3px minmax(0, 1fr) auto; gap: 4px 12px; padding: 4px 0; }
+    .agent-task .task-rail { grid-row: 1 / span 2; }
+    .agent-task .task-head { padding-bottom: 0; }
+    .agent-task .task-detail { grid-column: 2 / span 2; padding-top: 0; }
+    .agent-task .task-time { grid-column: 2; padding-top: 0; text-align: left; }
+    .agent-task .task-trigger { grid-column: 3; padding-top: 0; }
+    .agent-task .task-act { grid-row: 1; grid-column: 3; }
 }
 
 /* .hidden is declared before these components, so it loses on equal specificity. */

@@ -2095,74 +2095,143 @@ class ServerConsole extends EventTarget {
         $wrapper.empty();
 
         for (let i = 0; i < tasks.length; i++) {
-            const t = tasks[i];
-
-            // omitempty drops zero-valued numbers, so they arrive as undefined.
-            const attempts = t.attempts || 0;
-            const maxAttempts = t.max_attempts || 0;
-            const progress = t.progress || 0;
-            const status = t.status || "";
-
-            const $row = $("<div/>").addClass(`agent-task agent-task-${status}`);
-
-            $row.append($("<span/>").addClass("task-action").text(t.action || ""));
-
-            $row.append(
-                $("<span/>")
-                    .addClass("task-status")
-                    .text(`${status} (${attempts}/${maxAttempts})`),
-            );
-
-            if (status == "running") {
-                // The label sits beside the bar rather than on the fill: at this size
-                // it has no readable contrast against the brand colour.
-                const $bar = $("<div/>").addClass("task-progress");
-                $bar.append(
-                    $("<div/>")
-                        .addClass("task-progress-bar")
-                        .css("width", `${progress}%`),
-                );
-
-                $row.append($bar);
-                $row.append(
-                    $("<span/>").addClass("task-pct").text(`${progress}%`),
-                );
-            }
-
-            if (status == "dead" && t.last_error) {
-                $row.append(
-                    $("<span/>").addClass("task-message err").text(t.last_error),
-                );
-            } else if (t.message) {
-                $row.append(
-                    $("<span/>").addClass("task-message").text(t.message),
-                );
-            }
-
-            $row.append(
-                $("<span/>")
-                    .addClass("task-trigger")
-                    .text(t.triggered_by_type || ""),
-            );
-
-            if (status == "pending" || status == "running") {
-                $row.append(
-                    $("<button/>")
-                        .addClass("op agent-task-cancel-btn")
-                        .attr("data-task-id", t.id)
-                        .text("Cancel"),
-                );
-            } else if (status == "dead") {
-                $row.append(
-                    $("<button/>")
-                        .addClass("op agent-task-retry-btn")
-                        .attr("data-task-id", t.id)
-                        .text("Retry"),
-                );
-            }
-
-            $wrapper.append($row);
+            $wrapper.append(this.buildAgentTaskRow(tasks[i]));
         }
+    }
+
+    buildAgentTaskRow(t) {
+        // omitempty drops zero-valued numbers, so they arrive as undefined.
+        const status = t.status || "";
+        const attempts = t.attempts || 0;
+        const progress = t.progress || 0;
+        const running = status == "running";
+
+        const $row = $("<div/>").addClass(`agent-task agent-task-${status}`);
+
+        $row.append($("<span/>").addClass("task-rail"));
+
+        const $head = $("<div/>").addClass("task-head");
+        $head.append($("<span/>").addClass("task-action").text(t.action || ""));
+        $head.append($("<span/>").addClass("task-status").text(status));
+
+        // An attempt count only says something once a task has actually retried.
+        // Printing (1/5) on every first-try success is noise that reads like a
+        // warning.
+        if (attempts > 1) {
+            $head.append(
+                $("<span/>")
+                    .addClass("task-attempts")
+                    .attr("title", `Attempt ${attempts} of ${t.max_attempts || 0}`)
+                    .text(`retry ${attempts - 1}`),
+            );
+        }
+        $row.append($head);
+
+        const $detail = $("<div/>").addClass("task-detail");
+
+        if (running) {
+            const $bar = $("<div/>").addClass("task-progress");
+            $bar.append(
+                $("<div/>")
+                    .addClass("task-progress-bar")
+                    .css("width", `${progress}%`),
+            );
+
+            $detail.append($bar);
+            $detail.append($("<span/>").addClass("task-pct").text(`${progress}%`));
+        }
+
+        // last_error outlives the run that produced it, so a task that failed and
+        // then recovered still carries one. Only show it while it is the reason for
+        // the current state.
+        const failed = status == "dead" || status == "cancelled";
+        if (failed && t.last_error) {
+            $detail.append(
+                $("<span/>").addClass("task-message err").text(t.last_error),
+            );
+        } else if (running && t.message) {
+            $detail.append($("<span/>").addClass("task-message").text(t.message));
+        }
+        $row.append($detail);
+
+        $row.append(
+            $("<span/>")
+                .addClass("task-time")
+                .text(this.agentTaskTime(t, status)),
+        );
+
+        $row.append(
+            $("<span/>")
+                .addClass("task-trigger")
+                .text(t.triggered_by_type || ""),
+        );
+
+        const $act = $("<div/>").addClass("task-act");
+        if (status == "pending" || running) {
+            $act.append(
+                $("<button/>")
+                    .addClass("op agent-task-cancel-btn")
+                    .attr("data-task-id", t.id)
+                    .text("Cancel"),
+            );
+        } else if (status == "dead") {
+            $act.append(
+                $("<button/>")
+                    .addClass("op agent-task-retry-btn")
+                    .attr("data-task-id", t.id)
+                    .text("Retry"),
+            );
+        }
+        $row.append($act);
+
+        return $row;
+    }
+
+    // A task list with no time in it cannot be read as a log. Show the duration
+    // once a task has run, and how long it has been waiting before that.
+    agentTaskTime(t, status) {
+        const created = t.created_at || 0;
+        const started = t.started_at || 0;
+        const finished = t.finished_at || 0;
+        const now = Math.floor(Date.now() / 1000);
+
+        if (finished && started) {
+            return `${this.agentTaskSpan(finished - started)} · ${this.agentTaskAgo(finished)}`;
+        }
+        if (status == "running" && started) {
+            return this.agentTaskSpan(now - started);
+        }
+        if (created) {
+            return `queued ${this.agentTaskAgo(created)}`;
+        }
+        return "";
+    }
+
+    agentTaskSpan(secs) {
+        secs = Math.max(0, secs);
+
+        if (secs < 60) {
+            return `${secs}s`;
+        }
+        if (secs < 3600) {
+            return `${Math.floor(secs / 60)}m ${secs % 60}s`;
+        }
+        return `${Math.floor(secs / 3600)}h ${Math.floor((secs % 3600) / 60)}m`;
+    }
+
+    agentTaskAgo(unix) {
+        const secs = Math.max(0, Math.floor(Date.now() / 1000) - unix);
+
+        if (secs < 60) {
+            return "just now";
+        }
+        if (secs < 3600) {
+            return `${Math.floor(secs / 60)}m ago`;
+        }
+        if (secs < 86400) {
+            return `${Math.floor(secs / 3600)}h ago`;
+        }
+        return `${Math.floor(secs / 86400)}d ago`;
     }
 
     onStatusRecieved(event) {
