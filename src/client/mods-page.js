@@ -32,6 +32,7 @@ class ModsPage {
         // can re-send it as an apply.
         this.pendingChange = null;
         this.awaitingPreview = false;
+        this.awaitingApplyPending = false;
 
         this.tasks = [];
 
@@ -65,6 +66,18 @@ class ModsPage {
         // error is ours — an unresolvable selection ("requires SF >= 1.1") must
         // land in front of the user, never in a swallowed catch.
         ws.addEventListener("error", (event) => {
+            // The banner's apply-now has no modal to render an error into, so it
+            // toasts instead. Swallowing it would leave the user staring at a
+            // "Mods pending" banner that never moves.
+            if (this.awaitingApplyPending) {
+                this.awaitingApplyPending = false;
+                toastr.error(
+                    String(event.detail || "Mod change failed"),
+                    "Could not apply the pending mod change",
+                );
+                return;
+            }
+
             if (!this.awaitingPreview) return;
             this.awaitingPreview = false;
             this.previewError = String(event.detail || "Mod change failed");
@@ -647,6 +660,7 @@ class ModsPage {
 
     onApplyReceived = (event) => {
         this.awaitingPreview = false;
+        this.awaitingApplyPending = false;
 
         const taskIds = (event.detail && event.detail.taskIds) || [];
         if (taskIds.length === 0) {
@@ -684,14 +698,30 @@ class ModsPage {
         );
 
         const pick = (status) => syncs.find((t) => (t.status || "") == status);
-        const task = pick("running") || pick("pending") || pick("dead");
+
+        // A pending sync is NOT necessarily a deferred one. Only requiresServerStopped
+        // means "waiting for the next restart"; a pending sync WITHOUT it is gated on
+        // its own chain's stopsfserver — the change is being applied right now, and
+        // saying it will apply "the next time the server restarts" is simply false.
+        const isDeferred = (t) => !!t.requires_server_stopped;
+        const deferred = syncs.find(
+            (t) => (t.status || "") == "pending" && isDeferred(t),
+        );
+        const chained = syncs.find(
+            (t) => (t.status || "") == "pending" && !isDeferred(t),
+        );
+
+        const task = pick("running") || chained || deferred || pick("dead");
 
         if (!task) {
             $banner.addClass("hidden").empty();
             return;
         }
 
-        const status = task.status || "";
+        // A chained pending sync belongs to the live apply-now chain, so it renders as
+        // the running state (it has just not been claimed yet).
+        const status =
+            task === chained ? "running" : task.status || "";
         $banner
             .removeClass("hidden")
             .empty()
@@ -705,7 +735,12 @@ class ModsPage {
             $head.append(
                 $("<span/>")
                     .addClass("mod-sync-msg")
-                    .text(task.message || "Syncing mods…"),
+                    .text(
+                        task.message ||
+                            (task === chained
+                                ? "Stopping the server to apply the mods…"
+                                : "Syncing mods…"),
+                    ),
             );
 
             const progress = task.progress || 0;
@@ -772,7 +807,7 @@ class ModsPage {
                 .addClass("btn2 outline mod-sync-apply-now-btn")
                 .attr("type", "button")
                 .attr("data-task-id", task.id)
-                .text("Apply now — stops the server"),
+                .text("Apply now — restarts the server"),
         );
         $act.append(
             $("<button/>")
@@ -786,13 +821,26 @@ class ModsPage {
         $banner.append($act);
     }
 
-    // The pending sync is gated on the server being stopped, and the change it
-    // carries is already persisted — so re-sending the apply would resolve to an
-    // empty diff and do nothing. Stopping the server is what actually releases
-    // the gate, so that is what this button honestly does, and it says so.
+    // The change this pending sync carries is ALREADY persisted, so re-sending it as
+    // an add/remove/setVersion resolves to an empty diff and is dropped. applyPending
+    // is the op that escalates it: the backend re-points the very sync that is
+    // waiting onto a fresh stop -> sync -> start chain.
+    //
+    // Do NOT "simplify" this back into a bare stopsfserver. That releases the gate,
+    // the sync runs — and then nothing brings the server back up.
     ApplyPendingNow = () => {
         if (!this.agentId) return;
-        ws.sendServerAction(this.agentId, "stopsfserver");
+
+        this.awaitingApplyPending = true;
+
+        ws.send({
+            action: "console.agent.mods.apply",
+            agentId: this.agentId,
+            op: "applyPending",
+            modReference: "",
+            version: "",
+            applyNow: true,
+        });
     };
 
     // ----------------------------------------------------------------- config
