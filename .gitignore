@@ -26,3 +26,5 @@ docker/releases*
 bin
 
 docs/superpowers
+
+node_modules
