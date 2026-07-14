@@ -46,8 +46,5 @@ func RegisterDashboardRoutes(r *gin.RouterGroup) {
 	r.GET("/download/save", middleware.AuthRequired(), handler.GET_DashboardDownloadSave)
 	r.GET("/download/log", middleware.AuthRequired(), handler.GET_DashboardDownloadLog)
 
-	r.POST("/mods/installmod", middleware.AuthRequired(), handler.POST_DashboardMods_Install)
-	r.POST("/mods/uninstallmod", middleware.AuthRequired(), handler.POST_DashboardMods_Uninstall)
-
 	r.GET("/ws", middleware.AuthRequired(), handlerWS.WSHandler)
 }

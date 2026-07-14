@@ -348,24 +348,44 @@ func GetAgentModsGRPC(ctx context.Context, externalID string, agentId string, pa
 	return pbModsRes, err
 }
 
-func InstallAgentModGRPC(ctx context.Context, externalID string, agentId string, modReference string) error {
+func PreviewModChangeGRPC(ctx context.Context, externalID string, agentId string, op string, modReference string, version string) (*pb.PreviewModChangeResponse, error) {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
 	if err != nil {
-		return fmt.Errorf("failed to get gRPC connection: %w", err)
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	_, err = frontendServiceClient.InstallAgentMod(ctx, &pb.InstallAgentModRequest{
+	return frontendServiceClient.PreviewModChange(ctx, &pb.ModChangeRequest{
 		Eid:          externalID,
 		AgentId:      agentId,
+		Op:           op,
 		ModReference: modReference,
+		Version:      version,
 	})
-
-	return err
 }
 
-func UninstallAgentModGRPC(ctx context.Context, externalID string, agentId string, modReference string) error {
+func ApplyModChangeGRPC(ctx context.Context, externalID string, agentId string, op string, modReference string, version string, applyNow bool) (*pb.ApplyModChangeResponse, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	return frontendServiceClient.ApplyModChange(ctx, &pb.ApplyModChangeRequest{
+		Change: &pb.ModChangeRequest{
+			Eid:          externalID,
+			AgentId:      agentId,
+			Op:           op,
+			ModReference: modReference,
+			Version:      version,
+		},
+		ApplyNow: applyNow,
+	})
+}
+
+func UpdateAgentModConfigTextGRPC(ctx context.Context, externalID string, agentId string, modReference string, config string) error {
 	ctx = CreategRPCContext(ctx)
 
 	_, err := GetGRPCConnection()
@@ -373,10 +393,11 @@ func UninstallAgentModGRPC(ctx context.Context, externalID string, agentId strin
 		return fmt.Errorf("failed to get gRPC connection: %w", err)
 	}
 
-	_, err = frontendServiceClient.UninstallAgentMod(ctx, &pb.UninstallAgentModRequest{
+	_, err = frontendServiceClient.UpdateAgentModConfigText(ctx, &pb.UpdateAgentModConfigTextRequest{
 		Eid:          externalID,
 		AgentId:      agentId,
 		ModReference: modReference,
+		Config:       config,
 	})
 
 	return err

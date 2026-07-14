@@ -192,10 +192,9 @@ type APIGetModsRequest struct {
 
 type APIGetModsResponse struct {
 	APIResponse
-	Mods           []models.ModSchema `json:"mods"`
-	TotalMods      int64              `json:"totalMods"`
-	Pages          int                `json:"pages"`
-	AgentModConfig v2.AgentModConfig  `json:"agentModConfig"`
+	Mods      []models.ModSchema `json:"mods"`
+	TotalMods int64              `json:"totalMods"`
+	Pages     int                `json:"pages"`
 }
 
 type APIServerTaskRequest struct {
@@ -203,21 +202,6 @@ type APIServerTaskRequest struct {
 	Action  string      `json:"action"`
 	AgentID string      `json:"id"`
 	Data    interface{} `json:"data"`
-}
-
-type APIModData struct {
-	AgentID string `json:"agentId" form:"agentId"`
-	ModRef  string `json:"modReference" form:"modReference"`
-}
-
-type APIInstallModRequest struct {
-	APIRequest
-	APIModData
-}
-
-type APIUninstallModRequest struct {
-	APIRequest
-	APIModData
 }
 
 type APIGetAccountIntegrationsResponse struct {
@@ -290,6 +274,10 @@ type WSMessage struct {
 	FilterInstalled bool   `json:"filterInstalled"`
 	OnlyUpdatable   bool   `json:"onlyUpdatable"`
 	IncludeHidden   bool   `json:"includeHidden"`
+	Op              string `json:"op"`
+	ModReference    string `json:"modReference"`
+	Version         string `json:"version"`
+	ApplyNow        bool   `json:"applyNow"`
 }
 
 type WSResponse struct {

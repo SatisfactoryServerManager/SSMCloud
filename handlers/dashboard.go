@@ -229,7 +229,7 @@ func (handler *DashboardHandler) GET_DashboardMods(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "mods": modsRes.Mods, "pages": modsRes.Pages, "totalMods": modsRes.TotalMods, "agentModConfig": modsRes.AgentModConfig})
+	c.JSON(http.StatusOK, gin.H{"success": true, "mods": modsRes.Mods, "pages": modsRes.Pages, "totalMods": modsRes.TotalCount, "agentMods": modsRes.AgentMods})
 }
 
 func (handler *DashboardHandler) GET_DashboardServers(c *gin.Context) {
@@ -570,44 +570,4 @@ func (handler *DashboardHandler) GET_DashboardDownloadLog(c *gin.Context) {
 func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile", "csrfField": csrf.TemplateField(c.Request)})
-}
-
-func (handler *DashboardHandler) POST_DashboardMods_Install(c *gin.Context) {
-
-	PostData := api.APIModData{}
-	if err := c.Bind(&PostData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
-		c.Abort()
-		return
-	}
-
-	err := api.InstallAgentModGRPC(context.Background(), c.GetString("user_eid"), PostData.AgentID, PostData.ModRef)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
-		c.Abort()
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"success": true})
-}
-
-func (handler *DashboardHandler) POST_DashboardMods_Uninstall(c *gin.Context) {
-
-	PostData := api.APIModData{}
-	if err := c.Bind(&PostData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
-		c.Abort()
-		return
-	}
-
-	err := api.UninstallAgentModGRPC(context.Background(), c.GetString("user_eid"), PostData.AgentID, PostData.ModRef)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
-		c.Abort()
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"success": true})
 }

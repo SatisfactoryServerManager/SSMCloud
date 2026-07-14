@@ -76,6 +76,12 @@ func (handler *DashboardWSHandler) WSHandler(c *gin.Context) {
 		if msg.Action == "console.agent.mods" {
 			handler.WS_GetAgentMods(conn, userEid, msg)
 		}
+		if msg.Action == "console.agent.mods.preview" {
+			handler.WS_PreviewModChange(conn, userEid, msg)
+		}
+		if msg.Action == "console.agent.mods.apply" {
+			handler.WS_ApplyModChange(conn, userEid, msg)
+		}
 		if msg.Action == "console.agent.tasks" {
 			handler.WS_GetAgentTasks(conn, userEid, msg)
 		}
@@ -256,11 +262,49 @@ func (handler *DashboardWSHandler) WS_GetAgentMods(conn *websocket.Conn, userEid
 	res := api.WSResponse{
 		Action: msg.Action,
 		Data: map[string]interface{}{
-			"mods":           modsRes.Mods,
-			"pages":          modsRes.Pages,
-			"totalMods":      modsRes.TotalMods,
-			"agentModConfig": modsRes.AgentModConfig,
+			"mods":      modsRes.Mods,
+			"pages":     modsRes.Pages,
+			"totalMods": modsRes.TotalCount,
+			"agentMods": modsRes.AgentMods,
 		},
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_PreviewModChange(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	previewRes, err := api.PreviewModChangeGRPC(context.Background(), userEid, msg.AgentId, msg.Op, msg.ModReference, msg.Version)
+
+	if err != nil {
+		fmt.Println("Error previewing mod change:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data:   previewRes,
+	}
+
+	if err := conn.WriteJSON(res); err != nil {
+		fmt.Println("Write error:", err)
+	}
+}
+
+func (handler *DashboardWSHandler) WS_ApplyModChange(conn *websocket.Conn, userEid string, msg *api.WSMessage) {
+	applyRes, err := api.ApplyModChangeGRPC(context.Background(), userEid, msg.AgentId, msg.Op, msg.ModReference, msg.Version, msg.ApplyNow)
+
+	if err != nil {
+		fmt.Println("Error applying mod change:", err)
+		conn.WriteJSON(api.WSResponse{Action: "error", Data: err.Error()})
+		return
+	}
+
+	res := api.WSResponse{
+		Action: msg.Action,
+		Data:   applyRes,
 	}
 
 	if err := conn.WriteJSON(res); err != nil {
