@@ -1,10 +1,17 @@
 const ws = require("./ws");
 
-// Mods manager for the server-detail "Mods" tab. Mod data is fetched over the
-// dashboard websocket (action "console.agent.mods") instead of a REST poll, so
-// the installed/pending state of each mod can be refreshed live — the list is
-// re-requested every 5s, so a mod that finishes installing on the agent flips
-// its buttons/tags without a page reload.
+// Mods manager for the server-detail "Mods" tab.
+//
+// Every mutating click PREVIEWS first: the backend resolves the real dependency
+// closure and answers with exactly what would change (added/removed/changed,
+// dependencies flagged). The user confirms in a dialog, and the sync task the
+// apply enqueues is then visible in the banner above the list — running with
+// progress, deferred until the next restart, or dead with its error and a retry.
+// Nothing about a mod change is allowed to happen invisibly.
+//
+// Mod data arrives over the dashboard websocket (action "console.agent.mods")
+// and is re-requested every 5s, so a mod that finishes installing on the agent
+// flips its buttons/tags without a page reload.
 class ModsPage {
     constructor() {
         this.page = 0;
@@ -15,9 +22,18 @@ class ModsPage {
         this.search = "";
 
         this.mods = [];
-        this.installedMods = [];
+        // The agent's whole selection, flat: direct picks AND resolver-pulled
+        // dependencies. Entries are AgentMod (snake_case over the wire).
+        this.agentMods = [];
         this.totalMods = 0;
         this.pages = 0;
+
+        // The change currently being previewed/applied, so the confirm buttons
+        // can re-send it as an apply.
+        this.pendingChange = null;
+        this.awaitingPreview = false;
+
+        this.tasks = [];
 
         this.pollInterval = 5000;
     }
@@ -33,6 +49,27 @@ class ModsPage {
 
         ws.addEventListener("console.agent.mods", (event) => {
             this.onModsReceived(event);
+        });
+        ws.addEventListener("console.agent.mods.preview", (event) => {
+            this.onPreviewReceived(event);
+        });
+        ws.addEventListener("console.agent.mods.apply", (event) => {
+            this.onApplyReceived(event);
+        });
+        ws.addEventListener("console.agent.tasks", (event) => {
+            this.onTasksReceived(event);
+        });
+
+        // The websocket reports failures as a bare "error" frame with no
+        // correlation id. While a preview/apply of ours is in flight, that
+        // error is ours — an unresolvable selection ("requires SF >= 1.1") must
+        // land in front of the user, never in a swallowed catch.
+        ws.addEventListener("error", (event) => {
+            if (!this.awaitingPreview) return;
+            this.awaitingPreview = false;
+            this.previewError = String(event.detail || "Mod change failed");
+            this.previewData = null;
+            this.RenderApplyModal();
         });
 
         this.timer = setInterval(() => {
@@ -65,6 +102,16 @@ class ModsPage {
             onlyUpdatable: f.onlyUpdatable,
             includeHidden: f.includeHidden,
         });
+
+        // The server-console panel polls the task list every second on this same
+        // page, and we render off the same event. Only ask for it ourselves when
+        // that panel is not present, so the mods tab still shows its sync banner.
+        if ($(".server-console").length === 0) {
+            ws.send({
+                action: "console.agent.tasks",
+                agentId: this.agentId,
+            });
+        }
     };
 
     // Read the offcanvas filter checkboxes. Filtering is done server-side, so
@@ -84,11 +131,25 @@ class ModsPage {
         };
     }
 
-    // Kept as the public entry point used by app.js (sort/search/install/
-    // uninstall/settings-save) — a view update is now a fresh websocket request.
+    // Kept as the public entry point used by app.js (sort/search/settings-save)
+    // — a view update is a fresh websocket request.
     UpdateView = () => {
         this.RequestMods();
     };
+
+    // AgentMod arrives with protobuf's Go json tags (snake_case), while the
+    // preview's ChangedMod uses camelCase. Read both rather than depending on
+    // which side of that line a field happens to fall.
+    static Field(obj, snake, camel) {
+        if (obj == null) return undefined;
+        return obj[snake] !== undefined ? obj[snake] : obj[camel];
+    }
+
+    AgentMod(modReference) {
+        return this.agentMods.find(
+            (am) => ModsPage.Field(am, "mod_reference", "modReference") == modReference,
+        );
+    }
 
     onModsReceived = (event) => {
         if ($(".mod-list").length === 0) return;
@@ -98,37 +159,56 @@ class ModsPage {
         this.mods = detail.mods || [];
         this.pages = detail.pages || 0;
         this.totalMods = detail.totalMods || 0;
-        this.installedMods =
-            (detail.agentModConfig && detail.agentModConfig.selectedMods) || [];
+        this.agentMods = detail.agentMods || [];
 
         for (let i = 0; i < this.mods.length; i++) {
             const mod = this.mods[i];
             mod.installed = false;
             mod.needsUpdate = false;
-            mod.installedVersion = "0.0.0";
-            mod.desiredVersion = "0.0.0";
+            mod.installedVersion = "";
+            mod.desiredVersion = "";
+            mod.latestVersion = "";
+            mod.direct = false;
             mod.pendingInstall = false;
 
-            const selectedMod = this.installedMods.find(
-                (sm) => sm.mod.mod_reference == mod.mod_reference,
-            );
+            const agentMod = this.AgentMod(mod.mod_reference);
+            if (agentMod == null) continue;
 
-            if (selectedMod == null) continue;
-
-            mod.installed = selectedMod.installed;
-            mod.needsUpdate = selectedMod.needsUpdate;
-            mod.installedVersion = selectedMod.installedVersion;
-            mod.desiredVersion = selectedMod.desiredVersion;
+            mod.installed = !!agentMod.installed;
+            mod.needsUpdate = !!ModsPage.Field(agentMod, "needs_update", "needsUpdate");
+            mod.installedVersion =
+                ModsPage.Field(agentMod, "installed_version", "installedVersion") || "";
+            mod.desiredVersion =
+                ModsPage.Field(agentMod, "desired_version", "desiredVersion") || "";
+            mod.latestVersion =
+                ModsPage.Field(agentMod, "latest_version", "latestVersion") || "";
+            mod.direct = !!agentMod.direct;
+            // Selected at a version the agent has not got on disk yet.
             mod.pendingInstall =
-                selectedMod.desiredVersion != selectedMod.installedVersion;
+                mod.desiredVersion != "" && mod.desiredVersion != mod.installedVersion;
         }
 
         this.BuildPagination();
         this.RenderMods();
+        this.RenderUpdateAll();
 
-        $("#mod-count").text(
-            `${this.installedMods.length} / ${this.totalMods}`,
+        // The dashboard's server card counts DIRECT mods only — the ones the
+        // user chose. Counting resolver-pulled dependencies here would make the
+        // two disagree.
+        const directCount = this.agentMods.filter((am) => !!am.direct).length;
+        $("#mod-count").text(`${directCount} / ${this.totalMods}`);
+    };
+
+    // "Update all" is only meaningful when something is actually behind.
+    RenderUpdateAll = () => {
+        const $btn = $("#mods-update-all-btn");
+        if ($btn.length === 0) return;
+
+        const any = this.agentMods.some(
+            (am) => !!ModsPage.Field(am, "needs_update", "needsUpdate"),
         );
+        $btn.toggleClass("hidden", !any);
+        $btn.attr("data-agentid", this.agentId);
     };
 
     // A compact fingerprint of everything BuildModCard renders for a mod. Used
@@ -143,6 +223,7 @@ class ModsPage {
             mod.pendingInstall ? 1 : 0,
             mod.installedVersion,
             mod.desiredVersion,
+            mod.latestVersion,
             latest,
             mod.logo_url || "",
         ].join("|");
@@ -282,7 +363,8 @@ class ModsPage {
 
     // Console-native mod row. Preserves every hook app.js delegates on:
     // .install-mod-btn / .update-mod-btn / .uninstall-mod-btn / .settings-mod-btn
-    // each with data-agentid + data-mod-reference.
+    // each with data-agentid + data-mod-reference. The update button also carries
+    // the version it would move to, so the preview can be sent without a lookup.
     BuildModCard(mod) {
         const $row = $(
             `<div class="mod" data-mod-reference="${mod.mod_reference}" data-sig="${this.ModSignature(mod)}"></div>`,
@@ -299,21 +381,42 @@ class ModsPage {
             `<b><a href="https://ficsit.app/mod/${mod.mod_reference}" target="_blank" rel="noopener">${mod.mod_name}</a></b>`,
         );
 
-        let tags = `<span class="tag">v${mod.versions[0].version}</span>`;
+        const $tags = $(`<span class="mod-tags"></span>`);
+        $tags.append(
+            $("<span/>")
+                .addClass("tag")
+                .text(`v${(mod.versions[0] && mod.versions[0].version) || "?"}`),
+        );
+
         if (mod.installed) {
-            if (mod.pendingInstall) {
-                tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
-            } else {
-                tags += `<span class="tag ok">v${mod.installedVersion}</span>`;
-            }
-        } else if (mod.pendingInstall) {
-            tags += `<span class="tag upd">→ v${mod.desiredVersion}</span>`;
+            $tags.append(
+                $("<span/>").addClass("tag ok").text(`v${mod.installedVersion}`),
+            );
         }
-        $info.append(`<span class="mod-tags">${tags}</span>`);
+
+        if (mod.needsUpdate) {
+            // The version move, spelled out: an "Update" button that does not say
+            // what it moves to is asking the user to trust it blindly.
+            $tags.append(
+                $("<span/>")
+                    .addClass("tag upd mod-update")
+                    .text(`${mod.installedVersion} → ${mod.latestVersion}`),
+            );
+        } else if (mod.pendingInstall) {
+            $tags.append(
+                $("<span/>").addClass("tag upd").text(`→ v${mod.desiredVersion}`),
+            );
+        }
+
+        if (mod.installed && !mod.direct) {
+            $tags.append($("<span/>").addClass("tag").text("dependency"));
+        }
+
+        $info.append($tags);
         $row.append($info);
 
         const $acts = $(`<div class="acts"></div>`);
-        if (!mod.installed) {
+        if (!mod.installed && !mod.pendingInstall) {
             $acts.append(
                 `<button class="icobtn install-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Install mod"><i class="fas fa-download"></i></button>`,
             );
@@ -323,7 +426,7 @@ class ModsPage {
             );
             if (mod.needsUpdate) {
                 $acts.append(
-                    `<button class="icobtn warn update-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" aria-label="Update mod"><i class="fas fa-upload"></i></button>`,
+                    `<button class="icobtn warn update-mod-btn" data-agentid="${this.agentId}" data-mod-reference="${mod.mod_reference}" data-version="${mod.latestVersion}" aria-label="Update mod"><i class="fas fa-upload"></i></button>`,
                 );
             }
             $acts.append(
@@ -335,30 +438,388 @@ class ModsPage {
         return $row;
     }
 
-    OpenModSettings(modReference) {
-        const selectedMod = this.installedMods.find(
-            (sm) => sm.mod.mod_reference == modReference,
-        );
+    // ---------------------------------------------------------------- preview
 
-        if (selectedMod == null) {
+    // Every mutating click lands here. Nothing is written until the user has
+    // seen what the backend says the change actually does.
+    RequestPreview = (op, modReference, version) => {
+        if (!this.agentId) return;
+
+        this.pendingChange = {
+            op: op,
+            modReference: modReference || "",
+            version: version || "",
+        };
+        this.previewData = null;
+        this.previewError = null;
+        this.awaitingPreview = true;
+
+        // No eid in the frame — the BFF takes it from the session.
+        ws.send({
+            action: "console.agent.mods.preview",
+            agentId: this.agentId,
+            op: op,
+            modReference: modReference || "",
+            version: version || "",
+        });
+
+        window.openModal("/public/modals", "mod-apply-modal", (modal) => {
+            this.$applyModal = modal;
+            this.RenderApplyModal();
+        });
+    };
+
+    onPreviewReceived = (event) => {
+        if (!this.awaitingPreview) return;
+
+        this.awaitingPreview = false;
+        this.previewError = null;
+        this.previewData = event.detail || {};
+        this.RenderApplyModal();
+    };
+
+    ChangeTitle() {
+        const c = this.pendingChange || {};
+        if (c.op == "updateAll") return "Update all mods";
+        if (c.op == "remove") return `Remove ${c.modReference}`;
+        if (c.op == "setVersion") return `Update ${c.modReference}`;
+        return `Install ${c.modReference}`;
+    }
+
+    RenderApplyModal() {
+        const modal = this.$applyModal;
+        if (!modal || modal.length === 0) return;
+
+        const $body = modal.find("#mod-apply-body").empty();
+        const $acts = modal.find("#mod-apply-actions").empty();
+
+        modal.find(".modal-title").text(this.ChangeTitle());
+
+        // An unresolvable selection is the whole reason preview exists. Show it.
+        if (this.previewError) {
+            $body.append(
+                $("<p/>").addClass("mod-apply-error").text(this.previewError),
+            );
+            $acts.append(
+                $("<button/>")
+                    .addClass("btn2 outline mod-apply-close-btn")
+                    .attr("type", "button")
+                    .text("Close"),
+            );
             return;
         }
 
+        if (this.awaitingPreview || this.previewData == null) {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line")
+                    .text("Working out what this changes…"),
+            );
+            return;
+        }
+
+        const p = this.previewData;
+        const added = p.added || [];
+        const removed = p.removed || [];
+        const changed = p.changed || [];
+
+        const direct = (list) => list.filter((e) => !e.dependency);
+        const deps = (list) => list.filter((e) => !!e.dependency);
+        const names = (list) => list.map((e) => e.modReference).join(", ");
+
+        direct(added).forEach((e) => {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line")
+                    .text(`Installs: ${e.modReference} ${e.to || ""}`.trim()),
+            );
+        });
+        direct(removed).forEach((e) => {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line")
+                    .text(`Removes: ${e.modReference}`),
+            );
+        });
+
+        changed.forEach((e) => {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line")
+                    .text(`${e.modReference}: ${e.from || "—"} → ${e.to || "—"}`),
+            );
+        });
+
+        // Dependencies are the thing the old page never told anyone about.
+        if (deps(added).length > 0) {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line dep")
+                    .text(`Also installs: ${names(deps(added))}`),
+            );
+        }
+        if (deps(removed).length > 0) {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line dep")
+                    .text(
+                        `Also removes: ${names(deps(removed))} (no longer required)`,
+                    ),
+            );
+        }
+
+        if (added.length == 0 && removed.length == 0 && changed.length == 0) {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-line")
+                    .text("Nothing would change."),
+            );
+            $acts.append(
+                $("<button/>")
+                    .addClass("btn2 outline mod-apply-close-btn")
+                    .attr("type", "button")
+                    .text("Close"),
+            );
+            return;
+        }
+
+        if (p.serverRunning) {
+            $body.append(
+                $("<p/>")
+                    .addClass("mod-apply-note")
+                    .text(
+                        "The server is running. Mods can only be written to disk while it is stopped.",
+                    ),
+            );
+
+            $acts.append(
+                $("<button/>")
+                    .addClass("btn2 outline mod-apply-confirm-btn")
+                    .attr("type", "button")
+                    .attr("data-apply-now", "false")
+                    .text("Apply on next restart"),
+            );
+            $acts.append(
+                $("<button/>")
+                    .addClass("btn2 mod-apply-confirm-btn")
+                    .attr("type", "button")
+                    .attr("data-apply-now", "true")
+                    .text("Apply now — restarts the server"),
+            );
+            return;
+        }
+
+        // Server already stopped: applyNow is moot, so there is one button.
+        $acts.append(
+            $("<button/>")
+                .addClass("btn2 mod-apply-confirm-btn")
+                .attr("type", "button")
+                .attr("data-apply-now", "false")
+                .text("Apply"),
+        );
+    }
+
+    // Confirm. Sends the change that was previewed — not a re-derived one.
+    ConfirmApply = (applyNow) => {
+        const c = this.pendingChange;
+        if (!c) return;
+
+        this.awaitingPreview = true; // an error frame from here is still ours
+
+        ws.send({
+            action: "console.agent.mods.apply",
+            agentId: this.agentId,
+            op: c.op,
+            modReference: c.modReference,
+            version: c.version,
+            applyNow: !!applyNow,
+        });
+
+        this.CloseApplyModal();
+    };
+
+    CloseApplyModal = () => {
+        if (this.$applyModal && this.$applyModal.length > 0) {
+            this.$applyModal.find("button.btn-close").trigger("click");
+        }
+        this.$applyModal = null;
+    };
+
+    onApplyReceived = (event) => {
+        this.awaitingPreview = false;
+
+        const taskIds = (event.detail && event.detail.taskIds) || [];
+        if (taskIds.length === 0) {
+            toastr.info("", "No mod changes were needed", { timeOut: 4000 });
+        } else {
+            toastr.success("", "Mod change queued", { timeOut: 4000 });
+        }
+
+        this.pendingChange = null;
+        this.UpdateView();
+    };
+
+    // ----------------------------------------------------------------- banner
+
+    onTasksReceived = (event) => {
+        if ($(".mod-list").length === 0) return;
+
+        try {
+            this.tasks = event.detail || [];
+            this.RenderSyncBanner();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // The sync task is the change made visible. A deferred one waiting for the
+    // next restart, a running one with its progress, a dead one with its error:
+    // all three used to be invisible, and all three now live in this banner.
+    RenderSyncBanner() {
+        const $banner = $("#mod-sync-banner");
+        if ($banner.length === 0) return;
+
+        const syncs = (this.tasks || []).filter(
+            (t) => (t.action || "") == "syncmods",
+        );
+
+        const pick = (status) => syncs.find((t) => (t.status || "") == status);
+        const task = pick("running") || pick("pending") || pick("dead");
+
+        if (!task) {
+            $banner.addClass("hidden").empty();
+            return;
+        }
+
+        const status = task.status || "";
+        $banner
+            .removeClass("hidden")
+            .empty()
+            .attr("class", `mod-sync mod-sync-${status}`);
+
+        const $head = $("<div/>").addClass("mod-sync-head");
+        const $act = $("<div/>").addClass("mod-sync-act");
+
+        if (status == "running") {
+            $head.append($("<b/>").text("Applying mods"));
+            $head.append(
+                $("<span/>")
+                    .addClass("mod-sync-msg")
+                    .text(task.message || "Syncing mods…"),
+            );
+
+            const progress = task.progress || 0;
+            const $bar = $("<div/>").addClass("task-progress");
+            $bar.append(
+                $("<div/>")
+                    .addClass("task-progress-bar")
+                    .css("width", `${progress}%`),
+            );
+
+            $banner.append($head);
+            $banner.append($bar);
+            $banner.append(
+                $("<span/>").addClass("task-pct").text(`${progress}%`),
+            );
+
+            // A running sync is already in the agent's hands; cancelling it is
+            // the only thing left to offer.
+            $act.append(
+                $("<button/>")
+                    .addClass("btn2 outline agent-task-cancel-btn")
+                    .attr("type", "button")
+                    .attr("data-task-id", task.id)
+                    .text("Cancel"),
+            );
+            $banner.append($act);
+            return;
+        }
+
+        if (status == "dead") {
+            $head.append($("<b/>").text("Mod sync failed"));
+            $head.append(
+                $("<span/>")
+                    .addClass("mod-sync-msg err")
+                    .text(task.last_error || "The agent could not apply the mods."),
+            );
+
+            $act.append(
+                $("<button/>")
+                    .addClass("btn2 outline agent-task-retry-btn")
+                    .attr("type", "button")
+                    .attr("data-task-id", task.id)
+                    .text("Retry"),
+            );
+
+            $banner.append($head);
+            $banner.append($act);
+            return;
+        }
+
+        // pending: the change is written, but the agent cannot touch the Mods
+        // directory under a live server, so it is waiting for the server to stop.
+        $head.append($("<b/>").text("Mods pending"));
+        $head.append(
+            $("<span/>")
+                .addClass("mod-sync-msg")
+                .text(
+                    "Changes will apply the next time the server restarts.",
+                ),
+        );
+
+        $act.append(
+            $("<button/>")
+                .addClass("btn2 outline mod-sync-apply-now-btn")
+                .attr("type", "button")
+                .attr("data-task-id", task.id)
+                .text("Apply now — stops the server"),
+        );
+        $act.append(
+            $("<button/>")
+                .addClass("btn2 outline danger agent-task-cancel-btn")
+                .attr("type", "button")
+                .attr("data-task-id", task.id)
+                .text("Cancel"),
+        );
+
+        $banner.append($head);
+        $banner.append($act);
+    }
+
+    // The pending sync is gated on the server being stopped, and the change it
+    // carries is already persisted — so re-sending the apply would resolve to an
+    // empty diff and do nothing. Stopping the server is what actually releases
+    // the gate, so that is what this button honestly does, and it says so.
+    ApplyPendingNow = () => {
+        if (!this.agentId) return;
+        ws.sendServerAction(this.agentId, "stopsfserver");
+    };
+
+    // ----------------------------------------------------------------- config
+
+    OpenModSettings(modReference) {
+        const agentMod = this.AgentMod(modReference);
+
+        if (agentMod == null) {
+            return;
+        }
+
+        const modName =
+            ModsPage.Field(agentMod, "mod_name", "modName") || modReference;
+
         let modConfig = {};
         try {
-            modConfig = JSON.parse(selectedMod.config);
+            modConfig = JSON.parse(agentMod.config);
         } catch (err) {
             modConfig = {};
         }
 
         window.openModal("/public/modals", "mod-settings", (modal) => {
-            modal
-                .find(".modal-title")
-                .text(`${selectedMod.mod.mod_name} Settings`);
+            modal.find(".modal-title").text(`${modName} Settings`);
             modal
                 .find("#mod-settings-config")
                 .val(JSON.stringify(modConfig, null, 4));
-            modal.find("#inp_mod_ref").val(selectedMod.mod.mod_reference);
+            modal.find("#inp_mod_ref").val(modReference);
 
             modal.find("#mod-settings-save-btn").on("click", async (e) => {
                 e.preventDefault();

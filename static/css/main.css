@@ -2100,6 +2100,30 @@ h6.blk { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-
 .mod .info .mod-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .mod .acts { display: flex; gap: 6px; }
 .icobtn.warn:hover { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+
+/* The mod sync banner. A deferred mod change used to be invisible — it now sits
+   above the list until it has actually landed. */
+.mod-sync { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; padding: 11px 13px; background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--steel); border-radius: 4px; }
+.mod-sync-head { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 240px; }
+.mod-sync-head b { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+.mod-sync .mod-sync-msg { font-size: 12px; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; }
+.mod-sync .mod-sync-msg.err { font-family: var(--mono); font-size: 11px; color: var(--danger); white-space: pre-wrap; }
+.mod-sync .task-progress { flex: 1 1 160px; min-width: 120px; max-width: 320px; height: 4px; background: var(--line-strong); border-radius: 999px; overflow: hidden; }
+.mod-sync .task-progress-bar { height: 100%; background: var(--brand-bright); transition: width 0.3s ease; }
+.mod-sync .task-pct { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.mod-sync-act { display: flex; gap: 6px; margin-left: auto; }
+.mod-sync-act .btn2 { height: 32px; padding: 0 12px; font-size: 10px; }
+.mod-sync-pending { border-left-color: var(--warn); }
+.mod-sync-running { border-left-color: var(--brand-bright); }
+.mod-sync-dead { border-left-color: var(--danger); }
+
+/* Preview dialog: one line per thing the change does. */
+.mod-apply-line { font-size: 13px; color: var(--ink); margin: 0 0 6px; }
+.mod-apply-line.dep { color: var(--ink-dim); font-size: 12px; }
+.mod-apply-note { font-size: 12px; color: var(--ink-dim); margin: 12px 0 0; }
+.mod-apply-error { font-family: var(--mono); font-size: 12px; color: var(--danger); white-space: pre-wrap; margin: 0; }
+.mod-apply-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
 .pagination#mods-pagination { display: flex; gap: 5px; margin: 0; }
 #mods-pagination .page-item { list-style: none; }
 #mods-pagination .page-link, #mods-pagination .mod-page, #mods-pagination .mod-page-prev, #mods-pagination .mod-page-next { min-width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: var(--panel); color: var(--ink-dim); border-radius: 3px; font-family: var(--mono); font-size: 12px; cursor: pointer; text-decoration: none; }

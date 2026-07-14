@@ -321,55 +321,36 @@ function main() {
             ModsPage.page = 0;
             ModsPage.UpdateView();
         })
-        .on("click", ".install-mod-btn, .update-mod-btn", async (e) => {
-            const $this = $(e.currentTarget);
-
-            const agentId = $this.attr("data-agentid");
-            const modReference = $this.attr("data-mod-reference");
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
-
-            try {
-                const res = await $.ajax({
-                    method: "post",
-                    url: "/dashboard/mods/installmod",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify({
-                        agentId,
-                        modReference,
-                    }),
-                    headers: { "X-CSRF-Token": csrfToken },
-                }).promise();
-            } catch (err) {
-                console.error(err);
-            }
-
-            ModsPage.UpdateView();
+        // Every mutating mod click previews first — nothing is written until the
+        // user has seen the resolved change, dependencies and all.
+        .on("click", ".install-mod-btn", (e) => {
+            e.preventDefault();
+            ModsPage.RequestPreview("add", $(e.currentTarget).attr("data-mod-reference"), "");
         })
-        .on("click", ".uninstall-mod-btn", async (e) => {
+        .on("click", ".update-mod-btn", (e) => {
+            e.preventDefault();
             const $this = $(e.currentTarget);
-
-            const agentId = $this.attr("data-agentid");
-            const modReference = $this.attr("data-mod-reference");
-            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0]?.value ?? "";
-
-            try {
-                const res = await $.ajax({
-                    method: "post",
-                    url: "/dashboard/mods/uninstallmod",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify({
-                        agentId,
-                        modReference,
-                    }),
-                    headers: { "X-CSRF-Token": csrfToken },
-                }).promise();
-            } catch (err) {
-                console.error(err);
-            }
-
-            ModsPage.UpdateView();
+            ModsPage.RequestPreview("setVersion", $this.attr("data-mod-reference"), $this.attr("data-version"));
+        })
+        .on("click", ".uninstall-mod-btn", (e) => {
+            e.preventDefault();
+            ModsPage.RequestPreview("remove", $(e.currentTarget).attr("data-mod-reference"), "");
+        })
+        .on("click", "#mods-update-all-btn", (e) => {
+            e.preventDefault();
+            ModsPage.RequestPreview("updateAll", "", "");
+        })
+        .on("click", ".mod-apply-confirm-btn", (e) => {
+            e.preventDefault();
+            ModsPage.ConfirmApply($(e.currentTarget).attr("data-apply-now") == "true");
+        })
+        .on("click", ".mod-apply-close-btn", (e) => {
+            e.preventDefault();
+            ModsPage.CloseApplyModal();
+        })
+        .on("click", ".mod-sync-apply-now-btn", (e) => {
+            e.preventDefault();
+            ModsPage.ApplyPendingNow();
         })
         .on("keyup", ".backup-search", (e) => {
             const $this = $(e.currentTarget);

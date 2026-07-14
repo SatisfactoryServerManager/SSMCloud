@@ -8,6 +8,7 @@
     <div class="bar" style="margin-bottom:16px;">
         <label class="drop" style="flex:1; cursor:pointer;"><i class="fas fa-file-import"></i> Import SMM profile <input type="file" class="smm-metadata-file" hidden></label>
         <button class="btn2 outline" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvas-mods-filter" aria-controls="canvas-mods-filter"><i class="fa-solid fa-filter"></i> Filter</button>
+        <button class="btn2 outline warn hidden" type="button" id="mods-update-all-btn"><i class="fas fa-upload"></i> Update all</button>
         <select class="field" style="height:42px;" name="inp_mod_sortby" id="mods-sortby">
             <option value="az">A–Z</option>
             <option value="za">Z–A</option>
@@ -16,6 +17,10 @@
         </select>
         <ul class="pagination m-0" id="mods-pagination"></ul>
     </div>
+    <!-- The sync task made visible: a deferred change waiting for the next
+         restart, a running sync's progress, or a failed one with its error.
+         Rendered by mods-page.js from console.agent.tasks. -->
+    <div id="mod-sync-banner" class="mod-sync hidden"></div>
     <div class="mod-list">
         <div class="row"></div>
     </div>
