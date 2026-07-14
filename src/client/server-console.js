@@ -3,9 +3,7 @@ const ws = require("./ws");
 class ServerConsole extends EventTarget {
     constructor() {
         super();
-        this.agentId = window.location.href.substring(
-            window.location.href.lastIndexOf("/") + 1,
-        );
+        this.agentId = window.location.href.substring(window.location.href.lastIndexOf("/") + 1);
         this.status = {
             running: false,
             installed: false,
@@ -99,12 +97,7 @@ class ServerConsole extends EventTarget {
     deepEqual(x, y) {
         if (x === y) {
             return true;
-        } else if (
-            typeof x == "object" &&
-            x != null &&
-            typeof y == "object" &&
-            y != null
-        ) {
+        } else if (typeof x == "object" && x != null && typeof y == "object" && y != null) {
             if (Object.keys(x).length != Object.keys(y).length) return false;
 
             for (var prop in x) {
@@ -174,7 +167,6 @@ class ServerConsole extends EventTarget {
         // fields, so guard before reading length.
         tasks = tasks || [];
 
-        $card.toggleClass("hidden", tasks.length == 0);
         $wrapper.empty();
 
         for (let i = 0; i < tasks.length; i++) {
@@ -194,7 +186,11 @@ class ServerConsole extends EventTarget {
         $row.append($("<span/>").addClass("task-rail"));
 
         const $head = $("<div/>").addClass("task-head");
-        $head.append($("<span/>").addClass("task-action").text(t.action || ""));
+        $head.append(
+            $("<span/>")
+                .addClass("task-action")
+                .text(t.action || ""),
+        );
         $head.append($("<span/>").addClass("task-status").text(status));
 
         // An attempt count only says something once a task has actually retried.
@@ -214,11 +210,7 @@ class ServerConsole extends EventTarget {
 
         if (running) {
             const $bar = $("<div/>").addClass("task-progress");
-            $bar.append(
-                $("<div/>")
-                    .addClass("task-progress-bar")
-                    .css("width", `${progress}%`),
-            );
+            $bar.append($("<div/>").addClass("task-progress-bar").css("width", `${progress}%`));
 
             $detail.append($bar);
             $detail.append($("<span/>").addClass("task-pct").text(`${progress}%`));
@@ -229,19 +221,13 @@ class ServerConsole extends EventTarget {
         // the current state.
         const failed = status == "dead" || status == "cancelled";
         if (failed && t.last_error) {
-            $detail.append(
-                $("<span/>").addClass("task-message err").text(t.last_error),
-            );
+            $detail.append($("<span/>").addClass("task-message err").text(t.last_error));
         } else if (running && t.message) {
             $detail.append($("<span/>").addClass("task-message").text(t.message));
         }
         $row.append($detail);
 
-        $row.append(
-            $("<span/>")
-                .addClass("task-time")
-                .text(this.agentTaskTime(t, status)),
-        );
+        $row.append($("<span/>").addClass("task-time").text(this.agentTaskTime(t, status)));
 
         $row.append(
             $("<span/>")
@@ -251,19 +237,9 @@ class ServerConsole extends EventTarget {
 
         const $act = $("<div/>").addClass("task-act");
         if (status == "pending" || running) {
-            $act.append(
-                $("<button/>")
-                    .addClass("op agent-task-cancel-btn")
-                    .attr("data-task-id", t.id)
-                    .text("Cancel"),
-            );
+            $act.append($("<button/>").addClass("op agent-task-cancel-btn").attr("data-task-id", t.id).text("Cancel"));
         } else if (status == "dead") {
-            $act.append(
-                $("<button/>")
-                    .addClass("op agent-task-retry-btn")
-                    .attr("data-task-id", t.id)
-                    .text("Retry"),
-            );
+            $act.append($("<button/>").addClass("op agent-task-retry-btn").attr("data-task-id", t.id).text("Retry"));
         }
         $row.append($act);
 
@@ -408,9 +384,7 @@ class ServerConsole extends EventTarget {
 
         // Delay scroll update to next frame for smoother UI
         requestAnimationFrame(() => {
-            this.$serverConsole.scrollTop(
-                this.$serverConsole.prop("scrollHeight"),
-            );
+            this.$serverConsole.scrollTop(this.$serverConsole.prop("scrollHeight"));
         });
     }
     onStatsRecieved(event) {
@@ -432,31 +406,16 @@ class ServerConsole extends EventTarget {
             date.setSeconds(stat.created_at.seconds);
 
             cpuStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.cpu || 0),
             });
             memStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.mem || 0),
             });
             const runningVal = stat.running ? 1 : -1;
             runningStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: runningVal,
             });
 
@@ -593,9 +552,7 @@ class ServerConsole extends EventTarget {
         const textColour = $("body").hasClass("dark") ? "white" : "black";
 
         if (this.uptimeChart != null) {
-            this.uptimeChart.data.datasets[0].data = data.map(
-                (row) => row.value,
-            );
+            this.uptimeChart.data.datasets[0].data = data.map((row) => row.value);
             this.uptimeChart.data.labels = data.map((row) => row.date);
             this.uptimeChart.data.datasets[0].backgroundColor = backgroundColor;
             this.uptimeChart.update();

@@ -19,10 +19,7 @@
                         <div class="workflow-steps" id="server-workflow-wrapper"></div>
                     </div></div>
 
-                    <!-- Populated by app.js from the console.agent.tasks poll; hidden while there are no tasks. -->
-                    <div class="card2 hidden" id="server-tasks-card"><div class="hd"><h5>Agent Tasks</h5></div><div class="bd">
-                        <div class="agent-tasks" id="agent-tasks-wrapper"></div>
-                    </div></div>
+                    
 
                     {{if not .agent.Config.Version}}
                     <div class="cmd-head is-offline">
@@ -82,6 +79,16 @@
                                 <div class="readout blue"><div class="k">Connection</div><div class="v">{{.agent.Config.IpAddress}}:{{.agent.Config.Port}}</div></div>
                                 <div class="readout blue"><div class="k">Version</div><div class="v">{{.agent.Config.Version}}</div></div>
                                 <div class="readout blue"><div class="k">SF Server</div><div class="v">{{.agent.Status.InstalledSfVersion}}</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Populated by app.js from the console.agent.tasks poll; hidden while there are no tasks. -->
+                        <div class="card2" id="server-tasks-card">
+                            <div class="hd"><h5>Server Tasks</h5></div>
+                            <div class="bd">
+                                <div class="agent-tasks" id="agent-tasks-wrapper">
+                                    <span>Loading server tasks <i class="fa-solid fa-spinner fa-spin"></i></span>
+                                </div>
                             </div>
                         </div>
 
