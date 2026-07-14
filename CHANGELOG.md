@@ -1,3 +1,19 @@
+## 1.0.184 (July 14, 2026)
+  - feat: Improvements to frontend
+  - chore: ignore node_modules
+  - fix: make the pending-mods banner's Apply now actually apply
+  - feat: show mod dependencies, sync progress, and pending changes
+  - fix: render the dashboard mod count from Agent.ModCount
+  - feat!: drive mod changes over preview/apply websocket actions
+  - chore: Update deps
+  - feat: Updated agent tasks style
+  - feat: rebuild the agent task panel as an ops log
+  - fix: style the agent task panel
+  - feat: agent task panel with cancel and retry
+  - fix: label the collapsed agent-task workflow steps
+  - chore: Updated deps
+  - feat: Updated new server modal and workflow
+
 ## 1.0.183 (July 09, 2026)
 
 
