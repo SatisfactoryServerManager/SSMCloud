@@ -35,6 +35,7 @@
                     <a class="nav-link" href="/dashboard/servers">
                         <i class="fas fa-server"></i>
                         <span>Servers</span>
+                        <span class="nav-pill" id="server-count">{{ len .agents }}</span>
                     </a>
                 </li>
                 <li class="nav-item {{if eq .pageTitle "Account"}}active{{end}}">
@@ -55,6 +56,38 @@
                         <i class="fas fa-book"></i>
                         <span>Docs</span>
                     </a>
+                </li>
+                <li class="nav-item dropup sidebar-accounts">
+                    <a class="nav-link" href="#" id="sidebarAccountsDrop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-building-shield"></i>
+                        <span>{{.account.AccountName}}</span>
+                        <i class="fas fa-chevron-up caret"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="sidebarAccountsDrop">
+                        {{range .linkedAccounts}}
+                            <li><a class="dropdown-item" href="/dashboard/account/switch?id={{.Id}}"><i class="fa-solid fa-building-shield me-2"></i> {{.AccountName}}</a></li>
+                        {{end}}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/dashboard/account/create"><i class="fa-solid fa-plus me-2"></i> Create Account</a></li>
+                        <li><a class="dropdown-item" href="/dashboard/account/join"><i class="fa-solid fa-right-to-bracket me-2"></i> Join Account</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropup sidebar-profile">
+                    <a class="nav-link" href="#" id="sidebarProfileDrop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="profile-image" src="{{.user.ProfileImageUrl}}" alt=""/>
+                        <span>{{.user.Username}}</span>
+                        <i class="fas fa-chevron-up caret"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="sidebarProfileDrop">
+                        <li><a class="dropdown-item" href="/dashboard/profile"><i class="fa-solid fa-user me-2"></i> Profile</a></li>
+                        <li>
+                            <button type="button" class="dropdown-item sidebar-theme-btn" data-ssm-theme-toggle aria-label="Toggle light/dark theme">
+                                <i class="fa-solid fa-circle-half-stroke me-2"></i> Theme
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item logout-btn" href="/auth/logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Log Out</a></li>
+                    </ul>
                 </li>
                 <li class="sidebar-status">
                     <span class="status-lamp on"></span> All systems nominal

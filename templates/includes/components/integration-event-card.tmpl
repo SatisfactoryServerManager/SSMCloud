@@ -8,7 +8,7 @@
     {{else if eq $event.Status "sent"}}<span class="tag ok"><i class="fa-solid fa-circle-check"></i> Succeeded</span>
     {{else if eq $event.Status "failed"}}<span class="tag no"><i class="fa-solid fa-circle-xmark"></i> Failed</span>{{end}}
     <span class="int-url mono">Attempts: {{$event.Attempts}} / 5</span>
-    <span class="mono" style="color:var(--steel);font-size:12px;flex:0 0 auto;">{{formatDate $event.CreatedAt}}</span>
+    <span class="mono" style="color:var(--steel);font-size:12px;flex:0 0 auto;">{{formatDatePb $event.CreatedAt}}</span>
     <span class="int-go"><i class="fa-solid fa-chevron-right"></i></span>
 </a>
 

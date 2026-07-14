@@ -571,3 +571,33 @@ func (handler *DashboardHandler) GET_DashboardProfile(c *gin.Context) {
 
 	RenderTemplate(c, "pages/dashboard/profile", gin.H{"pageTitle": "Profile", "csrfField": csrf.TemplateField(c.Request)})
 }
+
+func (handler *DashboardHandler) POST_DashboardProfileAPIKey(c *gin.Context) {
+
+	newKey, err := api.CreateUserAPIKeyGRPC(context.Background(), c.GetString("user_eid"))
+
+	if err != nil {
+		services.AddFlash(c.Writer, c.Request, "error", err.Error())
+		c.Redirect(http.StatusFound, "/dashboard/profile")
+		return
+	}
+
+	// Only chance to show the full key - the profile page renders it in a modal,
+	// after this only the short key is available.
+	services.AddFlash(c.Writer, c.Request, services.FLASHTYPE_APIKEY, newKey)
+	c.Redirect(http.StatusFound, "/dashboard/profile")
+}
+
+func (handler *DashboardHandler) GET_DashboardProfileDeleteAPIKey(c *gin.Context) {
+
+	shortKey := c.Param("shortkey")
+
+	if err := api.DeleteUserAPIKeyGRPC(context.Background(), c.GetString("user_eid"), shortKey); err != nil {
+		services.AddFlash(c.Writer, c.Request, "error", err.Error())
+		c.Redirect(http.StatusFound, "/dashboard/profile")
+		return
+	}
+
+	services.AddFlash(c.Writer, c.Request, "success", "Successfully deleted API key")
+	c.Redirect(http.StatusFound, "/dashboard/profile")
+}

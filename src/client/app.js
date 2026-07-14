@@ -435,10 +435,18 @@ function main() {
         .on("click", "#mods-pagination .mod-page-next", (e) => {
             ModsPage.NextPage();
         })
-        .on("click", "#refresh-new-api-key", (e) => {
+        .on("click", "[data-ssm-copy]", (e) => {
             e.preventDefault();
+            const $this = $(e.currentTarget);
+            const value = $($this.attr("data-ssm-copy")).val();
 
-            $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
+            if (!value) return;
+
+            navigator.clipboard.writeText(value.trim());
+
+            toastr.success("", "Copied to clipboard", {
+                timeOut: 3000,
+            });
         })
         .on("click", "#add-server-btn", (e) => {
             e.preventDefault();
@@ -789,9 +797,9 @@ function main() {
         $("#max-players-value").text(`${val} / 500`);
     }
 
-    if ($("#inp_new_apikey").length > 0) {
-        $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
-    }
+    $("[data-ssm-autoshow]").each(function () {
+        new bootstrap.Modal(this).show();
+    });
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

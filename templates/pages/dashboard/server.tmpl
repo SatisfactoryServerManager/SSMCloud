@@ -59,33 +59,39 @@
                         </div>
                     </div></div>
                     {{else}}
-                        <div class="cmd-head {{if not .agent.Status.Online}}is-offline{{end}}">
+                        <div class="cmd-head {{if not .agent.Status.Online}}is-offline{{end}}" id="server-cmd-head">
                             <div class="cmd-top">
                                 <div class="cmd-id">
                                     <h5 class="cmd-name">
-                                        <span class="status-lamp {{if .agent.Status.Online}}{{if .agent.Status.Running}}run pulse{{else}}on{{end}}{{else}}off{{end}}"></span>
+                                        <span class="status-lamp {{if .agent.Status.Online}}{{if .agent.Status.Running}}run pulse{{else}}on{{end}}{{else}}off{{end}}" id="server-status-lamp"></span>
                                         {{.agent.AgentName}}
                                     </h5>
                                     <span class="cmd-code mono">server {{.agent.Id}}</span>
                                 </div>
                                 <div class="ops">
+                                    <button type="button" class="op tasks" id="server-tasks-btn" data-bs-toggle="offcanvas" data-bs-target="#server-tasks-panel" aria-controls="server-tasks-panel"><i class="fas fa-list-check"></i> Tasks <span class="task-count" id="server-tasks-count">0</span></button>
                                     <a id="server-console-start-btn" href="/dashboard/serveraction/start?id={{.agent.Id}}"><button class="op start server-action-btn" {{if .agent.Status.Running}}disabled{{end}}><i class="fas fa-play"></i> Start</button></a>
                                     <a id="server-console-stop-btn" href="/dashboard/serveraction/stop?id={{.agent.Id}}"><button class="op stop server-action-btn" {{if not .agent.Status.Running}}disabled{{end}}><i class="fas fa-stop"></i> Stop</button></a>
                                     <a id="server-console-kill-btn" href="/dashboard/serveraction/kill?id={{.agent.Id}}"><button class="op kill server-action-btn" {{if not .agent.Status.Running}}disabled{{end}}><span><i class="fas fa-skull-crossbones"></i> Kill</span></button></a>
                                 </div>
                             </div>
                             <div class="cmd-readouts">
-                                <div class="readout"><div class="k">Status</div><div class="v">{{if .agent.Status.Running}}Running{{else if .agent.Status.Online}}Online{{else}}Offline{{end}}</div></div>
+                                <div class="readout"><div class="k">Status</div><div class="v" id="server-status-text">{{if .agent.Status.Running}}Running{{else if .agent.Status.Online}}Online{{else}}Offline{{end}}</div></div>
                                 <div class="readout blue"><div class="k">Connection</div><div class="v">{{.agent.Config.IpAddress}}:{{.agent.Config.Port}}</div></div>
                                 <div class="readout blue"><div class="k">Version</div><div class="v">{{.agent.Config.Version}}</div></div>
-                                <div class="readout blue"><div class="k">SF Server</div><div class="v">{{.agent.Status.InstalledSfVersion}}</div></div>
+                                <div class="readout blue"><div class="k">SF Server</div><div class="v" id="server-sf-version">{{.agent.Status.InstalledSfVersion}}</div></div>
                             </div>
                         </div>
 
-                        <!-- Populated by app.js from the console.agent.tasks poll; hidden while there are no tasks. -->
-                        <div class="card2" id="server-tasks-card">
-                            <div class="hd"><h5>Server Tasks</h5></div>
-                            <div class="bd">
+                        <!-- Task queue lives in a side panel: it is long, noisy and only
+                             wanted on demand. Populated by server-console.js from the
+                             console.agent.tasks poll. -->
+                        <div class="offcanvas offcanvas-end tasks-offcanvas" tabindex="-1" id="server-tasks-panel" aria-labelledby="server-tasks-panel-label">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="server-tasks-panel-label">Server Tasks</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
                                 <div class="agent-tasks" id="agent-tasks-wrapper">
                                     <span>Loading server tasks <i class="fa-solid fa-spinner fa-spin"></i></span>
                                 </div>

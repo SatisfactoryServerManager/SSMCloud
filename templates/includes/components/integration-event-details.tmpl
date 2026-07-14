@@ -4,14 +4,14 @@
 <div class="row g-3">
     <div class="col-12 col-md-6">
         <div class="section-head"><span class="eyebrow">// Request</span><span class="rule"></span></div>
-        <div class="readout mb-2"><div class="k">Request URL</div><div class="v mono">{{$event.URL}}</div></div>
+        <div class="readout mb-2"><div class="k">Request URL</div><div class="v mono">{{$event.Url}}</div></div>
         <div class="readout mb-2"><div class="k">Status</div><div class="v">
             {{if eq $event.Status "pending"}}<span class="tag"><i class="fa-solid fa-clock"></i> Pending</span>
             {{else if eq $event.Status "processing"}}<span class="tag upd"><i class="fa-solid fa-rotate fa-spin-pulse"></i> Processing</span>
             {{else if eq $event.Status "sent"}}<span class="tag ok"><i class="fa-solid fa-circle-check"></i> Succeeded</span>
             {{else if eq $event.Status "failed"}}<span class="tag no"><i class="fa-solid fa-circle-xmark"></i> Failed</span>{{end}}
         </div></div>
-        <div class="readout mb-2"><div class="k">Date</div><div class="v mono">{{formatDate $event.CreatedAt}}</div></div>
+        <div class="readout mb-2"><div class="k">Date</div><div class="v mono">{{formatDatePb $event.CreatedAt}}</div></div>
         <div class="readout mb-3"><div class="k">Attempts</div><div class="v mono">{{$event.Attempts}} / 5</div></div>
         <pre class="term">{{toJsonPretty $event.Payload}}</pre>
     </div>

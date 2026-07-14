@@ -324,6 +324,97 @@ a.disabled {
     gap: 8px;
 }
 
+/* Server count rides the Servers link so the number sits next to the thing it counts. */
+#sidebar .nav-pill {
+    margin-left: auto;
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+#sidebar .nav-item.active .nav-pill {
+    color: var(--ink);
+    border-color: var(--line-strong);
+}
+
+/* Theme toggle is a <button> so the #sidebar .nav-item a rules skip it; restate them here. */
+#sidebar .sidebar-theme-btn {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 11px 14px;
+    font-weight: 600;
+    transition: none !important;
+}
+#sidebar .sidebar-theme-btn i {
+    margin-right: 12px;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    float: left;
+    color: inherit;
+}
+
+#sidebar .sidebar-profile > .nav-link,
+#sidebar .sidebar-accounts > .nav-link {
+    text-decoration: none;
+}
+#sidebar .sidebar-profile .profile-image {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    margin-right: 12px;
+    float: left;
+}
+#sidebar .sidebar-profile .caret,
+#sidebar .sidebar-accounts .caret {
+    margin-left: auto;
+    margin-right: 0;
+    float: none;
+    font-size: 11px;
+}
+#viewport #sidebar .sidebar-profile span,
+#viewport #sidebar .sidebar-accounts span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+}
+#sidebar .sidebar-profile .dropdown-menu,
+#sidebar .sidebar-accounts .dropdown-menu {
+    width: calc(100% - 8px);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+#sidebar .sidebar-profile .dropdown-item,
+#sidebar .sidebar-accounts .dropdown-item {
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 12px;
+}
+#sidebar .sidebar-profile .dropdown-item:hover,
+#sidebar .sidebar-profile .dropdown-item:focus,
+#sidebar .sidebar-accounts .dropdown-item:hover,
+#sidebar .sidebar-accounts .dropdown-item:focus {
+    background: var(--panel-2);
+    color: var(--ink);
+}
+
 #content .container-fluid {
     padding: 0;
 }
@@ -369,64 +460,6 @@ a.disabled {
     color: var(--ink);
     line-height: 1;
     margin-top: 2px !important;
-}
-.page-header .server-count-wrapper {
-    height: 38px;
-    border: 1px solid var(--line);
-    background: var(--panel-2);
-    border-radius: 4px;
-    padding: 0 12px;
-    font-family: var(--mono);
-    font-weight: 700;
-    color: var(--ink);
-}
-.page-header .topbar-icon {
-    width: 38px;
-    height: 38px;
-    display: grid;
-    place-items: center;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    color: var(--ink-dim);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 15px;
-    text-decoration: none;
-}
-.page-header .topbar-icon:hover {
-    color: var(--ink);
-    border-color: var(--line-strong);
-}
-.page-header .topbar-icon:focus-visible,
-.page-header .profile-btn-group:focus-within {
-    outline: 2px solid var(--brand);
-    outline-offset: 2px;
-}
-.profile-btn-group {
-    background-color: var(--panel-2);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-}
-.profile-btn-group > .btn:first-child {
-    border-radius: 4px 0 0 4px;
-}
-.profile-btn-group .dropdown-toggle {
-    border-radius: 0 4px 4px 0;
-}
-.profile-btn-group .profile-image {
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-}
-.page-header .profile-btn-group .btn {
-    background-color: transparent;
-    color: var(--ink);
-    font-family: var(--mono);
-    font-size: 12px !important;
-    height: 38px;
-    font-weight: 600;
-    line-height: 28px !important;
-    border: 0;
 }
 
 .page-footer {
@@ -1632,30 +1665,12 @@ pre {
     gap: 8px;
 }
 
-/* ---- Mobile top bar: stack actions below the page title ---- */
 @media (max-width: 640px) {
     .page-header > .d-flex {
-        flex-wrap: wrap;
         width: 100%;
-        row-gap: 12px;
     }
     .page-header .crumb {
         flex: 1 1 100%;
-    }
-    .page-header .topbar-actions {
-        flex: 1 1 100%;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .page-header .topbar-actions > * {
-        margin-right: 0 !important;
-    }
-    .profile-btn-group .btn {
-        max-width: 42vw;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 }
 
@@ -2162,6 +2177,18 @@ select.field {
 .btn2.outline:hover {
     border-color: var(--line-strong);
 }
+.btn2.outline.active {
+    border-color: var(--brand-deep);
+    color: var(--brand-bright);
+}
+.theme-choice {
+    display: flex;
+    gap: 8px;
+}
+.theme-choice .btn2 {
+    flex: 1 1 0;
+    padding: 0 8px;
+}
 .card2.danger {
     border-color: color-mix(in srgb, var(--danger) 30%, var(--line));
 }
@@ -2421,17 +2448,32 @@ h6.blk {
     margin: 0;
 }
 
+/* minmax(0,…) and min-width:0: an auto-sized grid track is as wide as its widest
+   log line, which is what pushed the whole page sideways. Long lines scroll inside
+   the viewer instead. */
 .log-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px;
+}
+.log-grid > .card2 {
+    min-width: 0;
+}
+.log-grid .card2 .bd {
+    min-width: 0;
+    overflow: hidden;
 }
 .log-grid .term.log-viewer {
     height: 380px;
+    max-width: 100%;
+    overflow: auto;
+}
+.log-grid .term.log-viewer p {
+    white-space: pre;
 }
 @media (max-width: 860px) {
     .log-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -3409,6 +3451,98 @@ h6.blk {
         grid-row: 1;
         grid-column: 3;
     }
+}
+
+/* ---- Server tasks side panel ---- */
+.tasks-offcanvas {
+    width: min(520px, 92vw);
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    color: var(--ink);
+}
+.tasks-offcanvas .offcanvas-header {
+    border-bottom: 1px solid var(--line);
+}
+.tasks-offcanvas .offcanvas-title {
+    font-family: var(--display);
+    font-style: italic;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+:root[data-theme="dark"] .tasks-offcanvas .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .tasks-offcanvas .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+}
+.tasks-offcanvas .offcanvas-body {
+    overflow-y: auto;
+    padding: 0 16px 16px;
+}
+/* The panel is far narrower than the console, so the task row drops to the same
+   stacked layout it uses on mobile. */
+.tasks-offcanvas .agent-task {
+    grid-template-columns: 3px minmax(0, 1fr) auto;
+    gap: 2px 12px;
+    padding: 10px 0;
+}
+.tasks-offcanvas .agent-task > * {
+    padding: 0;
+}
+/* -1 resolves against the explicit grid, which has no rows here, so span the
+   implicit ones instead. The row's padding sits outside the grid area, so the rail
+   also bleeds back over it to reach the row's full height. */
+.tasks-offcanvas .agent-task .task-rail {
+    grid-row: 1 / span 3;
+    align-self: stretch;
+    margin: -5px 0;
+}
+.tasks-offcanvas .agent-task .task-detail {
+    grid-column: 2 / span 2;
+}
+/* A completed task has no progress bar or message, so its detail row is empty —
+   without this it still reserves a line and the rows read as double-spaced. */
+.tasks-offcanvas .agent-task .task-detail:empty {
+    display: none;
+}
+.tasks-offcanvas .agent-task .task-time {
+    grid-column: 2;
+    text-align: left;
+}
+.tasks-offcanvas .agent-task .task-trigger {
+    grid-column: 3;
+}
+.tasks-offcanvas .agent-task .task-act {
+    grid-row: 1;
+    grid-column: 3;
+}
+
+.cmd-head .op.tasks {
+    color: var(--ink-dim);
+}
+.cmd-head .op.tasks .task-count {
+    display: inline-block;
+    margin-left: 6px;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    font-size: 10px;
+    line-height: 15px;
+    font-variant-numeric: tabular-nums;
+}
+.cmd-head .op.tasks.has-active {
+    color: var(--brand-bright);
+    border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
+}
+.cmd-head .op.tasks.has-active .task-count {
+    background: color-mix(in srgb, var(--brand) 22%, transparent);
+    border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+    color: var(--brand-bright);
 }
 
 /* .hidden is declared before these components, so it loses on equal specificity. */

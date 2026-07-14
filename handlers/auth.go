@@ -62,6 +62,8 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 	session.Values["access_token"] = customToken
 	session.Values["user_eid"] = subject
+	// Needed later as the id_token_hint on the OIDC end-session request.
+	session.Values["id_token"] = rawIDToken
 	err = session.Save(c.Request, c.Writer)
 	if err != nil {
 		c.String(500, "cant save session: %v", err)
@@ -71,8 +73,14 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 	email := claims["email"].(string)
 	username, _ := claims["preferred_username"].(string) // Optional: adjust based on available claims
 
+	// Authentik sends the avatar as "picture"; some providers use "avatar".
+	avatarUrl, _ := claims["picture"].(string)
+	if avatarUrl == "" {
+		avatarUrl, _ = claims["avatar"].(string)
+	}
+
 	// Call gRPC service to check/create user
-	if err := api.CheckUserExistsOrCreateGRPC(context.Background(), email, subject, username); err != nil {
+	if err := api.CheckUserExistsOrCreateGRPC(context.Background(), email, subject, username, avatarUrl); err != nil {
 		c.String(500, "cant check/create user via gRPC: %v", err)
 		return
 	}
@@ -95,7 +103,7 @@ func (handler *AuthHandler) Get_Auth_Callback(c *gin.Context) {
 func (handler *AuthHandler) Get_Auth_Logout(c *gin.Context) {
 	session, _ := services.GetAuthService().SessionStore.Get(c.Request, "session")
 
-	idToken := session.Values["id_token"].(string)
+	idToken, _ := session.Values["id_token"].(string)
 
 	session.Values = make(map[interface{}]interface{})
 	session.Options = &sessions.Options{

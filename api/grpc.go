@@ -87,7 +87,7 @@ func CloseGRPCConnection() error {
 }
 
 // CheckUserExistsOrCreateGRPC calls the backend gRPC FrontendService to check or create a user
-func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, username string) error {
+func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, username, avatarUrl string) error {
 
 	ctx = CreategRPCContext(ctx)
 
@@ -99,9 +99,10 @@ func CheckUserExistsOrCreateGRPC(ctx context.Context, email, externalID, usernam
 
 	// Call the CheckUserExistsOrCreate RPC using cached client
 	_, err = frontendServiceClient.CheckUserExistsOrCreate(ctx, &pb.CheckUserExistsOrCreateRequest{
-		Email:    email,
-		Eid:      externalID,
-		Username: username,
+		Email:     email,
+		Eid:       externalID,
+		Username:  username,
+		AvatarUrl: avatarUrl,
 	})
 
 	if err != nil {
@@ -729,4 +730,41 @@ func GetAccountIntegrationEventsGRPC(ctx context.Context, integrationId string) 
 	}
 
 	return integrationsRes.Events, nil
+}
+
+func CreateUserAPIKeyGRPC(ctx context.Context, externalId string) (string, error) {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return "", fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	res, err := frontendServiceClient.CreateUserAPIKey(ctx, &pb.CreateUserAPIKeyRequest{
+		Eid: externalId,
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return res.Key, nil
+}
+
+func DeleteUserAPIKeyGRPC(ctx context.Context, externalId string, shortKey string) error {
+	ctx = CreategRPCContext(ctx)
+
+	_, err := GetGRPCConnection()
+	if err != nil {
+		return fmt.Errorf("failed to get gRPC connection: %w", err)
+	}
+
+	if _, err := frontendServiceClient.DeleteUserAPIKey(ctx, &pb.DeleteUserAPIKeyRequest{
+		Eid:      externalId,
+		ShortKey: shortKey,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

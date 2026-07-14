@@ -156,7 +156,6 @@ class ServerConsole extends EventTarget {
     }
 
     renderAgentTasks(tasks) {
-        const $card = $("#server-tasks-card");
         const $wrapper = $("#agent-tasks-wrapper");
 
         if ($wrapper.length == 0) {
@@ -169,9 +168,20 @@ class ServerConsole extends EventTarget {
 
         $wrapper.empty();
 
+        if (tasks.length == 0) {
+            $wrapper.append($("<p/>").addClass("empty-note").text("No tasks have run on this server yet."));
+        }
+
         for (let i = 0; i < tasks.length; i++) {
             $wrapper.append(this.buildAgentTaskRow(tasks[i]));
         }
+
+        // The panel is closed most of the time, so the button carries the only
+        // signal that something is queued or in flight.
+        const active = tasks.filter((t) => t.status == "pending" || t.status == "running").length;
+        const $btn = $("#server-tasks-btn");
+        $btn.toggleClass("has-active", active > 0);
+        $("#server-tasks-count").text(active);
     }
 
     buildAgentTaskRow(t) {
@@ -298,6 +308,8 @@ class ServerConsole extends EventTarget {
             const prevStatus = this.status;
             this.status = event.detail;
 
+            this.renderCmdHead();
+
             if (!this.deepEqual(prevStatus.installed, this.status.installed)) {
                 this.dispatchEvent(new Event("statusUpdated"));
             }
@@ -309,6 +321,31 @@ class ServerConsole extends EventTarget {
             }
         } catch (err) {
             console.error(err);
+        }
+    }
+
+    // The header is rendered server-side on page load and then goes stale, so
+    // keep it in step with the status poll instead of waiting for a reload.
+    renderCmdHead() {
+        const $head = $("#server-cmd-head");
+        if ($head.length == 0) {
+            return;
+        }
+
+        const online = !!this.status.online;
+        const running = !!this.status.running;
+
+        $head.toggleClass("is-offline", !online);
+
+        $("#server-status-lamp")
+            .removeClass("on off run pulse")
+            .addClass(online ? (running ? "run pulse" : "on") : "off");
+
+        $("#server-status-text").text(running ? "Running" : online ? "Online" : "Offline");
+
+        const sfVersion = this.status.installed_sf_version || 0;
+        if (sfVersion) {
+            $("#server-sf-version").text(sfVersion);
         }
     }
 

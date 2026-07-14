@@ -14,6 +14,9 @@ const (
 	FLASHTYPE_SUCCESS = "success"
 	FLASHTYPE_WARNING = "warning"
 	FLASHTYPE_ERROR   = "error"
+	// Carries a freshly created API key to the page that renders it in a modal.
+	// Deliberately not rendered as a toast.
+	FLASHTYPE_APIKEY = "apikey"
 )
 
 type FlashMessage struct {

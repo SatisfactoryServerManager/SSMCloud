@@ -16,23 +16,43 @@ function current() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+// "system" clears the override so prefers-color-scheme wins again.
+function saved() {
+    try { return localStorage.getItem(KEY) || "system"; } catch (e) { return "system"; }
+}
+
 function set(mode) {
     apply(mode);
-    try { localStorage.setItem(KEY, mode); } catch (e) { /* ignore */ }
+    try {
+        if (mode === "light" || mode === "dark") {
+            localStorage.setItem(KEY, mode);
+        } else {
+            localStorage.removeItem(KEY);
+        }
+    } catch (e) { /* ignore */ }
+    markChoice();
 }
 
 function toggle() {
     set(current() === "dark" ? "light" : "dark");
 }
 
+function markChoice() {
+    const mode = saved();
+    document.querySelectorAll("[data-ssm-theme-set]").forEach(function (btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-ssm-theme-set") === mode);
+    });
+}
+
 function init() {
-    try {
-        const saved = localStorage.getItem(KEY);
-        if (saved) apply(saved);
-    } catch (e) { /* ignore */ }
+    apply(saved());
+    markChoice();
     document.addEventListener("click", function (e) {
         const btn = e.target.closest("[data-ssm-theme-toggle]");
-        if (btn) { e.preventDefault(); toggle(); }
+        if (btn) { e.preventDefault(); toggle(); return; }
+
+        const choice = e.target.closest("[data-ssm-theme-set]");
+        if (choice) { e.preventDefault(); set(choice.getAttribute("data-ssm-theme-set")); }
     });
 }
 

@@ -15,20 +15,26 @@
                                 <div class="hd"><h5>Profile</h5></div>
                                 <div class="bd">
                                     <div class="text-center mb-3">
-                                        <img src="/dashboard/profile/image" alt="Profile image" class="profile-avatar" width="180" height="180">
+                                        <img src="{{.user.ProfileImageUrl}}" alt="Profile image" class="profile-avatar" width="180" height="180">
                                     </div>
-                                    <form action="/profile/update" method="post">
-                                        {{ .csrfField }}
-                                        <label for="inp_email" class="fld-lab">Email</label>
-                                        <input id="inp_email" type="text" class="field w-100 mb-3" value="{{.user.Email}}" name="inp_email">
-                                        <label for="inp_password" class="fld-lab">Password</label>
-                                        <input id="inp_password" type="password" class="field w-100 mb-3" value="" name="inp_password">
-                                        <label for="inp_confirmpassword" class="fld-lab">Confirm Password</label>
-                                        <input id="inp_confirmpassword" type="password" class="field w-100 mb-3" value="" name="inp_confirmpassword">
-                                        <label for="token" class="fld-lab">2FA Code</label>
-                                        <input id="token" class="field mono w-100 mb-3 text-center" type="text" name="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" placeholder="123456">
-                                        <button type="submit" class="btn2 w-100"><i class="fas fa-save"></i> Update Settings</button>
-                                    </form>
+                                    <div class="readout mb-2"><div class="k">Username</div><div class="v">{{.user.Username}}</div></div>
+                                    <div class="readout mb-2"><div class="k">Email</div><div class="v mono">{{.user.Email}}</div></div>
+                                    <div class="readout mb-2"><div class="k">Last Active</div><div class="v mono">{{formatDatePb .user.LastActive}}</div></div>
+                                    <div class="readout mb-3"><div class="k">Member Since</div><div class="v mono">{{formatDatePb .user.CreatedAt}}</div></div>
+                                    <div class="ssm-alert warn"><i class="fas fa-circle-info"></i> Your email and password are managed by your identity provider, so they can't be changed here.</div>
+                                </div>
+                            </div>
+
+                            <div class="card2 mt-3">
+                                <div class="hd"><h5>Preferences</h5></div>
+                                <div class="bd">
+                                    <label class="fld-lab">Theme</label>
+                                    <div class="theme-choice">
+                                        <button type="button" class="btn2 outline" data-ssm-theme-set="light"><i class="fas fa-sun"></i> Light</button>
+                                        <button type="button" class="btn2 outline" data-ssm-theme-set="dark"><i class="fas fa-moon"></i> Dark</button>
+                                        <button type="button" class="btn2 outline" data-ssm-theme-set="system"><i class="fas fa-desktop"></i> System</button>
+                                    </div>
+                                    <p class="empty-note">Theme is stored in this browser only.</p>
                                 </div>
                             </div>
                         </div>
@@ -36,32 +42,69 @@
                             <div class="card2">
                                 <div class="hd"><h5>API Keys</h5></div>
                                 <div class="bd">
-                                    <label for="inp_new_apikey" class="fld-lab">Add API Key</label>
-                                    <form action="/dashboard/profile/apikey" method="post">
+                                    <form action="/dashboard/profile/apikey" method="post" class="mb-2">
                                         {{ .csrfField }}
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="field mono flex-grow-1" name="inp_new_apikey" id="inp_new_apikey" value="">
-                                            <button type="button" class="icobtn" aria-label="Generate a new key"><i class="fas fa-refresh" id="refresh-new-api-key"></i></button>
-                                            <button class="btn2" type="submit"><i class="fas fa-plus"></i> Add Key</button>
-                                        </div>
+                                        <button class="btn2" type="submit"><i class="fas fa-plus"></i> Create API Key</button>
                                     </form>
-                                    <p class="empty-note">If you are happy with the current API key, copy it <b>BEFORE</b> clicking Add Key.</p>
+                                    <p class="empty-note">The full key is shown once, right after it is created. Copy it then &mdash; afterwards only the last 4 characters are visible.</p>
 
-                                    {{if not .user.APIKeys }}
+                                    {{range .flashes}}
+                                        {{if eq .Type "apikey"}}
+                                        <div class="modal fade" id="modal-new-apikey" tabindex="-1" aria-labelledby="modal-new-apikey-label" aria-hidden="true" data-ssm-autoshow>
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modal-new-apikey-label">New API Key</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="ssm-alert warn"><i class="fas fa-triangle-exclamation"></i> Copy this key now. It will not be shown again.</div>
+                                                        <div class="input-group">
+                                                            <input type="text" class="field mono flex-grow-1" id="new-apikey-value" value="{{.Message}}" readonly>
+                                                            <button type="button" class="btn2" data-ssm-copy="#new-apikey-value"><i class="fas fa-copy"></i> Copy</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn2 outline" data-bs-dismiss="modal">Done</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{end}}
+                                    {{end}}
+
+                                    {{if not .user.ApiKeys }}
                                         <div class="ssm-alert warn"><i class="fas fa-circle-info"></i> There are currently no API keys set up on your account.</div>
                                     {{end}}
 
-                                    {{range .user.APIKeys }}
+                                    {{range .user.ApiKeys }}
                                         <div class="readout apikey-row">
                                             <div class="k"><i class="fas fa-key me-1"></i> API Key</div>
                                             <div class="v mono">API-••••{{.ShortKey}}</div>
-                                            <a href="/dashboard/profile/deletekey/{{.ShortKey}}" class="icobtn danger" aria-label="Delete API key"><i class="fas fa-trash"></i></a>
+                                            <a href="/dashboard/profile/deletekey/{{.ShortKey}}" class="icobtn danger should-confirm-btn" data-confirm-title="Delete API Key Confirmation" aria-label="Delete API key"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    {{end}}
+                                </div>
+                            </div>
+
+                            <div class="card2 mt-3">
+                                <div class="hd"><h5>Linked Accounts</h5></div>
+                                <div class="bd">
+                                    {{$activeId := .account.Id}}
+                                    {{range .linkedAccounts}}
+                                        <div class="readout apikey-row">
+                                            <div class="k"><i class="fa-solid fa-building-shield me-1"></i> {{.AccountName}}</div>
+                                            <div class="v">
+                                                {{if eq .Id $activeId}}<span class="tag ok"><i class="fa-solid fa-circle-check"></i> Active</span>{{end}}
+                                            </div>
+                                            {{if ne .Id $activeId}}
+                                                <a href="/dashboard/account/switch?id={{.Id}}" class="btn2 outline"><i class="fa-solid fa-right-left"></i> Switch</a>
+                                            {{end}}
                                         </div>
                                     {{end}}
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>

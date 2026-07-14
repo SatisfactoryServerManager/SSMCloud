@@ -859,10 +859,18 @@ function main() {
         .on("click", "#mods-pagination .mod-page-next", (e) => {
             ModsPage.NextPage();
         })
-        .on("click", "#refresh-new-api-key", (e) => {
+        .on("click", "[data-ssm-copy]", (e) => {
             e.preventDefault();
+            const $this = $(e.currentTarget);
+            const value = $($this.attr("data-ssm-copy")).val();
 
-            $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
+            if (!value) return;
+
+            navigator.clipboard.writeText(value.trim());
+
+            toastr.success("", "Copied to clipboard", {
+                timeOut: 3000,
+            });
         })
         .on("click", "#add-server-btn", (e) => {
             e.preventDefault();
@@ -1213,9 +1221,9 @@ function main() {
         $("#max-players-value").text(`${val} / 500`);
     }
 
-    if ($("#inp_new_apikey").length > 0) {
-        $("#inp_new_apikey").val(`API-${makeapikey(32)}`);
-    }
+    $("[data-ssm-autoshow]").each(function () {
+        new bootstrap.Modal(this).show();
+    });
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -2410,9 +2418,7 @@ const ws = require("./ws");
 class ServerConsole extends EventTarget {
     constructor() {
         super();
-        this.agentId = window.location.href.substring(
-            window.location.href.lastIndexOf("/") + 1,
-        );
+        this.agentId = window.location.href.substring(window.location.href.lastIndexOf("/") + 1);
         this.status = {
             running: false,
             installed: false,
@@ -2506,12 +2512,7 @@ class ServerConsole extends EventTarget {
     deepEqual(x, y) {
         if (x === y) {
             return true;
-        } else if (
-            typeof x == "object" &&
-            x != null &&
-            typeof y == "object" &&
-            y != null
-        ) {
+        } else if (typeof x == "object" && x != null && typeof y == "object" && y != null) {
             if (Object.keys(x).length != Object.keys(y).length) return false;
 
             for (var prop in x) {
@@ -2570,7 +2571,6 @@ class ServerConsole extends EventTarget {
     }
 
     renderAgentTasks(tasks) {
-        const $card = $("#server-tasks-card");
         const $wrapper = $("#agent-tasks-wrapper");
 
         if ($wrapper.length == 0) {
@@ -2581,12 +2581,22 @@ class ServerConsole extends EventTarget {
         // fields, so guard before reading length.
         tasks = tasks || [];
 
-        $card.toggleClass("hidden", tasks.length == 0);
         $wrapper.empty();
+
+        if (tasks.length == 0) {
+            $wrapper.append($("<p/>").addClass("empty-note").text("No tasks have run on this server yet."));
+        }
 
         for (let i = 0; i < tasks.length; i++) {
             $wrapper.append(this.buildAgentTaskRow(tasks[i]));
         }
+
+        // The panel is closed most of the time, so the button carries the only
+        // signal that something is queued or in flight.
+        const active = tasks.filter((t) => t.status == "pending" || t.status == "running").length;
+        const $btn = $("#server-tasks-btn");
+        $btn.toggleClass("has-active", active > 0);
+        $("#server-tasks-count").text(active);
     }
 
     buildAgentTaskRow(t) {
@@ -2601,7 +2611,11 @@ class ServerConsole extends EventTarget {
         $row.append($("<span/>").addClass("task-rail"));
 
         const $head = $("<div/>").addClass("task-head");
-        $head.append($("<span/>").addClass("task-action").text(t.action || ""));
+        $head.append(
+            $("<span/>")
+                .addClass("task-action")
+                .text(t.action || ""),
+        );
         $head.append($("<span/>").addClass("task-status").text(status));
 
         // An attempt count only says something once a task has actually retried.
@@ -2621,11 +2635,7 @@ class ServerConsole extends EventTarget {
 
         if (running) {
             const $bar = $("<div/>").addClass("task-progress");
-            $bar.append(
-                $("<div/>")
-                    .addClass("task-progress-bar")
-                    .css("width", `${progress}%`),
-            );
+            $bar.append($("<div/>").addClass("task-progress-bar").css("width", `${progress}%`));
 
             $detail.append($bar);
             $detail.append($("<span/>").addClass("task-pct").text(`${progress}%`));
@@ -2636,19 +2646,13 @@ class ServerConsole extends EventTarget {
         // the current state.
         const failed = status == "dead" || status == "cancelled";
         if (failed && t.last_error) {
-            $detail.append(
-                $("<span/>").addClass("task-message err").text(t.last_error),
-            );
+            $detail.append($("<span/>").addClass("task-message err").text(t.last_error));
         } else if (running && t.message) {
             $detail.append($("<span/>").addClass("task-message").text(t.message));
         }
         $row.append($detail);
 
-        $row.append(
-            $("<span/>")
-                .addClass("task-time")
-                .text(this.agentTaskTime(t, status)),
-        );
+        $row.append($("<span/>").addClass("task-time").text(this.agentTaskTime(t, status)));
 
         $row.append(
             $("<span/>")
@@ -2658,19 +2662,9 @@ class ServerConsole extends EventTarget {
 
         const $act = $("<div/>").addClass("task-act");
         if (status == "pending" || running) {
-            $act.append(
-                $("<button/>")
-                    .addClass("op agent-task-cancel-btn")
-                    .attr("data-task-id", t.id)
-                    .text("Cancel"),
-            );
+            $act.append($("<button/>").addClass("op agent-task-cancel-btn").attr("data-task-id", t.id).text("Cancel"));
         } else if (status == "dead") {
-            $act.append(
-                $("<button/>")
-                    .addClass("op agent-task-retry-btn")
-                    .attr("data-task-id", t.id)
-                    .text("Retry"),
-            );
+            $act.append($("<button/>").addClass("op agent-task-retry-btn").attr("data-task-id", t.id).text("Retry"));
         }
         $row.append($act);
 
@@ -2729,6 +2723,8 @@ class ServerConsole extends EventTarget {
             const prevStatus = this.status;
             this.status = event.detail;
 
+            this.renderCmdHead();
+
             if (!this.deepEqual(prevStatus.installed, this.status.installed)) {
                 this.dispatchEvent(new Event("statusUpdated"));
             }
@@ -2740,6 +2736,31 @@ class ServerConsole extends EventTarget {
             }
         } catch (err) {
             console.error(err);
+        }
+    }
+
+    // The header is rendered server-side on page load and then goes stale, so
+    // keep it in step with the status poll instead of waiting for a reload.
+    renderCmdHead() {
+        const $head = $("#server-cmd-head");
+        if ($head.length == 0) {
+            return;
+        }
+
+        const online = !!this.status.online;
+        const running = !!this.status.running;
+
+        $head.toggleClass("is-offline", !online);
+
+        $("#server-status-lamp")
+            .removeClass("on off run pulse")
+            .addClass(online ? (running ? "run pulse" : "on") : "off");
+
+        $("#server-status-text").text(running ? "Running" : online ? "Online" : "Offline");
+
+        const sfVersion = this.status.installed_sf_version || 0;
+        if (sfVersion) {
+            $("#server-sf-version").text(sfVersion);
         }
     }
 
@@ -2815,9 +2836,7 @@ class ServerConsole extends EventTarget {
 
         // Delay scroll update to next frame for smoother UI
         requestAnimationFrame(() => {
-            this.$serverConsole.scrollTop(
-                this.$serverConsole.prop("scrollHeight"),
-            );
+            this.$serverConsole.scrollTop(this.$serverConsole.prop("scrollHeight"));
         });
     }
     onStatsRecieved(event) {
@@ -2839,31 +2858,16 @@ class ServerConsole extends EventTarget {
             date.setSeconds(stat.created_at.seconds);
 
             cpuStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.cpu || 0),
             });
             memStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: parseFloat(stat.mem || 0),
             });
             const runningVal = stat.running ? 1 : -1;
             runningStats.push({
-                date:
-                    date.getHours().pad(2) +
-                    ":" +
-                    date.getMinutes().pad(2) +
-                    ":" +
-                    date.getSeconds().pad(2),
+                date: date.getHours().pad(2) + ":" + date.getMinutes().pad(2) + ":" + date.getSeconds().pad(2),
                 value: runningVal,
             });
 
@@ -3000,9 +3004,7 @@ class ServerConsole extends EventTarget {
         const textColour = $("body").hasClass("dark") ? "white" : "black";
 
         if (this.uptimeChart != null) {
-            this.uptimeChart.data.datasets[0].data = data.map(
-                (row) => row.value,
-            );
+            this.uptimeChart.data.datasets[0].data = data.map((row) => row.value);
             this.uptimeChart.data.labels = data.map((row) => row.date);
             this.uptimeChart.data.datasets[0].backgroundColor = backgroundColor;
             this.uptimeChart.update();
@@ -3173,23 +3175,43 @@ function current() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+// "system" clears the override so prefers-color-scheme wins again.
+function saved() {
+    try { return localStorage.getItem(KEY) || "system"; } catch (e) { return "system"; }
+}
+
 function set(mode) {
     apply(mode);
-    try { localStorage.setItem(KEY, mode); } catch (e) { /* ignore */ }
+    try {
+        if (mode === "light" || mode === "dark") {
+            localStorage.setItem(KEY, mode);
+        } else {
+            localStorage.removeItem(KEY);
+        }
+    } catch (e) { /* ignore */ }
+    markChoice();
 }
 
 function toggle() {
     set(current() === "dark" ? "light" : "dark");
 }
 
+function markChoice() {
+    const mode = saved();
+    document.querySelectorAll("[data-ssm-theme-set]").forEach(function (btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-ssm-theme-set") === mode);
+    });
+}
+
 function init() {
-    try {
-        const saved = localStorage.getItem(KEY);
-        if (saved) apply(saved);
-    } catch (e) { /* ignore */ }
+    apply(saved());
+    markChoice();
     document.addEventListener("click", function (e) {
         const btn = e.target.closest("[data-ssm-theme-toggle]");
-        if (btn) { e.preventDefault(); toggle(); }
+        if (btn) { e.preventDefault(); toggle(); return; }
+
+        const choice = e.target.closest("[data-ssm-theme-set]");
+        if (choice) { e.preventDefault(); set(choice.getAttribute("data-ssm-theme-set")); }
     });
 }
 
