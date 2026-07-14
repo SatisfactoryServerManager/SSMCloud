@@ -4,7 +4,7 @@
   {{if .Status.Online}} {{$statusText = "Online"}} {{end}}
   {{if .Status.Running}} {{$statusText = "Running"}} {{end}}
   {{if not .Status.Installed}} {{$statusText = "Not Installed"}} {{end}}
-  {{$modCount := (len .ModConfig.SelectedMods)}}
+  {{$modCount := .ModCount}}
   <article class="unit status-rail {{if .Status.Online}}online{{else}}offline{{end}}" id="server-card-{{.Id}}">
     <div class="unit-head">
       <div class="unit-id">
