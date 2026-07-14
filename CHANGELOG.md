@@ -1,3 +1,6 @@
+## 1.0.185 (July 14, 2026)
+  - fix: Fixes to integrations and profile page
+
 ## 1.0.184 (July 14, 2026)
   - feat: Improvements to frontend
   - chore: ignore node_modules
